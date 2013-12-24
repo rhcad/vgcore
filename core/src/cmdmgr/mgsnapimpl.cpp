@@ -212,7 +212,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
     Box2d snapbox(orignPt, 2 * arr[0].dist, 0);         // 捕捉容差框
     GiTransform* xf = sender->view->xform();
     Box2d wndbox(xf->getWndRectM());
-    MgShapeIterator it(sender->view->shapes());
+    MgShapeIterator it(sender->view->backShapes());
     
     while (const MgShape* sp = it.getNext()) {
         if (skipShape(ignoreids, sp)) {

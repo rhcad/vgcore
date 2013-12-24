@@ -33,7 +33,7 @@ int MgCmdSelect::getSelection(MgView* view, int count, const MgShape** shapes)
     
     if (m_clones.empty() && count > 0) {
         for (i = 0; i < count; i++) {
-            const MgShape* shape = view->shapes()->findShape(m_selIds[i]);
+            const MgShape* shape = view->backShapes()->findShape(m_selIds[i]);
             if (shape)
                 shapes[ret++] = shape;
         }
@@ -195,9 +195,9 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         }
     }
     
-    if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)) {
+    if (sender->view->backShapes()->getOwner()->isKindOf(kMgShapeComposite)) {
         GiContext ctxshap(0, GiColor(0, 0, 255, 64), kGiLineDot);
-        Box2d rect(sender->view->shapes()->getExtent());
+        Box2d rect(sender->view->backShapes()->getExtent());
         rect.inflate(sender->displayMmToModel(2.f));
         gs->drawRect(&ctxshap, rect);
     }
@@ -341,7 +341,7 @@ MgCmdSelect::sel_iterator MgCmdSelect::getSelectedPostion(const MgShape* shape)
 
 const MgShape* MgCmdSelect::getShape(int id, const MgMotion* sender) const
 {
-    return sender->view->shapes()->findShape(id);
+    return sender->view->backShapes()->findShape(id);
 }
 
 const MgShape* MgCmdSelect::getShape(const MgMotion* sender)
@@ -357,7 +357,7 @@ bool MgCmdSelect::isSelected(const MgShape* shape)
 const MgShape* MgCmdSelect::hitTestAll(const MgMotion* sender, MgHitResult& res)
 {
     Box2d limits(sender->pointM, sender->displayMmToModel(8.f), 0);
-    return sender->view->shapes()->hitTest(limits, res);
+    return sender->view->backShapes()->hitTest(limits, res);
 }
 
 const MgShape* MgCmdSelect::getSelectedShape(const MgMotion* sender)
@@ -543,7 +543,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         const MgShape* oldshape = getSelectedShape(sender);
         
         if (newshape && newshape->getID() != m_id
-            && !sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)
+            && !sender->view->backShapes()->getOwner()->isKindOf(kMgShapeComposite)
             && (!oldshape || !canSelect(oldshape, sender))) {
             m_hit = res;
             m_id = newshape->getID();
@@ -861,7 +861,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
     
     if (m_clones.empty() && m_boxsel) {    // 没有选中图形时就滑动多选
         Box2d snap(sender->startPtM, sender->pointM);
-        MgShapeIterator it(sender->view->shapes());
+        MgShapeIterator it(sender->view->backShapes());
         
         m_selIds.clear();
         m_id = 0;
@@ -936,7 +936,7 @@ void MgCmdSelect::cloneShapes(MgView* view)
     m_clones.clear();
     
     for (sel_iterator its = m_selIds.begin(); its != m_selIds.end(); ++its) {
-        const MgShape* shape = view->shapes()->findShape(*its);
+        const MgShape* shape = view->backShapes()->findShape(*its);
         if (shape) {
             MgShape* newsp = shape->cloneShape();
             if (newsp)
@@ -954,7 +954,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     if (apply) {
         apply = false;
         for (i = 0; i < m_clones.size() && !apply; i++) {
-            const MgShape* oldsp = view->shapes()->findShape(m_clones[i]->getID());
+            const MgShape* oldsp = view->backShapes()->findShape(m_clones[i]->getID());
             if (oldsp && !oldsp->equals(*(m_clones[i]))) {
                 apply = true;
             }
@@ -964,7 +964,6 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     if (!apply && !m_clones.empty()) {
         for (i = 0; i < m_clones.size(); i++) {
             m_clones[i]->release();
-            m_clones[i] = NULL;
         }
         m_clones.clear();
     }
@@ -975,7 +974,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
         }
         for (i = 0; i < m_clones.size(); i++) {
             if (addNewShapes) {
-                if (view->shapes()->addShapeDirect(m_clones[i])) {
+                if (view->backShapes()->addShapeDirect(m_clones[i])) {
                     view->shapeAdded(m_clones[i]);
                     m_selIds.push_back(m_clones[i]->getID());
                     m_id = m_clones[i]->getID();
@@ -986,7 +985,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
                 }
             }
             else {
-                if (view->shapes()->updateShape(m_clones[i])) {
+                if (view->backShapes()->updateShape(m_clones[i])) {
                     changed = true;
                 }
                 else {
@@ -1014,7 +1013,7 @@ MgSelState MgCmdSelect::getSelectState(MgView* view)
     MgSelState state = kMgSelNone;
     
     if (isEditMode(view)) {
-        const MgShape* shape = view->shapes()->findShape(m_id);
+        const MgShape* shape = view->backShapes()->findShape(m_id);
         state = m_handleIndex > 0 && shape && shape->shapec()->isKindOf(MgBaseLines::Type()) ?
             kMgSelVertex : kMgSelVertexes;
     }
@@ -1050,7 +1049,7 @@ int MgCmdSelect::getSelectType(MgView* view)
 bool MgCmdSelect::selectAll(const MgMotion* sender)
 {
     size_t oldn = m_selIds.size();
-    MgShapeIterator it(sender->view->shapes());
+    MgShapeIterator it(sender->view->backShapes());
     
     m_selIds.clear();
     m_handleIndex = 0;
@@ -1076,14 +1075,14 @@ bool MgCmdSelect::selectAll(const MgMotion* sender)
 bool MgCmdSelect::deleteSelection(const MgMotion* sender)
 {
     const MgShape* shape = (m_selIds.empty() ? NULL
-                            : sender->view->shapes()->findShape(m_selIds.front()));
+                            : sender->view->backShapes()->findShape(m_selIds.front()));
     int count = 0;
     
     if (shape && sender->view->shapeWillDeleted(shape)) {
         applyCloneShapes(sender->view, false);
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
-            shape = sender->view->shapes()->findShape(*it);
+            shape = sender->view->backShapes()->findShape(*it);
             if (shape && sender->view->removeShape(shape)) {
                 count++;
             }
@@ -1110,12 +1109,12 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
     if (m_selIds.size() > 1) {
         applyCloneShapes(sender->view, false);
 
-        MgShape* newgroup = sender->view->shapes()->addShapeByType(
+        MgShape* newgroup = sender->view->backShapes()->addShapeByType(
             sender->view->getShapeFactory(), MgGroup::Type());
         MgGroup* group = (MgGroup*)newgroup->shape();
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
-            if (group->addShapeToGroup(sender->view->shapes()->findShape(*it))) {
+            if (group->addShapeToGroup(sender->view->backShapes()->findShape(*it))) {
                 count++;
             }
         }
@@ -1140,14 +1139,14 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
 bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
 {
     const MgShape* oldsp = (m_selIds.empty() ? NULL
-                            : sender->view->shapes()->findShape(m_selIds.front()));
+                            : sender->view->backShapes()->findShape(m_selIds.front()));
     int count = 0;
     
     if (oldsp && sender->view->shapeWillDeleted(oldsp)) {
         applyCloneShapes(sender->view, false);
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
-            oldsp = sender->view->shapes()->findShape(*it);
+            oldsp = sender->view->backShapes()->findShape(*it);
             if (oldsp && oldsp->shapec()->isKindOf(MgGroup::Type())) {
                 if (sender->view->shapeCanUngroup(oldsp)) {
                     const MgGroup* group = (const MgGroup*)oldsp->shapec();
@@ -1204,7 +1203,7 @@ void MgCmdSelect::resetSelection(const MgMotion* sender)
 
 bool MgCmdSelect::addSelection(const MgMotion* sender, int shapeID)
 {
-    const MgShape* shape = sender->view->shapes()->findShape(shapeID);
+    const MgShape* shape = sender->view->backShapes()->findShape(shapeID);
     
     if (shape && !isSelected(shape)) {
         m_selIds.push_back(shape->getID());
@@ -1219,7 +1218,7 @@ bool MgCmdSelect::addSelection(const MgMotion* sender, int shapeID)
 
 bool MgCmdSelect::deleteVertext(const MgMotion* sender)
 {
-    const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
+    const MgShape* oldsp = sender->view->backShapes()->findShape(m_id);
     bool ret = false;
     
     if (oldsp && m_handleIndex > 0
@@ -1248,7 +1247,7 @@ bool MgCmdSelect::deleteVertext(const MgMotion* sender)
 
 bool MgCmdSelect::insertVertext(const MgMotion* sender)
 {
-    const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
+    const MgShape* oldsp = sender->view->backShapes()->findShape(m_id);
     bool ret = false;
     
     if (oldsp && isEditMode(sender->view)
@@ -1279,7 +1278,7 @@ bool MgCmdSelect::insertVertext(const MgMotion* sender)
 
 bool MgCmdSelect::switchClosed(const MgMotion* sender)
 {
-    const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
+    const MgShape* oldsp = sender->view->backShapes()->findShape(m_id);
     bool ret = false;
     
     if (oldsp && oldsp->shapec()->isKindOf(MgBaseLines::Type())) {
@@ -1300,7 +1299,7 @@ bool MgCmdSelect::switchClosed(const MgMotion* sender)
 
 bool MgCmdSelect::isFixedLength(MgView* view)
 {
-    const MgShape* shape = view->shapes()->findShape(m_id);
+    const MgShape* shape = view->backShapes()->findShape(m_id);
     return shape && shape->shapec()->getFlag(kMgFixedLength);
 }
 
@@ -1309,7 +1308,7 @@ bool MgCmdSelect::setFixedLength(const MgMotion* sender, bool fixed)
     int count = 0;
     
     for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
-        const MgShape* oldsp = sender->view->shapes()->findShape(*it);
+        const MgShape* oldsp = sender->view->backShapes()->findShape(*it);
         if (oldsp && oldsp->shapec()->getFlag(kMgFixedLength) != fixed) {
             MgShape* newsp = oldsp->cloneShape();
             newsp->shape()->setFlag(kMgFixedLength, fixed);
@@ -1327,7 +1326,7 @@ bool MgCmdSelect::setFixedLength(const MgMotion* sender, bool fixed)
 
 bool MgCmdSelect::isLocked(MgView* view)
 {
-    const MgShape* shape = view->shapes()->findShape(m_id);
+    const MgShape* shape = view->backShapes()->findShape(m_id);
     return shape && shape->shapec()->getFlag(kMgShapeLocked);
 }
 
@@ -1336,7 +1335,7 @@ bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
     int count = 0;
     
     for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
-        const MgShape* oldsp = sender->view->shapes()->findShape(*it);
+        const MgShape* oldsp = sender->view->backShapes()->findShape(*it);
         if (oldsp && oldsp->shapec()->getFlag(kMgShapeLocked) != locked) {
             if (locked || sender->view->shapeCanUnlock(oldsp)) {
                 MgShape* newsp = oldsp->cloneShape();
@@ -1356,7 +1355,7 @@ bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
 
 bool MgCmdSelect::isEditMode(MgView* view)
 {
-    MgObject* owner = view->shapes()->getOwner();
+    MgObject* owner = view->backShapes()->getOwner();
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         return true;
     }
@@ -1365,14 +1364,14 @@ bool MgCmdSelect::isEditMode(MgView* view)
 
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
 {
-    MgObject* owner = sender->view->shapes()->getOwner();
+    MgObject* owner = sender->view->backShapes()->getOwner();
 
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         editMode = false;
         sender->view->setCurrentShapes(NULL);
     }
     else {
-        const MgShape* sp = sender->view->shapes()->findShape(m_id);
+        const MgShape* sp = sender->view->backShapes()->findShape(m_id);
         if (sp && sp->shapec()->isKindOf(kMgShapeComposite)) {
             MgShapes* shapes = ((MgComposite*)sp->shapec())->shapes();
             sender->view->setCurrentShapes(shapes);

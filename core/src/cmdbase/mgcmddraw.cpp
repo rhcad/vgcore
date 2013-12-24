@@ -17,10 +17,7 @@ MgCommandDraw::MgCommandDraw(const char* name)
 
 MgCommandDraw::~MgCommandDraw()
 {
-    if (m_shape) {
-        m_shape->release();
-        m_shape = NULL;
-    }
+    MgObject::release_pointer(m_shape);
 }
 
 bool MgCommandDraw::cancel(const MgMotion* sender)
@@ -41,13 +38,13 @@ bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
         m_shape = creator ? creator() : sender->view->getShapeFactory()->createShape(getShapeType());
         if (!m_shape || !m_shape->shape())
             return false;
-        m_shape->setParent(sender->view->shapes(), 0);
+        m_shape->setParent(sender->view->backShapes(), 0);
     }
     sender->view->setNewShapeID(0);
     m_step = 0;
     m_needClear = 0;
     m_shape->shape()->clear();
-    m_shape->setContext(*sender->view->context(), -1);
+    m_shape->setContext(*sender->view->backContext(), -1);
     
     return true;
 }
@@ -58,15 +55,15 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
     MgShape* newsp = NULL;
     
     if (sender->view->shapeWillAdded(shape)) {
-        newsp = sender->view->shapes()->addShape(*shape);
+        newsp = sender->view->backShapes()->addShape(*shape);
         sender->view->shapeAdded(newsp);
         sender->view->getCmdSubject()->onShapeAdded(sender, newsp);
         if (strcmp(getName(), "splines") != 0) {
             sender->view->setNewShapeID(newsp->getID());
         }
     }
-    if (m_shape && sender->view->context()) {
-        m_shape->setContext(*sender->view->context(), -1);
+    if (m_shape && sender->view->backContext()) {
+        m_shape->setContext(*sender->view->backContext(), -1);
     }
     
     return newsp;
@@ -108,7 +105,7 @@ bool MgCommandDraw::_click(const MgMotion* sender)
 {
     Box2d limits(sender->pointM, sender->displayMmToModel(10.f), 0);
     MgHitResult res;
-    const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
+    const MgShape* shape = sender->view->backShapes()->hitTest(limits, res);
     
     if (shape) {
         sender->view->setNewShapeID(shape->getID());
@@ -126,7 +123,7 @@ bool MgCommandDraw::longPress(const MgMotion* sender)
 
 bool MgCommandDraw::touchBegan(const MgMotion* sender)
 {
-    m_shape->setContext(*sender->view->context(), -1);
+    m_shape->setContext(*sender->view->backContext(), -1);
     sender->view->redraw();
     m_needClear = 0;
     

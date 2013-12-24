@@ -6,7 +6,7 @@
 #ifndef TOUCHVG_MGSELECTION_H_
 #define TOUCHVG_MGSELECTION_H_
 
-class MgView;
+struct MgView;
 class MgMotion;
 class MgShape;
 class Point2d;

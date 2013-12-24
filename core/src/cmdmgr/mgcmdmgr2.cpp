@@ -42,7 +42,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());
     
     if (sender->view->shapeWillAdded(&shape)) {
-        MgShape* newsp = sender->view->shapes()->addShape(shape);
+        MgShape* newsp = sender->view->backShapes()->addShape(shape);
         sender->view->shapeAdded(newsp);
         
         sender->view->setNewShapeID(newsp->getID());
@@ -73,7 +73,7 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
 {
     Box2d snap(sender->view->xform()->getWndRectM());
     std::vector<int> delIds;
-    MgShapes* s = sender->view->shapes();
+    MgShapes* s = sender->view->backShapes();
     MgShapeIterator it(s);
     
     while (const MgShape* shape = it.getNext()) {

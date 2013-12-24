@@ -26,11 +26,15 @@ public:
     GcBaseView* getView(int index) const;
     int getViewCount() const;
     GcBaseView* firstView() const;
-    MgShapeDoc* doc() const { return _doc; }
+    
+    MgShapeDoc* frontDoc() const { return _frontDoc ? _frontDoc : _backDoc; }
+    MgShapeDoc* backDoc() const { return _backDoc; }
+    void submitBackDoc();
     
 private:
     std::vector<GcBaseView*>    _views;
-    MgShapeDoc*     _doc;
+    MgShapeDoc*     _frontDoc;
+    MgShapeDoc*     _backDoc;
 };
 
 #endif // TOUCHVG_CORE_SHAPEDOC_H

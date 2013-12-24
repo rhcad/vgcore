@@ -11,7 +11,7 @@
 
 class GiCanvas;
 class GiCoreViewImpl;
-class MgView;
+struct MgView;
 
 //! 内核视图分发器类
 /*! 本对象拥有图形文档对象，负责显示和手势动作的分发。
@@ -42,10 +42,10 @@ public:
     void stopDrawing(GiView* view);
     
     //! 显示所有图形
-    int drawAll(GiView* view, GiCanvas* canvas);
+    int drawAll(long docHandle, GiView* view, GiCanvas* canvas);
 
     //! 显示新图形，在 GiView.regenAppend() 后调用
-    int drawAppend(GiView* view, GiCanvas* canvas);
+    int drawAppend(long docHandle, GiView* view, GiCanvas* canvas);
     
     //! 显示动态图形
     void dynDraw(GiView* view, GiCanvas* canvas);
@@ -75,15 +75,18 @@ public:
     bool isPressDragging();
     MgView* viewAdapter();
     long viewAdapterHandle();
-    long docHandle();
-    long shapesHandle();
+    long backDoc();
+    long backShapes();
+    long acquireFrontDoc();
+    void releaseFrontDoc(long h);
+    void submitBackDoc();
     const char* getCommand() const;
     bool setCommand(GiView* view, const char* name, const char* params = "");
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);
     void clearCachedData();
     int addShapesForTest();
-    int getShapeCount();
+    int getShapeCount(long docHandle);
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();
@@ -91,11 +94,11 @@ public:
     int getSelectedShapeID();
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
-    bool saveToFile(const char* vgfile, bool pretty = true);
+    bool saveToFile(long docHandle, const char* vgfile, bool pretty = true);
     bool loadShapes(MgStorage* s, bool readOnly = false);
-    bool saveShapes(MgStorage* s);
+    bool saveShapes(long docHandle, MgStorage* s);
     bool loadDynamicShapes(MgStorage* s);
-    const char* getContent();
+    const char* getContent(long docHandle);
     void freeContent();
     bool setContent(const char* content);
     bool zoomToExtent();

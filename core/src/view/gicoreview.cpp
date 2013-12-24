@@ -99,9 +99,7 @@ public:
     }
 
     ~GiCoreViewImpl() {
-        if (dynshapes) {
-            dynshapes->release();
-        }
+        MgObject::release_pointer(dynshapes);
         _cmds->release();
         delete _doc;
     }
@@ -109,12 +107,12 @@ public:
     MgMotion* motion() { return &_motion; }
     MgCmdManager* cmds() const { return _cmds; }
     GcShapeDoc* document() const { return _doc; }
-    MgShapeDoc* doc() const { return _doc->doc(); }
-    MgShapes* shapes() const { return doc()->getCurrentShapes(); }
-    GiContext* context() const { return doc()->context(); }
+    MgShapeDoc* backDoc() const { return _doc->backDoc(); }
+    MgShapes* backShapes() const { return backDoc()->getCurrentShapes(); }
+    GiContext* backContext() const { return backDoc()->context(); }
     GiTransform* xform() const { return CALL_VIEW2(xform(), NULL); }
     GiGraphics* graph() const { return CALL_VIEW2(graph(), NULL); }
-    Matrix2d& modelTransform() const { return doc()->modelTransform(); }
+    Matrix2d& backModelTransform() const { return backDoc()->modelTransform(); }
 
     int getNewShapeID() { return _cmds->getNewShapeID(); }
     void setNewShapeID(int sid) { _cmds->setNewShapeID(sid); }
@@ -134,8 +132,8 @@ public:
         return _cmds->findCommand(name); }
     bool setCommand(const char* name) { return _cmds->setCommand(&_motion, name, NULL); }
     bool setCurrentShapes(MgShapes* shapes) {
-        return doc()->setCurrentShapes(shapes); }
-    bool isReadOnly() const { return doc()->isReadOnly() || doc()->getCurrentLayer()->isLocked(); }
+        return backDoc()->setCurrentShapes(shapes); }
+    bool isReadOnly() const { return backDoc()->isReadOnly() || backDoc()->getCurrentLayer()->isLocked(); }
     int getDynamicShapes(MgShapes* shapes) {
         MgCommand* cmd = getCommand(); return cmd ? cmd->gatherShapes(&_motion, shapes) : 0; }
 
@@ -438,14 +436,19 @@ GcBaseView::GcBaseView(MgView* mgview, GiView *view)
     mgview->document()->addView(this);
 }
 
-MgShapeDoc* GcBaseView::doc()
+MgShapeDoc* GcBaseView::backDoc()
 {
-    return cmdView()->document()->doc();
+    return cmdView()->document()->backDoc();
 }
 
-MgShapes* GcBaseView::shapes()
+MgShapeDoc* GcBaseView::frontDoc()
 {
-    return doc()->getCurrentShapes();
+    return cmdView()->document()->frontDoc();
+}
+
+MgShapes* GcBaseView::backShapes()
+{
+    return backDoc()->getCurrentShapes();
 }
 
 GiCoreView::GiCoreView(GiCoreView* mainView)
@@ -476,14 +479,32 @@ long GiCoreView::viewAdapterHandle()
     return viewAdapter()->toHandle();
 }
 
-long GiCoreView::docHandle()
+long GiCoreView::backDoc()
 {
-    return impl->doc()->toHandle();
+    return impl->backDoc()->toHandle();
 }
 
-long GiCoreView::shapesHandle()
+long GiCoreView::backShapes()
 {
-    return impl->shapes()->toHandle();
+    return impl->backShapes()->toHandle();
+}
+
+long GiCoreView::acquireFrontDoc()
+{
+    impl->_doc->frontDoc()->addRef();
+    return impl->_doc->frontDoc()->toHandle();
+}
+
+void GiCoreView::releaseFrontDoc(long h)
+{
+    MgShapeDoc* doc = MgShapeDoc::fromHandle(h);
+    MgObject::release_pointer(doc);
+}
+
+void GiCoreView::submitBackDoc()
+{
+    impl->backDoc()->saveAll(NULL, impl->xform());  // save viewport
+    impl->_doc->submitBackDoc();
 }
 
 void GiCoreView::createView(GiView* view, int type)
@@ -568,14 +589,14 @@ void GiCoreView::stopDrawing(GiView* view)
     aview->graph(true)->isDrawing();
 }
 
-int GiCoreView::drawAll(GiView* view, GiCanvas* canvas)
+int GiCoreView::drawAll(long docHandle, GiView* view, GiCanvas* canvas)
 {
     int n = -1;
     GcBaseView* aview = impl->_doc->findView(view);
     GiGraphics* gs = aview ? aview->graph() : NULL;
     
-    if (gs && gs->beginPaint(canvas)) {
-        n = aview->drawAll(*gs);
+    if (docHandle && gs && gs->beginPaint(canvas)) {
+        n = aview->drawAll(docHandle, *gs);
         gs->endPaint();
     }
     if (!impl->newids.empty()) {
@@ -587,15 +608,15 @@ int GiCoreView::drawAll(GiView* view, GiCanvas* canvas)
     return n;
 }
 
-int GiCoreView::drawAppend(GiView* view, GiCanvas* canvas)
+int GiCoreView::drawAppend(long docHandle, GiView* view, GiCanvas* canvas)
 {
     int n = -1;
     GcBaseView* aview = impl->_doc->findView(view);
     GiGraphics* gs = aview ? aview->graph() : NULL;
     
-    if (gs && !impl->newids.empty()
+    if (docHandle && gs && !impl->newids.empty()
         && gs->beginPaint(canvas)) {
-        n = aview->drawAppend(&impl->newids.front(), *gs);
+        n = aview->drawAppend(docHandle, &impl->newids.front(), *gs);
         gs->endPaint();
     }
     if (!impl->newids.empty()) {
@@ -757,19 +778,20 @@ bool GiCoreView::doContextAction(int action)
 
 void GiCoreView::clearCachedData()
 {
-    impl->doc()->clearCachedData();
+    impl->backDoc()->clearCachedData();
 }
 
 int GiCoreView::addShapesForTest()
 {
-    int n = RandomParam().addShapes(impl->shapes());
+    int n = RandomParam().addShapes(impl->backShapes());
     impl->regenAll(true);
     return n;
 }
 
-int GiCoreView::getShapeCount()
+int GiCoreView::getShapeCount(long docHandle)
 {
-    return impl->doc()->getShapeCount();
+    const MgShapeDoc* doc = MgShapeDoc::fromHandle(docHandle);
+    return doc ? doc->getShapeCount() : 0;
 }
 
 long GiCoreView::getChangeCount()
@@ -810,13 +832,13 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
 
     if (s) {
-        ret = impl->doc()->loadAll(impl->getShapeFactory(), s, impl->xform());
-        impl->doc()->setReadOnly(readOnly);
+        ret = impl->backDoc()->loadAll(impl->getShapeFactory(), s, impl->xform());
+        impl->backDoc()->setReadOnly(readOnly);
         LOGD("Load %d shapes and %d layers",
-             impl->doc()->getShapeCount(), impl->doc()->getLayerCount());
+             impl->backDoc()->getShapeCount(), impl->backDoc()->getLayerCount());
     }
     else {
-        impl->doc()->clear();
+        impl->backDoc()->clear();
         ret = true;
     }
     impl->regenAll(true);
@@ -825,9 +847,10 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     return ret;
 }
 
-bool GiCoreView::saveShapes(MgStorage* s)
+bool GiCoreView::saveShapes(long docHandle, MgStorage* s)
 {
-    return s && impl->doc()->saveAll(s, impl->xform());
+    const MgShapeDoc* doc = MgShapeDoc::fromHandle(docHandle);
+    return doc && doc->save(s, 0);
 }
 
 bool GiCoreView::loadDynamicShapes(MgStorage* s)
@@ -840,8 +863,7 @@ bool GiCoreView::loadDynamicShapes(MgStorage* s)
         ret = impl->dynshapes->load(impl->getShapeFactory(), s);
     }
     else if (impl->dynshapes) {
-        impl->dynshapes->release();
-        impl->dynshapes = NULL;
+        MgObject::release_pointer(impl->dynshapes);
         ret = true;
     }
     if (ret) {
@@ -857,10 +879,10 @@ void GiCoreView::clear()
     loadShapes((MgStorage*)0);
 }
 
-const char* GiCoreView::getContent()
+const char* GiCoreView::getContent(long docHandle)
 {
     const char* content = "";
-    if (saveShapes(impl->defaultStorage.storageForWrite())) {
+    if (saveShapes(docHandle, impl->defaultStorage.storageForWrite())) {
         content = impl->defaultStorage.stringify();
     }
     return content; // has't free defaultStorage's string buffer
@@ -895,12 +917,12 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
     return ret;
 }
 
-bool GiCoreView::saveToFile(const char* vgfile, bool pretty)
+bool GiCoreView::saveToFile(long docHandle, const char* vgfile, bool pretty)
 {
     FILE *fp = mgopenfile(vgfile, "wt");
     MgJsonStorage s;
     bool ret = (fp != NULL
-        && saveShapes(s.storageForWrite())
+        && saveShapes(docHandle, s.storageForWrite())
         && s.save(fp, pretty));
 
     if (fp) {
@@ -914,7 +936,7 @@ bool GiCoreView::saveToFile(const char* vgfile, bool pretty)
 
 bool GiCoreView::zoomToExtent()
 {
-    Box2d rect(impl->doc()->getExtent() * impl->xform()->modelToWorld());
+    Box2d rect(impl->backDoc()->getExtent() * impl->xform()->modelToWorld());
     bool ret = impl->xform()->zoomTo(rect);
     if (ret) {
         impl->regenAll(false);
@@ -948,7 +970,7 @@ GiContext& GiCoreView::getContext(bool forChange)
 
     const MgShape* shape = NULL;
     impl->_cmds->getSelection(impl, 1, &shape);
-    _tmpContext = shape ? shape->context() : *impl->context();
+    _tmpContext = shape ? shape->context() : *impl->backContext();
 
     return _tmpContext;
 }
@@ -987,7 +1009,7 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
             impl->redraw();
         }
         else {
-            impl->context()->copy(ctx, mask);
+            impl->backContext()->copy(ctx, mask);
         }
     }
 
@@ -1022,7 +1044,7 @@ bool GiCoreView::getBoundingBox(mgvector<float>& box)
 
 bool GiCoreView::getBoundingBox(mgvector<float>& box, int shapeId)
 {
-    const MgShape* shape = impl->shapes()->findShape(shapeId);
+    const MgShape* shape = impl->backDoc()->getCurrentShapes()->findShape(shapeId);
     bool ret = box.count() == 4 && shape;
     
     if (ret) {

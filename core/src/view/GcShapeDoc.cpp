@@ -4,13 +4,14 @@
 #include "GcShapeDoc.h"
 #include "GcBaseView.h"
 
-GcShapeDoc::GcShapeDoc() : _doc(MgShapeDoc::createDoc())
+GcShapeDoc::GcShapeDoc() : _frontDoc(NULL), _backDoc(MgShapeDoc::createDoc())
 {
 }
 
 GcShapeDoc::~GcShapeDoc()
 {
-    _doc->release();
+    MgObject::release_pointer(_frontDoc);
+    MgObject::release_pointer(_backDoc);
 }
 
 void GcShapeDoc::addView(GcBaseView* view)
@@ -58,4 +59,11 @@ int GcShapeDoc::getViewCount() const
 GcBaseView* GcShapeDoc::firstView() const
 {
     return !_views.empty() ? _views.front() : NULL;
+}
+
+void GcShapeDoc::submitBackDoc()
+{
+    MgObject::release_pointer(_frontDoc);
+    _frontDoc = MgShapeDoc::createDoc();
+    _frontDoc->copyShapes(_backDoc, false);
 }

@@ -6,7 +6,7 @@
 #ifndef TOUCHVG_BASIC_CMDS_H_
 #define TOUCHVG_BASIC_CMDS_H_
 
-class MgView;
+struct MgView;
 
 //! 基本绘图命令工厂类
 /*! \ingroup CORE_COMMAND

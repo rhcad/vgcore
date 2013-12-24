@@ -8,15 +8,15 @@
 // GcBaseView
 //
 
-int GcBaseView::drawAll(GiGraphics& gs)
+int GcBaseView::drawAll(long docHandle, GiGraphics& gs)
 {
-    return doc()->draw(gs);
+    return MgShapeDoc::fromHandle(docHandle)->draw(gs);
 }
 
-int GcBaseView::drawAppend(const int* newids, GiGraphics& gs)
+int GcBaseView::drawAppend(long docHandle, const int* newids, GiGraphics& gs)
 {
     int n = 0;
-    const MgShapes* sps = shapes();
+    const MgShapes* sps = MgShapeDoc::fromHandle(docHandle)->getCurrentShapes();
     
     for (; *newids && !gs.isStopping(); newids++) {
         const MgShape* sp = sps->findShape(*newids);

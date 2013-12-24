@@ -26,8 +26,9 @@ public:
     GiView* deviceView() { return _view; }
     
     MgView* cmdView() { return _mgview; }
-    MgShapeDoc* doc();
-    MgShapes* shapes();
+    MgShapeDoc* frontDoc();
+    MgShapeDoc* backDoc();
+    MgShapes* backShapes();
     
     //! 得到坐标系对象
     GiTransform* xform() { return &_xf; }
@@ -36,10 +37,10 @@ public:
     GiGraphics* graph(bool dyndraw = false) { return dyndraw ? &_dyngs : &_gs; }
     
     //! 显示所有图形
-    virtual int drawAll(GiGraphics& gs);
+    virtual int drawAll(long docHandle, GiGraphics& gs);
 
     //! 显示新图形，在 GiView.regenAppend() 后调用
-    virtual int drawAppend(const int* newids, GiGraphics& gs);
+    virtual int drawAppend(long docHandle, const int* newids, GiGraphics& gs);
     
     //! 显示动态图形
     virtual void dynDraw(const MgMotion& motion, GiGraphics& gs);
