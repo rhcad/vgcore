@@ -30,20 +30,17 @@ public:
     MgShapeDoc* backDoc();
     MgShapes* backShapes();
     
-    //! 得到坐标系对象
-    GiTransform* xform() { return &_xf; }
+    //! 克隆前端图形显示对象
+    GiGraphics* createFrontGraph() { return new GiGraphics(new GiTransform(_xfFront), true); }
     
-    //! 得到图形显示对象
-    GiGraphics* graph(bool dyndraw = false) { return dyndraw ? &_dyngs : &_gs; }
+    //! 应用后端坐标系对象到前端
+    void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }
     
-    //! 显示所有图形
-    virtual int drawAll(long docHandle, GiGraphics& gs);
-
-    //! 显示新图形，在 GiView.regenAppend() 后调用
-    virtual int drawAppend(long docHandle, const int* newids, GiGraphics& gs);
+    //! 得到后端坐标系对象
+    GiTransform* xform() { return &_xfBack; }
     
-    //! 显示动态图形
-    virtual void dynDraw(const MgMotion& motion, GiGraphics& gs);
+    //! 得到后端图形显示对象
+    GiGraphics* graph() { return &_gsBack; }
 
     //! 设置视图的宽高
     virtual void onSize(int dpi, int w, int h);
@@ -57,9 +54,10 @@ public:
 private:
     MgView*     _mgview;
     GiView*     _view;
-    GiTransform _xf;
-    GiGraphics  _gs;
-    GiGraphics  _dyngs;
+    GiTransform _xfFront;
+    GiTransform _xfBack;
+    GiGraphics  _gsFront;
+    GiGraphics  _gsBack;
 
     Point2d     _lastCenter;
     float       _lastScale;

@@ -8,29 +8,6 @@
 // GcBaseView
 //
 
-int GcBaseView::drawAll(long docHandle, GiGraphics& gs)
-{
-    return MgShapeDoc::fromHandle(docHandle)->draw(gs);
-}
-
-int GcBaseView::drawAppend(long docHandle, const int* newids, GiGraphics& gs)
-{
-    int n = 0;
-    const MgShapes* sps = MgShapeDoc::fromHandle(docHandle)->getCurrentShapes();
-    
-    for (; *newids && !gs.isStopping(); newids++) {
-        const MgShape* sp = sps->findShape(*newids);
-        if (sp && sp->draw(0, gs, NULL, -1)) {
-            n++;
-        }
-    }
-    return n;
-}
-
-void GcBaseView::dynDraw(const MgMotion&, GiGraphics&)
-{
-}
-
 void GcBaseView::onSize(int dpi, int w, int h)
 {
     xform()->setResolution((float)dpi);

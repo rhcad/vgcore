@@ -435,6 +435,7 @@ bool MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
             }
             if (newsp) {
                 newsp->setParent(this, oldsp ? sid : im->getNewID(sid));
+                newsp->shape()->setExtent(rect);
                 ret = newsp->load(factory, s);
                 if (ret) {
                     newsp->shape()->setFlag(kMgClosed, newsp->shape()->isClosed());

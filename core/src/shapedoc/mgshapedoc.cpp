@@ -297,9 +297,10 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
 
 bool MgShapeDoc::saveAll(MgStorage* s, const GiTransform* xform)
 {
-    im->rectW = xform->getWndRectW();
-    im->viewScale = xform->getViewScale();
-    
+    if (xform) {
+        im->rectW = xform->getWndRectW();
+        im->viewScale = xform->getViewScale();
+    }
     return save(s, 0);
 }
 

@@ -14,6 +14,7 @@ public:
     enum { CLIP_INFLATE = 10 };
 
     GiTransform*  xform;            //!< 坐标系管理对象
+    bool        needFreeXf;         //!< 是否自动释放 xform
     GiCanvas*   canvas;             //!< 显示适配器
     GiContext   ctx;                //!< 当前绘图参数
     int         ctxused;            //!< 画笔和画刷的设置标志
@@ -35,7 +36,7 @@ public:
     Box2d       rectDrawMaxM;       //!< 最大剪裁矩形，模型坐标
     Box2d       rectDrawMaxW;       //!< 最大剪裁矩形，世界坐标
 
-    GiGraphicsImpl(GiTransform* x) : xform(x), canvas(NULL)
+    GiGraphicsImpl(GiTransform* x, bool needFree) : xform(x), needFreeXf(needFree), canvas(NULL)
     {
         drawColors = 0;
         stopping = 0;
@@ -48,6 +49,8 @@ public:
 
     ~GiGraphicsImpl()
     {
+        if (needFreeXf)
+            delete xform;
     }
 
     void zoomChanged()

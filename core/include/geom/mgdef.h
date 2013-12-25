@@ -64,9 +64,7 @@ template<class _T> inline bool mgEquals(_T v1, _T v2)
 }
 
 //! 返回两个同类型的数中较小的数的引用
-/*!
-    \ingroup GEOMAPI
-*/
+//! \ingroup GEOMAPI
 template<class _T> inline
 const _T& mgMin(const _T& t1, const _T& t2)
 {
@@ -74,9 +72,7 @@ const _T& mgMin(const _T& t1, const _T& t2)
 }
 
 //! 返回两个同类型的数中较大的数的引用
-/*!
-    \ingroup GEOMAPI
-*/
+//! \ingroup GEOMAPI
 template<class _T> inline
 const _T& mgMax(const _T& t1, const _T& t2)
 {
@@ -84,29 +80,30 @@ const _T& mgMax(const _T& t1, const _T& t2)
 }
 
 //! 交换两个同类型的数
-/*!
-    \ingroup GEOMAPI
-*/
-template<class _T> inline
-void mgSwap(_T& t1, _T& t2)
+//! \ingroup GEOMAPI
+template<class _T> inline void mgSwap(_T& t1, _T& t2)
 {
     _T tmp = t1; t1 = t2; t2 = tmp;
+}
+
+//! 两个同类型的数的赋值
+//! \ingroup GEOMAPI
+template<class _T> inline bool mgCopy(_T& t1, _T t2)
+{
+    bool changed = !mgEquals(t1, t2); if (changed) t1 = t2; return changed;
 }
 
 //! 求直角三角形的斜边长度
 /*! 不用math.h中的hypot函数是因为在不溢出的情况下该函数执行快些
     \ingroup GEOMAPI
 */
-template<class _T> inline
-_T mgHypot(_T x, _T y)
+template<class _T> inline _T mgHypot(_T x, _T y)
 {
     return (_T)sqrt(x*x + y*y);
 }
 
 //! 求两个数的平方和
-/*!
-    \ingroup GEOMAPI
-*/
+//! \ingroup GEOMAPI
 template<class _T> inline _T mgSquare(_T x, _T y)
 {
     return (x*x + y*y);

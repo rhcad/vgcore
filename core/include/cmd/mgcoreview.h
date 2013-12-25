@@ -26,9 +26,14 @@ struct MgCoreView
     virtual long backDoc() = 0;                     //!< 图形文档的句柄, 用 MgShapeDoc::fromHandle() 转换
     virtual long backShapes() = 0;                  //!< 当前图形列表的句柄, 用 MgShapes::fromHandle() 转换
     
-    virtual long acquireFrontDoc() = 0;             //!< 获取前端图形文档的句柄, 需要独占调用
-    virtual void releaseFrontDoc(long h) = 0;       //!< 释放 acquireFrontDoc() 得到的文档句柄
-    virtual void submitBackDoc() = 0;               //!< 将后端文档提交到前端, 需要独占调用
+    virtual long acquireFrontDoc() = 0;             //!< 获取前端图形文档的句柄, 需要并发访问保护
+    virtual void releaseDoc(long hDoc) = 0;         //!< 释放 acquireFrontDoc() 得到的文档句柄
+    virtual void submitBackDoc() = 0;               //!< 将后端文档提交到前端，在UI的regen回调中用，需要并发保护
+    
+    virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
+    virtual void releaseShapes(long hShapes) = 0;   //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
+    virtual void submitDynamicShapes() = 0;         //!< 提交后端动态图形到前端，需要并发访问保护
+    virtual bool loadDynamicShapes(MgStorage* s) = 0; //!< 从数据源中加载临时图形，s为空则清除, 可异步加载
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称
@@ -38,7 +43,7 @@ struct MgCoreView
     virtual void clearCachedData() = 0;             //!< 释放临时数据内存，未做线程保护
     virtual int addShapesForTest() = 0;             //!< 添加测试图形
     
-    virtual int getShapeCount(long docHandle) = 0;  //!< 返回前端文档的图形总数
+    virtual int getShapeCount() = 0;                //!< 返回前端文档的图形总数
     virtual long getChangeCount() = 0;              //!< 返回静态图形改变次数，可用于检查是否需要保存
     virtual long getDrawCount() const = 0;          //!< 返回已绘制次数，可用于录屏
     virtual int getSelectedShapeCount() = 0;        //!< 返回选中的图形个数
@@ -52,26 +57,22 @@ struct MgCoreView
     virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;
     
     //! 保存图形到JSON文件
-    virtual bool saveToFile(long docHandle, const char* vgfile, bool pretty = true) = 0;
+    virtual bool saveToFile(long hDoc, const char* vgfile, bool pretty = true) = 0;
     
     //! 从数据源中加载图形
     virtual bool loadShapes(MgStorage* s, bool readOnly = false) = 0;
     
     //! 保存图形到数据源
-    virtual bool saveShapes(long docHandle, MgStorage* s) = 0;
-    
-    //! 从数据源中加载临时图形，s为空则清除
-    virtual bool loadDynamicShapes(MgStorage* s) = 0;
+    virtual bool saveShapes(long hDoc, MgStorage* s) = 0;
 
-    virtual const char* getContent(long docHandle) = 0; //!< 得到图形的JSON内容，需要调用 freeContent()
+    virtual const char* getContent(long hDoc) = 0; //!< 得到图形的JSON内容，需要调用 freeContent()
     virtual void freeContent() = 0;                     //!< 释放 getContent() 产生的缓冲资源
     virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
     
     virtual bool zoomToExtent() = 0;                    //!< 放缩显示全部内容到视图区域
     virtual bool zoomToModel(float x, float y, float w, float h) = 0;   //!< 放缩显示指定范围到视图区域
     
-    virtual float calcPenWidth(float lineWidth) = 0;    //!< 计算画笔的像素宽度
-    virtual GiContext& getContext(bool forChange) = 0;  //!< 返回当前绘图属性
+    virtual GiContext& getContext(bool forChange) = 0;  //!< 当前绘图属性，可用 calcPenWidth() 计算线宽
 
     //! 绘图属性改变后提交更新
     /** 在 getContext(true) 后调用本函数。

@@ -213,8 +213,7 @@ public:
     virtual bool hitTestBox(const Box2d& rect) const;
 
     //! 显示图形（mode：0-正常显示，1-选中显示，2-拖动显示）
-    virtual bool draw(int mode, GiGraphics& gs, 
-        const GiContext& ctx, int segment) const;
+    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     
     //! 保存图形
     virtual bool save(MgStorage* s) const;
@@ -249,6 +248,7 @@ public:
     virtual void copy(const MgObject& src);
     virtual bool equals(const MgObject& src) const;
     virtual bool isKindOf(int type) const;
+    virtual void addRef() {}
 
     //! 设置图形模型坐标范围，供Java等语言代码调用
     void setExtent(const Box2d& rect) { _extent = rect; }
@@ -339,9 +339,7 @@ public:                                                         \
     virtual bool offset(const Vector2d& vec, int segment);      \
     virtual float hitTest(const Point2d& pt, float tol, MgHitResult& res) const; \
 protected:                                                      \
-    virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data); \
-private:                                                        \
-    virtual void addRef() {}
+    virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data);
 
 #define MG_DECLARE_CREATE(Cls, Base, TypeNum)                   \
     MG_INHERIT_CREATE(Cls, Base, TypeNum)                       \

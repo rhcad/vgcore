@@ -34,13 +34,16 @@ class GiGraphics
 {
 public:
     //! 构造函数，坐标系管理对象必须有效
-    GiGraphics(GiTransform* xform);
+    GiGraphics(GiTransform* xform, bool needFreeXf = false);
     
     //! 拷贝构造函数
     GiGraphics(const GiGraphics& src);
 
     //! 析构函数
     virtual ~GiGraphics();
+    
+    static GiGraphics* fromHandle(long h) { GiGraphics* p; *(long*)&p = h; return p; }  //!< 转为对象
+    long toHandle() { long h; *(GiGraphics**)&h = this; return h; }                     //!< 得到句柄
 
 public:
     //! 复制指定对象到本对象

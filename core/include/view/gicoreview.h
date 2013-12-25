@@ -22,42 +22,26 @@ class GiCoreView : public MgCoreView
 public:
     //! 构造函数，传入NULL构造主视图，传入主视图构造辅助视图
     GiCoreView(GiCoreView* mainView = (GiCoreView*)0);
-    
     //! 析构函数
     virtual ~GiCoreView();
     
-    //! 创建内核视图
-    void createView(GiView* view, int type = 1);
+    void createView(GiView* view, int type = 1);                    //!< 创建内核视图
+    void createMagnifierView(GiView* newview, GiView* mainView);    //!< 创建放大镜视图
+    void destoryView(GiView* view);                                 //!< 销毁内核视图
     
-    //! 创建放大镜视图
-    void createMagnifierView(GiView* newview, GiView* mainView);
+    bool isDrawing(GiView* view);                                   //!< 返回是否正在绘制静态图形
+    void stopDrawing(GiView* view);                                 //!< 标记需要停止绘图
     
-    //! 销毁内核视图
-    void destoryView(GiView* view);
+    long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
+    void releaseGraphics(long hGs);                                 //!< 释放 GiGraphics 句柄
     
-    //! 返回是否正在绘制静态图形
-    bool isDrawing(GiView* view);
+    int drawAll(long hDoc, long hGs, GiCanvas* canvas);             //!< 显示所有图形
+    int drawAppend(long hDoc, long hGs, GiCanvas* canvas);          //!< 显示新图形
+    int dynDraw(long hShapes, long hGs, GiCanvas* canvas);          //!< 显示动态图形
     
-    //! 标记需要停止绘图
-    void stopDrawing(GiView* view);
-    
-    //! 显示所有图形
-    int drawAll(long docHandle, GiView* view, GiCanvas* canvas);
-
-    //! 显示新图形，在 GiView.regenAppend() 后调用
-    int drawAppend(long docHandle, GiView* view, GiCanvas* canvas);
-    
-    //! 显示动态图形
-    void dynDraw(GiView* view, GiCanvas* canvas);
-    
-    //! 设置背景颜色
-    int setBkColor(GiView* view, int argb);
-
-    //! 设置屏幕的点密度
-    static void setScreenDpi(int dpi);
-    
-    //! 设置视图的宽高
-    void onSize(GiView* view, int w, int h);
+    int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
+    static void setScreenDpi(int dpi);                              //!< 设置屏幕的点密度
+    void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
     
     //! 传递单指触摸手势消息
     bool onGesture(GiView* view, GiGestureType type,
@@ -67,8 +51,9 @@ public:
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
     
-    GiGestureType getGestureType();     //!< 得到当前手势类型
-    GiGestureState getGestureState();   //!< 得到当前手势状态
+    float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
+    GiGestureType getGestureType();                                 //!< 得到当前手势类型
+    GiGestureState getGestureState();                               //!< 得到当前手势状态
     
 // MgCoreView
 public:
@@ -78,15 +63,19 @@ public:
     long backDoc();
     long backShapes();
     long acquireFrontDoc();
-    void releaseFrontDoc(long h);
+    void releaseDoc(long hDoc);
     void submitBackDoc();
+    long acquireDynamicShapes();
+    void releaseShapes(long hShapes);
+    void submitDynamicShapes();
+    bool loadDynamicShapes(MgStorage* s);
     const char* getCommand() const;
     bool setCommand(GiView* view, const char* name, const char* params = "");
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);
     void clearCachedData();
     int addShapesForTest();
-    int getShapeCount(long docHandle);
+    int getShapeCount();
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();
@@ -94,16 +83,14 @@ public:
     int getSelectedShapeID();
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
-    bool saveToFile(long docHandle, const char* vgfile, bool pretty = true);
+    bool saveToFile(long hDoc, const char* vgfile, bool pretty = true);
     bool loadShapes(MgStorage* s, bool readOnly = false);
-    bool saveShapes(long docHandle, MgStorage* s);
-    bool loadDynamicShapes(MgStorage* s);
-    const char* getContent(long docHandle);
+    bool saveShapes(long hDoc, MgStorage* s);
+    const char* getContent(long hDoc);
     void freeContent();
     bool setContent(const char* content);
     bool zoomToExtent();
     bool zoomToModel(float x, float y, float w, float h);
-    float calcPenWidth(float lineWidth);
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);

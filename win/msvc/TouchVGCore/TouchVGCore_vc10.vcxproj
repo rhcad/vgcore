@@ -75,6 +75,7 @@
     <ClInclude Include="..\..\..\core\include\storage\mgstorage.h" />
     <ClInclude Include="..\..\..\core\include\test\RandomShape.h" />
     <ClInclude Include="..\..\..\core\include\test\testcanvas.h" />
+    <ClInclude Include="..\..\..\core\include\view\girecordcanvas.h" />
     <ClInclude Include="..\..\..\core\src\cmdbasic\mgcmderase.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdmgr_.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdselect.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="..\..\..\core\src\view\GcShapeDoc.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gicoreview.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gimousehelper.cpp" />
+    <ClCompile Include="..\..\..\core\src\view\girecordcanvas.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7119A43-A135-413A-A852-F2945924AC17}</ProjectGuid>

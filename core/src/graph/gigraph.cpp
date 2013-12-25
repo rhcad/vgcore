@@ -11,14 +11,14 @@
 #define SafeCall(p, f)      if (p) p->f
 #endif
 
-GiGraphics::GiGraphics(GiTransform* xform)
+GiGraphics::GiGraphics(GiTransform* xform, bool needFreeXf)
 {
-    m_impl = new GiGraphicsImpl(xform);
+    m_impl = new GiGraphicsImpl(xform, needFreeXf);
 }
 
 GiGraphics::GiGraphics(const GiGraphics& src)
 {
-    m_impl = new GiGraphicsImpl(src.m_impl->xform);
+    m_impl = new GiGraphicsImpl(src.m_impl->xform, false);
     copy(src);
 }
 

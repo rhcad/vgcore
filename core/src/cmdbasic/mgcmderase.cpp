@@ -48,7 +48,7 @@ bool MgCmdErase::draw(const MgMotion* sender, GiGraphics* gs)
     GiContext ctx(-4, GiColor(64, 64, 64, 128));
     
     for (std::vector<int>::const_iterator it = m_delIds.begin(); it != m_delIds.end(); ++it) {
-        const MgShape* shape = sender->view->backShapes()->findShape(*it);
+        const MgShape* shape = sender->view->shapes()->findShape(*it);
         if (shape) {
             shape->draw(1, *gs, &ctx, -1);
         }
@@ -75,7 +75,7 @@ const MgShape* MgCmdErase::hitTest(const MgMotion* sender)
 {
     Box2d limits(sender->startPtM, sender->displayMmToModel(6.f), 0);
     MgHitResult res;
-    return sender->view->backShapes()->hitTest(limits, res);
+    return sender->view->shapes()->hitTest(limits, res);
 }
 
 bool MgCmdErase::click(const MgMotion* sender)
@@ -113,7 +113,7 @@ bool MgCmdErase::isIntersectMode(const MgMotion*)
 bool MgCmdErase::touchMoved(const MgMotion* sender)
 {
     Box2d snap(sender->startPtM, sender->pointM);
-    MgShapeIterator it(m_boxsel ? sender->view->backShapes() : NULL);
+    MgShapeIterator it(m_boxsel ? sender->view->shapes() : NULL);
     
     m_delIds.clear();
     while (const MgShape* shape = it.getNext()) {
@@ -129,7 +129,7 @@ bool MgCmdErase::touchMoved(const MgMotion* sender)
 
 bool MgCmdErase::touchEnded(const MgMotion* sender)
 {
-    MgShapes* s = sender->view->backShapes();
+    MgShapes* s = sender->view->shapes();
     
     if (!m_delIds.empty()
         && sender->view->shapeWillDeleted(s->findShape(m_delIds.front()))) {

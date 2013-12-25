@@ -27,7 +27,7 @@ typedef enum {                  //!< 手势状态
     kMgGestureCancel,           //!< 取消
 } MgGestureState;
 
-//! 视图回调接口
+//! 视图回调接口，供命令使用
 /*! \ingroup GROUP_COMMAND
     \see mgRegisterCommand(), MgShapeT<T>::registerCreator()
     \interface MgView
@@ -39,42 +39,40 @@ struct MgView
     long toHandle() { long h; *(MgView**)&h = this; return h; }       //!< 得到句柄，用于跨库转换
     
 #ifndef SWIG
-    virtual GcShapeDoc* document() const = 0;
+    virtual GcShapeDoc* document() const = 0;                   //!< 返回内核的内部文档对象
 #endif
-    virtual MgMotion* motion() = 0;                     //!< 返回当前动作参数
-    virtual MgCmdManager* cmds() const = 0;             //!< 返回命令管理器对象
-    virtual GiTransform* xform() const = 0;             //!< 得到坐标系对象
-    virtual GiGraphics* graph() const = 0;              //!< 得到图形显示对象
-    virtual MgShapeDoc* backDoc() const = 0;            //!< 得到可编辑的图形文档
-    virtual MgShapes* backShapes() const = 0;           //!< 得到可编辑的图形列表
-    virtual GiContext* backContext() const = 0;         //!< 得到当前绘图属性
-    virtual Matrix2d& backModelTransform() const = 0;   //!< 文档的模型变换矩阵
+    virtual MgMotion* motion() = 0;                             //!< 返回当前动作参数
+    virtual MgCmdManager* cmds() const = 0;                     //!< 返回命令管理器对象
+    virtual GiTransform* xform() const = 0;                     //!< 得到坐标系对象
+    virtual MgShapeDoc* doc() const = 0;                        //!< 得到可编辑的图形文档
+    virtual MgShapes* shapes() const = 0;                       //!< 得到可编辑的图形列表
+    virtual GiContext* context() const = 0;                     //!< 得到当前绘图属性
+    virtual Matrix2d& modelTransform() const = 0;               //!< 文档的模型变换矩阵
 
-    virtual MgShapeFactory* getShapeFactory() = 0;      //!< 返回图形工厂对象
-    virtual MgSnap* getSnap() = 0;                      //!< 返回图形特征点捕捉器
-    virtual MgActionDispatcher* getAction() = 0;        //!< 返回上下文动作分发对象
-    virtual CmdSubject* getCmdSubject() = 0;            //!< 返回命令扩展目标对象
-    virtual MgSelection* getSelection() = 0;            //!< 返回选择集对象，可能为NULL
+    virtual MgShapeFactory* getShapeFactory() = 0;              //!< 返回图形工厂对象
+    virtual MgSnap* getSnap() = 0;                              //!< 返回图形特征点捕捉器
+    virtual MgActionDispatcher* getAction() = 0;                //!< 返回上下文动作分发对象
+    virtual CmdSubject* getCmdSubject() = 0;                    //!< 返回命令扩展目标对象
+    virtual MgSelection* getSelection() = 0;                    //!< 返回选择集对象，可能为NULL
 
-    virtual bool setCurrentShapes(MgShapes* shapes) = 0; //!< 设置当前图形列表
-    virtual bool toSelectCommand() = 0;                 //!< 取消当前命令
-    virtual int getNewShapeID() = 0;                    //!< 返回新绘图形的ID
-    virtual void setNewShapeID(int sid) = 0;            //!< 设置新绘图形的ID
-    virtual const char* getCommandName() = 0;           //!< 得到当前命令名称
-    virtual MgCommand* getCommand() = 0;                    //!< 得到当前命令
-    virtual MgCommand* findCommand(const char* name) = 0;   //!< 查找命令
-    virtual bool setCommand(const char* name) = 0;          //!< 启动命令
-    virtual bool isReadOnly() const = 0;                    //! 返回文档是否只读
-    virtual int getDynamicShapes(MgShapes* shapes) = 0;     //!< 得到动态图形
-
-    virtual void regenAll(bool changed) = 0;            //!< 标记视图待重新构建显示
-    virtual void regenAppend() = 0;                     //!< 标记视图待追加显示新图形
-    virtual void redraw() = 0;                          //!< 标记视图待更新显示
+    virtual bool setCurrentShapes(MgShapes* shapes) = 0;        //!< 设置当前图形列表
+    virtual bool toSelectCommand() = 0;                         //!< 取消当前命令
+    virtual int getNewShapeID() = 0;                            //!< 返回新绘图形的ID
+    virtual void setNewShapeID(int sid) = 0;                    //!< 设置新绘图形的ID
+    virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
+    virtual MgCommand* getCommand() = 0;                        //!< 得到当前命令
+    virtual MgCommand* findCommand(const char* name) = 0;       //!< 查找命令
+    virtual bool setCommand(const char* name) = 0;              //!< 启动命令
+    virtual bool isReadOnly() const = 0;                        //!< 返回文档是否只读
     
-    virtual bool useFinger() = 0;                       //!< 使用手指或鼠标交互
-    virtual void commandChanged() = 0;                  //!< 命令改变
-    virtual void selectionChanged() = 0;                //!< 选择集改变的通知
-    virtual void dynamicChanged() = 0;                  //!< 图形动态改变的通知
+    virtual void regenAll(bool changed) = 0;                    //!< 标记视图待重新构建显示
+    virtual void regenAppend() = 0;                             //!< 标记视图待追加显示新图形
+    virtual void redraw() = 0;                                  //!< 标记视图待更新显示
+    
+    virtual bool useFinger() = 0;                               //!< 使用手指或鼠标交互
+    virtual void commandChanged() = 0;                          //!< 命令改变
+    virtual void selectionChanged() = 0;                        //!< 选择集改变的通知
+    virtual void dynamicChanged() = 0;                          //!< 图形动态改变的通知
     
     virtual bool shapeWillAdded(MgShape* shape) = 0;            //!< 通知将添加图形
     virtual void shapeAdded(MgShape* shape) = 0;                //!< 通知已添加图形，由视图重新构建显示

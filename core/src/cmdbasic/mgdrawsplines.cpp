@@ -146,7 +146,7 @@ bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
         }
     }
     else {
-        MgShapeT<MgLine> line(*sender->view->backContext());
+        MgShapeT<MgLine> line(*sender->view->context());
         Vector2d vec(Vector2d(1.f, 1.f) * sender->view->xform()->displayToModel());
         
         line.shape()->setPoint(0, sender->pointM);
@@ -195,7 +195,7 @@ bool MgCmdDrawSplines::canAddPoint(const MgMotion* sender, bool ended)
 bool MgCmdDrawSplines::click(const MgMotion* sender)
 {
     if (m_freehand) {
-        MgShapeT<MgLine> line(*sender->view->backContext());
+        MgShapeT<MgLine> line(*sender->view->context());
         Point2d pt (sender->pointM);
         
         if (sender->point.distanceTo(sender->startPt) < 1.f) {
