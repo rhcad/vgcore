@@ -20,7 +20,7 @@ public:
     virtual void regenAll(bool changed) {}
 
     //! 标记视图待追加显示新图形
-    virtual void regenAppend() {}
+    virtual void regenAppend(int sid) {}
 
     //! 标记视图待更新显示
     virtual void redraw() {}

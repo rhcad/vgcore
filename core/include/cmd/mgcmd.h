@@ -28,8 +28,8 @@ public:
     virtual bool backStep(const MgMotion* sender) { return !sender; }   //!< 回退一步
     
     virtual bool draw(const MgMotion* sender, GiGraphics* gs) = 0;  //!< 显示动态图形
-    virtual int gatherShapes(const MgMotion* sender, MgShapes* shapes) { //!< 得到动态图形
-        return sender && shapes ? 0 : 0; }
+    virtual bool gatherShapes(const MgMotion* sender, MgShapes* shapes) { //!< 得到动态图形
+        return !sender && !shapes; }    // 实现则返回true，否则将用 draw() 生成临时图形
     
     virtual bool click(const MgMotion* sender) {    //!< 点击
         return sender->view->useFinger() && longPress(sender); }

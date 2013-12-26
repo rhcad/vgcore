@@ -5,8 +5,6 @@
 #include "mgcmderase.h"
 #include <algorithm>
 #include <functional>
-#include "mgshapet.h"
-#include "mgbasicsp.h"
 #include "mgaction.h"
 
 bool MgCmdErase::cancel(const MgMotion* sender)
@@ -55,20 +53,6 @@ bool MgCmdErase::draw(const MgMotion* sender, GiGraphics* gs)
     }
     
     return true;
-}
-
-int MgCmdErase::gatherShapes(const MgMotion* sender, MgShapes* shapes)
-{
-    if (m_boxsel) {
-        MgShapeT<MgRect> shape;
-        
-        GiContext ctxshap(0, GiColor(0, 0, 255, 128), 
-                          isIntersectMode(sender) ? kGiLineDash : kGiLineSolid, GiColor(0, 0, 255, 32));
-        shape._context = ctxshap;
-        ((MgRect*)shape.shape())->setRect2P(sender->startPtM, sender->pointM);
-        shapes->addShape(shape);
-    }
-    return m_boxsel ? 1 : 0;
 }
 
 const MgShape* MgCmdErase::hitTest(const MgMotion* sender)

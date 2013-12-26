@@ -32,8 +32,8 @@ struct MgCoreView
     
     virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
     virtual void releaseShapes(long hShapes) = 0;   //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
-    virtual void submitDynamicShapes() = 0;         //!< 提交后端动态图形到前端，需要并发访问保护
     virtual bool loadDynamicShapes(MgStorage* s) = 0; //!< 从数据源中加载临时图形，s为空则清除, 可异步加载
+    virtual void submitDynamicShapes() = 0;         //!< 提交 loadDynamicShapes() 结果，需要并发访问保护
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称

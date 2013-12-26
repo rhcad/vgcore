@@ -76,6 +76,7 @@
     <ClInclude Include="..\..\..\core\include\test\RandomShape.h" />
     <ClInclude Include="..\..\..\core\include\test\testcanvas.h" />
     <ClInclude Include="..\..\..\core\include\view\girecordcanvas.h" />
+    <ClInclude Include="..\..\..\core\include\view\girecordshape.h" />
     <ClInclude Include="..\..\..\core\src\cmdbasic\mgcmderase.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdmgr_.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdselect.h" />

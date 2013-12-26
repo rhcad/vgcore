@@ -8,7 +8,6 @@
 #include <string.h>
 #include <algorithm>
 #include <functional>
-#include "mgshapet.h"
 #include "mgsnap.h"
 #include "mgaction.h"
 #include "mgshapetype.h"
@@ -306,29 +305,6 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     return true;
 }
 
-int MgCmdSelect::gatherShapes(const MgMotion* sender, MgShapes* shapes)
-{
-    int ret = 0;
-
-    if (m_boxsel) {
-        MgShapeT<MgRect> shape;
-        GiContext ctxshap(0, GiColor(0, 0, 255, 128), 
-                          isIntersectMode(sender) ? kGiLineDash : kGiLineSolid,
-                          GiColor(0, 0, 255, 32));
-        shape._context = ctxshap;
-        ((MgRect*)shape.shape())->setRect2P(sender->startPtM, sender->pointM);
-        shapes->addShape(shape);
-        ret++;
-    }
-    for (std::vector<MgShape*>::const_iterator it = m_clones.begin();
-         it != m_clones.end(); ++it) {
-        shapes->addShape(*(*it));
-        ret++;
-    }
-
-    return ret;
-}
-
 MgCmdSelect::sel_iterator MgCmdSelect::getSelectedPostion(const MgShape* shape)
 {
     sel_iterator it = m_selIds.end();
@@ -409,7 +385,7 @@ int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
     
     if (sender->pressDrag && nearDist < minDist / 3
         && minDist > sender->displayMmToModel(8.f)
-        && shape->shapec()->isKindOf(MgBaseLines::Type()))
+        && shape->shapec()->isKindOf(kMgShapeBaseLines))
     {
         m_insertPt = true;
     }
@@ -466,7 +442,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
         if (changed) {
             sender->view->selectionChanged();
         }
-        else if (shape && m_selIds.size() == 1 && !shape->shapec()->isKindOf(MgSplines::Type())) {
+        else if (shape && m_selIds.size() == 1 && !shape->shapec()->isKindOf(kMgShapeSplines)) {
             bool issmall = (shape->shapec()->getExtent().width() < sender->displayMmToModel(5.f)
                             && shape->shapec()->getExtent().height() < sender->displayMmToModel(5.f));
             m_handleIndex = (m_editMode || !issmall ?
@@ -476,12 +452,12 @@ bool MgCmdSelect::click(const MgMotion* sender)
     else {
         m_handleIndex = 0;
         if (isEditMode(sender->view) || (canRotate(shape, sender)
-                && !shape->shapec()->isKindOf(MgSplines::Type()))) {
+                && !shape->shapec()->isKindOf(kMgShapeSplines))) {
             m_handleIndex = hitTestHandles(shape, sender->pointM, sender);
         }
     }
     if (!isEditMode(sender->view) && canRotate(shape, sender)
-        && !shape->shapec()->isKindOf(MgSplines::Type())) {
+        && !shape->shapec()->isKindOf(kMgShapeSplines)) {
         m_rotateHandle = m_handleIndex;
     }
     sender->view->setNewShapeID(m_id);
@@ -573,7 +549,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
     m_handleIndex = (m_clones.size() == 1 && (m_handleIndex > 0 || m_editMode) ?
                      hitTestHandles(shape, sender->pointM, sender) : 0);
     
-    if (m_insertPt && shape && shape->shape()->isKindOf(MgBaseLines::Type())) {
+    if (m_insertPt && shape && shape->shape()->isKindOf(kMgShapeBaseLines)) {
         MgBaseLines* lines = (MgBaseLines*)(shape->shape());
         lines->insertPoint(m_hit.segment, m_hit.nearpt);
         shape->shape()->update();
@@ -788,7 +764,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 shape->setFlag(kMgFixedSize, true);
             }
             
-            if (m_insertPt && shape->isKindOf(MgBaseLines::Type())) {
+            if (m_insertPt && shape->isKindOf(kMgShapeBaseLines)) {
                 MgBaseLines* lines = (MgBaseLines*)shape;
                 lines->insertPoint(m_hit.segment, m_hit.nearpt);    // 插入新顶点
             }
@@ -1014,7 +990,7 @@ MgSelState MgCmdSelect::getSelectState(MgView* view)
     
     if (isEditMode(view)) {
         const MgShape* shape = view->shapes()->findShape(m_id);
-        state = m_handleIndex > 0 && shape && shape->shapec()->isKindOf(MgBaseLines::Type()) ?
+        state = m_handleIndex > 0 && shape && shape->shapec()->isKindOf(kMgShapeBaseLines) ?
             kMgSelVertex : kMgSelVertexes;
     }
     else if (!m_selIds.empty()) {
@@ -1222,7 +1198,7 @@ bool MgCmdSelect::deleteVertext(const MgMotion* sender)
     bool ret = false;
     
     if (oldsp && m_handleIndex > 0
-        && oldsp->shapec()->isKindOf(MgBaseLines::Type()))
+        && oldsp->shapec()->isKindOf(kMgShapeBaseLines))
     {
         MgShape* newsp = oldsp->cloneShape();
         MgBaseLines *lines = (MgBaseLines *)newsp->shape();
@@ -1251,7 +1227,7 @@ bool MgCmdSelect::insertVertext(const MgMotion* sender)
     bool ret = false;
     
     if (oldsp && isEditMode(sender->view)
-        && oldsp->shapec()->isKindOf(MgBaseLines::Type()))
+        && oldsp->shapec()->isKindOf(kMgShapeBaseLines))
     {
         MgShape* newsp = oldsp->cloneShape();
         MgBaseLines *lines = (MgBaseLines *)newsp->shape();
@@ -1281,7 +1257,7 @@ bool MgCmdSelect::switchClosed(const MgMotion* sender)
     const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
     bool ret = false;
     
-    if (oldsp && oldsp->shapec()->isKindOf(MgBaseLines::Type())) {
+    if (oldsp && oldsp->shapec()->isKindOf(kMgShapeBaseLines)) {
         MgShape* newsp = oldsp->cloneShape();
         MgBaseLines *lines = (MgBaseLines *)newsp->shape();
         

@@ -90,9 +90,11 @@ bool MgCommandDraw::draw(const MgMotion* sender, GiGraphics* gs)
     return sender->view->getSnap()->drawSnap(sender, gs) || ret;
 }
 
-int MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
+bool MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
 {
-    return (m_step > 0 && m_shape && shapes->addShape(*m_shape)) ? 1 : 0;
+    if (m_step > 0 && m_shape)
+        shapes->addShape(*m_shape);
+    return true;
 }
 
 bool MgCommandDraw::click(const MgMotion* sender)

@@ -14,6 +14,9 @@
 #include "cmdsubject.h"
 #include "mgselect.h"
 #include "mglog.h"
+#include "mgshapet.h"
+#include "girecordcanvas.h"
+#include "girecordshape.h"
 #include "cmdbasic.h"
 #include <map>
 
@@ -71,14 +74,12 @@ public:
     GcBaseView*     curview;
     long            refcount;
     MgMotion        _motion;
-    std::vector<int>    newids;
     int             gestureHandler;
     MgJsonStorage   defaultStorage;
     
     long            regenPending;
     long            appendPending;
     long            redrawPending;
-    bool            needRedraw;
     volatile long   changeCount;
     volatile long   drawCount;
     
@@ -99,6 +100,7 @@ public:
 
         MgBasicShapes::registerShapes(this);
         MgBasicCommands::registerCmds(this);
+        MgShapeT<MgRecordShape>::registerCreator(this);
     }
 
     ~GiCoreViewImpl() {
@@ -199,16 +201,7 @@ public:
     }
 
     void shapeAdded(MgShape* sp) {
-        if (newids.empty()) {
-            newids.push_back(sp->getID());      // 记下新图形的ID
-            regenAppend();                      // 通知视图获取快照并增量重绘
-        }
-        else if (newids.back() != 0) {          // 已经regenAppend，但视图还未重绘
-            newids.insert(newids.begin(), sp->getID()); // 记下更多的ID
-        }
-        else {                                  // 已经regenAppend并增量重绘
-            regenAll(true);
-        }
+        regenAppend(sp->getID());
         getCmdSubject()->onShapeAdded(motion(), sp);
     }
 
@@ -217,12 +210,12 @@ public:
             redrawPending++;
         }
         else {
+            giInterlockedIncrement(&drawCount);
             CALL_VIEW(deviceView()->redraw());  // 将调用dynDraw
         }
     }
 
     void regenAll(bool changed) {
-        newids.clear();
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
         }
@@ -230,20 +223,27 @@ public:
             if (changed) {
                 giInterlockedIncrement(&changeCount);
             }
+            giInterlockedIncrement(&drawCount);
             for (int i = 0; i < _doc->getViewCount(); i++) {
                 _doc->getView(i)->deviceView()->regenAll(changed);
             }
         }
     }
 
-    void regenAppend() {
-        if (appendPending >= 0) {
-            appendPending++;
+    void regenAppend(int sid) {
+        if (appendPending == 0) {
+            appendPending = sid;
+        }
+        else if (appendPending > 0) {
+            if (appendPending != sid) {
+                regenAll(true);
+            }
         }
         else {  // 将调用drawAppend
             giInterlockedIncrement(&changeCount);
+            giInterlockedIncrement(&drawCount);
             for (int i = 0; i < _doc->getViewCount(); i++) {
-                _doc->getView(i)->deviceView()->regenAppend();
+                _doc->getView(i)->deviceView()->regenAppend(sid);
             }
         }
     }
@@ -255,9 +255,6 @@ public:
         return !!view;
     }
 
-    void checkDrawAppendEnded();
-    void clearRedrawFlag();
-    bool drawCommand(long hShapes, GcBaseView* view, GiGraphics& gs);
     bool gestureToCommand();
 
 private:
@@ -413,18 +410,13 @@ public:
         _impl->redrawPending = -1;
 
         if (regenPending > 0) {
-            _impl->needRedraw = true;
             _impl->regenAll(regenPending >= 100);
         }
         else if (appendPending > 0) {
-            _impl->needRedraw = true;
-            _impl->regenAppend();
+            _impl->regenAppend(appendPending);
         }
         else if (redrawPending > 0) {
-            if (!_impl->needRedraw) {
-                _impl->needRedraw = true;
-                _impl->redraw();
-            }
+            _impl->redraw();
         }
     }
 };
@@ -570,28 +562,6 @@ void GiCoreView::setScreenDpi(int dpi)
     }
 }
 
-void GiCoreViewImpl::checkDrawAppendEnded()
-{
-    int n = 0;
-
-    for (size_t i = 0; i < newids.size(); i++) {
-        if (newids[i] == 0) {
-            n++;
-        }
-    }
-    if (n >= _doc->getViewCount()) {
-        newids.clear();
-    }
-}
-
-void GiCoreViewImpl::clearRedrawFlag()
-{
-    if (needRedraw) {
-        needRedraw = false;
-        giInterlockedIncrement(&drawCount);
-    }
-}
-
 bool GiCoreView::isDrawing(GiView* view)
 {
     GcBaseView* aview = impl->_doc->findView(view);
@@ -625,36 +595,21 @@ int GiCoreView::drawAll(long hDoc, long hGs, GiCanvas* canvas)
         n = MgShapeDoc::fromHandle(hDoc)->draw(*gs);
         gs->endPaint();
     }
-    if (!impl->newids.empty()) {
-        impl->newids.push_back(0);
-    }
-    impl->checkDrawAppendEnded();
-    impl->clearRedrawFlag();
 
     return n;
 }
 
-int GiCoreView::drawAppend(long hDoc, long hGs, GiCanvas* canvas)
+int GiCoreView::drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (hDoc && gs && !impl->newids.empty() && gs->beginPaint(canvas)) {
+    if (hDoc && gs && sid && gs->beginPaint(canvas)) {
         const MgShapes* sps = MgShapeDoc::fromHandle(hDoc)->getCurrentShapes();
-        n = 0;
-        for (size_t i = 0; impl->newids[i] && !gs->isStopping(); i++) {
-            const MgShape* sp = sps->findShape(impl->newids[i]);
-            if (sp && sp->draw(0, *gs, NULL, -1)) {
-                n++;
-            }
-        }
+        const MgShape* sp = sps->findShape(sid);
+        n = (sp && sp->draw(0, *gs, NULL, -1)) ? 1 : 0;
         gs->endPaint();
     }
-    if (!impl->newids.empty()) {
-        impl->newids.push_back(0);
-    }
-    impl->checkDrawAppendEnded();
-    impl->clearRedrawFlag();
     
     return n;
 }
@@ -666,11 +621,9 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 
     if (hShapes && gs && gs->beginPaint(canvas)) {
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
-        
-        //impl->drawCommand(hShapes, aview, *gs);
+        n = MgShapes::fromHandle(hShapes)->draw(*gs);
         gs->endPaint();
     }
-    impl->clearRedrawFlag();
     
     return n;
 }
@@ -905,19 +858,38 @@ bool GiCoreView::loadDynamicShapes(MgStorage* s)
 void GiCoreView::submitDynamicShapes()
 {
     MgObject::release_pointer(impl->dynShapes);
-    
     if (impl->dynShapesBack) {
         impl->dynShapes = impl->dynShapesBack;
         impl->dynShapesBack = NULL;
         impl->redraw();
     }
-    else {
-        MgCommand* cmd = impl->getCommand();
-        if (cmd) {
-            impl->dynShapes = MgShapes::create();
-            cmd->gatherShapes(impl->motion(), impl->dynShapes);
+}
+
+bool GiCoreView::gatherDynamicShapes(GiView* view)
+{
+    GcBaseView* v = impl->_doc->findView(view);
+    MgCommand* cmd = impl->getCommand();
+    bool ret = false;
+    
+    if (v == impl->curview && cmd) {
+        MgObject::release_pointer(impl->dynShapes);
+        impl->dynShapes = MgShapes::create();
+        
+        GiRecordCanvas canvas(impl->dynShapes, v->xform()->displayToWorld());
+        
+        if (v->frontGraph()->beginPaint(&canvas)) {
+            ret = cmd->draw(impl->motion(), v->frontGraph());
+            if (ret && cmd->isDrawingCommand()) {
+                impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
+            }
+            v->frontGraph()->endPaint();
+        }
+        if (!ret) {
+            ret = cmd->gatherShapes(impl->motion(), impl->dynShapes);
         }
     }
+    
+    return ret;
 }
 
 void GiCoreView::clear()
@@ -1101,25 +1073,6 @@ bool GiCoreView::getBoundingBox(mgvector<float>& box, int shapeId)
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
     }
-    return ret;
-}
-
-bool GiCoreViewImpl::drawCommand(long hShapes, GcBaseView* view, GiGraphics& gs)
-{
-    bool ret = false;
-
-    if (dynShapes) {
-        ret = dynShapes->draw(gs) > 0;
-    }
-    else if (view == curview) {
-        MgCommand* cmd = _cmds->getCommand();
-
-        ret = cmd && cmd->draw(&_motion, &gs);
-        if (ret && cmd->isDrawingCommand()) {
-            getCmdSubject()->drawInShapeCommand(&_motion, cmd, &gs);
-        }
-    }
-
     return ret;
 }
 

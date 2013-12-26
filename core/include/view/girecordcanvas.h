@@ -6,56 +6,26 @@
 #define TOUCHVG_CORE_GIRECORDCANVAS_H
 
 #include "gicanvas.h"
-#include "mgshape.h"
-#include <string>
-#include <list>
 
-//! The shape class to record drawing.
-/*! \ingroup CORE_SHAPE
- */
-class MgRecordShape : public MgBaseShape
-{
-public:
-    MgRecordShape() {}
-    
-    typedef std::list<std::string>  ITEMS;
-    ITEMS   items;
-    
-    static MgRecordShape* create() { return new MgRecordShape(); }
-    static int Type() { return 30; }
-    
-    virtual MgObject* clone() const;
-    virtual void copy(const MgObject& src);
-    virtual void release() { delete this; }
-    virtual bool equals(const MgObject& src) const;
-    virtual int getType() const { return Type(); }
-    virtual bool isKindOf(int type) const { return type == Type(); }
-    
-    virtual void clear();
-    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
-    virtual bool save(MgStorage* s) const;
-    virtual bool load(MgShapeFactory* factory, MgStorage* s);
-    
-    virtual bool isCurve() const { return true; }
-    virtual int getPointCount() const { return 0; }
-    virtual Point2d getPoint(int) const { return Point2d(); }
-    virtual void setPoint(int, const Point2d&) {}
-    virtual float hitTest(const Point2d&, float, MgHitResult&) const { return _FLT_MAX; }
-};
+class MgRecordShape;
+class MgShape;
+class MgShapes;
 
 //! The canvas adapter class to record drawing.
-/*!
-    \ingroup CORE_VIEW
+/*! \ingroup CORE_VIEW
  */
 class GiRecordCanvas : public GiCanvas
 {
 public:
-    GiRecordCanvas() {}
+    GiRecordCanvas(MgShapes* shapes, const Matrix2d& d2w);
+    virtual ~GiRecordCanvas() { clear(); }
     
-    MgRecordShape   shape;
+    void clear();
     
 private:
-    virtual void setPen(int argb, float width, int style, float phase);
+    virtual bool beginShape(int type, int sid, int version, float x, float y, float w, float h);
+    virtual void endShape(int type, int sid, float x, float y);
+    virtual void setPen(int argb, float width, int style, float phase, float orgw);
     virtual void setBrush(int argb, int style);
     virtual void clearRect(float x, float y, float w, float h);
     virtual void drawRect(float x, float y, float w, float h, bool stroke, bool fill);
@@ -76,6 +46,12 @@ private:
     virtual void drawBitmap(const char* name, float xc, float yc, 
                             float w, float h, float angle);
     virtual float drawTextAt(const char* text, float x, float y, float h, int align);
+    
+private:
+    MgShapes*       _shapes;
+    MgShape*        _shape;
+    MgRecordShape*  _sp;
+    Matrix2d        _d2w;
 };
 
 #endif // TOUCHVG_CORE_GIRECORDCANVAS_H

@@ -22,7 +22,6 @@ class GiCoreView : public MgCoreView
 public:
     //! 构造函数，传入NULL构造主视图，传入主视图构造辅助视图
     GiCoreView(GiCoreView* mainView = (GiCoreView*)0);
-    //! 析构函数
     virtual ~GiCoreView();
     
     void createView(GiView* view, int type = 1);                    //!< 创建内核视图
@@ -36,7 +35,7 @@ public:
     void releaseGraphics(long hGs);                                 //!< 释放 GiGraphics 句柄
     
     int drawAll(long hDoc, long hGs, GiCanvas* canvas);             //!< 显示所有图形
-    int drawAppend(long hDoc, long hGs, GiCanvas* canvas);          //!< 显示新图形
+    int drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid); //!< 显示新图形
     int dynDraw(long hShapes, long hGs, GiCanvas* canvas);          //!< 显示动态图形
     
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
@@ -50,6 +49,9 @@ public:
     //! 传递双指移动手势(可放缩旋转)
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
+    
+    //! 提交动态图形到前端，在 onGesture() 或 twoFingersMove() 后调用
+    bool gatherDynamicShapes(GiView* view);
     
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
@@ -67,8 +69,8 @@ public:
     void submitBackDoc();
     long acquireDynamicShapes();
     void releaseShapes(long hShapes);
-    void submitDynamicShapes();
     bool loadDynamicShapes(MgStorage* s);
+    void submitDynamicShapes();
     const char* getCommand() const;
     bool setCommand(GiView* view, const char* name, const char* params = "");
     bool setCommand(const char* name, const char* params = "");

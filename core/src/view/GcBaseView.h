@@ -36,6 +36,9 @@ public:
     //! 应用后端坐标系对象到前端
     void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }
     
+    //! 得到前端图形显示对象
+    GiGraphics* frontGraph() { return &_gsFront; }
+    
     //! 得到后端坐标系对象
     GiTransform* xform() { return &_xfBack; }
     

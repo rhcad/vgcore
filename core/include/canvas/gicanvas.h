@@ -26,8 +26,9 @@ public:
                     0:solid line, 1:dash line, 2:...., 3:-.-.-, 4:-..-.., 5:null line, >5:customized line.
                     Round end caps for solid line, flat end caps for the four dash types.
         \param phase Dash pattern's offset in point unit.
+        \param orgw Orginal line width, >0: in 0.01mm unit, 0: 1px, <0: in point unit.
      */
-    virtual void setPen(int argb, float width, int style, float phase) = 0;
+    virtual void setPen(int argb, float width, int style, float phase, float orgw) = 0;
     
     //! Set attributes of the current brush to fill shapes.
     /*!

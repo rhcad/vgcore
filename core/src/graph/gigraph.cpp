@@ -1125,7 +1125,7 @@ bool GiGraphics::setPen(const GiContext* ctx)
         m_impl->ctxused &= 1;
         m_impl->canvas->setPen(calcPenColor(ctx->getLineColor()).getARGB(),
                                calcPenWidth(ctx->getLineWidth(), ctx->isAutoScale()),
-                               ctx->getLineStyle(), 0);
+                               ctx->getLineStyle(), 0, ctx->getLineWidth());
     }
     
     return !ctx->isNullLine();

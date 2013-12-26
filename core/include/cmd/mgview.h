@@ -66,7 +66,7 @@ struct MgView
     virtual bool isReadOnly() const = 0;                        //!< 返回文档是否只读
     
     virtual void regenAll(bool changed) = 0;                    //!< 标记视图待重新构建显示
-    virtual void regenAppend() = 0;                             //!< 标记视图待追加显示新图形
+    virtual void regenAppend(int sid) = 0;                      //!< 标记视图待追加显示新图形
     virtual void redraw() = 0;                                  //!< 标记视图待更新显示
     
     virtual bool useFinger() = 0;                               //!< 使用手指或鼠标交互

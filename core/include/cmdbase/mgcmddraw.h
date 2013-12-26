@@ -40,7 +40,7 @@ public:
     virtual bool backStep(const MgMotion* sender);
     virtual bool cancel(const MgMotion* sender);
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
-    virtual int gatherShapes(const MgMotion* sender, MgShapes* shapes);
+    virtual bool gatherShapes(const MgMotion* sender, MgShapes* shapes);
     virtual bool touchBegan(const MgMotion* sender);
     virtual bool touchMoved(const MgMotion* sender);
     virtual bool touchEnded(const MgMotion* sender);

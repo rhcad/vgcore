@@ -62,7 +62,7 @@ void TestCanvas::testRect(GiCanvas* canvas, int n)
 {
     for (int i = 0; i < n; i++) {
         if (s_randStyle) {
-            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
             canvas->setBrush(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), 0);
         }
         canvas->drawRect(randFloat(10.f, 2000.f), randFloat(10.f, 2000.f),
@@ -75,7 +75,7 @@ void TestCanvas::testLine(GiCanvas* canvas, int n)
 {
     for (int i = 0; i < n; i++) {
         if (s_randStyle) {
-            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
         }
         canvas->drawLine(randFloat(10.f, 2000.f), randFloat(10.f, 2000.f),
                          randFloat(10.f, 400.f), randFloat(10.f, 400.f));
@@ -86,7 +86,7 @@ void TestCanvas::testEllipse(GiCanvas* canvas, int n)
 {
     for (int i = 0; i < n; i++) {
         if (s_randStyle) {
-            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
             canvas->setBrush(randInt(10, 0xFF) << 24 | randInt(0, 0xFFFFFF), 0);
         }
         canvas->drawEllipse(randFloat(10.f, 2000.f), randFloat(10.f, 2000.f),
@@ -123,7 +123,7 @@ void TestCanvas::testQuadBezier(GiCanvas* canvas, int n)
         
         if (s_randStyle) {
             canvas->setPen(0xFF000000 | randInt(0, 0xFFFFFF),
-                           randFloat(0, 6), randInt(0, 4), 0);
+                           randFloat(0, 6), randInt(0, 4), 0, 0);
         }
         canvas->drawPath(true, false);
     }
@@ -159,7 +159,7 @@ void TestCanvas::testCubicBezier(GiCanvas* canvas, int n)
         }
         
         if (s_randStyle) {
-            canvas->setPen(0xFF000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(0xFF000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
         }
         canvas->drawPath(true, false);
     }
@@ -175,7 +175,7 @@ void TestCanvas::testDynCurves(GiCanvas* canvas)
         initRand();
     }
     if (n == 0) {
-        canvas->setPen(0x8F000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+        canvas->setPen(0x8F000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
         x1 = randFloat(100.f, 400.f);
         y1 = randFloat(100.f, 400.f);
         x2 = x1 + randFloat(-20.f, 20.f);
@@ -245,7 +245,7 @@ void TestCanvas::testPolygon(GiCanvas* canvas, int n)
         canvas->closePath();
         
         if (s_randStyle) {
-            canvas->setPen(0x8F000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(0x8F000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
             canvas->setBrush(0x41000000 | randInt(0, 0xFFFFFF), 0);
         }
         canvas->drawPath(randInt(0, 1) == 1, randInt(0, 1) == 1);
@@ -285,7 +285,7 @@ void TestCanvas::testClipPath(GiCanvas* canvas, int n)
     
     if (canvas->clipPath()) {
         if (s_randStyle) {
-            canvas->setPen(0x41000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0);
+            canvas->setPen(0x41000000 | randInt(0, 0xFFFFFF), -1.f, -1, 0, 0);
             canvas->setBrush(0x41000000 | randInt(0, 0xFFFFFF), 0);
         }
         canvas->drawRect(0, 0, 1000, 1000, true, true);
