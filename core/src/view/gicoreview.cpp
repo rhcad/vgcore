@@ -572,7 +572,6 @@ void GiCoreView::stopDrawing(GiView* view)
 {
     GcBaseView* aview = impl->_doc->findView(view);
     aview->graph()->stopDrawing();
-    aview->graph()->isDrawing();
 }
 
 long GiCoreView::acquireGraphics(GiView* view)
@@ -842,9 +841,8 @@ bool GiCoreView::loadDynamicShapes(MgStorage* s)
     bool ret = false;
     
     if (s) {
-        if (!impl->dynShapesBack) {
-            impl->dynShapesBack = MgShapes::create();
-        }
+        MgObject::release_pointer(impl->dynShapesBack);
+        impl->dynShapesBack = MgShapes::create();
         ret = impl->dynShapesBack->load(impl->getShapeFactory(), s);
     }
     else if (impl->dynShapesBack) {
@@ -855,12 +853,12 @@ bool GiCoreView::loadDynamicShapes(MgStorage* s)
     return ret;
 }
 
-void GiCoreView::submitDynamicShapes()
+void GiCoreView::applyDynamicShapes()
 {
     MgObject::release_pointer(impl->dynShapes);
     if (impl->dynShapesBack) {
         impl->dynShapes = impl->dynShapesBack;
-        impl->dynShapesBack = NULL;
+        impl->dynShapes->addRef();
         impl->redraw();
     }
 }
@@ -871,7 +869,7 @@ bool GiCoreView::gatherDynamicShapes(GiView* view)
     MgCommand* cmd = impl->getCommand();
     bool ret = false;
     
-    if (v == impl->curview && cmd) {
+    if (v == impl->curview && cmd && !impl->dynShapesBack) {
         MgObject::release_pointer(impl->dynShapes);
         impl->dynShapes = MgShapes::create();
         

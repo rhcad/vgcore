@@ -50,8 +50,8 @@ public:
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
     
-    //! 提交动态图形到前端，在 onGesture() 或 twoFingersMove() 后调用
-    bool gatherDynamicShapes(GiView* view);
+    void submitBackDoc();                       //!< 提交静态图形到前端，在UI的regen回调中用
+    bool gatherDynamicShapes(GiView* view);     //!< 提交动态图形到前端，需要并发保护
     
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
@@ -66,11 +66,10 @@ public:
     long backShapes();
     long acquireFrontDoc();
     void releaseDoc(long hDoc);
-    void submitBackDoc();
     long acquireDynamicShapes();
     void releaseShapes(long hShapes);
     bool loadDynamicShapes(MgStorage* s);
-    void submitDynamicShapes();
+    void applyDynamicShapes();
     const char* getCommand() const;
     bool setCommand(GiView* view, const char* name, const char* params = "");
     bool setCommand(const char* name, const char* params = "");
