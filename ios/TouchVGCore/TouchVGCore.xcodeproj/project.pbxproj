@@ -27,6 +27,7 @@
 		AE60BE03186BBAAC005399DF /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE01186BBAAC005399DF /* girecordcanvas.h */; };
 		AE60BE04186BBAAC005399DF /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE02186BBAAC005399DF /* girecordshape.h */; };
 		AE60BE08186BBDB4005399DF /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */; };
+		AEC058C1186D1010005F8479 /* corever.h in Headers */ = {isa = PBXBuildFile; fileRef = AEC058C0186D1010005F8479 /* corever.h */; };
 		AED3709A1866883700C0A778 /* mgcmddraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37047186681DB00C0A778 /* mgcmddraw.cpp */; };
 		AED3709B1866883700C0A778 /* mgdrawarc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37048186681DB00C0A778 /* mgdrawarc.cpp */; };
 		AED3709C1866883700C0A778 /* mgdrawrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37049186681DB00C0A778 /* mgdrawrect.cpp */; };
@@ -229,6 +230,7 @@
 		AE60BE01186BBAAC005399DF /* girecordcanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordcanvas.h; sourceTree = "<group>"; };
 		AE60BE02186BBAAC005399DF /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
 		AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
+		AEC058C0186D1010005F8479 /* corever.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = corever.h; path = src/corever.h; sourceTree = "<group>"; };
 		AED36FF6186681DB00C0A778 /* gicanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicanvas.h; sourceTree = "<group>"; };
 		AED36FF8186681DB00C0A778 /* mgaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgaction.h; sourceTree = "<group>"; };
 		AED36FF9186681DB00C0A778 /* mgcmd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgcmd.h; sourceTree = "<group>"; };
@@ -445,6 +447,7 @@
 		AED36FF2186681DB00C0A778 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				AEC058C0186D1010005F8479 /* corever.h */,
 				AED36FF4186681DB00C0A778 /* include */,
 				AED37045186681DB00C0A778 /* src */,
 			);
@@ -918,6 +921,7 @@
 				AED3713E186689DC00C0A778 /* mgjsonstorage.cpp in Headers */,
 				AED3713F186689DC00C0A778 /* document.h in Headers */,
 				AED37140186689DC00C0A778 /* filestream.h in Headers */,
+				AEC058C1186D1010005F8479 /* corever.h in Headers */,
 				AE60BE04186BBAAC005399DF /* girecordshape.h in Headers */,
 				AED37141186689DC00C0A778 /* pow10.h in Headers */,
 				AED37142186689DC00C0A778 /* stack.h in Headers */,

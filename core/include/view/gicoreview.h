@@ -29,17 +29,17 @@ public:
     void destoryView(GiView* view);                                 //!< 销毁内核视图
     
     bool isDrawing(GiView* view);                                   //!< 返回是否正在绘制静态图形
-    void stopDrawing(GiView* view);                                 //!< 标记需要停止绘图
+    bool stopDrawing(GiView* view);                                 //!< 标记需要停止绘图
     
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
-    void releaseGraphics(long hGs);                                 //!< 释放 GiGraphics 句柄
+    void releaseGraphics(GiView* view, long hGs);                   //!< 释放 GiGraphics 句柄
     
     int drawAll(long hDoc, long hGs, GiCanvas* canvas);             //!< 显示所有图形
     int drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid); //!< 显示新图形
     int dynDraw(long hShapes, long hGs, GiCanvas* canvas);          //!< 显示动态图形
     
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
-    static void setScreenDpi(int dpi);                              //!< 设置屏幕的点密度
+    static void setScreenDpi(int dpi, float factor);                //!< 设置屏幕的点密度和UI放缩系数
     void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
     
     //! 传递单指触摸手势消息
@@ -56,6 +56,7 @@ public:
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
     GiGestureState getGestureState();                               //!< 得到当前手势状态
+    int getVersion();                                               //!< 得到内核版本号
     
 // MgCoreView
 public:

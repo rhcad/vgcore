@@ -4,7 +4,7 @@
 
 #include <mgcomposite.h>
 
-MgComposite::MgComposite()
+MgComposite::MgComposite() : _owner(NULL)
 {
     _shapes = MgShapes::create(this);
 }
@@ -17,6 +17,11 @@ MgComposite::~MgComposite()
 bool MgComposite::_isKindOf(int type) const
 {
     return type == Type() || MgBaseShape::_isKindOf(type);
+}
+
+void MgComposite::setOwner(MgShape* owner)
+{
+    _owner = owner;
 }
 
 int MgComposite::_getPointCount() const

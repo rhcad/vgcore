@@ -19,9 +19,13 @@
 #include "girecordshape.h"
 #include "cmdbasic.h"
 #include <map>
+#include "../corever.h"
 
 #define CALL_VIEW(func) if (curview) curview->func
 #define CALL_VIEW2(func, v) curview ? curview->func : v
+
+static int _dpi = 96;
+static float _factor = 1.0f;
 
 //! 供Java等语言用的 MgShape 实现类
 class MgShapeExt : public MgShape
@@ -37,14 +41,14 @@ public:
     MgShapeExt(MgBaseShape* shape)
         : _shape(shape), _id(0), _parent(NULL), _tag(0), _refcount(1) {
     }
-    virtual ~MgShapeExt() { }
+    virtual ~MgShapeExt() { _shape->release(); }
 
     const GiContext& context() const { return _context; }
     void setContext(const GiContext& ctx, int mask) { _context.copy(ctx, mask); }
     MgBaseShape* shape() { return _shape; }
     const MgBaseShape* shapec() const { return _shape; }
     int getType() const { return 0x20000 | _shape->getType(); }
-    void release() { if (!giInterlockedDecrement(&_refcount)) { _shape->release(); delete this; }}
+    void release() { if (giInterlockedDecrement(&_refcount) == 0) delete this; }
     void addRef() { giInterlockedIncrement(&_refcount); }
     int getTag() const { return _tag; }
     void setTag(int tag) { _tag = tag; }
@@ -220,12 +224,20 @@ public:
             regenPending += changed ? 100 : 1;
         }
         else {  // 将调用drawAll
+            giInterlockedIncrement(&drawCount);
             if (changed) {
                 giInterlockedIncrement(&changeCount);
+                for (int i = 0; i < _doc->getViewCount(); i++) {
+                    _doc->getView(i)->deviceView()->regenAll(changed);
+                }
+                CALL_VIEW(deviceView()->contentChanged());
             }
-            giInterlockedIncrement(&drawCount);
-            for (int i = 0; i < _doc->getViewCount(); i++) {
-                _doc->getView(i)->deviceView()->regenAll(changed);
+            else {
+                CALL_VIEW(deviceView()->regenAll(changed));
+                for (int i = 0; i < _doc->getViewCount(); i++) {
+                    if (_doc->getView(i) != curview)
+                        _doc->getView(i)->deviceView()->redraw();
+                }
             }
         }
     }
@@ -240,17 +252,20 @@ public:
             }
         }
         else {  // 将调用drawAppend
-            giInterlockedIncrement(&changeCount);
             giInterlockedIncrement(&drawCount);
+            giInterlockedIncrement(&changeCount);
             for (int i = 0; i < _doc->getViewCount(); i++) {
                 _doc->getView(i)->deviceView()->regenAppend(sid);
             }
+            CALL_VIEW(deviceView()->contentChanged());
         }
     }
 
     bool setView(GcBaseView* view) {
         if (curview != view) {
+            GcBaseView* oldview = curview;
             curview = view;
+            CALL_VIEW(deviceView()->viewChanged(oldview ? oldview->deviceView() : NULL));
         }
         return !!view;
     }
@@ -286,12 +301,12 @@ private:
     {
         Box2d selbox(box);
 
-        selbox.inflate(12, 18);
-        if (box.height() < (n < 7 ? 40 : 80)) {
-            selbox.deflate(0, (box.height() - (n < 7 ? 40 : 80)) / 2);
+        selbox.inflate(12 * _factor, 18 * _factor);
+        if (box.height() < (n < 7 ? 40 : 80) * _factor) {
+            selbox.deflate(0, (box.height() - (n < 7 ? 40 : 80) * _factor) / 2);
         }
-        if (box.width() < (n == 3 || n > 4 ? 120 : 40)) {
-            selbox.deflate((box.width() - (n==3||n>4 ? 120 : 40)) / 2, 0);
+        if (box.width() < (n == 3 || n > 4 ? 120 : 40) * _factor) {
+            selbox.deflate((box.width() - (n==3||n>4 ? 120 : 40) * _factor) / 2, 0);
         }
 
         Box2d rect(calcButtonPosition(pos, n, selbox));
@@ -348,7 +363,8 @@ private:
             default:
                 return rect;
             }
-            rect.unionWith(Box2d(Point2d(pos.get(2 * i), pos.get(2 * i + 1)), 32, 32));
+            rect.unionWith(Box2d(Point2d(pos.get(2 * i), pos.get(2 * i + 1)),
+                                 32 * _factor, 32 * _factor));
         }
 
         return rect;
@@ -379,7 +395,8 @@ private:
     }
 };
 
-static int _dpi = 96;
+// DrawLocker
+//
 
 class DrawLocker
 {
@@ -421,9 +438,16 @@ public:
     }
 };
 
+// GcBaseView
+//
+
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
     : _mgview(mgview), _view(view), _gsFront(&_xfFront), _gsBack(&_xfBack)
 {
+    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        _gsBuf[i] = NULL;
+        _gsUsed[i] = 0;
+    }
     mgview->document()->addView(this);
 }
 
@@ -441,6 +465,11 @@ MgShapes* GcBaseView::backShapes()
 {
     return backDoc()->getCurrentShapes();
 }
+
+// GiCoreView
+//
+
+int GiCoreView::getVersion() { return COREVERSION; }
 
 GiCoreView::GiCoreView(GiCoreView* mainView)
 {
@@ -555,23 +584,26 @@ int GiCoreView::setBkColor(GiView* view, int argb)
     return aview ? aview->graph()->setBkColor(GiColor(argb)).getARGB() : 0;
 }
 
-void GiCoreView::setScreenDpi(int dpi)
+void GiCoreView::setScreenDpi(int dpi, float factor)
 {
     if (_dpi != dpi && dpi > 0) {
         _dpi = dpi;
+    }
+    if (factor != _factor && factor > 0.1f) {
+        _factor = factor;
     }
 }
 
 bool GiCoreView::isDrawing(GiView* view)
 {
     GcBaseView* aview = impl->_doc->findView(view);
-    return aview && aview->graph()->isDrawing();
+    return aview && aview->isDrawing();
 }
 
-void GiCoreView::stopDrawing(GiView* view)
+bool GiCoreView::stopDrawing(GiView* view)
 {
     GcBaseView* aview = impl->_doc->findView(view);
-    aview->graph()->stopDrawing();
+    return aview && aview->stopDrawing() > 0;
 }
 
 long GiCoreView::acquireGraphics(GiView* view)
@@ -580,9 +612,12 @@ long GiCoreView::acquireGraphics(GiView* view)
     return aview ? aview->createFrontGraph()->toHandle() : 0;
 }
 
-void GiCoreView::releaseGraphics(long hGs)
+void GiCoreView::releaseGraphics(GiView* view, long hGs)
 {
-    delete GiGraphics::fromHandle(hGs);
+    GcBaseView* aview = impl->_doc->findView(view);
+    if (aview && hGs) {
+        aview->releaseFrontGraph(GiGraphics::fromHandle(hGs));
+    }
 }
 
 int GiCoreView::drawAll(long hDoc, long hGs, GiCanvas* canvas)
@@ -807,6 +842,7 @@ int GiCoreView::getSelectedShapeType()
 
 bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
 {
+    DrawLocker locker(impl);
     bool ret = false;
 
     MgCommand* cmd = impl->getCommand();
@@ -873,17 +909,17 @@ bool GiCoreView::gatherDynamicShapes(GiView* view)
         MgObject::release_pointer(impl->dynShapes);
         impl->dynShapes = MgShapes::create();
         
-        GiRecordCanvas canvas(impl->dynShapes, v->xform()->displayToWorld());
-        
-        if (v->frontGraph()->beginPaint(&canvas)) {
-            ret = cmd->draw(impl->motion(), v->frontGraph());
-            if (ret && cmd->isDrawingCommand()) {
-                impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
-            }
-            v->frontGraph()->endPaint();
-        }
+        ret = cmd->gatherShapes(impl->motion(), impl->dynShapes);
         if (!ret) {
-            ret = cmd->gatherShapes(impl->motion(), impl->dynShapes);
+            GiRecordCanvas canvas(impl->dynShapes, v->xform()->displayToWorld());
+            
+            if (v->frontGraph()->beginPaint(&canvas)) {
+                ret = cmd->draw(impl->motion(), v->frontGraph());
+                if (ret && cmd->isDrawingCommand()) {
+                    impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
+                }
+                v->frontGraph()->endPaint();
+            }
         }
     }
     
@@ -892,7 +928,6 @@ bool GiCoreView::gatherDynamicShapes(GiView* view)
 
 void GiCoreView::clear()
 {
-    DrawLocker locker(impl);
     loadShapes((MgStorage*)0);
 }
 
@@ -912,7 +947,6 @@ void GiCoreView::freeContent()
 
 bool GiCoreView::setContent(const char* content)
 {
-    DrawLocker locker(impl);
     bool ret = loadShapes(impl->defaultStorage.storageForRead(content));
     impl->defaultStorage.clear();
     return ret;
@@ -921,7 +955,6 @@ bool GiCoreView::setContent(const char* content)
 bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
 {
     FILE *fp = mgopenfile(vgfile, "rt");
-    DrawLocker locker(impl);
     MgJsonStorage s;
     bool ret = loadShapes(s.storageForRead(fp), readOnly);
 
@@ -939,15 +972,15 @@ bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
     FILE *fp = mgopenfile(vgfile, "wt");
     MgJsonStorage s;
     bool ret = (fp != NULL
-        && saveShapes(hDoc, s.storageForWrite())
-        && s.save(fp, pretty));
-
+                && saveShapes(hDoc, s.storageForWrite())
+                && s.save(fp, pretty));
+    
     if (fp) {
         fclose(fp);
     } else {
         LOGE("Fail to open file: %s", vgfile);
     }
-
+    
     return ret;
 }
 

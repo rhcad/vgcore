@@ -18,20 +18,19 @@ class GcBaseView
 {
 public:
     GcBaseView(MgView* mgview, GiView *view);
+    virtual ~GcBaseView();
     
-    //! 析构函数
-    virtual ~GcBaseView() {}
-    
-    //! 返回回调视图对象
-    GiView* deviceView() { return _view; }
+    GiView* deviceView() { return _view; }                          //!< 返回回调视图对象
     
     MgView* cmdView() { return _mgview; }
     MgShapeDoc* frontDoc();
     MgShapeDoc* backDoc();
     MgShapes* backShapes();
     
-    //! 克隆前端图形显示对象
-    GiGraphics* createFrontGraph() { return new GiGraphics(new GiTransform(_xfFront), true); }
+    GiGraphics* createFrontGraph();                                 //!< 克隆前端图形显示对象
+    void releaseFrontGraph(GiGraphics* gs);                         //!< 释放前端图形显示对象
+    bool isDrawing();                                               //!< 返回是否正在绘制静态图形
+    int stopDrawing();                                              //!< 标记需要停止绘图
     
     //! 应用后端坐标系对象到前端
     void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }
@@ -61,6 +60,8 @@ private:
     GiTransform _xfBack;
     GiGraphics  _gsFront;
     GiGraphics  _gsBack;
+    GiGraphics* _gsBuf[10];
+    volatile long _gsUsed[10];
 
     Point2d     _lastCenter;
     float       _lastScale;

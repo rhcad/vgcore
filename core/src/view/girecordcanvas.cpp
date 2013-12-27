@@ -660,6 +660,9 @@ void GiRecordCanvas::clear()
 
 bool GiRecordCanvas::beginShape(int, int sid, int, float, float, float, float)
 {
+    if (_shapes->findShape(sid)) {
+        return false;
+    }
     if (!_shape || _sp->getCount() > 0) {
         clear();
         _shape = MgShapeT<MgRecordShape>::create();

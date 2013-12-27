@@ -34,14 +34,13 @@ public:
     //! 显示上下文操作菜单
     virtual bool showContextActions(const mgvector<int>& actions,
                                     const mgvector<float>& buttonXY,
-                                    float x, float y, float w, float h) {
-        return actions.count() && buttonXY.count() && x == y && w == h;
-    }
+                                    float x, float y, float w, float h) { return false; }
 
     virtual void commandChanged() {}        //!< 当前命令已改变
     virtual void selectionChanged() {}      //!< 选择集改变的通知
     virtual void contentChanged() {}        //!< 图形数据改变的通知
-    virtual void dynamicChanged() {}        //!< 图形动态改变的通知
+    virtual void dynamicChanged() {}        //!< 图形动态拖拉改变的通知
+    virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
 };
 
 #endif // TOUCHVG_CORE_GIVIEW_H

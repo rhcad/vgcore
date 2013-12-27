@@ -23,11 +23,15 @@ public:
 
     //! 返回子图形列表
     MgShapes* shapes() const { return _shapes; }
+    
+    //! 返回拥有者图形对象
+    const MgShape* getOwnerShape() const { return _owner; }
 
     //! 返回是否可以单独移动一个子图形，在 offset() 中调用
     virtual bool canOffsetShapeAlone(MgShape* shape) { return !!shape; }
     
     virtual bool isCurve() const { return true; }
+    virtual void setOwner(MgShape* owner);
 
 protected:
     MgComposite();
@@ -53,6 +57,7 @@ protected:
     bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
 
 protected:
+    MgShape*    _owner;
     MgShapes*   _shapes;
 };
 

@@ -72,7 +72,7 @@ struct MgView
     virtual bool useFinger() = 0;                               //!< 使用手指或鼠标交互
     virtual void commandChanged() = 0;                          //!< 命令改变
     virtual void selectionChanged() = 0;                        //!< 选择集改变的通知
-    virtual void dynamicChanged() = 0;                          //!< 图形动态改变的通知
+    virtual void dynamicChanged() = 0;                          //!< 图形动态拖拉改变的通知
     
     virtual bool shapeWillAdded(MgShape* shape) = 0;            //!< 通知将添加图形
     virtual void shapeAdded(MgShape* shape) = 0;                //!< 通知已添加图形，由视图重新构建显示

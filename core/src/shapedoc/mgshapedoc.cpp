@@ -7,6 +7,7 @@
 #include <mgstorage.h>
 #include <vector>
 #include "mglayer.h"
+#include "mgcomposite.h"
 
 struct MgShapeDoc::Impl {
     std::vector<MgLayer*> layers;
@@ -96,6 +97,16 @@ void MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
     
     im->curLayer = im->layers[src->im->curLayer->getIndex()];
     im->curShapes = im->curLayer;
+    
+    const MgObject* owner = src->getCurrentShapes()->getOwner();
+    if (owner && !owner->isKindOf(MgComposite::Type())) {
+        int sid = ((const MgComposite*)owner)->getOwnerShape()->getID();
+        const MgShape* sp = im->curShapes->findShape(sid);
+        
+        if (sp && sp->shapec()->isKindOf(MgComposite::Type())) {
+            im->curShapes = ((const MgComposite*)sp->shapec())->shapes();
+        }
+    }
 }
 
 bool MgShapeDoc::equals(const MgObject& src) const

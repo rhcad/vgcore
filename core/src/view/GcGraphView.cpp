@@ -8,6 +8,79 @@
 // GcBaseView
 //
 
+GcBaseView::~GcBaseView()
+{
+    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        delete _gsBuf[i];
+    }
+}
+
+GiGraphics* GcBaseView::createFrontGraph()
+{
+    GiGraphics* gs = (GiGraphics*)0;
+    int i = sizeof(_gsBuf)/sizeof(_gsBuf[0]);
+    
+    while (--i >= 0) {
+        if (!_gsUsed[i] && _gsBuf[i]) {
+            if (giInterlockedIncrement(&_gsUsed[i]) == 1) {
+                gs = _gsBuf[i];
+                gs->copy(_gsFront);
+                gs->_xf().copy(_xfFront);
+                break;
+            } else {
+                giInterlockedDecrement(&_gsUsed[i]);
+            }
+        }
+    }
+    if (!gs) {
+        GiGraphics* gs = new GiGraphics(new GiTransform(_xfFront), true);
+        gs->copy(_gsFront);
+        for (i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+            if (!_gsBuf[i]) {
+                if (giInterlockedIncrement(&_gsUsed[i]) == 1) {
+                    _gsBuf[i] = gs;
+                    break;
+                } else {
+                    giInterlockedDecrement(&_gsUsed[i]);
+                }
+            }
+        }
+    }
+    return gs;
+}
+
+void GcBaseView::releaseFrontGraph(GiGraphics* gs)
+{
+    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        if (_gsBuf[i] == gs) {
+            giInterlockedDecrement(&_gsUsed[i]);
+            return;
+        }
+    }
+    delete gs;
+}
+
+bool GcBaseView::isDrawing()
+{
+    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        if (_gsUsed[i] && _gsBuf[i] && _gsBuf[i]->isDrawing())
+            return true;
+    }
+    return false;
+}
+
+int GcBaseView::stopDrawing()
+{
+    int n = 0;
+    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        if (_gsUsed[i] && _gsBuf[i] && _gsBuf[i]->isDrawing()) {
+            _gsBuf[i]->stopDrawing();
+            n++;
+        }
+    }
+    return n;
+}
+
 void GcBaseView::onSize(int dpi, int w, int h)
 {
     xform()->setResolution((float)dpi);

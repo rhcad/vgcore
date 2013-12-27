@@ -80,6 +80,7 @@
     <ClInclude Include="..\..\..\core\src\cmdbasic\mgcmderase.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdmgr_.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdselect.h" />
+    <ClInclude Include="..\..\..\core\src\corever.h" />
     <ClInclude Include="..\..\..\core\src\geom\mgdblpt.h" />
     <ClInclude Include="..\..\..\core\src\graph\gigraph_.h" />
     <ClInclude Include="..\..\..\core\src\graph\giplclip.h" />

@@ -356,6 +356,9 @@
     <ClInclude Include="..\..\..\core\include\view\girecordshape.h">
       <Filter>Header Files\view</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\src\corever.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\shape\mgbasicspreg.cpp">
