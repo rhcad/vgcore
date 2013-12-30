@@ -38,8 +38,12 @@ public:
     int drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid); //!< 显示新图形
     int dynDraw(long hShapes, long hGs, GiCanvas* canvas);          //!< 显示动态图形
     
+    int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，单线程
+    int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，单线程
+    int dynDraw(GiView* view, GiCanvas* canvas);                    //!< 显示动态图形，单线程
+    
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
-    static void setScreenDpi(int dpi, float factor);                //!< 设置屏幕的点密度和UI放缩系数
+    static void setScreenDpi(int dpi, float factor = 1.f);          //!< 设置屏幕的点密度和UI放缩系数
     void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
     
     //! 传递单指触摸手势消息
@@ -51,7 +55,7 @@ public:
             float x1, float y1, float x2, float y2, bool switchGesture = false);
     
     void submitBackDoc();                       //!< 提交静态图形到前端，在UI的regen回调中用
-    bool gatherDynamicShapes(GiView* view);     //!< 提交动态图形到前端，需要并发保护
+    bool submitDynamicShapes(GiView* view);     //!< 提交动态图形到前端，需要并发保护
     
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型

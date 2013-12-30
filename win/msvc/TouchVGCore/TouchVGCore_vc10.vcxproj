@@ -192,16 +192,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\build\$(Configuration)\</OutDir>
+    <OutDir>..\..\build\$(Configuration)10\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>..\..\build\obj\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\obj\$(Configuration)10\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\build\$(Configuration)\</OutDir>
+    <OutDir>..\..\build\$(Configuration)10\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\build\obj\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir>..\..\build\obj\$(Configuration)10\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

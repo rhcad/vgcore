@@ -620,6 +620,33 @@ void GiCoreView::releaseGraphics(GiView* view, long hGs)
     }
 }
 
+int GiCoreView::drawAll(GiView* view, GiCanvas* canvas) {
+    long hDoc = acquireFrontDoc();
+    long hGs = acquireGraphics(view);
+    int n = drawAll(hDoc, hGs, canvas);
+    releaseDoc(hDoc);
+    releaseGraphics(view, hGs);
+    return n;
+}
+
+int GiCoreView::drawAppend(GiView* view, GiCanvas* canvas, int sid) {
+    long hDoc = acquireFrontDoc();
+    long hGs = acquireGraphics(view);
+    int n = drawAppend(hDoc, hGs, canvas, sid);
+    releaseDoc(hDoc);
+    releaseGraphics(view, hGs);
+    return n;
+}
+
+int GiCoreView::dynDraw(GiView* view, GiCanvas* canvas){
+    long hShapes = acquireDynamicShapes();
+    long hGs = acquireGraphics(view);
+    int n = dynDraw(hShapes, hGs, canvas);
+    releaseShapes(hShapes);
+    releaseGraphics(view, hGs);
+    return n;
+}
+
 int GiCoreView::drawAll(long hDoc, long hGs, GiCanvas* canvas)
 {
     int n = -1;
@@ -899,27 +926,32 @@ void GiCoreView::applyDynamicShapes()
     }
 }
 
-bool GiCoreView::gatherDynamicShapes(GiView* view)
+bool GiCoreView::submitDynamicShapes(GiView* view)
 {
     GcBaseView* v = impl->_doc->findView(view);
     MgCommand* cmd = impl->getCommand();
     bool ret = false;
-    
+
+    if (v) {
+        v->submitBackXform();
+    }
     if (v == impl->curview && cmd && !impl->dynShapesBack) {
         MgObject::release_pointer(impl->dynShapes);
         impl->dynShapes = MgShapes::create();
         
         ret = cmd->gatherShapes(impl->motion(), impl->dynShapes);
         if (!ret) {
-            GiRecordCanvas canvas(impl->dynShapes, v->xform()->displayToWorld());
+            GiRecordCanvas canvas(impl->dynShapes, v->xform(),
+                    cmd->isDrawingCommand() ? 0 : -1);
             
             if (v->frontGraph()->beginPaint(&canvas)) {
-                ret = cmd->draw(impl->motion(), v->frontGraph());
-                if (ret && cmd->isDrawingCommand()) {
+                cmd->draw(impl->motion(), v->frontGraph());
+                if (cmd->isDrawingCommand()) {
                     impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
                 }
                 v->frontGraph()->endPaint();
             }
+            ret = impl->dynShapes->getShapeCount() > 0;
         }
     }
     

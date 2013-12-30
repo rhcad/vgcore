@@ -12,7 +12,7 @@ struct CmdSetPen : public MgRecordShape::ICmd {
     int argb; float width; int style; float phase; float orgw;
     CmdSetPen() {}
     CmdSetPen(int argb, float width, int style, float phase, float orgw)
-        : argb(argb), width(width), style(style), phase() {}
+        : argb(argb), width(width), style(style), phase(), orgw(orgw) {}
     
     virtual int type() const { return 1; }
     virtual void copy(const ICmd& src) {
@@ -42,7 +42,10 @@ struct CmdSetPen : public MgRecordShape::ICmd {
         return true;
     }
     virtual void draw(GiGraphics& gs, const Matrix2d&) const {
-        float w = (orgw < 1e-2f && orgw > -2.1f) ? width : gs.calcPenWidth(orgw, true);
+        bool autoScale = orgw > 1e-3f || orgw < -1e3f;
+        float w = orgw;
+        while (w < -1e3f) w += 1e3f;
+        w = mgIsZero(w) ? width : gs.calcPenWidth(w, autoScale);
         gs.getCanvas()->setPen(argb, w, style, phase, orgw);
     }
 };
@@ -78,8 +81,8 @@ struct CmdSetBrush : public MgRecordShape::ICmd {
 struct CmdClearRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec;
     CmdClearRect() {}
-    CmdClearRect(const Matrix2d& d2w, float x, float y, float w, float h)
-        : pt(Point2d(x, y) * d2w), vec(Vector2d(w, h) * d2w) {}
+    CmdClearRect(const Matrix2d& d2m, float x, float y, float w, float h)
+        : pt(Point2d(x, y) * d2m), vec(Vector2d(w, h) * d2m) {}
     
     virtual int type() const { return 3; }
     virtual void copy(const ICmd& src) {
@@ -106,13 +109,14 @@ struct CmdClearRect : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->clearRect(pt2.x, pt2.y, vec2.x, vec2.y);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec; bool stroke; bool fill;
     CmdDrawRect() {}
-    CmdDrawRect(const Matrix2d& d2w, float x, float y, float w, float h, bool stroke, bool fill)
-        : pt(Point2d(x, y) * d2w), vec(Vector2d(w, h) * d2w), stroke(stroke), fill(fill) {}
+    CmdDrawRect(const Matrix2d& d2m, float x, float y, float w, float h, bool stroke, bool fill)
+        : pt(Point2d(x, y) * d2m), vec(Vector2d(w, h) * d2m), stroke(stroke), fill(fill) {}
     
     virtual int type() const { return 4; }
     virtual void copy(const ICmd& src) {
@@ -145,13 +149,14 @@ struct CmdDrawRect : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawRect(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawLine : public MgRecordShape::ICmd {
     Point2d pt1; Point2d pt2;
     CmdDrawLine() {}
-    CmdDrawLine(const Matrix2d& d2w, float x1, float y1, float x2, float y2)
-        : pt1(Point2d(x1, y1) * d2w), pt2(Point2d(x2, y2) * d2w) {}
+    CmdDrawLine(const Matrix2d& d2m, float x1, float y1, float x2, float y2)
+        : pt1(Point2d(x1, y1) * d2m), pt2(Point2d(x2, y2) * d2m) {}
     
     virtual int type() const { return 5; }
     virtual void copy(const ICmd& src) {
@@ -178,13 +183,14 @@ struct CmdDrawLine : public MgRecordShape::ICmd {
         Point2d pt4(pt2 * w2d);
         gs.getCanvas()->drawLine(pt3.x, pt3.y, pt4.x, pt4.y);
     }
+    virtual Box2d getExtent() const { return Box2d(pt1, pt2); }
 };
 
 struct CmdDrawEllipse : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec; bool stroke; bool fill;
     CmdDrawEllipse() {}
-    CmdDrawEllipse(const Matrix2d& d2w, float x, float y, float w, float h, bool stroke, bool fill)
-        : pt(Point2d(x, y) * d2w), vec(Vector2d(w, h) * d2w), stroke(stroke), fill(fill) {}
+    CmdDrawEllipse(const Matrix2d& d2m, float x, float y, float w, float h, bool stroke, bool fill)
+        : pt(Point2d(x, y) * d2m), vec(Vector2d(w, h) * d2m), stroke(stroke), fill(fill) {}
     
     virtual int type() const { return 6; }
     virtual void copy(const ICmd& src) {
@@ -217,6 +223,7 @@ struct CmdDrawEllipse : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawEllipse(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdBeginPath : public MgRecordShape::ICmd {
@@ -238,7 +245,7 @@ struct CmdBeginPath : public MgRecordShape::ICmd {
 struct CmdMoveTo : public MgRecordShape::ICmd {
     Point2d pt;
     CmdMoveTo() {}
-    CmdMoveTo(const Matrix2d& d2w, float x, float y) : pt(Point2d(x, y) * d2w) {}
+    CmdMoveTo(const Matrix2d& d2m, float x, float y) : pt(Point2d(x, y) * d2m) {}
     
     virtual int type() const { return 8; }
     virtual void copy(const ICmd& src) {
@@ -260,12 +267,13 @@ struct CmdMoveTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->moveTo(pt2.x, pt2.y);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
 };
 
 struct CmdLineTo : public MgRecordShape::ICmd {
     Point2d pt;
     CmdLineTo() {}
-    CmdLineTo(const Matrix2d& d2w, float x, float y) : pt(Point2d(x, y) * d2w) {}
+    CmdLineTo(const Matrix2d& d2m, float x, float y) : pt(Point2d(x, y) * d2m) {}
     
     virtual int type() const { return 9; }
     virtual void copy(const ICmd& src) {
@@ -288,13 +296,14 @@ struct CmdLineTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->lineTo(pt2.x, pt2.y);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
 };
 
 struct CmdBezierTo : public MgRecordShape::ICmd {
     Point2d c1, c2, pt;
     CmdBezierTo() {}
-    CmdBezierTo(const Matrix2d& d2w, float c1x, float c1y, float c2x, float c2y, float x, float y)
-        : c1(Point2d(c1x, c1y) * d2w), c2(Point2d(c2x, c2y) * d2w), pt(Point2d(x, y) * d2w) {}
+    CmdBezierTo(const Matrix2d& d2m, float c1x, float c1y, float c2x, float c2y, float x, float y)
+        : c1(Point2d(c1x, c1y) * d2m), c2(Point2d(c2x, c2y) * d2m), pt(Point2d(x, y) * d2m) {}
     
     virtual int type() const { return 10; }
     virtual void copy(const ICmd& src) {
@@ -327,13 +336,14 @@ struct CmdBezierTo : public MgRecordShape::ICmd {
         Point2d c1t(c1 * w2d), c2t(c2 * w2d), pt2(pt * w2d);
         gs.getCanvas()->bezierTo(c1t.x, c1t.y, c2t.x, c2t.y, pt2.x, pt2.y);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, c1, c2, pt); }
 };
 
 struct CmdQuadTo : public MgRecordShape::ICmd {
     Point2d cp, pt;
     CmdQuadTo() {}
-    CmdQuadTo(const Matrix2d& d2w, float cpx, float cpy, float x, float y)
-        : cp(Point2d(cpx, cpy) * d2w), pt(Point2d(x, y) * d2w) {}
+    CmdQuadTo(const Matrix2d& d2m, float cpx, float cpy, float x, float y)
+        : cp(Point2d(cpx, cpy) * d2m), pt(Point2d(x, y) * d2m) {}
     
     virtual int type() const { return 11; }
     virtual void copy(const ICmd& src) {
@@ -361,6 +371,7 @@ struct CmdQuadTo : public MgRecordShape::ICmd {
         Point2d cp2(cp * w2d), pt2(pt * w2d);
         gs.getCanvas()->quadTo(cp2.x, cp2.y, pt2.x, pt2.y);
     }
+    virtual Box2d getExtent() const { return Box2d(cp, pt); }
 };
 
 struct CmdClosePath : public MgRecordShape::ICmd {
@@ -410,7 +421,7 @@ struct CmdDrawPath : public MgRecordShape::ICmd {
 struct CmdDrawHandle : public MgRecordShape::ICmd {
     Point2d pt; int t;
     CmdDrawHandle() {}
-    CmdDrawHandle(const Matrix2d& d2w, float x, float y, int t) : pt(Point2d(x, y) * d2w), t(t) {}
+    CmdDrawHandle(const Matrix2d& d2m, float x, float y, int t) : pt(Point2d(x, y) * d2m), t(t) {}
     
     virtual int type() const { return 14; }
     virtual void copy(const ICmd& src) {
@@ -436,13 +447,14 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->drawHandle(pt2.x, pt2.y, t);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
 };
 
 struct CmdDrawBitmap : public MgRecordShape::ICmd {
     std::string name; Point2d pt; Vector2d vec; float angle;
     CmdDrawBitmap() {}
-    CmdDrawBitmap(const Matrix2d& d2w, const char* name, float xc, float yc, float w, float h, float angle)
-        : name(name), pt(Point2d(xc, yc) * d2w), vec(Vector2d(w, h) * d2w), angle(angle) {}
+    CmdDrawBitmap(const Matrix2d& d2m, const char* name, float xc, float yc, float w, float h, float angle)
+        : name(name), pt(Point2d(xc, yc) * d2m), vec(Vector2d(w, h) * d2m), angle(angle) {}
     
     virtual int type() const { return 15; }
     virtual void copy(const ICmd& src) {
@@ -481,13 +493,14 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawBitmap(name.c_str(), pt2.x, pt2.y, vec2.x, vec2.y, angle);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawTextAt : public MgRecordShape::ICmd {
     std::string text; Point2d pt; Vector2d vec; int align;
     CmdDrawTextAt() {}
-    CmdDrawTextAt(const Matrix2d& d2w, const char* text, float x, float y, float h, int align)
-        : text(text), pt(Point2d(x, y) * d2w), vec(Vector2d(h, h) * d2w), align(align) {}
+    CmdDrawTextAt(const Matrix2d& d2m, const char* text, float x, float y, float h, int align)
+        : text(text), pt(Point2d(x, y) * d2m), vec(Vector2d(h, h) * d2m), align(align) {}
     
     virtual int type() const { return 16; }
     virtual void copy(const ICmd& src) {
@@ -524,6 +537,7 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align);
     }
+    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
 };
 
 // MgRecordShape
@@ -636,13 +650,25 @@ bool MgRecordShape::draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     return _draw(mode, gs, ctx, segment) || !_items.empty();
 }
 
+void MgRecordShape::addItem(ICmd* p)
+{
+    _extent.unionWith(p->getExtent());
+    _items.push_back(p);
+}
+
 // GiRecordCanvas
 //
 
-GiRecordCanvas::GiRecordCanvas(MgShapes* shapes, const Matrix2d& d2w) : _shapes(shapes), _d2w(d2w)
+GiRecordCanvas::GiRecordCanvas(MgShapes* shapes, const GiTransform* xf, int ignoreId)
+    : _shapes(shapes), _xf(xf), _ignoreId(ignoreId)
 {
     _shape = MgShapeT<MgRecordShape>::create();
     _sp = (MgRecordShape*)_shape->shape();
+}
+
+const Matrix2d GiRecordCanvas::d2m() const
+{
+    return _xf->displayToModel();
 }
 
 void GiRecordCanvas::clear()
@@ -660,7 +686,7 @@ void GiRecordCanvas::clear()
 
 bool GiRecordCanvas::beginShape(int, int sid, int, float, float, float, float)
 {
-    if (_shapes->findShape(sid)) {
+    if (sid == _ignoreId) {
         return false;
     }
     if (!_shape || _sp->getCount() > 0) {
@@ -692,22 +718,22 @@ void GiRecordCanvas::setBrush(int argb, int style)
 
 void GiRecordCanvas::clearRect(float x, float y, float w, float h)
 {
-    _sp->addItem(new CmdClearRect(_d2w, x, y, w, h));
+    _sp->addItem(new CmdClearRect(d2m(), x, y, w, h));
 }
 
 void GiRecordCanvas::drawRect(float x, float y, float w, float h, bool stroke, bool fill)
 {
-    _sp->addItem(new CmdDrawRect(_d2w, x, y, w, h, stroke, fill));
+    _sp->addItem(new CmdDrawRect(d2m(), x, y, w, h, stroke, fill));
 }
 
 void GiRecordCanvas::drawLine(float x1, float y1, float x2, float y2)
 {
-    _sp->addItem(new CmdDrawLine(_d2w, x1, y1, x2, y2));
+    _sp->addItem(new CmdDrawLine(d2m(), x1, y1, x2, y2));
 }
 
 void GiRecordCanvas::drawEllipse(float x, float y, float w, float h, bool stroke, bool fill)
 {
-    _sp->addItem(new CmdDrawEllipse(_d2w, x, y, w, h, stroke, fill));
+    _sp->addItem(new CmdDrawEllipse(d2m(), x, y, w, h, stroke, fill));
 }
 
 void GiRecordCanvas::beginPath()
@@ -717,22 +743,22 @@ void GiRecordCanvas::beginPath()
 
 void GiRecordCanvas::moveTo(float x, float y)
 {
-    _sp->addItem(new CmdMoveTo(_d2w, x, y));
+    _sp->addItem(new CmdMoveTo(d2m(), x, y));
 }
 
 void GiRecordCanvas::lineTo(float x, float y)
 {
-    _sp->addItem(new CmdLineTo(_d2w, x, y));
+    _sp->addItem(new CmdLineTo(d2m(), x, y));
 }
 
 void GiRecordCanvas::bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y)
 {
-    _sp->addItem(new CmdBezierTo(_d2w, c1x, c1y, c2x, c2y, x, y));
+    _sp->addItem(new CmdBezierTo(d2m(), c1x, c1y, c2x, c2y, x, y));
 }
 
 void GiRecordCanvas::quadTo(float cpx, float cpy, float x, float y)
 {
-    _sp->addItem(new CmdQuadTo(_d2w, cpx, cpy, x, y));
+    _sp->addItem(new CmdQuadTo(d2m(), cpx, cpy, x, y));
 }
 
 void GiRecordCanvas::closePath()
@@ -765,17 +791,17 @@ bool GiRecordCanvas::clipPath()
 
 void GiRecordCanvas::drawHandle(float x, float y, int type)
 {
-    _sp->addItem(new CmdDrawHandle(_d2w, x, y, type));
+    _sp->addItem(new CmdDrawHandle(d2m(), x, y, type));
 }
 
 void GiRecordCanvas::drawBitmap(const char* name, float xc, float yc,
                                 float w, float h, float angle)
 {
-    _sp->addItem(new CmdDrawBitmap(_d2w, name, xc, yc, w, h, angle));
+    _sp->addItem(new CmdDrawBitmap(d2m(), name, xc, yc, w, h, angle));
 }
 
 float GiRecordCanvas::drawTextAt(const char* text, float x, float y, float h, int align)
 {
-    _sp->addItem(new CmdDrawTextAt(_d2w, text, x, y, h, align));
+    _sp->addItem(new CmdDrawTextAt(d2m(), text, x, y, h, align));
     return h;
 }

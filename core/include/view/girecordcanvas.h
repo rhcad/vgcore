@@ -10,6 +10,7 @@
 class MgRecordShape;
 class MgShape;
 class MgShapes;
+class GiTransform;
 
 //! The canvas adapter class to record drawing.
 /*! \ingroup CORE_VIEW
@@ -17,7 +18,7 @@ class MgShapes;
 class GiRecordCanvas : public GiCanvas
 {
 public:
-    GiRecordCanvas(MgShapes* shapes, const Matrix2d& d2w);
+    GiRecordCanvas(MgShapes* shapes, const GiTransform* xf, int ignoreId);
     virtual ~GiRecordCanvas() { clear(); }
     
     void clear();
@@ -48,10 +49,14 @@ private:
     virtual float drawTextAt(const char* text, float x, float y, float h, int align);
     
 private:
+    const Matrix2d d2m() const;
+
+private:
     MgShapes*       _shapes;
     MgShape*        _shape;
     MgRecordShape*  _sp;
-    Matrix2d        _d2w;
+    const GiTransform* _xf;
+    int             _ignoreId;
 };
 
 #endif // TOUCHVG_CORE_GIRECORDCANVAS_H

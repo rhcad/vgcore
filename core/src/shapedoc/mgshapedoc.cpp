@@ -99,7 +99,7 @@ void MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
     im->curShapes = im->curLayer;
     
     const MgObject* owner = src->getCurrentShapes()->getOwner();
-    if (owner && !owner->isKindOf(MgComposite::Type())) {
+    if (owner && owner->isKindOf(MgComposite::Type())) {
         int sid = ((const MgComposite*)owner)->getOwnerShape()->getID();
         const MgShape* sp = im->curShapes->findShape(sid);
         

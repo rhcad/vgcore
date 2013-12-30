@@ -94,7 +94,7 @@ bool MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
 {
     if (m_step > 0 && m_shape)
         shapes->addShape(*m_shape);
-    return true;
+    return false; // gather more shapes via draw()
 }
 
 bool MgCommandDraw::click(const MgMotion* sender)

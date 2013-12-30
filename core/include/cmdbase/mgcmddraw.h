@@ -47,7 +47,7 @@ public:
     virtual bool click(const MgMotion* sender);
     virtual bool longPress(const MgMotion* sender);
     virtual bool mouseHover(const MgMotion* sender);
-    virtual MgShape* getShape(const MgMotion*) { return m_shape; }
+    virtual const MgShape* getShape(const MgMotion* sender) { return m_shape; }
 
     int getStep() { return m_needClear ? 0 : m_step; }
     MgShape* dynshape() { return m_shape; }

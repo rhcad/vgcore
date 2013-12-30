@@ -199,7 +199,8 @@ GiColor GiGraphics::getBkColor() const
 GiColor GiGraphics::setBkColor(const GiColor& color)
 {
     GiColor old(m_impl->bkcolor);
-    m_impl->bkcolor = color;
+    if (m_impl->bkcolor != color)
+        m_impl->bkcolor = color;
     return old;
 }
 
@@ -1123,9 +1124,11 @@ bool GiGraphics::setPen(const GiContext* ctx)
     ctx = &(m_impl->ctx);
     if (m_impl->canvas && changed) {
         m_impl->ctxused &= 1;
+        float orgw = ctx->getLineWidth();
+        orgw = (orgw < -0.1f && ctx->isAutoScale()) ? orgw - 1e4f : orgw;
         m_impl->canvas->setPen(calcPenColor(ctx->getLineColor()).getARGB(),
                                calcPenWidth(ctx->getLineWidth(), ctx->isAutoScale()),
-                               ctx->getLineStyle(), 0, ctx->getLineWidth());
+                               ctx->getLineStyle(), 0, orgw);
     }
     
     return !ctx->isNullLine();

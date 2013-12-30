@@ -33,7 +33,7 @@ GiGraphics* GcBaseView::createFrontGraph()
         }
     }
     if (!gs) {
-        GiGraphics* gs = new GiGraphics(new GiTransform(_xfFront), true);
+        gs = new GiGraphics(new GiTransform(_xfFront), true);
         gs->copy(_gsFront);
         for (i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
             if (!_gsBuf[i]) {
