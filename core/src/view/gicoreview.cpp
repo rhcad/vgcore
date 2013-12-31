@@ -444,7 +444,7 @@ public:
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
     : _mgview(mgview), _view(view), _gsFront(&_xfFront), _gsBack(&_xfBack)
 {
-    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+    for (unsigned i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
         _gsBuf[i] = NULL;
         _gsUsed[i] = 0;
     }
@@ -489,14 +489,9 @@ GiCoreView::~GiCoreView()
     }
 }
 
-MgView* GiCoreView::viewAdapter()
-{
-    return impl;
-}
-
 long GiCoreView::viewAdapterHandle()
 {
-    return viewAdapter()->toHandle();
+    return impl->toHandle();
 }
 
 long GiCoreView::backDoc()

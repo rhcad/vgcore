@@ -8,7 +8,6 @@
 #include "mgvector.h"
 
 class GiContext;
-struct MgView;
 struct MgStorage;
 
 //! 内核视图接口
@@ -21,7 +20,6 @@ struct MgCoreView
     static MgCoreView* fromHandle(long h) { MgCoreView* p; *(long*)&p = h; return p; } //!< 转为对象
     long toHandle() { long h; *(MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
     
-    virtual MgView* viewAdapter() = 0;              //!< 命令视图回调适配器
     virtual long viewAdapterHandle() = 0;           //!< 命令视图回调适配器的句柄, 可转换为 MgView 指针
     virtual long backDoc() = 0;                     //!< 图形文档的句柄, 用 MgShapeDoc::fromHandle() 转换
     virtual long backShapes() = 0;                  //!< 当前图形列表的句柄, 用 MgShapes::fromHandle() 转换

@@ -11,7 +11,6 @@
 
 class GiCanvas;
 class GiCoreViewImpl;
-struct MgView;
 
 //! 内核视图分发器类
 /*! 本对象拥有图形文档对象，负责显示和手势动作的分发。
@@ -65,7 +64,6 @@ public:
 // MgCoreView
 public:
     bool isPressDragging();
-    MgView* viewAdapter();
     long viewAdapterHandle();
     long backDoc();
     long backShapes();

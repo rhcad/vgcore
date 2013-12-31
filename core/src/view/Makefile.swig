@@ -1,7 +1,7 @@
 ROOTDIR  =../../..
 PKGNAME  =touchvg
 PROJNAME =gview
-SWIGFILE =touchvg.i
+SWIGFILE =touchvg.swig
 
 INCLUDES += -I$(ROOTDIR)/core/include \
             -I$(ROOTDIR)/core/include/geom \

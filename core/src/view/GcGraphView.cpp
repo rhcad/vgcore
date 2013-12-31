@@ -10,7 +10,7 @@
 
 GcBaseView::~GcBaseView()
 {
-    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+    for (unsigned i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
         delete _gsBuf[i];
     }
 }
@@ -35,7 +35,7 @@ GiGraphics* GcBaseView::createFrontGraph()
     if (!gs) {
         gs = new GiGraphics(new GiTransform(_xfFront), true);
         gs->copy(_gsFront);
-        for (i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+        for (i = 0; i < (unsigned)(sizeof(_gsBuf)/sizeof(_gsBuf[0])); i++) {
             if (!_gsBuf[i]) {
                 if (giInterlockedIncrement(&_gsUsed[i]) == 1) {
                     _gsBuf[i] = gs;
@@ -51,7 +51,7 @@ GiGraphics* GcBaseView::createFrontGraph()
 
 void GcBaseView::releaseFrontGraph(GiGraphics* gs)
 {
-    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+    for (unsigned i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
         if (_gsBuf[i] == gs) {
             giInterlockedDecrement(&_gsUsed[i]);
             return;
@@ -62,7 +62,7 @@ void GcBaseView::releaseFrontGraph(GiGraphics* gs)
 
 bool GcBaseView::isDrawing()
 {
-    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+    for (unsigned i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
         if (_gsUsed[i] && _gsBuf[i] && _gsBuf[i]->isDrawing())
             return true;
     }
@@ -72,7 +72,7 @@ bool GcBaseView::isDrawing()
 int GcBaseView::stopDrawing()
 {
     int n = 0;
-    for (int i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
+    for (unsigned i = 0; i < sizeof(_gsBuf)/sizeof(_gsBuf[0]); i++) {
         if (_gsUsed[i] && _gsBuf[i] && _gsBuf[i]->isDrawing()) {
             _gsBuf[i]->stopDrawing();
             n++;
