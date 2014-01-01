@@ -35,7 +35,7 @@ GiGraphics* GcBaseView::createFrontGraph()
     if (!gs) {
         gs = new GiGraphics(new GiTransform(_xfFront), true);
         gs->copy(_gsFront);
-        for (i = 0; i < (unsigned)(sizeof(_gsBuf)/sizeof(_gsBuf[0])); i++) {
+        for (i = 0; i < (int)(sizeof(_gsBuf)/sizeof(_gsBuf[0])); i++) {
             if (!_gsBuf[i]) {
                 if (giInterlockedIncrement(&_gsUsed[i]) == 1) {
                     _gsBuf[i] = gs;
