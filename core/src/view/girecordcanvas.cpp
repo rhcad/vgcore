@@ -478,7 +478,7 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
     virtual bool load(MgStorage* s) {
         int len = s->readString("name", NULL, 0);
         name.resize(len, 0);
-        len = s->readString("name", const_cast<char*>(name.c_str()), name.size());
+        len = s->readString("name", const_cast<char*>(name.c_str()), (int)name.size());
         
         pt.x = s->readFloat("xc", pt.x);
         pt.y = s->readFloat("yc", pt.y);
@@ -523,7 +523,7 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
     virtual bool load(MgStorage* s) {
         int len = s->readString("text", NULL, 0);
         text.resize(len, 0);
-        len = s->readString("text", const_cast<char*>(text.c_str()), text.size());
+        len = s->readString("text", const_cast<char*>(text.c_str()), (int)text.size());
         
         pt.x = s->readFloat("x", pt.x);
         pt.y = s->readFloat("y", pt.y);

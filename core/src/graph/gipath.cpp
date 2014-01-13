@@ -3,7 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "gipath.h"
-#include <mgcurv.h>
+#include "mgcurv.h"
 #include <vector>
 
 // 返回STL数组(vector)变量的元素个数

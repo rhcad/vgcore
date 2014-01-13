@@ -3,8 +3,8 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "gigraph_.h"
-#include <mglnrel.h>
-#include <mgcurv.h>
+#include "mglnrel.h"
+#include "mgcurv.h"
 #include "giplclip.h"
 
 #ifndef SafeCall

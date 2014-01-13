@@ -1,4 +1,4 @@
-﻿//! \file gicoreview.cpp
+//! \file gicoreview.cpp
 //! \brief 实现内核视图类 GiCoreView
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
@@ -373,7 +373,7 @@ private:
     Vector2d moveActionsInView(Box2d& rect)
     {
         Vector2d off;
-        Box2d viewrect(0.f, 0.f, (float)xform()->getWidth(), (float)xform()->getHeight());
+        Box2d viewrect(xform()->getWndRect());
 
         if (!rect.isEmpty() && !viewrect.contains(rect)) {
             if (rect.xmin < 0) {
@@ -430,7 +430,7 @@ public:
             _impl->regenAll(regenPending >= 100);
         }
         else if (appendPending > 0) {
-            _impl->regenAppend(appendPending);
+            _impl->regenAppend((int)appendPending);
         }
         else if (redrawPending > 0) {
             _impl->redraw();

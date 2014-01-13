@@ -1,7 +1,7 @@
 ﻿#include "mgjsonstorage.h"
 #include "mgstorage.h"
 #include <vector>
-#include <mglog.h>
+#include "mglog.h"
 
 #if !defined(_MSC_VER) || _MSC_VER > 1200
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
@@ -304,7 +304,7 @@ bool MgJsonStorage::Impl::save(FILE* fp, bool pretty)
 static inline bool parseInt(const char* str, int& value)
 {
     char *endptr;
-    value = strtoul(str, &endptr, 0);
+    value = (int)strtoul(str, &endptr, 0);
     return !endptr || !*endptr;
 }
 
@@ -456,7 +456,7 @@ void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 #else
         snprintf(buf, sizeof(buf), "0x%x", value);
 #endif
-        Value valueCopied(buf, strlen(buf), _doc.GetAllocator());
+        Value valueCopied(buf, (unsigned)strlen(buf), _doc.GetAllocator());
         _stack.back()->AddMember(name, valueCopied, _doc.GetAllocator());
     }
 }
@@ -483,7 +483,7 @@ void MgJsonStorage::Impl::writeFloatArray(const char* name, const float* values,
 
 void MgJsonStorage::Impl::writeString(const char* name, const char* value)
 {
-    Value valueCopied(value, strlen(value), _doc.GetAllocator());
+    Value valueCopied(value, (unsigned)strlen(value), _doc.GetAllocator());
     _stack.back()->AddMember(name, value ? value : "", _doc.GetAllocator());
 }
 

@@ -56,8 +56,7 @@ public:
     void zoomChanged()
     {
         rectDrawM = rectDraw * xform->displayToModel();
-        Box2d rect (0, 0, xform->getWidth(), xform->getHeight());
-        rectDrawMaxM = rect * xform->displayToModel();
+        rectDrawMaxM = xform->getWndRectM();
         rectDrawW = rectDrawM * xform->modelToWorld();
         rectDrawMaxW = rectDrawMaxM * xform->modelToWorld();
         if (canvas) {

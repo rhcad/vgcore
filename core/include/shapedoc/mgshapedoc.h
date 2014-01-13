@@ -7,7 +7,7 @@
 #define TOUCHVG_SHAPEDOC_H_
 
 #include "mgshapes.h"
-#include <mgspfactory.h>
+#include "mgspfactory.h"
 
 class MgLayer;
 

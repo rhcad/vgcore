@@ -2,7 +2,7 @@
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include <mgcomposite.h>
+#include "mgcomposite.h"
 
 MgComposite::MgComposite() : _owner(NULL)
 {
@@ -200,7 +200,7 @@ bool MgComposite::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int) con
     return n > 0;
 }
 
-#include <mgshape_.h>
+#include "mgshape_.h"
 
 MG_IMPLEMENT_CREATE(MgGroup)
 

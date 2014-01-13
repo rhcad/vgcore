@@ -3,7 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mggrid.h"
-#include <mgshape_.h>
+#include "mgshape_.h"
 
 MG_IMPLEMENT_CREATE(MgGrid)
 

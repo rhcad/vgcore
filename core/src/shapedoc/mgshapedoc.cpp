@@ -4,7 +4,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgshapedoc.h"
-#include <mgstorage.h>
+#include "mgstorage.h"
 #include <vector>
 #include "mglayer.h"
 #include "mgcomposite.h"

@@ -3,8 +3,8 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgbasicsp.h"
-#include <mgshape_.h>
-#include <mglog.h>
+#include "mgshape_.h"
+#include "mglog.h"
 
 MG_IMPLEMENT_CREATE(MgEllipse)
 

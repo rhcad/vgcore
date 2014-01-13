@@ -5,7 +5,7 @@
 #ifndef TOUCHVG_CORE_MOUSEHELPER_H
 #define TOUCHVG_CORE_MOUSEHELPER_H
 
-#include <gicoreview.h>
+#include "gicoreview.h"
 
 //! 鼠标转手势的辅助类
 /*! \ingroup CORE_VIEW

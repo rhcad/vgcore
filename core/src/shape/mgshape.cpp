@@ -3,7 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgshape.h"
-#include <mgstorage.h>
+#include "mgstorage.h"
 
 void MgBaseShape::copy(const MgObject& src) {
     if (src.isKindOf(Type()))
@@ -223,8 +223,9 @@ bool MgShape::draw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) 
 
     rect.inflate(1 + gs.calcPenWidth(tmpctx.getLineWidth(), tmpctx.isAutoScale()) / 2);
 
-    if (gs.beginShape(shapec()->getType(), getID(), shapec()->getChangeCount(), rect.xmin,
-        rect.ymin, rect.width(), rect.height())) {
+    if (gs.beginShape(shapec()->getType(), getID(),
+                      (int)shapec()->getChangeCount(),
+                      rect.xmin, rect.ymin, rect.width(), rect.height())) {
         ret = shapec()->draw(mode, gs, tmpctx, segment);
         gs.endShape(shapec()->getType(), getID(), rect.xmin, rect.ymin);
     }

@@ -4,7 +4,7 @@
 
 #include "mgshapes.h"
 #include "mgstorage.h"
-#include <mgspfactory.h>
+#include "mgspfactory.h"
 #include <list>
 #include <map>
 

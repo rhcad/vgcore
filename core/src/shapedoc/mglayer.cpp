@@ -5,7 +5,7 @@
 
 #include "mglayer.h"
 #include "mgshapedoc.h"
-#include <mgstorage.h>
+#include "mgstorage.h"
 
 MgLayer::MgLayer(MgShapeDoc* doc, int index) : MgShapes(doc, index), _flags(0)
 {

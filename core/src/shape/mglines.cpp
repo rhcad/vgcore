@@ -3,7 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgbasicsp.h"
-#include <mgshape_.h>
+#include "mgshape_.h"
 
 // MgBaseLines
 //
