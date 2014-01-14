@@ -567,7 +567,9 @@ void GiCoreView::destoryView(GiView* view)
         if (impl->curview == aview) {
             impl->curview = impl->_doc->firstView();
         }
-        //delete aview;
+#ifndef __ANDROID__
+        delete aview;
+#endif
     }
 }
 
