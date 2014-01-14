@@ -59,7 +59,7 @@ public:
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
     GiGestureState getGestureState();                               //!< 得到当前手势状态
-    int getVersion();                                               //!< 得到内核版本号
+    static int getVersion();                                        //!< 得到内核版本号
     
 // MgCoreView
 public:
