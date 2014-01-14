@@ -217,6 +217,14 @@ GiColor GiGraphics::calcPenColor(const GiColor& color) const
     return ret;
 }
 
+static float _penWidthFactor = 1;
+
+void GiGraphics::setPenWidthFactor(float factor)
+{
+    if (factor > 0.1f && factor < 10.f)
+        _penWidthFactor = factor;
+}
+
 float GiGraphics::calcPenWidth(float lineWidth, bool useViewScale) const
 {
     float w = 1;
@@ -229,7 +237,7 @@ float GiGraphics::calcPenWidth(float lineWidth, bool useViewScale) const
         w *= xf().getViewScale();
     }
     else if (lineWidth < 0) {   // 单位：像素
-        w = -lineWidth;
+        w = -lineWidth * _penWidthFactor;
         if (useViewScale)
             w *= xf().getViewScale();
     }

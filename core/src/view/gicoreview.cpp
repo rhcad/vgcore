@@ -563,13 +563,11 @@ void GiCoreView::destoryView(GiView* view)
 {
     GcBaseView* aview = this ? impl->_doc->findView(view) : NULL;
 
-    if (aview) {
-        impl->_doc->removeView(aview);
-
+    if (aview && impl->_doc->removeView(aview)) {
         if (impl->curview == aview) {
             impl->curview = impl->_doc->firstView();
         }
-        delete aview;
+        //delete aview;
     }
 }
 
@@ -586,6 +584,7 @@ void GiCoreView::setScreenDpi(int dpi, float factor)
     }
     if (factor != _factor && factor > 0.1f) {
         _factor = factor;
+        GiGraphics::setPenWidthFactor(factor);
     }
 }
 

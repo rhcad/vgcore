@@ -20,8 +20,8 @@ public:
     GcShapeDoc();
     ~GcShapeDoc();
     
-    void addView(GcBaseView* view);
-    void removeView(GcBaseView* view);
+    bool addView(GcBaseView* view);
+    bool removeView(GcBaseView* view);
     GcBaseView* findView(GiView* view) const;
     GcBaseView* getView(int index) const;
     int getViewCount() const;

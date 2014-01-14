@@ -14,24 +14,27 @@ GcShapeDoc::~GcShapeDoc()
     MgObject::release_pointer(_backDoc);
 }
 
-void GcShapeDoc::addView(GcBaseView* view)
+bool GcShapeDoc::addView(GcBaseView* view)
 {
     if (view && view->deviceView() && view->cmdView()->document() == this
         && !findView(view->deviceView())) {
         _views.push_back(view);
+        return true;
     }
+    return false;
 }
 
-void GcShapeDoc::removeView(GcBaseView* view)
+bool GcShapeDoc::removeView(GcBaseView* view)
 {
     std::vector<GcBaseView*>::iterator it;
     
     for (it = _views.begin(); it != _views.end(); ++it) {
         if (*it == view) {
             _views.erase(it);
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 GcBaseView* GcShapeDoc::findView(GiView* view) const

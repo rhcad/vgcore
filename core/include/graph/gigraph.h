@@ -128,6 +128,9 @@ public:
     */
     void setMaxPenWidth(float pixels, float minw = 1);
     
+    //! 设置像素线宽的放大系数
+    static void setPenWidthFactor(float factor);
+    
 public:
     //! 绘制直线段，模型坐标或世界坐标
     /*!
