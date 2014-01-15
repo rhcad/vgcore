@@ -63,7 +63,7 @@ bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
     
     m_impl->clipBox0 = clipBox;
     if (Box2d(clipBox).isEmpty()) {
-        (xf().getWndRectW() * xf().worldToDisplay()).get(m_impl->clipBox0);
+        xf().getWndRect().get(m_impl->clipBox0);
     }
     m_impl->clipBox  = m_impl->clipBox0;
     m_impl->rectDraw = m_impl->clipBox0;
@@ -619,7 +619,8 @@ bool GiGraphics::_drawPolygon(const GiContext* ctx, int count, const Point2d* po
         }
     }
 
-    if (n == 4 && mgEquals(pxs[0].x, pxs[3].x) && mgEquals(pxs[1].x, pxs[2].x)
+    if (n == 4 && m2d
+        && mgEquals(pxs[0].x, pxs[3].x) && mgEquals(pxs[1].x, pxs[2].x)
         && mgEquals(pxs[0].y, pxs[1].y) && mgEquals(pxs[2].y, pxs[3].y))
     {
         Box2d rc(pxs[0].x, pxs[0].y, pxs[2].x, pxs[2].y, true);
