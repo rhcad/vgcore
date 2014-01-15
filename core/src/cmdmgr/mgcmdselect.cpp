@@ -754,7 +754,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             
             if (!basesp || shape->getFlag(kMgShapeLocked))  // 锁定图形不参与变形
                 continue;
-            shape->copy(*basesp->shapec());                  // 先重置为原始位置
+            shape->copy(*basesp->shapec());                 // 先重置为原始位置
             
             bool oldFixedLength = shape->getFlag(kMgFixedLength);
             bool oldFixedSize = shape->getFlag(kMgFixedSize);
@@ -769,24 +769,20 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 lines->insertPoint(m_hit.segment, m_hit.nearpt);    // 插入新顶点
             }
             if (m_rotateHandle > 0 && canRotate(basesp, sender)) {
-                int oldRotateHandle = m_rotateHandle;
                 Point2d center(basesp->shapec()->getHandlePoint(m_rotateHandle - 1));
                 
-                if (center == m_ptStart || m_handleIndex == m_rotateHandle) {
-                    m_rotateHandle = m_rotateHandle > 1 ? m_rotateHandle - 1 : m_rotateHandle + 1;
-                    center = basesp->shapec()->getHandlePoint(m_rotateHandle - 1);
-                }
-                    
-                float angle = (m_ptStart - center).angleTo2(pointM - center);
-                shape->transform(Matrix2d::rotation(angle, center));
-                
-                Point2d fromPt, toPt;
-                snapPoint(sender, m_clones[i]);
-                if (sender->cmds()->getSnap()->getSnappedPoint(fromPt, toPt) > 0) {
-                    angle = (fromPt - center).angleTo2(toPt - center);
+                if (center != m_ptStart && m_handleIndex != m_rotateHandle) {
+                    float angle = (m_ptStart - center).angleTo2(pointM - center);
                     shape->transform(Matrix2d::rotation(angle, center));
+                    
+                    Point2d fromPt, toPt;
+                    snapPoint(sender, m_clones[i]);
+                    
+                    if (sender->cmds()->getSnap()->getSnappedPoint(fromPt, toPt) > 0) {
+                        angle = (fromPt - center).angleTo2(toPt - center);
+                        shape->transform(Matrix2d::rotation(angle, center));
+                    }
                 }
-                m_rotateHandle = oldRotateHandle;
             }
             else if (m_handleIndex > 0 && isEditMode(sender->view)) { // 拖动顶点
                 float tol = sender->displayMmToModel(3.f);
