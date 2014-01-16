@@ -25,7 +25,7 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
     if (m_step > 0) {
         m_step = 0;
         m_shape->shape()->clear();
-        sender->view->getSnap()->clearSnap();
+        sender->view->getSnap()->clearSnap(sender);
         sender->view->redraw();
         return true;
     }
@@ -140,7 +140,7 @@ bool MgCommandDraw::touchMoved(const MgMotion* sender)
 
 bool MgCommandDraw::touchEnded(const MgMotion* sender)
 {
-    sender->view->getSnap()->clearSnap();
+    sender->view->getSnap()->clearSnap(sender);
     sender->view->redraw();
     return true;
 }

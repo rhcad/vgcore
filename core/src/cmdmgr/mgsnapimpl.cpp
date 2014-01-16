@@ -321,10 +321,13 @@ bool MgCmdManagerImpl::getSnappedHandle(int& shapeid, int& handleIndex, int& han
     return shapeid != 0;
 }
 
-void MgCmdManagerImpl::clearSnap()
+void MgCmdManagerImpl::clearSnap(const MgMotion* sender)
 {
-    _snapType[0] = 0;
-    _snapType[1] = 0;
+    if (_snapType[0] || _snapType[1]) {
+        _snapType[0] = 0;
+        _snapType[1] = 0;
+        sender->view->redraw();
+    }
 }
 
 bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)

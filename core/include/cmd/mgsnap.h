@@ -33,7 +33,7 @@ typedef enum {
 */
 struct MgSnap {
     //! 清除捕捉结果
-    virtual void clearSnap() = 0;
+    virtual void clearSnap(const MgMotion* sender) = 0;
     
     //! 显示捕捉提示线
     virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs) = 0;

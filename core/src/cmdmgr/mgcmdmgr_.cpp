@@ -150,7 +150,7 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
 
 bool MgCmdManagerImpl::cancel(const MgMotion* sender)
 {
-    clearSnap();
+    clearSnap(sender);
     
     int actions[] = { 0 };
     sender->view->showContextActions(0, actions, Box2d(), NULL);

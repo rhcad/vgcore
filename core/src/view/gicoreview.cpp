@@ -310,7 +310,7 @@ private:
         }
 
         Box2d rect(calcButtonPosition(pos, n, selbox));
-        Vector2d off(moveActionsInView(rect));
+        Vector2d off(moveActionsInView(rect, 16 * _factor));
 
         for (int i = 0; i < n; i++) {
             pos.set(2 * i, pos.get(2 * i) + off.x, pos.get(2 * i + 1) + off.y);
@@ -370,24 +370,24 @@ private:
         return rect;
     }
 
-    Vector2d moveActionsInView(Box2d& rect)
+    Vector2d moveActionsInView(Box2d& rect, float btnHalfW)
     {
         Vector2d off;
         Box2d viewrect(xform()->getWndRect());
 
         if (!rect.isEmpty() && !viewrect.contains(rect)) {
-            if (rect.xmin < 0) {
-                off.x = -rect.xmin;
+            if (rect.xmin < btnHalfW) {
+                off.x = btnHalfW - rect.xmin;
             }
-            else if (rect.xmax > viewrect.xmax) {
-                off.x = viewrect.xmax - rect.xmax;
+            else if (rect.xmax > viewrect.xmax - btnHalfW) {
+                off.x = viewrect.xmax - btnHalfW - rect.xmax;
             }
 
-            if (rect.ymin < 0) {
-                off.y = -rect.ymin;
+            if (rect.ymin < btnHalfW) {
+                off.y = btnHalfW - rect.ymin;
             }
-            else if (rect.ymax > viewrect.ymax) {
-                off.y = viewrect.ymax - rect.ymax;
+            else if (rect.ymax > viewrect.ymax - btnHalfW) {
+                off.y = viewrect.ymax - btnHalfW - rect.ymax;
             }
         }
 

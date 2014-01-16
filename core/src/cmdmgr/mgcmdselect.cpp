@@ -603,7 +603,7 @@ Box2d MgCmdSelect::getBoundingBox(const MgMotion* sender)
     if (!m_selIds.empty() && selbox.height() < minDist)
         selbox.inflate(0, minDist / 2);
     if (!m_selIds.empty())
-        selbox.inflate(minDist / 8, minDist / 8);
+        selbox.inflate(minDist / 8);
     
     Box2d rcview(sender->view->xform()->getWndRectM());
     rcview.deflate(sender->displayMmToModel(1.f));
@@ -874,7 +874,7 @@ bool MgCmdSelect::touchEnded(const MgMotion* sender)
     sender->cmds()->getSnap()->getSnappedHandle(shapeid, handleIndex, handleIndexSrc);
     
     applyCloneShapes(sender->view, true, isCloneDrag(sender));
-    sender->cmds()->getSnap()->clearSnap();
+    sender->cmds()->getSnap()->clearSnap(sender);
     
     m_insertPt = false;
     m_hit.nearpt = sender->pointM;

@@ -61,7 +61,7 @@ private:
     virtual int getSnappedType();
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt);
     virtual bool getSnappedHandle(int& shapeid, int& handleIndex, int& handleIndexSrc);
-    virtual void clearSnap();
+    virtual void clearSnap(const MgMotion* sender);
     
     virtual bool showInSelect(const MgMotion* sender, int selState, const MgShape* shape, const Box2d& selbox);
     virtual bool showInDrawing(const MgMotion* sender, const MgShape* shape);
