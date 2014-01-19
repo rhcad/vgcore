@@ -50,16 +50,16 @@ struct MgCoreView
     virtual void clear() = 0;                       //!< 删除所有图形，包括锁定的图形
     virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;       //!< 从文件中加载
     virtual bool saveToFile(long hDoc, const char* vgfile, bool pretty = true) = 0; //!< 保存图形
-    bool saveToFile(const char* vgfile, bool pretty = true);            //!< 保存图形，单线程
+    bool saveToFile(const char* vgfile, bool pretty = true);            //!< 保存图形，主线程中用
     
     virtual bool loadShapes(MgStorage* s, bool readOnly = false) = 0;   //!< 从数据源中加载图形
     virtual bool saveShapes(long hDoc, MgStorage* s) = 0;               //!< 保存图形到数据源
-    bool saveShapes(MgStorage* s);                      //!< 保存图形到数据源，单线程
+    bool saveShapes(MgStorage* s);                      //!< 保存图形到数据源，主线程中用
 
     virtual const char* getContent(long hDoc) = 0;      //!< 得到图形的JSON内容，需要调用 freeContent()
     virtual void freeContent() = 0;                     //!< 释放 getContent() 产生的缓冲资源
     virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
-    const char* getContent();                           //!< 得到图形内容，需调用 freeContent()，单线程
+    const char* getContent();                           //!< 得到图形内容，需调用 freeContent()，主线程中用
 
     virtual bool zoomToExtent() = 0;                    //!< 放缩显示全部内容到视图区域
     virtual bool zoomToModel(float x, float y, float w, float h) = 0;   //!< 放缩显示指定范围到视图区域

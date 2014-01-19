@@ -8,8 +8,8 @@
 //! GiTransform的内部数据
 struct GiTransformImpl
 {
-    long        cxWnd;          //!< 显示窗口宽度，像素
-    long        cyWnd;          //!< 显示窗口高度，像素
+    int         cxWnd;          //!< 显示窗口宽度，像素
+    int         cyWnd;          //!< 显示窗口高度，像素
     float       dpiX;           //!< 显示设备每英寸的像素数X
     float       dpiY;           //!< 显示设备每英寸的像素数Y
     bool        ydown;          //!< 显示设备的+Y方向是否为向下
@@ -142,8 +142,8 @@ GiTransform& GiTransform::copy(const GiTransform& src)
 
 float GiTransform::getDpiX() const { return m_impl->dpiX; }
 float GiTransform::getDpiY() const { return m_impl->dpiY; }
-long GiTransform::getWidth() const { return m_impl->cxWnd; }
-long GiTransform::getHeight() const { return m_impl->cyWnd; }
+int GiTransform::getWidth() const { return m_impl->cxWnd; }
+int GiTransform::getHeight() const { return m_impl->cyWnd; }
 Point2d GiTransform::getCenterW() const { return m_impl->centerW; }
 float GiTransform::getViewScale() const { return m_impl->viewScale; }
 float GiTransform::getWorldToDisplayX(bool useViewScale) const {
@@ -180,7 +180,7 @@ long GiTransform::getZoomTimes() const
     return m_impl->zoomTimes;
 }
 
-bool GiTransform::setWndSize(long width, long height)
+bool GiTransform::setWndSize(int width, int height)
 {
     if ((m_impl->cxWnd != width || m_impl->cyWnd != height)
         && width > 1 && height > 1)

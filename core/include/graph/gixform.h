@@ -65,12 +65,12 @@ public:
     //! 返回显示窗口的宽度，像素
     /*! 屏幕显示时为窗口的客户区宽度，打印和打印预览时为纸张可打印区域宽度
     */
-    long getWidth() const;
+    int getWidth() const;
 
     //! 返回显示窗口的高度，像素
     /*! 屏幕显示时为窗口的客户区高度，打印和打印预览时为纸张可打印区域高度
     */
-    long getHeight() const;
+    int getHeight() const;
 
     //! 返回显示窗口中心的世界坐标
     Point2d getCenterW() const;
@@ -123,7 +123,7 @@ public:
         \param height 显示窗口的高度，像素
         \return 是否改变了宽高
     */
-    bool setWndSize(long width, long height);
+    bool setWndSize(int width, int height);
 
     //! 设置显示分辨率
     /*! 一般不直接调用本函数，而是调用图形系统的 beginPaint 或 printSetup 函数

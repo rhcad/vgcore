@@ -1,4 +1,4 @@
-﻿//! \file gicoreview.cpp
+//! \file gicoreview.cpp
 //! \brief 实现内核视图类 GiCoreView
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
@@ -19,6 +19,7 @@
 #include "girecordshape.h"
 #include "cmdbasic.h"
 #include <map>
+#include "svgcanvas.h"
 #include "../corever.h"
 
 #define CALL_VIEW(func) if (curview) curview->func
@@ -172,10 +173,11 @@ public:
     bool removeShape(const MgShape* shape) {
         showContextActions(0, NULL, Box2d::kIdentity(), NULL);
         bool ret = (shape && shape->getParent()
-                    && shape->getParent()->findShape(shape->getID()) == shape);
+                    && shape->getParent()->findShape(shape->getID()) == shape
+                    && !shape->shapec()->getFlag(kMgShapeLocked));
         if (ret) {
             getCmdSubject()->onShapeDeleted(motion(), shape);
-            shape->getParent()->removeShape(shape->getID());
+            ret = shape->getParent()->removeShape(shape->getID());
         }
         return ret;
     }
@@ -214,8 +216,7 @@ public:
             redrawPending++;
         }
         else {
-            giInterlockedIncrement(&drawCount);
-            CALL_VIEW(deviceView()->redraw());  // 将调用dynDraw
+            CALL_VIEW(deviceView()->redraw());
         }
     }
 
@@ -223,17 +224,16 @@ public:
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
         }
-        else {  // 将调用drawAll
-            giInterlockedIncrement(&drawCount);
+        else {
+            CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
-                giInterlockedIncrement(&changeCount);
                 for (int i = 0; i < _doc->getViewCount(); i++) {
-                    _doc->getView(i)->deviceView()->regenAll(changed);
+                    if (_doc->getView(i) != curview)
+                        _doc->getView(i)->deviceView()->regenAll(changed);
                 }
                 CALL_VIEW(deviceView()->contentChanged());
             }
             else {
-                CALL_VIEW(deviceView()->regenAll(changed));
                 for (int i = 0; i < _doc->getViewCount(); i++) {
                     if (_doc->getView(i) != curview)
                         _doc->getView(i)->deviceView()->redraw();
@@ -251,11 +251,11 @@ public:
                 regenAll(true);
             }
         }
-        else {  // 将调用drawAppend
-            giInterlockedIncrement(&drawCount);
-            giInterlockedIncrement(&changeCount);
+        else {
+            CALL_VIEW(deviceView()->regenAppend(sid));
             for (int i = 0; i < _doc->getViewCount(); i++) {
-                _doc->getView(i)->deviceView()->regenAppend(sid);
+                if (_doc->getView(i) != curview)
+                    _doc->getView(i)->deviceView()->regenAppend(sid);
             }
             CALL_VIEW(deviceView()->contentChanged());
         }
@@ -516,13 +516,20 @@ void GiCoreView::releaseDoc(long hDoc)
     MgObject::release_pointer(doc);
 }
 
-void GiCoreView::submitBackDoc()
+bool GiCoreView::submitBackDoc(GiView* view)
 {
-    if (impl->curview) {
-        impl->doc()->saveAll(NULL, impl->curview->xform());  // save viewport
-        impl->curview->submitBackXform();
+    GcBaseView* aview = impl->_doc->findView(view);
+    if (aview) {
+        impl->doc()->saveAll(NULL, aview->xform());  // save viewport
+        aview->submitBackXform();
     }
-    impl->_doc->submitBackDoc();
+    
+    bool ret = impl->curview == aview;
+    if (ret) {
+        impl->_doc->submitBackDoc();
+        giInterlockedIncrement(&impl->changeCount);
+    }
+    return ret;
 }
 
 long GiCoreView::acquireDynamicShapes()
@@ -949,6 +956,7 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
             }
             ret = impl->dynShapes->getShapeCount() > 0;
         }
+        giInterlockedIncrement(&impl->drawCount);
     }
     
     return ret;
@@ -1010,6 +1018,30 @@ bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
     }
     
     return ret;
+}
+
+int GiCoreView::exportSVG(long hDoc, long hGs, const char* filename)
+{
+    GiSvgCanvas canvas;
+    int n = -1;
+    
+    if (hDoc && impl->curview
+        && canvas.open(filename, impl->curview->xform()->getWidth(),
+                       impl->curview->xform()->getHeight()))
+    {
+        n = drawAll(hDoc, hGs, &canvas);
+    }
+    
+    return canvas.close() ? n : -1;
+}
+
+int GiCoreView::exportSVG(GiView* view, const char* filename) {
+    long hDoc = acquireFrontDoc();
+    long hGs = acquireGraphics(view);
+    int n = exportSVG(hDoc, hGs, filename);
+    releaseDoc(hDoc);
+    releaseGraphics(view, hGs);
+    return n;
 }
 
 bool GiCoreView::zoomToExtent()

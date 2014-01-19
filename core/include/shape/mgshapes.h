@@ -76,7 +76,7 @@ public:
     bool updateShape(MgShape* shape);
     
     //! 移除一个图形
-    bool removeShape(int sid, bool skipLockedShape = true);
+    bool removeShape(int sid);
 
     //! 将一个图形移到另一个图形列表
     bool moveShapeTo(int sid, MgShapes* dest);

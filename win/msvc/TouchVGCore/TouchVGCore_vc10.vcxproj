@@ -39,6 +39,7 @@
     <ClInclude Include="..\..\..\core\include\cmd\mgselect.h" />
     <ClInclude Include="..\..\..\core\include\cmd\mgsnap.h" />
     <ClInclude Include="..\..\..\core\include\cmd\mgview.h" />
+    <ClInclude Include="..\..\..\core\include\export\svgcanvas.h" />
     <ClInclude Include="..\..\..\core\include\geom\mgbase.h" />
     <ClInclude Include="..\..\..\core\include\geom\mgbox.h" />
     <ClInclude Include="..\..\..\core\include\geom\mgcurv.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdmgr_.h" />
     <ClInclude Include="..\..\..\core\src\cmdmgr\mgcmdselect.h" />
     <ClInclude Include="..\..\..\core\src\corever.h" />
+    <ClInclude Include="..\..\..\core\src\export\simple_svg.hpp" />
     <ClInclude Include="..\..\..\core\src\geom\mgdblpt.h" />
     <ClInclude Include="..\..\..\core\src\graph\gigraph_.h" />
     <ClInclude Include="..\..\..\core\src\graph\giplclip.h" />
@@ -127,6 +129,7 @@
     <ClCompile Include="..\..\..\core\src\cmdmgr\mgcmdmgr_.cpp" />
     <ClCompile Include="..\..\..\core\src\cmdmgr\mgcmdselect.cpp" />
     <ClCompile Include="..\..\..\core\src\cmdmgr\mgsnapimpl.cpp" />
+    <ClCompile Include="..\..\..\core\src\export\svgcanvas.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgbase.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgbox.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgcurv.cpp" />
@@ -210,7 +213,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -227,7 +230,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
+		024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF63188A84A6000B0C41 /* svgcanvas.h */; };
+		024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6B188A84E3000B0C41 /* simple_svg.hpp */; };
+		024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
 		AE208E5618867E4800FE68E1 /* girecordcanvas.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */; };
 		AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
 		AE20C4BD1866C5F000471A19 /* mgpnt.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
@@ -214,6 +218,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		024FCF63188A84A6000B0C41 /* svgcanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgcanvas.h; sourceTree = "<group>"; };
+		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
+		024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgcanvas.cpp; sourceTree = "<group>"; };
 		AE20C4BB1866C5C600471A19 /* mgpnt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpnt.cpp; sourceTree = "<group>"; };
 		AE20C4BF1866D28B00471A19 /* gicoreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicoreview.h; sourceTree = "<group>"; };
 		AE20C4C01866D28B00471A19 /* gigesture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gigesture.h; sourceTree = "<group>"; };
@@ -376,6 +383,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		024FCF62188A84A6000B0C41 /* export */ = {
+			isa = PBXGroup;
+			children = (
+				024FCF63188A84A6000B0C41 /* svgcanvas.h */,
+			);
+			path = export;
+			sourceTree = "<group>";
+		};
+		024FCF67188A84E3000B0C41 /* export */ = {
+			isa = PBXGroup;
+			children = (
+				024FCF6B188A84E3000B0C41 /* simple_svg.hpp */,
+				024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */,
+			);
+			path = export;
+			sourceTree = "<group>";
+		};
 		AE20C4BE1866D28B00471A19 /* view */ = {
 			isa = PBXGroup;
 			children = (
@@ -475,6 +499,7 @@
 				AED37040186681DB00C0A778 /* storage */,
 				AED37042186681DB00C0A778 /* test */,
 				AE20C4BE1866D28B00471A19 /* view */,
+				024FCF62188A84A6000B0C41 /* export */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -645,6 +670,7 @@
 				AED37092186681DB00C0A778 /* shapedoc */,
 				AED37097186681DB00C0A778 /* test */,
 				AE20C4C31866D2F400471A19 /* view */,
+				024FCF67188A84E3000B0C41 /* export */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -857,6 +883,9 @@
 				AED370DF1866897B00C0A778 /* mgcmdmgrfactory.h in Headers */,
 				AED370E01866897B00C0A778 /* cmdobserver.h in Headers */,
 				AED370E11866897B00C0A778 /* cmdsubject.h in Headers */,
+				024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */,
+				024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */,
+				024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */,
 				AE208E5618867E4800FE68E1 /* girecordcanvas.cpp in Headers */,
 				AE20C4D61866D38200471A19 /* GcBaseView.h in Headers */,
 				AE20C4D71866D38200471A19 /* GcGraphView.cpp in Headers */,
@@ -1035,6 +1064,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */,
 				AE20C4CD1866D33600471A19 /* GcGraphView.cpp in Sources */,
 				AE20C4CE1866D33600471A19 /* GcMagnifierView.cpp in Sources */,
 				AE20C4CF1866D33600471A19 /* GcShapeDoc.cpp in Sources */,

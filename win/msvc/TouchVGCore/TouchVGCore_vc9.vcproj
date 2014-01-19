@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view"
+				AdditionalIncludeDirectories="..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -106,7 +106,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view"
+				AdditionalIncludeDirectories="..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -512,6 +512,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="export"
+				>
+				<File
+					RelativePath="..\..\..\core\src\export\simple_svg.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\core\src\export\svgcanvas.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -851,6 +863,14 @@
 				</File>
 				<File
 					RelativePath="..\..\..\core\include\view\giview.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="export"
+				>
+				<File
+					RelativePath="..\..\..\core\include\export\svgcanvas.h"
 					>
 				</File>
 			</Filter>

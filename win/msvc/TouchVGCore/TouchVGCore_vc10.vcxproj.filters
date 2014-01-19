@@ -84,6 +84,12 @@
     <Filter Include="Source Files\view">
       <UniqueIdentifier>{efec7cca-9b40-4f08-9fe0-410cadf51935}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\export">
+      <UniqueIdentifier>{c37044ad-bd7f-432c-9e14-32009d130030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\export">
+      <UniqueIdentifier>{2f0de004-3552-42e0-af9b-b5a08e264359}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\core\include\mgvector.h">
@@ -359,6 +365,12 @@
     <ClInclude Include="..\..\..\core\src\corever.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\include\export\svgcanvas.h">
+      <Filter>Header Files\export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\src\export\simple_svg.hpp">
+      <Filter>Source Files\export</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\shape\mgbasicspreg.cpp">
@@ -534,6 +546,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\view\girecordcanvas.cpp">
       <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\export\svgcanvas.cpp">
+      <Filter>Source Files\export</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

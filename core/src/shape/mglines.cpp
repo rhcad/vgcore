@@ -126,7 +126,7 @@ bool MgBaseLines::insertPoint(int segment, const Point2d& pt)
     
     if (segment >= 0 && segment <= maxEdgeIndex()) {
         resize(_count + 1);
-        for (int i = (int)_count - 1; i > segment + 1; i--)
+        for (int i = _count - 1; i > segment + 1; i--)
             _points[i] = _points[i - 1];
         _points[segment + 1] = pt;
         ret = true;

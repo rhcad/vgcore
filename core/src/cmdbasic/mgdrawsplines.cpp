@@ -43,11 +43,12 @@ bool MgCmdDrawSplines::draw(const MgMotion* sender, GiGraphics* gs)
 bool MgCmdDrawSplines::touchBegan(const MgMotion* sender)
 {
     MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
+    Point2d pnt(m_freehand ? sender->startPtM : snapPoint(sender, true));
     
     if (m_step > 0 && !m_freehand) {
         m_step++;
         if (m_step >= dynshape()->shape()->getPointCount()) {
-            lines->addPoint(lines->endPoint());
+            lines->addPoint(pnt);
             dynshape()->shape()->update();
         }
         
@@ -57,7 +58,6 @@ bool MgCmdDrawSplines::touchBegan(const MgMotion* sender)
         lines->resize(2);
         lines->setClosed(false);
         m_step = 1;
-        Point2d pnt(m_freehand ? sender->startPtM : snapPoint(sender, true));
         dynshape()->shape()->setPoint(0, pnt);
         dynshape()->shape()->setPoint(1, pnt);
         dynshape()->shape()->update();
@@ -115,14 +115,6 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         if (m_step > 1 && lines->isClosed()) {
             addShape(sender);
             delayClear(sender);
-        }
-        else if (sender->startPtM.distanceTo(sender->pointM) >
-                sender->displayMmToModel(5.f)) {
-            m_step++;
-            if (m_step >= dynshape()->shape()->getPointCount()) {
-                lines->addPoint(lines->endPoint());
-                dynshape()->shape()->update();
-            }
         }
     }
     

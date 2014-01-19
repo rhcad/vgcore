@@ -1032,33 +1032,18 @@ bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count,
     
     const Box2d wndrect (DRAW_RECT(m_impl, modelUnit));
     const Matrix2d matD(S2D(xf(), modelUnit));
-    Point2d mid1, mid2, pt, pt2;
-    int n = 0;
+    Point2d mid, pt;
     
     rawBeginPath();
     
     for (int i = 0; i + 2 < count; i++) {
-        if (Box2d(3, ctlpts + i).isIntersect(wndrect)) {
-            pt2 = ctlpts[i+2];
-            mid1 = (ctlpts[i] + ctlpts[i+1]) / 2 * matD;
-            mid2 = (ctlpts[i+1] + pt2) / 2 * matD;
-            if (n++ == 0) {
-                pt = ctlpts[i] * matD;
-                rawMoveTo(pt.x, pt.y);
-                rawLineTo(mid1.x, mid1.y);
-            }
-            pt = ctlpts[i+1] * matD;
-            rawQuadTo(pt.x, pt.y, mid2.x, mid2.y);
+        if (i == 0) {
+            pt = ctlpts[i] * matD;
+            rawMoveTo(pt.x, pt.y);
         }
-        else if (n > 0) {
-            pt = pt2 * matD;
-            rawLineTo(pt.x, pt.y);
-            n = 0;
-        }
-    }
-    if (n > 0) {
-        pt = pt2 * matD;
-        rawLineTo(pt.x, pt.y);
+        pt = ctlpts[i+1] * matD;
+        mid = (i + 3 < count ? (ctlpts[i+1] + ctlpts[i+2]) / 2 : ctlpts[i+2]) * matD;
+        rawQuadTo(pt.x, pt.y, mid.x, mid.y);
     }
     
     return rawEndPath(ctx, false);

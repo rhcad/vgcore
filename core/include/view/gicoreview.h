@@ -1,4 +1,4 @@
-﻿//! \file gicoreview.h
+//! \file gicoreview.h
 //! \brief 定义内核视图分发器类 GiCoreView
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
@@ -37,9 +37,9 @@ public:
     int drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid); //!< 显示新图形
     int dynDraw(long hShapes, long hGs, GiCanvas* canvas);          //!< 显示动态图形
     
-    int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，单线程
-    int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，单线程
-    int dynDraw(GiView* view, GiCanvas* canvas);                    //!< 显示动态图形，单线程
+    int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，主线程中用
+    int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，主线程中用
+    int dynDraw(GiView* view, GiCanvas* canvas);                    //!< 显示动态图形，主线程中用
     
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
     static void setScreenDpi(int dpi, float factor = 1.f);          //!< 设置屏幕的点密度和UI放缩系数
@@ -53,13 +53,16 @@ public:
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
     
-    void submitBackDoc();                       //!< 提交静态图形到前端，在UI的regen回调中用
+    bool submitBackDoc(GiView* view);           //!< 提交静态图形到前端，在UI的regen回调中用
     bool submitDynamicShapes(GiView* view);     //!< 提交动态图形到前端，需要并发保护
     
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
     GiGestureState getGestureState();                               //!< 得到当前手势状态
     static int getVersion();                                        //!< 得到内核版本号
+    
+    int exportSVG(long hDoc, long hGs, const char* filename);       //!< 导出图形到SVG文件
+    int exportSVG(GiView* view, const char* filename);              //!< 导出图形到SVG文件，主线程中用
     
 // MgCoreView
 public:

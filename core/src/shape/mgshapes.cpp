@@ -176,18 +176,16 @@ MgShape* MgShapes::addShapeByType(MgShapeFactory* factory, int type)
     return p;
 }
 
-bool MgShapes::removeShape(int sid, bool skipLockedShape)
+bool MgShapes::removeShape(int sid)
 {
     I::iterator it = im->findPosition(sid);
     
     if (it != im->shapes.end()) {
         MgShape* shape = *it;
-        if (!skipLockedShape || !shape->shapec()->getFlag(kMgShapeLocked)) {
-            im->shapes.erase(it);
-            im->id2shape.erase(shape->getID());
-            shape->release();
-            return true;
-        }
+        im->shapes.erase(it);
+        im->id2shape.erase(shape->getID());
+        shape->release();
+        return true;
     }
     
     return false;
@@ -203,7 +201,7 @@ bool MgShapes::moveShapeTo(int sid, MgShapes* dest)
         dest->im->shapes.push_back(newsp);
         dest->im->id2shape[newsp->getID()] = newsp;
         
-        return removeShape(sid, false);
+        return removeShape(sid);
     }
     
     return false;

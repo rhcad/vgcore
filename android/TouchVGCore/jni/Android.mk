@@ -19,6 +19,9 @@ cmd_incs   := $(core_inc)/cmd \
               $(core_inc)/cmdobserver \
               $(core_inc)/cmdbasic \
               $(core_inc)/cmdmgr
+              
+view_incs  := $(core_inc)/view \
+              $(core_inc)/export
 
 core_src   := ../../../core/src
 
@@ -87,12 +90,13 @@ view_files := $(core_src)/view/GcGraphView.cpp \
               $(core_src)/view/GcMagnifierView.cpp \
               $(core_src)/view/GcShapeDoc.cpp \
               $(core_src)/view/girecordcanvas.cpp \
-              $(core_src)/view/gicoreview.cpp
+              $(core_src)/view/gicoreview.cpp \
+              $(core_src)/export/svgcanvas.cpp
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := libTouchVGCore
 LOCAL_CFLAGS     := $(cflags)
-LOCAL_C_INCLUDES := $(shape_incs) $(cmd_incs) $(core_inc)/view
+LOCAL_C_INCLUDES := $(shape_incs) $(cmd_incs) $(view_incs)
 LOCAL_SRC_FILES  := $(geom_files) $(graph_files) $(shape_files) \
                     $(json_files) $(test_files) $(doc_files) \
                     $(base_files) $(basic_files) $(mgr_files) \
