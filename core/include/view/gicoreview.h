@@ -1,4 +1,4 @@
-//! \file gicoreview.h
+﻿//! \file gicoreview.h
 //! \brief 定义内核视图分发器类 GiCoreView
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
