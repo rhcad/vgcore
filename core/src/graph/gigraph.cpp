@@ -48,7 +48,7 @@ GiTransform& GiGraphics::_xf()
 
 bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
 {
-    if (!canvas || m_impl->canvas) {
+    if (!canvas || m_impl->canvas || isStopping()) {
         return false;
     }
     

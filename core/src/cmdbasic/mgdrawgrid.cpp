@@ -49,7 +49,7 @@ bool MgCmdDrawGrid::touchEnded(const MgMotion* sender)
     if ( ((MgGrid*)dynshape()->shape())->valid(sender->displayMmToModel(1.f)) ) {
         dynshape()->setContext(GiContext(), kContextFillARGB);
         addShape(sender);
-        delayClear(sender);
+        m_step = 0;
         sender->view->toSelectCommand();
     }
     else {

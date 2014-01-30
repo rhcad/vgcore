@@ -18,12 +18,11 @@ public:
     virtual ~MgCommandDraw();
     
     MgShape* addShape(const MgMotion* sender, MgShape* shape = NULL);
-    void delayClear(const MgMotion* sender);
     bool touchBeganStep(const MgMotion* sender);
     bool touchMovedStep(const MgMotion* sender);
     bool touchEndedStep(const MgMotion* sender);
 
-    //! 返回新图形的类型，供其他语言重装使用
+    //! 返回新图形的类型，供其他语言重载使用
     virtual int getShapeType() { return m_shape ? m_shape->shapec()->getType() : 0; }
     
 protected:
@@ -49,7 +48,7 @@ public:
     virtual bool mouseHover(const MgMotion* sender);
     virtual const MgShape* getShape(const MgMotion* sender) { return m_shape; }
 
-    int getStep() { return m_needClear ? 0 : m_step; }
+    int getStep() { return m_step; }
     MgShape* dynshape() { return m_shape; }
     void setStep(int step) { m_step = step; }
     Point2d snapPoint(const MgMotion* sender, bool firstStep = false);
@@ -59,7 +58,6 @@ protected:
     int         m_step;
 private:
     MgShape*    m_shape;
-    int         m_needClear;
 };
 
 #endif // TOUCHVG_CMD_DRAW_H_

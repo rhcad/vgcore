@@ -21,6 +21,7 @@
 #include <map>
 #include "svgcanvas.h"
 #include "../corever.h"
+#include "recordshapes.h"
 
 #define CALL_VIEW(func) if (curview) curview->func
 #define CALL_VIEW2(func, v) curview ? curview->func : v
@@ -74,7 +75,7 @@ class GiCoreViewImpl
     , private MgShapeFactory
 {
 public:
-    GcShapeDoc*     _doc;
+    GcShapeDoc*     _gcdoc;
     MgCmdManager*   _cmds;
     GcBaseView*     curview;
     long            refcount;
@@ -89,18 +90,23 @@ public:
     volatile long   drawCount;
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
-    MgShapes*       dynShapes;
-    MgShapes*       dynShapesBack;
+    MgShapes*       dynShapesFront;
+    MgShapes*       dynShapesPlay;
+    MgShapeDoc*     docPlay;
+    long            startPlayTick;
+    MgRecordShapes* recorder[2];
 
 public:
     GiCoreViewImpl() : curview(NULL), refcount(1), gestureHandler(0)
         , regenPending(-1), appendPending(-1), redrawPending(-1)
-        , changeCount(0), drawCount(0), dynShapes(NULL), dynShapesBack(NULL)
+        , changeCount(0), drawCount(0), dynShapesFront(NULL)
+        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0)
     {
         _motion.view = this;
         _motion.gestureType = 0;
         _motion.gestureState = kMgGesturePossible;
-        _doc = new GcShapeDoc();
+        recorder[0] = recorder[1] = NULL;
+        _gcdoc = new GcShapeDoc();
         _cmds = MgCmdManagerFactory::create();
 
         MgBasicShapes::registerShapes(this);
@@ -109,16 +115,17 @@ public:
     }
 
     ~GiCoreViewImpl() {
-        MgObject::release_pointer(dynShapes);
-        MgObject::release_pointer(dynShapesBack);
+        MgObject::release_pointer(dynShapesFront);
+        MgObject::release_pointer(dynShapesPlay);
+        MgObject::release_pointer(docPlay);
         _cmds->release();
-        delete _doc;
+        delete _gcdoc;
     }
 
     MgMotion* motion() { return &_motion; }
     MgCmdManager* cmds() const { return _cmds; }
-    GcShapeDoc* document() const { return _doc; }
-    MgShapeDoc* doc() const { return _doc->backDoc(); }
+    GcShapeDoc* document() const { return _gcdoc; }
+    MgShapeDoc* doc() const { return _gcdoc->backDoc(); }
     MgShapes* shapes() const { return doc()->getCurrentShapes(); }
     GiContext* context() const { return doc()->context(); }
     GiTransform* xform() const { return CALL_VIEW2(xform(), NULL); }
@@ -227,16 +234,16 @@ public:
         else {
             CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
-                for (int i = 0; i < _doc->getViewCount(); i++) {
-                    if (_doc->getView(i) != curview)
-                        _doc->getView(i)->deviceView()->regenAll(changed);
+                for (int i = 0; i < _gcdoc->getViewCount(); i++) {
+                    if (_gcdoc->getView(i) != curview)
+                        _gcdoc->getView(i)->deviceView()->regenAll(changed);
                 }
                 CALL_VIEW(deviceView()->contentChanged());
             }
             else {
-                for (int i = 0; i < _doc->getViewCount(); i++) {
-                    if (_doc->getView(i) != curview)
-                        _doc->getView(i)->deviceView()->redraw();
+                for (int i = 0; i < _gcdoc->getViewCount(); i++) {
+                    if (_gcdoc->getView(i) != curview)
+                        _gcdoc->getView(i)->deviceView()->redraw();
                 }
             }
         }
@@ -253,9 +260,9 @@ public:
         }
         else {
             CALL_VIEW(deviceView()->regenAppend(sid));
-            for (int i = 0; i < _doc->getViewCount(); i++) {
-                if (_doc->getView(i) != curview)
-                    _doc->getView(i)->deviceView()->regenAppend(sid);
+            for (int i = 0; i < _gcdoc->getViewCount(); i++) {
+                if (_gcdoc->getView(i) != curview)
+                    _gcdoc->getView(i)->deviceView()->regenAppend(sid);
             }
             CALL_VIEW(deviceView()->contentChanged());
         }
@@ -506,8 +513,8 @@ long GiCoreView::backShapes()
 
 long GiCoreView::acquireFrontDoc()
 {
-    impl->_doc->frontDoc()->addRef();
-    return impl->_doc->frontDoc()->toHandle();
+    impl->_gcdoc->frontDoc()->addRef();
+    return impl->_gcdoc->frontDoc()->toHandle();
 }
 
 void GiCoreView::releaseDoc(long hDoc)
@@ -518,25 +525,26 @@ void GiCoreView::releaseDoc(long hDoc)
 
 bool GiCoreView::submitBackDoc(GiView* view)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    bool ret = aview && aview == impl->curview && !isPlaying();
+    
+    if (ret) {
+        impl->doc()->saveAll(NULL, aview->xform());  // set viewport from view
+        impl->_gcdoc->submitBackDoc(impl->doc());
+        giInterlockedIncrement(&impl->changeCount);
+    }
     if (aview) {
-        impl->doc()->saveAll(NULL, aview->xform());  // save viewport
         aview->submitBackXform();
     }
     
-    bool ret = impl->curview == aview;
-    if (ret) {
-        impl->_doc->submitBackDoc();
-        giInterlockedIncrement(&impl->changeCount);
-    }
     return ret;
 }
 
 long GiCoreView::acquireDynamicShapes()
 {
-    if (impl->dynShapes) {
-        impl->dynShapes->addRef();
-        return impl->dynShapes->toHandle();
+    if (impl->dynShapesFront) {
+        impl->dynShapesFront->addRef();
+        return impl->dynShapesFront->toHandle();
     }
     return 0;
 }
@@ -549,30 +557,30 @@ void GiCoreView::releaseShapes(long hShapes)
 
 void GiCoreView::createView(GiView* view, int type)
 {
-    if (view && !impl->_doc->findView(view)) {
+    if (view && !impl->_gcdoc->findView(view)) {
         impl->curview = new GcGraphView(impl, view);
         if (type == 0) {
-            setCommand(view, "splines");
+            setCommand("splines");
         }
     }
 }
 
 void GiCoreView::createMagnifierView(GiView* newview, GiView* mainView)
 {
-    GcGraphView* refview = dynamic_cast<GcGraphView *>(impl->_doc->findView(mainView));
+    GcGraphView* refview = dynamic_cast<GcGraphView *>(impl->_gcdoc->findView(mainView));
 
-    if (refview && newview && !impl->_doc->findView(newview)) {
+    if (refview && newview && !impl->_gcdoc->findView(newview)) {
         new GcMagnifierView(impl, newview, refview);
     }
 }
 
 void GiCoreView::destoryView(GiView* view)
 {
-    GcBaseView* aview = this ? impl->_doc->findView(view) : NULL;
+    GcBaseView* aview = this ? impl->_gcdoc->findView(view) : NULL;
 
-    if (aview && impl->_doc->removeView(aview)) {
+    if (aview && impl->_gcdoc->removeView(aview)) {
         if (impl->curview == aview) {
-            impl->curview = impl->_doc->firstView();
+            impl->curview = impl->_gcdoc->firstView();
         }
 #ifndef __ANDROID__
         delete aview;
@@ -582,7 +590,7 @@ void GiCoreView::destoryView(GiView* view)
 
 int GiCoreView::setBkColor(GiView* view, int argb)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     return aview ? aview->graph()->setBkColor(GiColor(argb)).getARGB() : 0;
 }
 
@@ -599,25 +607,25 @@ void GiCoreView::setScreenDpi(int dpi, float factor)
 
 bool GiCoreView::isDrawing(GiView* view)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     return aview && aview->isDrawing();
 }
 
 bool GiCoreView::stopDrawing(GiView* view)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     return aview && aview->stopDrawing() > 0;
 }
 
 long GiCoreView::acquireGraphics(GiView* view)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     return aview ? aview->createFrontGraph()->toHandle() : 0;
 }
 
 void GiCoreView::releaseGraphics(GiView* view, long hGs)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     if (aview && hGs) {
         aview->releaseFrontGraph(GiGraphics::fromHandle(hGs));
     }
@@ -694,7 +702,7 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 
 void GiCoreView::onSize(GiView* view, int w, int h)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     if (aview) {
         aview->onSize(_dpi, w, h);
     }
@@ -704,7 +712,7 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
                            GiGestureState state, float x, float y, bool switchGesture)
 {
     DrawLocker locker(impl);
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     bool ret = false;
 
     if (impl->setView(aview)) {
@@ -747,7 +755,7 @@ bool GiCoreView::twoFingersMove(GiView* view, GiGestureState state,
                                 float x1, float y1, float x2, float y2, bool switchGesture)
 {
     DrawLocker locker(impl);
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     bool ret = false;
 
     if (impl->setView(aview)) {
@@ -811,12 +819,6 @@ bool GiCoreView::setCommand(const char* name, const char* params)
     DrawLocker locker(impl);
     MgJsonStorage s;
     return impl->curview && impl->_cmds->setCommand(impl->motion(), name, s.storageForRead(params));
-}
-
-bool GiCoreView::setCommand(GiView* view, const char* name, const char* params)
-{
-    GcBaseView* aview = impl->_doc->findView(view);
-    return impl->setView(aview) && setCommand(name, params);
 }
 
 bool GiCoreView::doContextAction(int action)
@@ -902,61 +904,32 @@ bool GiCoreView::saveShapes(long hDoc, MgStorage* s)
     return doc && doc->save(s, 0);
 }
 
-bool GiCoreView::loadDynamicShapes(MgStorage* s)
-{
-    bool ret = false;
-    
-    if (s) {
-        MgObject::release_pointer(impl->dynShapesBack);
-        impl->dynShapesBack = MgShapes::create();
-        ret = impl->dynShapesBack->load(impl->getShapeFactory(), s);
-    }
-    else if (impl->dynShapesBack) {
-        MgObject::release_pointer(impl->dynShapesBack);
-        ret = true;
-    }
-    
-    return ret;
-}
-
-void GiCoreView::applyDynamicShapes()
-{
-    MgObject::release_pointer(impl->dynShapes);
-    if (impl->dynShapesBack) {
-        impl->dynShapes = impl->dynShapesBack;
-        impl->dynShapes->addRef();
-        impl->redraw();
-    }
-}
-
 bool GiCoreView::submitDynamicShapes(GiView* view)
 {
-    GcBaseView* v = impl->_doc->findView(view);
+    GcBaseView* v = impl->_gcdoc->findView(view);
     MgCommand* cmd = impl->getCommand();
-    bool ret = false;
-
+    bool ret = (v && v == impl->curview && !isPlaying());
+    
+    if (ret) {
+        MgObject::release_pointer(impl->dynShapesFront);
+        if (cmd) {
+            impl->dynShapesFront = MgShapes::create();
+            if (!cmd->gatherShapes(impl->motion(), impl->dynShapesFront)) {
+                GiRecordCanvas canvas(impl->dynShapesFront, v->xform(),
+                                      cmd->isDrawingCommand() ? 0 : -1);
+                if (v->frontGraph()->beginPaint(&canvas)) {
+                    cmd->draw(impl->motion(), v->frontGraph());
+                    if (cmd->isDrawingCommand()) {
+                        impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
+                    }
+                    v->frontGraph()->endPaint();
+                }
+            }
+            giInterlockedIncrement(&impl->drawCount);
+        }
+    }
     if (v) {
         v->submitBackXform();
-    }
-    if (v == impl->curview && cmd && !impl->dynShapesBack) {
-        MgObject::release_pointer(impl->dynShapes);
-        impl->dynShapes = MgShapes::create();
-        
-        ret = cmd->gatherShapes(impl->motion(), impl->dynShapes);
-        if (!ret) {
-            GiRecordCanvas canvas(impl->dynShapes, v->xform(),
-                    cmd->isDrawingCommand() ? 0 : -1);
-            
-            if (v->frontGraph()->beginPaint(&canvas)) {
-                cmd->draw(impl->motion(), v->frontGraph());
-                if (cmd->isDrawingCommand()) {
-                    impl->getCmdSubject()->drawInShapeCommand(impl->motion(), cmd, v->frontGraph());
-                }
-                v->frontGraph()->endPaint();
-            }
-            ret = impl->dynShapes->getShapeCount() > 0;
-        }
-        giInterlockedIncrement(&impl->drawCount);
     }
     
     return ret;
@@ -996,6 +969,7 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
 
     if (fp) {
         fclose(fp);
+        LOGD("loadFromFile: %s", vgfile);
     } else {
         LOGE("Fail to open file: %s", vgfile);
     }
@@ -1005,7 +979,7 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
 
 bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
 {
-    FILE *fp = mgopenfile(vgfile, "wt");
+    FILE *fp = hDoc ? mgopenfile(vgfile, "wt") : NULL;
     MgJsonStorage s;
     bool ret = (fp != NULL
                 && saveShapes(hDoc, s.storageForWrite())
@@ -1013,6 +987,7 @@ bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
     
     if (fp) {
         fclose(fp);
+        LOGD("saveToFile: %s", vgfile);
     } else {
         LOGE("Fail to open file: %s", vgfile);
     }
@@ -1066,7 +1041,7 @@ bool GiCoreView::zoomToModel(float x, float y, float w, float h)
 
 float GiCoreView::calcPenWidth(GiView* view, float lineWidth)
 {
-    GcBaseView* aview = impl->_doc->findView(view);
+    GcBaseView* aview = impl->_gcdoc->findView(view);
     return aview ? aview->graph()->calcPenWidth(lineWidth, false) : 0.f;
 }
 
@@ -1141,6 +1116,18 @@ int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, flo
     return shape ? shape->getID() : 0;
 }
 
+bool GiCoreView::getDisplayExtent(mgvector<float>& box)
+{
+    bool ret = box.count() == 4 && impl->curview;
+    if (ret) {
+        Box2d rect(impl->doc()->getExtent());
+        rect *= impl->curview->xform()->modelToDisplay();
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
 bool GiCoreView::getBoundingBox(mgvector<float>& box)
 {
     bool ret = box.count() == 4 && impl->curview;
@@ -1156,11 +1143,11 @@ bool GiCoreView::getBoundingBox(mgvector<float>& box)
 bool GiCoreView::getBoundingBox(mgvector<float>& box, int shapeId)
 {
     const MgShape* shape = impl->shapes()->findShape(shapeId);
-    bool ret = box.count() == 4 && shape;
+    bool ret = box.count() == 4 && shape && impl->curview;
     
     if (ret) {
         Box2d rect(shape->shapec()->getExtent());
-        impl->_cmds->getBoundingBox(rect, impl->motion());
+        rect *= impl->curview->xform()->modelToDisplay();
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
     }
@@ -1171,9 +1158,12 @@ bool GiCoreViewImpl::gestureToCommand()
 {
     MgCommand* cmd = _cmds->getCommand();
     bool ret = false;
-
-    if (_motion.gestureState == kMgGestureCancel || !cmd) {
+    
+    if (!cmd || _motion.gestureState == kMgGestureCancel) {
         return cmd && cmd->cancel(&_motion);
+    }
+    if (startPlayTick && _motion.gestureState > kMgGesturePossible) {
+        return true;
     }
     if (_motion.gestureState == kMgGesturePossible
         && _motion.gestureType != kGiTwoFingersMove) {
@@ -1220,4 +1210,128 @@ bool GiCoreViewImpl::gestureToCommand()
 #endif
     }
     return ret;
+}
+
+long GiCoreView::getRecordTick(bool forUndo)
+{
+    MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
+    return recorder ? recorder->getCurrentTick() : 0;
+}
+
+bool GiCoreView::startRecord(const char* path, long doc, bool forUndo)
+{
+    MgRecordShapes*& recorder = impl->recorder[forUndo ? 0 : 1];
+    if (recorder || !path)
+        return false;
+    
+    recorder = new MgRecordShapes(path, MgShapeDoc::fromHandle(doc), forUndo);
+    if (isPlaying()) {
+        impl->startPlayTick = GetTickCount();
+        return true;
+    }
+        
+    return forUndo || saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY);
+}
+
+void GiCoreView::stopRecord(bool forUndo)
+{
+    MgRecordShapes*& recorder = impl->recorder[forUndo ? 0 : 1];
+    bool playing = isPlaying();
+    
+    if (recorder) {
+        delete recorder;
+        recorder = NULL;
+    }
+    if (!forUndo && playing != isPlaying()) {
+        MgObject::release_pointer(impl->dynShapesPlay);
+        MgObject::release_pointer(impl->docPlay);
+        impl->startPlayTick = 0;
+        impl->regenAll(true);
+    }
+}
+
+bool GiCoreView::recordShapes(bool forUndo, long tick, long doc, long shapes)
+{
+    MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
+    bool ret = false;
+    
+    if (recorder && !recorder->isLoading() && !recorder->isPlaying()) {
+        ret = recorder->recordStep(tick, impl->changeCount, MgShapeDoc::fromHandle(doc),
+                                   MgShapes::fromHandle(shapes));
+    } else {
+        releaseDoc(doc);
+        releaseShapes(shapes);
+    }
+    
+    return ret;
+}
+
+bool GiCoreView::isUndoLoading() const
+{
+    return impl->recorder[0] && impl->recorder[0]->isLoading();
+}
+
+bool GiCoreView::canUndo() const
+{
+    return impl->recorder[0] && impl->recorder[0]->canUndo();
+}
+
+bool GiCoreView::canRedo() const
+{
+    return impl->recorder[0] && impl->recorder[0]->canRedo();
+}
+
+bool GiCoreView::undo(GiView* view)
+{
+    MgRecordShapes* recorder = impl->recorder[0];
+    bool ret = false;
+    
+    if (recorder) {
+        recorder->setLoading(true);
+        ret = recorder->undo(impl->getShapeFactory(), impl->doc(), (long*)&impl->changeCount);
+        if (ret) {
+            submitBackDoc(view);
+            submitDynamicShapes(view);
+            recorder->recordStep(0, impl->changeCount, MgShapeDoc::fromHandle(acquireFrontDoc()), NULL);
+            impl->regenAll(true);
+        }
+        recorder->setLoading(false);
+    }
+    
+    return ret;
+}
+
+bool GiCoreView::redo(GiView* view)
+{
+    MgRecordShapes* recorder = impl->recorder[0];
+    bool ret = false;
+    
+    if (recorder) {
+        recorder->setLoading(true);
+        ret = recorder->redo(impl->getShapeFactory(), impl->doc(), (long*)&impl->changeCount);
+        if (ret) {
+            submitBackDoc(view);
+            submitDynamicShapes(view);
+            recorder->recordStep(0, impl->changeCount, MgShapeDoc::fromHandle(acquireFrontDoc()), NULL);
+            impl->regenAll(true);
+        }
+        recorder->setLoading(false);
+    }
+    
+    return ret;
+}
+
+bool GiCoreView::isUndoRecording() const
+{
+    return !!impl->recorder[0];
+}
+
+bool GiCoreView::isRecording() const
+{
+    return impl->recorder[1] && !impl->recorder[1]->isPlaying();
+}
+
+bool GiCoreView::isPlaying() const
+{
+    return impl->recorder[1] && impl->recorder[1]->isPlaying();
 }

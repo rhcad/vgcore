@@ -272,8 +272,8 @@ bool MgShape::save(MgStorage* s) const
 {
     GiColor c;
 
-    s->writeUInt("tag", getTag());
-    s->writeUInt("lineStyle", (unsigned char)context().getLineStyle());
+    s->writeInt("tag", getTag());
+    s->writeInt("lineStyle", (unsigned char)context().getLineStyle());
     s->writeFloat("lineWidth", context().getLineWidth());
 
     c = context().getLineColor();

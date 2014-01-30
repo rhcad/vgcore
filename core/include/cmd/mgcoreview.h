@@ -29,8 +29,13 @@ struct MgCoreView
     virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
     virtual void releaseShapes(long hShapes) = 0;   //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
 
-    virtual bool loadDynamicShapes(MgStorage* s) = 0; //!< 从数据源中加载临时图形，s为空则清除, 可异步加载
-    virtual void applyDynamicShapes() = 0;          //!< 提交 loadDynamicShapes() 结果，需要并发访问保护
+    virtual bool isUndoRecording() const = 0;       //!< 是否正在Undo录制
+    virtual bool isRecording() const = 0;           //!< 是否正在录屏
+    virtual bool isPlaying() const = 0;             //!< 是否处于播放模式
+    virtual long getRecordTick(bool forUndo) = 0;   //!< 得到录制开始的相对毫秒时刻
+    virtual bool isUndoLoading() const = 0;         //!< 是否正加载文档
+    virtual bool canUndo() const = 0;               //!< 能否撤销
+    virtual bool canRedo() const = 0;               //!< 能否重做
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称
@@ -89,11 +94,14 @@ struct MgCoreView
     
     //! 添加一个容纳图像的矩形图形
     virtual int addImageShape(const char* name, float xc, float yc, float w, float h) = 0;
+    
+    //! 返回图形显示范围，四个点单位坐标(left, top, right, bottom)
+    virtual bool getDisplayExtent(mgvector<float>& box) = 0;
 
-    //! 返回选择包络框，四个点坐标(left, top, right, bottom)
+    //! 返回选择包络框，四个点单位坐标(left, top, right, bottom)
     virtual bool getBoundingBox(mgvector<float>& box) = 0;
     
-    //! 返回指定ID的图形的包络框，四个点坐标(left, top, right, bottom)
+    //! 返回指定ID的图形的包络框，四个点单位坐标(left, top, right, bottom)
     virtual bool getBoundingBox(mgvector<float>& box, int shapeId) = 0;
 };
 

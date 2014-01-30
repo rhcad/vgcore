@@ -64,9 +64,11 @@ GcBaseView* GcShapeDoc::firstView() const
     return !_views.empty() ? _views.front() : NULL;
 }
 
-void GcShapeDoc::submitBackDoc()
+void GcShapeDoc::submitBackDoc(MgShapeDoc* doc)
 {
     MgObject::release_pointer(_frontDoc);
-    _frontDoc = MgShapeDoc::createDoc();
-    _frontDoc->copyShapes(_backDoc, false);
+    if (doc) {
+        _frontDoc = _backDoc->cloneDoc();
+        _frontDoc->copyShapes(doc, false);
+    }
 }

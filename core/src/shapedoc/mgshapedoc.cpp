@@ -76,18 +76,19 @@ void MgShapeDoc::copy(const MgObject& src)
     }
 }
 
-void MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
+int MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
 {
     unsigned i;
+    int ret = 0;
     
     copy(*src);
     
     for (i = 0; i < im->layers.size() && i < src->im->layers.size(); i++) {
-        im->layers[i]->copyShapes(src->im->layers[i], deeply);
+        ret += im->layers[i]->copyShapes(src->im->layers[i], deeply);
     }
     for (; i < src->im->layers.size(); i++) {
         MgLayer* newLayer = MgLayer::create(this, i);
-        newLayer->copyShapes(src->im->layers[i], deeply);
+        ret += newLayer->copyShapes(src->im->layers[i], deeply);
         im->layers.push_back(newLayer);
     }
     while (i < im->layers.size()) {
@@ -107,6 +108,8 @@ void MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
             im->curShapes = ((const MgComposite*)sp->shapec())->shapes();
         }
     }
+    
+    return ret;
 }
 
 bool MgShapeDoc::equals(const MgObject& src) const
@@ -187,6 +190,17 @@ int MgShapeDoc::getShapeCount() const
     return n;
 }
 
+const MgShape* MgShapeDoc::findShape(int sid) const
+{
+    for (unsigned i = 0; i < im->layers.size(); i++) {
+        const MgShape* sp = im->layers[i]->findShape(sid);
+        if (sp) {
+            return sp;
+        }
+    }
+    return NULL;
+}
+
 MgShapes* MgShapeDoc::getCurrentShapes() const
 {
     return im->curShapes;
@@ -253,7 +267,7 @@ bool MgShapeDoc::save(MgStorage* s, int startIndex) const
         s->writeFloat("viewScale", im->viewScale);
         rect = getExtent();
         s->writeFloatArray("extent", &rect.xmin, 4);
-        s->writeUInt("count", (int)im->layers.size());
+        s->writeInt("count", (int)im->layers.size());
     }
 
     for (unsigned i = 0; i < im->layers.size(); i++) {
@@ -286,16 +300,17 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
 
     for (int i = 0; i < 99; i++) {
         if (i < getLayerCount()) {
-            ret = im->layers[i]->load(factory, s, addOnly) || ret;
+            ret = im->layers[i]->load(factory, s, addOnly) >= 0 || ret;
         }
         else {
             MgLayer* layer = MgLayer::create(this, i);
-            if (layer->load(factory, s, addOnly)) {
+            if (layer->load(factory, s, addOnly) >= 0) {
                 im->layers.push_back(layer);
                 ret = true;
             }
             else {
                 layer->release();
+                break;
             }
         }
         addOnly = false;

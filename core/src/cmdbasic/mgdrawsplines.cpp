@@ -101,7 +101,7 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         else {
             click(sender);  // add a point
         }
-        delayClear(sender);
+        m_step = 0;
     }
     else {
         MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
@@ -114,7 +114,7 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         }
         if (m_step > 1 && lines->isClosed()) {
             addShape(sender);
-            delayClear(sender);
+            m_step = 0;
         }
     }
     
@@ -134,7 +134,7 @@ bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
         }
         if (m_step > 1) {
             addShape(sender);
-            delayClear(sender);
+            m_step = 0;
         }
     }
     else {

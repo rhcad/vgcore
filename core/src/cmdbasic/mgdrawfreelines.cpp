@@ -97,7 +97,7 @@ bool MgCmdDrawFreeLines::touchEnded(const MgMotion* sender)
     else {
         click(sender);  // add a point
     }
-    delayClear(sender);
+    m_step = 0;
 
     return MgCommandDraw::touchEnded(sender);
 }

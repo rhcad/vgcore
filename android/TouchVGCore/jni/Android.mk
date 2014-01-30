@@ -21,7 +21,8 @@ cmd_incs   := $(core_inc)/cmd \
               $(core_inc)/cmdmgr
               
 view_incs  := $(core_inc)/view \
-              $(core_inc)/export
+              $(core_inc)/export \
+              $(core_inc)/record
 
 core_src   := ../../../core/src
 
@@ -91,7 +92,8 @@ view_files := $(core_src)/view/GcGraphView.cpp \
               $(core_src)/view/GcShapeDoc.cpp \
               $(core_src)/view/girecordcanvas.cpp \
               $(core_src)/view/gicoreview.cpp \
-              $(core_src)/export/svgcanvas.cpp
+              $(core_src)/export/svgcanvas.cpp \
+              $(core_src)/record/recordshapes.cpp
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := libTouchVGCore

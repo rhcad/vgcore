@@ -53,8 +53,8 @@ public:
     int dyndraw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) const;
 
     bool save(MgStorage* s, int startIndex = 0) const;
-    bool saveShape(MgStorage* s, MgShape* shape, int index) const;
-    bool load(MgShapeFactory* factory, MgStorage* s, bool addOnly = false);
+    bool saveShape(MgStorage* s, const MgShape* shape, int index) const;
+    int load(MgShapeFactory* factory, MgStorage* s, bool addOnly = false);
     void setNewShapeID(int sid);
     
     //! 删除所有图形
@@ -64,7 +64,7 @@ public:
     void clearCachedData();
 
     //! 复制(默认为深拷贝)每一个图形，浅拷贝则添加图形的引用计数且不改变图形的拥有者
-    void copyShapes(const MgShapes* src, bool deeply = true);
+    int copyShapes(const MgShapes* src, bool deeply = true);
     
     //! 复制出新图形并添加到图形列表中
     MgShape* addShape(const MgShape& src);

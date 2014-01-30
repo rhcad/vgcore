@@ -296,7 +296,7 @@ bool MgJsonStorage::Impl::save(FILE* fp, bool pretty)
             document().Accept(writer);
         }
     }
-    clear();
+    _strbuf.Clear();
     
     return true;
 }

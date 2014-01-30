@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\..\core\include\jsonstorage\mgjsonstorage.h" />
     <ClInclude Include="..\..\..\core\include\mglog.h" />
     <ClInclude Include="..\..\..\core\include\mgvector.h" />
+    <ClInclude Include="..\..\..\core\include\record\recordshapes.h" />
     <ClInclude Include="..\..\..\core\include\shapedoc\mglayer.h" />
     <ClInclude Include="..\..\..\core\include\shapedoc\mgshapedoc.h" />
     <ClInclude Include="..\..\..\core\include\shapedoc\spfactoryimpl.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\..\..\core\src\graph\gipath.cpp" />
     <ClCompile Include="..\..\..\core\src\graph\gixform.cpp" />
     <ClCompile Include="..\..\..\core\src\jsonstorage\mgjsonstorage.cpp" />
+    <ClCompile Include="..\..\..\core\src\record\recordshapes.cpp" />
     <ClCompile Include="..\..\..\core\src\shapedoc\mglayer.cpp" />
     <ClCompile Include="..\..\..\core\src\shapedoc\mgshapedoc.cpp" />
     <ClCompile Include="..\..\..\core\src\shapedoc\spfactoryimpl.cpp" />
@@ -213,7 +215,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;..\..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -230,7 +232,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\core\include;..\..\..\core\include\canvas;..\..\..\core\include\test;..\..\..\core\include\geom;..\..\..\core\include\graph;..\..\..\core\include\shape;..\..\..\core\include\storage;..\..\..\core\include\shapedoc;..\..\..\core\include\jsonstorage;..\..\..\core\include\cmd;..\..\..\core\include\cmdobserver;..\..\..\core\include\cmdbase;..\..\..\core\include\cmdbasic;..\..\..\core\include\cmdmgr;..\..\..\core\include\view;..\..\..\core\include\export;..\..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>

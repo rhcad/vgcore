@@ -289,9 +289,16 @@ public:
 
 	template <typename T>
 	GenericValue& AddMember(const Ch* name, T value, Allocator& allocator) {
-		GenericValue n(name, internal::StrLen(name));
-		GenericValue v(value);
-		return AddMember(n, v, allocator);
+        GenericValue v(value);
+        SizeType len = internal::StrLen(name);
+        
+        if (name[len - 1] >= '0' && name[len - 1] < '9') {  // name is formatted with digits
+            GenericValue n(name, len, allocator);           // copy for temporary string
+            return AddMember(n, v, allocator);
+        } else {
+            GenericValue n(name, len);
+            return AddMember(n, v, allocator);
+        }
 	}
 
 	//! Remove a member in object by its name.

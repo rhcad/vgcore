@@ -1,4 +1,4 @@
 // COREVERSION is used by GiCoreView::getVersion().
 // TODO: change COREVERSION after any change
 
-#define COREVERSION     4
+#define COREVERSION     7

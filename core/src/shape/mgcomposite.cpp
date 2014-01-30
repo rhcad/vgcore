@@ -239,7 +239,7 @@ bool MgGroup::_save(MgStorage* s) const
 
 bool MgGroup::_load(MgShapeFactory* factory, MgStorage* s)
 {
-    return __super::_load(factory, s) && _shapes->load(factory, s);
+    return __super::_load(factory, s) && _shapes->load(factory, s) > 0;
 }
 
 bool MgGroup::addShapeToGroup(const MgShape* shape)

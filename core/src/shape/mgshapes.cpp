@@ -5,6 +5,7 @@
 #include "mgshapes.h"
 #include "mgstorage.h"
 #include "mgspfactory.h"
+#include "mglog.h"
 #include <list>
 #include <map>
 
@@ -74,20 +75,25 @@ void MgShapes::copy(const MgObject&)
 {
 }
 
-void MgShapes::copyShapes(const MgShapes* src, bool deeply)
+int MgShapes::copyShapes(const MgShapes* src, bool deeply)
 {
     clear();
     
+    int ret = 0;
     MgShapeIterator it(src);
+    
     while (MgShape* sp = const_cast<MgShape*>(it.getNext())) {
         if (deeply) {
-            addShape(*sp);
+            ret += addShape(*sp) ? 1 : 0;
         } else {
             sp->addRef();
             im->shapes.push_back(sp);
             im->id2shape[sp->getID()] = sp;
+            ret++;
         }
     }
+    
+    return ret;
 }
 
 bool MgShapes::equals(const MgObject& src) const
@@ -373,7 +379,7 @@ bool MgShapes::save(MgStorage* s, int startIndex) const
         ret = saveExtra(s);
         rect = getExtent();
         s->writeFloatArray("extent", &rect.xmin, 4);
-        s->writeUInt("count", (int)im->shapes.size() - startIndex);
+        s->writeInt("count", (int)im->shapes.size() - startIndex);
         
         for (I::citerator it = im->shapes.begin();
              ret && it != im->shapes.end(); ++it, ++index)
@@ -388,13 +394,13 @@ bool MgShapes::save(MgStorage* s, int startIndex) const
     return ret;
 }
 
-bool MgShapes::saveShape(MgStorage* s, MgShape* shape, int index) const
+bool MgShapes::saveShape(MgStorage* s, const MgShape* shape, int index) const
 {
-    bool ret = s->writeNode("shape", index, false);
+    bool ret = shape && s->writeNode("shape", index, false);
     
     if (ret) {
-        s->writeUInt("type", shape->getType() & 0xFFFF);
-        s->writeUInt("id", shape->getID());
+        s->writeInt("type", shape->getType() & 0xFFFF);
+        s->writeInt("id", shape->getID());
         
         Box2d rect(shape->shapec()->getExtent());
         s->writeFloatArray("extent", &rect.xmin, 4);
@@ -406,13 +412,13 @@ bool MgShapes::saveShape(MgStorage* s, MgShape* shape, int index) const
     return ret;
 }
 
-bool MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
+int MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
 {
-    bool ret = false;
     Box2d rect;
-    int index = 0;
+    int index = 0, count = 0;
+    bool ret = s && s->readNode("shapes", im->index, false);
     
-    if (s && s->readNode("shapes", im->index, false)) {
+    if (ret) {
         if (!addOnly)
             clear();
         
@@ -436,6 +442,7 @@ bool MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
                 newsp->shape()->setExtent(rect);
                 ret = newsp->load(factory, s);
                 if (ret) {
+                    count++;
                     newsp->shape()->setFlag(kMgClosed, newsp->shape()->isClosed());
                     im->id2shape[newsp->getID()] = newsp;
                     if (oldsp) {
@@ -447,6 +454,7 @@ bool MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
                 }
                 else {
                     newsp->release();
+                    LOGE("Fail to load shape (id=%d, type=%d)", sid, type);
                 }
             }
             s->readNode("shape", index++, true);
@@ -457,7 +465,7 @@ bool MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
         s->setError("No shapes node.");
     }
     
-    return ret;
+    return ret ? count : (count > 0 ? -count : -1);
 }
 
 void MgShapes::setNewShapeID(int sid)

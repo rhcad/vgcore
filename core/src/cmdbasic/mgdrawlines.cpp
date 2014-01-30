@@ -119,7 +119,6 @@ bool MgCmdDrawLines::touchEnded(const MgMotion* sender)
                 lines->removePoint(m_step);
             }
             addShape(sender);
-            delayClear(sender);
             m_step = 0;
             _lastClicked = false;
         }
@@ -191,7 +190,6 @@ bool MgCmdDrawLines::doubleClick(const MgMotion* sender)
             lines->removePoint(m_index--);
         }
         addShape(sender);
-        delayClear(sender);
         m_step = 0;
     }
     return true;
@@ -203,7 +201,6 @@ bool MgCmdDrawLines::cancel(const MgMotion* sender)
     
     if (m_step > (lines->isClosed() ? 2 : 1)) {
         addShape(sender);
-        delayClear(sender);
         m_step = 0;
         return true;
     }

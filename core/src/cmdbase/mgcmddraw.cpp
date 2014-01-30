@@ -11,7 +11,7 @@
 #include "mgspfactory.h"
 
 MgCommandDraw::MgCommandDraw(const char* name)
-    : MgCommand(name), m_step(0), m_shape(NULL), m_needClear(0)
+    : MgCommand(name), m_step(0), m_shape(NULL)
 {
 }
 
@@ -42,7 +42,6 @@ bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
     }
     sender->view->setNewShapeID(0);
     m_step = 0;
-    m_needClear = 0;
     m_shape->shape()->clear();
     m_shape->setContext(*sender->view->context(), -1);
     
@@ -81,11 +80,6 @@ bool MgCommandDraw::backStep(const MgMotion* sender)
 
 bool MgCommandDraw::draw(const MgMotion* sender, GiGraphics* gs)
 {
-    if (m_needClear) {
-        m_needClear = 0;
-        m_step = 0;
-        m_shape->shape()->clear();
-    }
     bool ret = m_step > 0 && m_shape->draw(0, *gs, NULL, -1);
     return sender->view->getSnap()->drawSnap(sender, gs) || ret;
 }
@@ -127,8 +121,6 @@ bool MgCommandDraw::touchBegan(const MgMotion* sender)
 {
     m_shape->setContext(*sender->view->context(), -1);
     sender->view->redraw();
-    m_needClear = 0;
-    
     return true;
 }
 
@@ -143,12 +135,6 @@ bool MgCommandDraw::touchEnded(const MgMotion* sender)
     sender->view->getSnap()->clearSnap(sender);
     sender->view->redraw();
     return true;
-}
-
-void MgCommandDraw::delayClear(const MgMotion*)
-{
-    m_step = 0;
-    m_needClear = true;
 }
 
 bool MgCommandDraw::mouseHover(const MgMotion* sender)
@@ -215,7 +201,6 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
         if (m_step >= getMaxStep()) {
             if (!dynshape()->shape()->getExtent().isEmpty(tol, false)) {
                 addShape(sender);
-                delayClear(sender);
             }
             m_step = 0;
         }

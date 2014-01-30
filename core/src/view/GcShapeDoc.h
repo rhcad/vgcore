@@ -29,7 +29,7 @@ public:
     
     MgShapeDoc* frontDoc() const { return _frontDoc ? _frontDoc : _backDoc; }
     MgShapeDoc* backDoc() const { return _backDoc; }
-    void submitBackDoc();
+    void submitBackDoc(MgShapeDoc* doc);
     
 private:
     std::vector<GcBaseView*>    _views;

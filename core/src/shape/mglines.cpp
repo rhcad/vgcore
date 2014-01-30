@@ -196,7 +196,7 @@ bool MgBaseLines::_hitTestBox(const Box2d& rect) const
 bool MgBaseLines::_save(MgStorage* s) const
 {
     bool ret = __super::_save(s);
-    s->writeUInt("count", _count);
+    s->writeInt("count", _count);
     s->writeFloatArray("points", (const float*)_points, _count * 2);
     return ret;
 }

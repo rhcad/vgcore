@@ -24,7 +24,7 @@ public:
     MgShapeDoc* cloneDoc() const { return (MgShapeDoc*)clone(); }
     
     //! 复制(默认为深拷贝)每一个图形，浅拷贝则添加图形的引用计数且不改变图形的拥有者
-    void copyShapes(const MgShapeDoc* src, bool deeply);
+    int copyShapes(const MgShapeDoc* src, bool deeply);
 
     //! 创建图形文档对象
     static MgShapeDoc* createDoc();
@@ -55,6 +55,9 @@ public:
 
     //! 返回图形总数
     int getShapeCount() const;
+    
+    //! 查找指定ID的图形
+    const MgShape* findShape(int sid) const;
 
     //! 返回当前图形列表（图层或复合图形）
     MgShapes* getCurrentShapes() const;

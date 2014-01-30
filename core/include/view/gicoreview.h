@@ -63,6 +63,11 @@ public:
     
     int exportSVG(long hDoc, long hGs, const char* filename);       //!< 导出图形到SVG文件
     int exportSVG(GiView* view, const char* filename);              //!< 导出图形到SVG文件，主线程中用
+    bool startRecord(const char* path, long doc, bool forUndo);     //!< 开始录制图形，自动释放，在主线程用
+    void stopRecord(bool forUndo);                                  //!< 停止录制图形
+    bool recordShapes(bool forUndo, long tick, long doc, long shapes);  //!< 录制图形，自动释放
+    bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
+    bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
     
 // MgCoreView
 public:
@@ -74,10 +79,14 @@ public:
     void releaseDoc(long hDoc);
     long acquireDynamicShapes();
     void releaseShapes(long hShapes);
-    bool loadDynamicShapes(MgStorage* s);
-    void applyDynamicShapes();
+    bool isUndoRecording() const;
+    bool isRecording() const;
+    bool isPlaying() const;
+    long getRecordTick(bool forUndo);
+    bool isUndoLoading() const;
+    bool canUndo() const;
+    bool canRedo() const;
     const char* getCommand() const;
-    bool setCommand(GiView* view, const char* name, const char* params = "");
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);
     void clearCachedData();
@@ -104,6 +113,7 @@ public:
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
     int addImageShape(const char* name, float xc, float yc, float w, float h);
+    bool getDisplayExtent(mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box, int shapeId);
 

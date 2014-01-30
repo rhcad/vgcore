@@ -10,7 +10,7 @@
 
 struct CmdSetPen : public MgRecordShape::ICmd {
     int argb; float width; int style; float phase; float orgw;
-    CmdSetPen() {}
+    CmdSetPen() : argb(0xFF000000), width(0), style(0), phase(0), orgw(0) {}
     CmdSetPen(int argb, float width, int style, float phase, float orgw)
         : argb(argb), width(width), style(style), phase(), orgw(orgw) {}
     
@@ -38,13 +38,12 @@ struct CmdSetPen : public MgRecordShape::ICmd {
         width = s->readFloat("width", width);
         style = s->readInt("style", style);
         phase = s->readFloat("phase", phase);
-        phase = s->readFloat("orgw", orgw);
+        orgw = s->readFloat("orgw", orgw);
         return true;
     }
     virtual void draw(GiGraphics& gs, const Matrix2d&) const {
         bool autoScale = orgw > 1e-3f || orgw < -1e3f;
-        float w = orgw;
-        while (w < -1e3f) w += 1e3f;
+        float w = orgw > -1e2f && orgw < 1e4f ? orgw : width;
         w = mgIsZero(w) ? width : gs.calcPenWidth(w, autoScale);
         gs.getCanvas()->setPen(argb, w, style, phase, orgw);
     }
@@ -546,22 +545,22 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
 MgRecordShape::ICmd* MgRecordShape::createItem(int type) const
 {
     switch (type) {
-        case 1: new CmdSetPen(); break;
-        case 2: new CmdSetBrush(); break;
-        case 3: new CmdClearRect(); break;
-        case 4: new CmdDrawRect(); break;
-        case 5: new CmdDrawLine(); break;
-        case 6: new CmdDrawEllipse(); break;
-        case 7: new CmdBeginPath(); break;
-        case 8: new CmdMoveTo(); break;
-        case 9: new CmdLineTo(); break;
-        case 10: new CmdBezierTo(); break;
-        case 11: new CmdQuadTo(); break;
-        case 12: new CmdClosePath(); break;
-        case 13: new CmdDrawPath(); break;
-        case 14: new CmdDrawHandle(); break;
-        case 15: new CmdDrawBitmap(); break;
-        case 16: new CmdDrawTextAt(); break;
+        case 1: return new CmdSetPen();
+        case 2: return new CmdSetBrush();
+        case 3: return new CmdClearRect();
+        case 4: return new CmdDrawRect();
+        case 5: return new CmdDrawLine();
+        case 6: return new CmdDrawEllipse();
+        case 7: return new CmdBeginPath();
+        case 8: return new CmdMoveTo();
+        case 9: return new CmdLineTo();
+        case 10: return new CmdBezierTo();
+        case 11: return new CmdQuadTo();
+        case 12: return new CmdClosePath();
+        case 13: return new CmdDrawPath();
+        case 14: return new CmdDrawHandle();
+        case 15: return new CmdDrawBitmap();
+        case 16: return new CmdDrawTextAt();
     }
     return NULL;
 }
