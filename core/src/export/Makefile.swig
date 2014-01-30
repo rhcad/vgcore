@@ -2,9 +2,9 @@ ROOTDIR  =../../..
 PKGNAME  =touchvg
 PROJNAME =export
 
-INCLUDES += -I$(ROOTDIR)/core/pub_inc \
-            -I$(ROOTDIR)/core/pub_inc/canvas \
-            -I$(ROOTDIR)/core/mgr_inc/export
+INCLUDES += -I$(ROOTDIR)/core/include \
+            -I$(ROOTDIR)/core/include/canvas \
+            -I$(ROOTDIR)/core/include/export
 
 SOURCES   =$(wildcard *.cpp)
 

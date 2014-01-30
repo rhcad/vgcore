@@ -17,6 +17,8 @@ INCLUDES += -I$(ROOTDIR)/core/include \
             -I$(ROOTDIR)/core/include/jsonstorage \
             -I$(ROOTDIR)/core/include/cmdmgr \
             -I$(ROOTDIR)/core/include/view \
+            -I$(ROOTDIR)/core/include/export \
+            -I$(ROOTDIR)/core/include/record \
             -I$(ROOTDIR)/core/include/test
 
 SOURCES   =$(wildcard *.cpp) \
@@ -28,6 +30,8 @@ SOURCES   =$(wildcard *.cpp) \
            $(wildcard ../cmdbasic/*.cpp) \
            $(wildcard ../cmdmgr/*.cpp) \
            $(wildcard ../jsonstorage/*.cpp) \
+           $(wildcard ../export/*.cpp) \
+           $(wildcard ../record/*.cpp) \
            $(wildcard ../test/*.cpp)
 
 include $(ROOTDIR)/core/mk/config.mk

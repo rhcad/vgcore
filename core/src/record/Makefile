@@ -5,14 +5,14 @@ OBJS        =$(SRCS:.cpp=.o)
 INSTALL_DIR ?=$(ROOTDIR)/build
 
 CPPFLAGS    += -Wall \
-               -I$(ROOTDIR)/core/pub_inc \
-               -I$(ROOTDIR)/core/pub_inc/geom \
-               -I$(ROOTDIR)/core/pub_inc/graph \
-               -I$(ROOTDIR)/core/pub_inc/shape \
-               -I$(ROOTDIR)/core/pub_inc/storage \
-               -I$(ROOTDIR)/core/pub_inc/shapedoc \
-               -I$(ROOTDIR)/core/mgr_inc/record \
-               -I$(ROOTDIR)/core/mgr_inc/jsonstorage
+               -I$(ROOTDIR)/core/include \
+               -I$(ROOTDIR)/core/include/geom \
+               -I$(ROOTDIR)/core/include/graph \
+               -I$(ROOTDIR)/core/include/shape \
+               -I$(ROOTDIR)/core/include/storage \
+               -I$(ROOTDIR)/core/include/shapedoc \
+               -I$(ROOTDIR)/core/include/record \
+               -I$(ROOTDIR)/core/include/jsonstorage
 
 all:        $(TARGET)
 $(TARGET):  $(OBJS)

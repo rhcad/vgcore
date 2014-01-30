@@ -19,6 +19,8 @@ CPPFLAGS    += -Wall \
                -I$(ROOTDIR)/core/include/cmdbasic \
                -I$(ROOTDIR)/core/include/cmdmgr \
                -I$(ROOTDIR)/core/include/view \
+               -I$(ROOTDIR)/core/include/export \
+               -I$(ROOTDIR)/core/include/record \
                -I$(ROOTDIR)/core/include/test
 
 all:        $(TARGET)
