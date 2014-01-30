@@ -13,6 +13,8 @@ TouchVGCore contains the following cross-platform modules using C++ for 2D vecto
 - cmdbasic: Commands to draw basic shapes.
 - cmdmgr: Command manager module.
 - view: Interactive drawing kernel module.
+- export: SVG exportor module.
+- record: Undo/redo and shape record module.
 
 This is an open source LGPL 2.1 licensed project that is in active development. Contributors and sponsors are welcome.
 
