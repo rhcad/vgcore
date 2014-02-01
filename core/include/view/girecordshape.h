@@ -24,7 +24,7 @@ public:
         virtual bool save(MgStorage* s) const = 0;
         virtual bool load(MgStorage* s) = 0;
         virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const = 0;
-        virtual Box2d getExtent() const { return Box2d::kIdentity(); }
+        virtual Box2d getExtent() const { return Box2d(0, 0, 1, 1); }
     };
     
     int getCount() const { return (int)_items.size(); }

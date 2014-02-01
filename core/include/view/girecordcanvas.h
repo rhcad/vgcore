@@ -49,7 +49,7 @@ private:
     virtual float drawTextAt(const char* text, float x, float y, float h, int align);
     
 private:
-    const Matrix2d d2m() const;
+    const Matrix2d d2w() const;
 
 private:
     MgShapes*       _shapes;
