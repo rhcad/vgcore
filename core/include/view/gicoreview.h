@@ -86,6 +86,14 @@ public:
     bool isUndoLoading() const;
     bool canUndo() const;
     bool canRedo() const;
+    bool loadFrameIndex(const char* path, mgvector<int>& arr);
+    int loadFirstFrame();
+    int loadNextFrame(int index);
+    int loadPrevFrame(int index);
+    void applyFrame(int flags);
+    int getFrameIndex() const;
+    long getPlayingDocForEdit();
+    long getDynamicShapesForEdit();
     const char* getCommand() const;
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);

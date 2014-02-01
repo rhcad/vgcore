@@ -36,6 +36,14 @@ struct MgCoreView
     virtual bool isUndoLoading() const = 0;         //!< 是否正加载文档
     virtual bool canUndo() const = 0;               //!< 能否撤销
     virtual bool canRedo() const = 0;               //!< 能否重做
+    virtual bool loadFrameIndex(const char* path, mgvector<int>& arr) = 0;  //!< 加载帧索引{index,tick,flags}
+    virtual int loadFirstFrame() = 0;               //!< 异步加载第0帧
+    virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
+    virtual int loadPrevFrame(int index) = 0;       //!< 异步加载上一帧
+    virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
+    virtual int getFrameIndex() const = 0;          //!< 得到已播放的帧数
+    virtual long getPlayingDocForEdit() = 0;        //!< 得到文档句柄用于异步改变文档图形内容
+    virtual long getDynamicShapesForEdit() = 0;     //!< 得到动态图形列表用于异步改变内容
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称

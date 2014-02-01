@@ -18,11 +18,13 @@ public:
         _v = n > 0 ? new T[n] : (T*)0;
         _n = n;
     }
-    void setSize(int n) {
+    bool setSize(int n) {
         if (!_v) {
             _v = n > 0 ? new T[n] : (T*)0;
             _n = n;
+            return !_v;
         }
+        return false;
     }
     template<class T2>
     mgvector(const T2 *v, int n) : _v((T*)0), _n(0) {
