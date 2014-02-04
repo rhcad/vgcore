@@ -201,10 +201,12 @@ bool MgShape::draw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) 
             float width = tmpctx.getLineWidth();
 
             width = -gs.calcPenWidth(width, tmpctx.isAutoScale());  // 像素宽度，负数
-            if (addw <= 0)
-                tmpctx.setLineWidth(width + addw, false);           // 像素宽度加宽
-            else                                                    // 传入正数表示像素宽度
+            if (addw <= 0) {
+                addw = -gs.calcPenWidth(addw, false);
+                tmpctx.setLineWidth(width + addw - 1e3f, false);    // 像素宽度加宽，不放缩
+            } else {                                                // 传入正数表示像素宽度
                 tmpctx.setLineWidth(-addw, ctx->isAutoScale());     // 换成新的像素宽度
+            }
         }
 
         if (ctx && ctx->getLineColor().a > 0) {

@@ -40,7 +40,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
                 actions[n++] = kMgActionGroup;
             }
         case kMgSelOneShape:
-            if (!locked && !sender->view->useFinger()) {
+            if (!locked) {
                 actions[n++] = kMgActionDelete;
             }
             actions[n++] = kMgActionClone;

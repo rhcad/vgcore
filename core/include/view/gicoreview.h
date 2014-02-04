@@ -27,11 +27,11 @@ public:
     void createMagnifierView(GiView* newview, GiView* mainView);    //!< 创建放大镜视图
     void destoryView(GiView* view);                                 //!< 销毁内核视图
     
-    bool isDrawing(GiView* view);                                   //!< 返回是否正在绘制静态图形
-    bool stopDrawing(GiView* view);                                 //!< 标记需要停止绘图
+    bool isDrawing();                                               //!< 返回是否正在绘制静态图形
+    int stopDrawing();                                              //!< 标记需要停止绘图
     
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
-    void releaseGraphics(GiView* view, long hGs);                   //!< 释放 GiGraphics 句柄
+    void releaseGraphics(long hGs);                                 //!< 释放 GiGraphics 句柄
     
     int drawAll(long hDoc, long hGs, GiCanvas* canvas);             //!< 显示所有图形
     int drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid); //!< 显示新图形
@@ -76,9 +76,7 @@ public:
     long backDoc();
     long backShapes();
     long acquireFrontDoc();
-    void releaseDoc(long hDoc);
     long acquireDynamicShapes();
-    void releaseShapes(long hShapes);
     bool isUndoRecording() const;
     bool isRecording() const;
     bool isPlaying() const;
@@ -86,20 +84,13 @@ public:
     bool isUndoLoading() const;
     bool canUndo() const;
     bool canRedo() const;
-    bool loadFrameIndex(const char* path, mgvector<int>& arr);
-    int loadFirstFrame();
-    int loadNextFrame(int index);
-    int loadPrevFrame(int index);
-    void applyFrame(int flags);
-    int getFrameIndex() const;
-    long getPlayingDocForEdit();
-    long getDynamicShapesForEdit();
     const char* getCommand() const;
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);
     void clearCachedData();
     int addShapesForTest();
     int getShapeCount();
+    int getShapeCount(long hDoc);
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();

@@ -136,7 +136,7 @@ bool MgShapeDoc::equals(const MgObject& src) const
 
 GiContext* MgShapeDoc::context() { return &im->context; }
 Matrix2d& MgShapeDoc::modelTransform() { return im->xf; }
-Box2d MgShapeDoc::getPageRectW() const { return im->rectW; }
+const Box2d& MgShapeDoc::getPageRectW() const { return im->rectW; }
 float MgShapeDoc::getViewScale() const { return im->viewScale; }
 bool MgShapeDoc::isReadOnly() const { return im->readOnly; }
 void MgShapeDoc::setReadOnly(bool readOnly) { im->readOnly = readOnly; }

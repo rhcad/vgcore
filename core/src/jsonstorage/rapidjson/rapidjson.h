@@ -280,13 +280,14 @@ private:
 	*/
 	void AddChunk(size_t capacity) {
 		ChunkHeader* chunk = (ChunkHeader*)baseAllocator_->Malloc(sizeof(ChunkHeader) + capacity);
+        RAPIDJSON_ASSERT(chunk);
 		chunk->capacity = capacity;
 		chunk->size = 0;
 		chunk->next = chunkHead_;
 		chunkHead_ =  chunk;
 	}
 
-	static const int kDefaultChunkCapacity = 64 * 1024; //!< Default chunk capacity.
+	static const int kDefaultChunkCapacity = 8 * 1024; //!< Default chunk capacity.
 
 	//! Chunk header for perpending to each chunk.
 	/*! Chunks are stored as a singly linked list.

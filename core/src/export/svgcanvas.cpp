@@ -140,7 +140,7 @@ void GiSvgCanvas::drawEllipse(float x, float y, float w, float h, bool stroke, b
 
 void GiSvgCanvas::beginPath()
 {
-    im->d.clear();
+    im->d.str("");  // clear() not clear buffer!
 }
 
 void GiSvgCanvas::moveTo(float x, float y)

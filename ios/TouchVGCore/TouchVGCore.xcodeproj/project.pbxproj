@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021DA341189F90EF00CFD9DC /* recordshapes.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
 		024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
 		024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF63188A84A6000B0C41 /* svgcanvas.h */; };
 		024FCF78188A8552000B0C41 /* recordshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF66188A84A6000B0C41 /* recordshapes.h */; };
@@ -905,6 +906,7 @@
 				AED370DF1866897B00C0A778 /* mgcmdmgrfactory.h in Headers */,
 				AED370E01866897B00C0A778 /* cmdobserver.h in Headers */,
 				AED370E11866897B00C0A778 /* cmdsubject.h in Headers */,
+				021DA341189F90EF00CFD9DC /* recordshapes.cpp in Headers */,
 				024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */,
 				024FCF78188A8552000B0C41 /* recordshapes.h in Headers */,
 				024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */,

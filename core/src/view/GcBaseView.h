@@ -27,31 +27,16 @@ public:
     MgShapeDoc* backDoc();
     MgShapes* backShapes();
     
-    GiGraphics* createFrontGraph();                                 //!< 克隆前端图形显示对象
-    void releaseFrontGraph(GiGraphics* gs);                         //!< 释放前端图形显示对象
-    bool isDrawing();                                               //!< 返回是否正在绘制静态图形
-    int stopDrawing();                                              //!< 标记需要停止绘图
+    void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }  //!< 应用后端坐标系对象到前端
+    void copyGs(GiGraphics* gs) { gs->_xf().copy(_xfBack); gs->copy(_gsBack); }  //!< 复制坐标系参数
     
-    //! 应用后端坐标系对象到前端
-    void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }
+    GiGraphics* frontGraph() { return &_gsFront; }                  //!< 得到前端图形显示对象
+    GiTransform* xform() { return &_xfBack; }                       //!< 得到后端坐标系对象
+    GiGraphics* graph() { return &_gsBack; }                        //!< 得到后端图形显示对象
+    virtual void onSize(int dpi, int w, int h);                     //!< 设置视图的宽高
     
-    //! 得到前端图形显示对象
-    GiGraphics* frontGraph() { return &_gsFront; }
-    
-    //! 得到后端坐标系对象
-    GiTransform* xform() { return &_xfBack; }
-    
-    //! 得到后端图形显示对象
-    GiGraphics* graph() { return &_gsBack; }
-
-    //! 设置视图的宽高
-    virtual void onSize(int dpi, int w, int h);
-    
-    //! 传递单指触摸手势消息
-    virtual bool onGesture(const MgMotion& motion);
-
-    //! 传递双指移动手势(可放缩旋转)
-    virtual bool twoFingersMove(const MgMotion& motion);
+    virtual bool onGesture(const MgMotion& motion);                 //!< 传递单指触摸手势消息
+    virtual bool twoFingersMove(const MgMotion& motion);            //!< 传递双指移动手势(可放缩旋转)
 
 private:
     MgView*     _mgview;
@@ -60,9 +45,6 @@ private:
     GiTransform _xfBack;
     GiGraphics  _gsFront;
     GiGraphics  _gsBack;
-    GiGraphics* _gsBuf[10];
-    volatile long _gsUsed[10];
-
     Point2d     _lastCenter;
     float       _lastScale;
 };

@@ -81,7 +81,7 @@ public:
     Matrix2d& modelTransform();
 
     //! 得到页面范围的世界坐标
-    Box2d getPageRectW() const;
+    const Box2d& getPageRectW() const;
 
     //! 得到显示比例
     float getViewScale() const;

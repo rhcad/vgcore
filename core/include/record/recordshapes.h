@@ -34,9 +34,6 @@ public:
     bool isPlaying() const;
     int getFileTick() const;
     int getFileCount() const;
-    bool applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc);
-    int applyRedoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index);
-    int applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index);
     
     static int applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeDoc* doc,
                          MgShapes* dyns, const char* fn, long* changeCount = NULL);

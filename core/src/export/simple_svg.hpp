@@ -241,9 +241,13 @@ namespace svg
         std::string toString(Layout const & layout) const
         {
             std::stringstream ss;
-            ss << attribute("fill", color.toString(layout));
-            if (color.getAlpha() < 255) {
-                ss << attribute("fill-opacity", color.getAlpha() / 255.f);
+            if (color.getAlpha() == 0) {
+                ss << attribute("fill", "none");
+            } else {
+                ss << attribute("fill", color.toString(layout));
+                if (color.getAlpha() < 255) {
+                    ss << attribute("fill-opacity", color.getAlpha() / 255.f);
+                }
             }
             return ss.str();
         }

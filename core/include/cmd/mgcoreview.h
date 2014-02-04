@@ -25,9 +25,9 @@ struct MgCoreView
     virtual long backShapes() = 0;                  //!< 当前图形列表的句柄, 用 MgShapes::fromHandle() 转换
     
     virtual long acquireFrontDoc() = 0;             //!< 获取前端图形文档的句柄, 需要并发访问保护
-    virtual void releaseDoc(long hDoc) = 0;         //!< 释放 acquireFrontDoc() 得到的文档句柄
+    static void releaseDoc(long hDoc);              //!< 释放 acquireFrontDoc() 得到的文档句柄
     virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
-    virtual void releaseShapes(long hShapes) = 0;   //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
+    static void releaseShapes(long hShapes);        //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
 
     virtual bool isUndoRecording() const = 0;       //!< 是否正在Undo录制
     virtual bool isRecording() const = 0;           //!< 是否正在录屏
@@ -36,14 +36,6 @@ struct MgCoreView
     virtual bool isUndoLoading() const = 0;         //!< 是否正加载文档
     virtual bool canUndo() const = 0;               //!< 能否撤销
     virtual bool canRedo() const = 0;               //!< 能否重做
-    virtual bool loadFrameIndex(const char* path, mgvector<int>& arr) = 0;  //!< 加载帧索引{index,tick,flags}
-    virtual int loadFirstFrame() = 0;               //!< 异步加载第0帧
-    virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
-    virtual int loadPrevFrame(int index) = 0;       //!< 异步加载上一帧
-    virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
-    virtual int getFrameIndex() const = 0;          //!< 得到已播放的帧数
-    virtual long getPlayingDocForEdit() = 0;        //!< 得到文档句柄用于异步改变文档图形内容
-    virtual long getDynamicShapesForEdit() = 0;     //!< 得到动态图形列表用于异步改变内容
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称
@@ -54,6 +46,7 @@ struct MgCoreView
     virtual int addShapesForTest() = 0;             //!< 添加测试图形
     
     virtual int getShapeCount() = 0;                //!< 返回后端文档的图形总数
+    virtual int getShapeCount(long hDoc) = 0;       //!< 返回前端文档的图形总数
     virtual long getChangeCount() = 0;              //!< 返回静态图形改变次数，可用于检查是否需要保存
     virtual long getDrawCount() const = 0;          //!< 返回已绘制次数，可用于录屏
     virtual int getSelectedShapeCount() = 0;        //!< 返回选中的图形个数

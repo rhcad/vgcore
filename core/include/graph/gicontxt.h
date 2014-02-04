@@ -43,8 +43,8 @@ public:
     //! 默认构造函数
     /*! 绘图参数为3像素宽的黑实线、不填充
     */
-    GiContext() : m_lineStyle(kGiLineSolid), m_lineWidth(-3)
-        , m_lineColor(GiColor::Black()), m_fillColor(GiColor::Invalid()), m_autoScale(false)
+    GiContext() : m_lineStyle(kGiLineSolid), m_lineWidth(-2)
+        , m_lineColor(GiColor(0, 0, 0, 168)), m_fillColor(GiColor::Invalid()), m_autoScale(false)
     {
     }
     

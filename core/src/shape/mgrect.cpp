@@ -304,10 +304,13 @@ bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     
     GiContext tmpctx(ctx);
     tmpctx.setNoFillColor();
+    if (mode) {
+        tmpctx.setLineStyle(kGiLineSolid);
+    }
     
     bool ret = gs.drawPolygon(&tmpctx, 4, _points);
-    ret = gs.rawImage(_name, rect.center().x, rect.center().y,
-        rect.width(), rect.height(), vec.angle2()) || ret;
+    ret = (mode == 0 && gs.rawImage(_name, rect.center().x, rect.center().y,
+        rect.width(), rect.height(), vec.angle2())) || ret;
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
