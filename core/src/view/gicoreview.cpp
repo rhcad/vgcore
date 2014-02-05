@@ -1393,3 +1393,124 @@ bool GiCoreView::isPlaying() const
 {
     return impl->recorder[1] && impl->recorder[1]->isPlaying();
 }
+
+int GiCoreView::getFrameIndex() const
+{
+    return isPlaying() ? impl->recorder[1]->getFileCount() : -1;
+}
+
+long GiCoreView::getPlayingDocForEdit()
+{
+    if (!impl->docPlay) {
+        impl->docPlay = impl->doc()->cloneDoc();
+    }
+    return impl->docPlay->toHandle();
+}
+
+long GiCoreView::getDynamicShapesForEdit()
+{
+    MgObject::release_pointer(impl->dynShapesPlay);
+    impl->dynShapesPlay = MgShapes::create();
+    return impl->dynShapesPlay->toHandle();
+}
+
+bool GiCoreView::loadFrameIndex(const char* path, mgvector<int>& arr)
+{
+    std::string fn(path);
+    
+    if (*fn.rbegin() != '/' && *fn.rbegin() != '\\')
+        fn += '/';
+    fn += "records.json";
+    
+    FILE *fp = mgopenfile(fn.c_str(), "rt");
+    if (!fp) {
+        LOGE("Fail to read file: %s", fn.c_str());
+        return false;
+    }
+    
+    MgJsonStorage js;
+    MgStorage* s = js.storageForRead(fp);
+    std::vector<int> v;
+    
+    fclose(fp);
+    s->readNode("records", -1, false);
+    
+    for (int i = 0; s->readNode("r", i, false); i++) {
+        v.push_back(i + 1);
+        v.push_back(s->readInt("tick", 0));
+        v.push_back(s->readInt("flags", 0));
+        s->readNode("r", i, true);
+    }
+    
+    s->readNode("records", -1, true);
+    if (arr.setSize((int)v.size())) {
+        for (int i = 0; i < arr.count(); i++) {
+            arr.set(i, v[i]);
+        }
+        return true;
+    }
+    return false;
+}
+
+int GiCoreView::loadFirstFrame()
+{
+    if (!isPlaying() || !getPlayingDocForEdit())
+        return 0;
+    
+    if (!impl->recorder[1]->applyFirstFile(impl->getShapeFactory(), impl->docPlay))
+        return 0;
+    
+    impl->docPlay->setReadOnly(true);
+    return MgRecordShapes::STD_CHANGED;
+}
+
+int GiCoreView::loadNextFrame(int index)
+{
+    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit())
+        return 0;
+    
+    int newID = 0;
+    int flags = impl->recorder[1]->applyRedoFile(newID, impl->getShapeFactory(),
+                                                 impl->docPlay, impl->dynShapesPlay, index);
+    return flags;
+}
+
+int GiCoreView::loadPrevFrame(int index)
+{
+    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit())
+        return 0;
+    
+    int newID = 0;
+    int flags = impl->recorder[1]->applyUndoFile(newID, impl->getShapeFactory(),
+                                                 impl->docPlay, impl->dynShapesPlay, index);
+    return flags;
+}
+
+void GiCoreView::applyFrame(int flags)
+{
+    if (flags & (MgRecordShapes::STD_CHANGED | MgRecordShapes::APPEND)) {
+        impl->_gcdoc->submitBackDoc(impl->docPlay);
+        if (impl->curview) {
+            impl->curview->xform()->setModelTransform(impl->docPlay->modelTransform());
+            impl->curview->xform()->zoomTo(impl->docPlay->getPageRectW());
+        }
+    }
+    if (flags & MgRecordShapes::DYN_CHANGED) {
+        MgObject::release_pointer(impl->dynShapesFront);
+        impl->dynShapesFront = impl->dynShapesPlay;
+        impl->dynShapesFront->addRef();
+    }
+    if (impl->curview) {
+        impl->curview->submitBackXform();
+    }
+    
+    if (flags & MgRecordShapes::STD_CHANGED) {
+        impl->regenAll(true);
+    }
+    else if (flags & MgRecordShapes::APPEND) {
+        impl->regenAppend(impl->docPlay->getCurrentLayer()->getLastShape()->getID());
+    }
+    else if (flags & MgRecordShapes::DYN_CHANGED) {
+        impl->redraw();
+    }
+}

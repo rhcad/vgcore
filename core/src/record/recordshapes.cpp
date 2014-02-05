@@ -447,3 +447,60 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
     
     return ret;
 }
+
+bool MgRecordShapes::applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc)
+{
+    std::string filename(_im->getFileName(false, 0));
+    FILE *fp = mgopenfile(filename.c_str(), "rt");
+    if (!fp) {
+        LOGE("Fail to read file: %s", filename.c_str());
+        return 0;
+    }
+    
+    MgJsonStorage js;
+    MgStorage* s = js.storageForRead(fp);
+    
+    fclose(fp);
+    _im->fileCount = 1;
+    
+    return doc->load(factory, s, false);
+}
+
+int MgRecordShapes::applyRedoFile(int& newID, MgShapeFactory *f,
+                                  MgShapeDoc* doc, MgShapes* dyns, int index)
+{
+    if (index <= 0)
+        index = _im->fileCount;
+    
+    std::string filename(_im->getFileName(false, index));
+    int ret = applyFile(_im->tick, &newID, f, doc, dyns, filename.c_str());
+    
+    if (ret) {
+        _im->fileCount = index + 1;
+    }
+    return ret;
+}
+
+int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index)
+{
+    if (index <= 0)
+        index = _im->fileCount;
+    if (index <= 0)
+        return 0;
+    
+    if (index == 1) {
+        _im->fileCount = 0;
+        return DYN_CHANGED;
+    }
+    
+    std::string filename(_im->getFileName(true, index - 1));
+    int ret = applyFile(_im->tick, &newID, f, doc, NULL, filename.c_str());
+    
+    filename = _im->getFileName(false, index - 1);
+    ret |= applyFile(_im->tick, NULL, f, NULL, dyns, filename.c_str()) | DYN_CHANGED;
+    
+    if (ret) {
+        _im->fileCount = index - 1;
+    }
+    return ret;
+}

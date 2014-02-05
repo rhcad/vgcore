@@ -68,6 +68,7 @@ public:
     bool recordShapes(bool forUndo, long tick, long doc, long shapes);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
+    static bool loadFrameIndex(const char* path, mgvector<int>& arr);  //!< 加载帧索引{index,tick,flags}
     
 // MgCoreView
 public:
@@ -84,6 +85,13 @@ public:
     bool isUndoLoading() const;
     bool canUndo() const;
     bool canRedo() const;
+    int loadFirstFrame();
+    int loadNextFrame(int index);
+    int loadPrevFrame(int index);
+    void applyFrame(int flags);
+    int getFrameIndex() const;
+    long getPlayingDocForEdit();
+    long getDynamicShapesForEdit();
     const char* getCommand() const;
     bool setCommand(const char* name, const char* params = "");
     bool doContextAction(int action);
