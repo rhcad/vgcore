@@ -344,9 +344,9 @@ bool MgRecordShapes::Impl::saveJsonFile()
         s[i] = NULL;
     }
     if (ret) {
-        if (flags[0] != DYN || shapeCount > 1) {
-            LOGD("Record %03d: tick=%d, flags=%d, count=%d", fileCount, tick, flags[0], shapeCount);
-        }
+        //if (flags[0] != DYN || shapeCount > 1) {
+        //    LOGD("Record %03d: tick=%d, flags=%d, count=%d", fileCount, tick, flags[0], shapeCount);
+        //}
         maxCount = ++fileCount;
     }
     

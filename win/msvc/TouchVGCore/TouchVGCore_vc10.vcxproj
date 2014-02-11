@@ -131,6 +131,7 @@
     <ClCompile Include="..\..\..\core\src\cmdmgr\mgcmdselect.cpp" />
     <ClCompile Include="..\..\..\core\src\cmdmgr\mgsnapimpl.cpp" />
     <ClCompile Include="..\..\..\core\src\export\svgcanvas.cpp" />
+    <ClCompile Include="..\..\..\core\src\geom\fitcurves.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgbase.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgbox.cpp" />
     <ClCompile Include="..\..\..\core\src\geom\mgcurv.cpp" />

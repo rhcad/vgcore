@@ -39,8 +39,7 @@ public:
     float   dy;     //!< 矩阵元素，代表Y方向平移量
 
     //! 单位矩阵
-    static const Matrix2d& kIdentity()
-    {
+    static const Matrix2d& kIdentity() {
         static const Matrix2d mat;
         return mat;
     }
@@ -69,7 +68,36 @@ public:
     
     //! 矩阵乘法
     Matrix2d& operator*=(const Matrix2d& mat);
-#endif
+    
+    //! 矩阵的数乘, 数 * 矩阵
+    friend Matrix2d operator*(float s, const Matrix2d& mat) {
+        return Matrix2d(mat.m11 * s, mat.m12 * s, mat.m21 * s, mat.m22 * s, mat.dx * s, mat.dy * s);
+    }
+    
+    //! 矩阵的数乘, 矩阵 * 数
+    Matrix2d operator*(float s) const {
+        return Matrix2d(m11 * s, m12 * s, m21 * s, m22 * s, dx * s, dy * s);
+    }
+    
+    //! 矩阵的数乘, 矩阵 *= 数
+    Matrix2d& operator*=(float s) {
+        return set(m11 * s, m12 * s, m21 * s, m22 * s, dx * s, dy * s);
+    }
+    
+    //! 矩阵的数乘, 矩阵 / 数
+    Matrix2d operator/(float s) const { return operator*(1 / s); }
+    
+    //! 矩阵的数乘, 矩阵 /= 数
+    Matrix2d& operator/=(float s) { return operator*=(1 / s); }
+#endif // SWIG
+    
+    //! 比例放缩
+    Matrix2d& scaleBy(float sx, float sy) {
+        return set(m11 * sx, m12 * sx, m21 * sy, m22 * sy, dx * sx, dy * sy);
+    }
+    
+    //! 比例放缩、矩阵的数乘
+    Matrix2d& scaleBy(float s) { return operator*=(s); }
     
     //! 左乘一个矩阵，leftSide * (*this)
     Matrix2d& preMultBy(const Matrix2d& leftSide);

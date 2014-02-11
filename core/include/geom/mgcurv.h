@@ -46,9 +46,21 @@ static float lengthOfBezier(const Point2d* pts, float tol);
     \param[out] ctrpt2 中间第二个控制点
     \see ellipse90ToBezier, ellipseToBezier, arcToBezier
 */
-static void bezier4P(
-    const Point2d& pt1, const Point2d& pt2, const Point2d& pt3, 
-    const Point2d& pt4, Point2d& ctrpt1, Point2d& ctrpt2);
+static void bezier4P(const Point2d& pt1, const Point2d& pt2, const Point2d& pt3,
+                     const Point2d& pt4, Point2d& ctrpt1, Point2d& ctrpt2);
+
+//! 对数据点光滑拟合为三次贝塞尔曲线
+/*!
+    \param[in] knotCount 缓冲区knots和knotvs的元素个数
+    \param[out] knots 贝塞尔曲线的顶点
+    \param[out] knotvs 顶点处的切向矢量
+    \param[in] count 数据点pts的个数
+    \param[in] pts 数据点
+    \param[in] tol 拟合曲线与数据点的最大允许距离
+    \return 拟合的knots和knotvs的个数
+*/
+static int fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
+                    int count, const Point2d* pts, float tol);
 
 //! 用给定的起点和终点构造90度椭圆弧，并转换为一个三次贝塞尔曲线段
 /*! 椭圆弧为从起点到终点逆时针转90度。
@@ -59,8 +71,8 @@ static void bezier4P(
     \param[out] ctrpt2 中间第二个控制点
     \see bezier4P, ellipseToBezier, arcToBezier
 */
-static void ellipse90ToBezier(
-    const Point2d& frompt, const Point2d& topt, Point2d& ctrpt1, Point2d& ctrpt2);
+static void ellipse90ToBezier(const Point2d& frompt, const Point2d& topt,
+                              Point2d& ctrpt1, Point2d& ctrpt2);
 
 //! 将一个椭圆转换为4段三次贝塞尔曲线
 /*! 4段三次贝塞尔曲线是按逆时针方向从第一象限到第四象限连接，
@@ -71,8 +83,7 @@ static void ellipse90ToBezier(
     \param[in] ry 半短轴的长度
     \see bezier4P, ellipse90ToBezier, arcToBezier
 */
-static void ellipseToBezier(
-    Point2d points[13], const Point2d& center, float rx, float ry);
+static void ellipseToBezier(Point2d points[13], const Point2d& center, float rx, float ry);
 
 //! 将一个圆角矩形转换为4段三次贝塞尔曲线
 /*! 这4段贝塞尔曲线按逆时针方向从第一象限到第四象限，每段4个点，
@@ -83,8 +94,7 @@ static void ellipseToBezier(
     \param[in] ry Y方向的圆角半径，非负数
     \see ellipseToBezier
 */
-static void roundRectToBeziers(
-    Point2d points[16], const Box2d& rect, float rx, float ry);
+static void roundRectToBeziers(Point2d points[16], const Box2d& rect, float rx, float ry);
 
 //! 将一个椭圆弧转换为多段三次贝塞尔曲线
 /*! 4段三次贝塞尔曲线是按逆时针方向从第一象限到第四象限连接，每一段4个点，
@@ -98,9 +108,8 @@ static void roundRectToBeziers(
     \return 计算后的控制点数，点数小于4则给定参数有错误
     \see bezier4P, ellipse90ToBezier, ellipseToBezier, arc3P
 */
-static int arcToBezier(
-    Point2d points[16], const Point2d& center, float rx, float ry,
-    float startAngle, float sweepAngle);
+static int arcToBezier(Point2d points[16], const Point2d& center,
+                       float rx, float ry, float startAngle, float sweepAngle);
 
 #ifndef SWIG
 //! 给定起点、弧上一点和终点，计算圆弧参数
@@ -115,10 +124,9 @@ static int arcToBezier(
     \return 是否计算成功
     \see arcTan, arcBulge, arcToBezier
 */
-static bool arc3P(
-    const Point2d& start, const Point2d& point, const Point2d& end,
-    Point2d& center, float& radius,
-    float* startAngle = (float*)0, float* sweepAngle = (float*)0);
+static bool arc3P(const Point2d& start, const Point2d& point, const Point2d& end,
+                  Point2d& center, float& radius,
+                  float* startAngle = (float*)0, float* sweepAngle = (float*)0);
 
 //! 给定起点、终点和起点切向，计算圆弧参数
 /*!
@@ -132,10 +140,9 @@ static bool arc3P(
     \return 是否计算成功
     \see arc3P, arcBulge, arcToBezier
 */
-static bool arcTan(
-    const Point2d& start, const Point2d& end, const Vector2d& startTan,
-    Point2d& center, float& radius,
-    float* startAngle = (float*)0, float* sweepAngle = (float*)0);
+static bool arcTan(const Point2d& start, const Point2d& end, const Vector2d& startTan,
+                   Point2d& center, float& radius,
+                   float* startAngle = (float*)0, float* sweepAngle = (float*)0);
 
 //! 给定弦和拱高计算圆弧参数
 /*!
@@ -149,10 +156,9 @@ static bool arcTan(
     \return 是否计算成功
     \see arc3P, arcTan, arcToBezier
 */
-static bool arcBulge(
-    const Point2d& start, const Point2d& end, float bulge,
-    Point2d& center, float& radius,
-    float* startAngle = (float*)0, float* sweepAngle = (float*)0);
+static bool arcBulge(const Point2d& start, const Point2d& end, float bulge,
+                     Point2d& center, float& radius,
+                     float* startAngle = (float*)0, float* sweepAngle = (float*)0);
 #endif
 
 //! 计算两圆的交点
@@ -166,7 +172,7 @@ static bool arcBulge(
     \return 交点个数，-1:无穷个，0：没有交点，1：相切，2：两个交点相交
 */
 static int insectTwoCircles(Point2d& pt1, Point2d& pt2,
-                               const Point2d& c1, float r1, const Point2d& c2, float r2);
+                            const Point2d& c1, float r1, const Point2d& c2, float r2);
 
 #ifndef SWIG
 //! 求解三对角线方程组
@@ -185,8 +191,7 @@ static int insectTwoCircles(Point2d& pt1, Point2d& pt2,
     \return 是否求解成功，失败原因可能是参数错误或因系数矩阵非主角占优而出现除零
     \see gaussJordan
 */
-static bool triEquations(
-    int n, float *a, float *b, float *c, Vector2d *vs);
+static bool triEquations(int n, float *a, float *b, float *c, Vector2d *vs);
 
 //! Gauss-Jordan法求解线性方程组
 /*!
@@ -209,7 +214,7 @@ typedef enum {
     cubicLoop = 16,        //!< 闭合, 有该值时忽略其他组合值
 } SplineFlags;
 
-//! 计算三次参数样条曲线的型值点的切矢量
+//! 计算三次参数样条曲线(Hermite)的型值点的切矢量
 /*! 三次参数样条曲线的分段曲线方程为：\n
     P[i](t) = knots[i] + knotvs[i] * t \n
     　　　+ (3*(knots[i+1] - knots[i]) - 2 * knotvs[i] - knotvs[i+1]) * t^2 \n
@@ -227,11 +232,10 @@ typedef enum {
     \return 是否计算成功
     \see MgCubicSplineFlag, fitCubicSpline, cubicSplinesBox
 */
-static bool cubicSplines(
-    int n, const Point2d* knots, Vector2d* knotvs,
-    int flag = 0, float tension = 1);
+static bool cubicSplines(int n, const Point2d* knots, Vector2d* knotvs,
+                         int flag = 0, float tension = 1);
 
-//! 在三次样条曲线的一条弦上插值得到拟和点坐标
+//! 在三次样条曲线(Hermite)的一条弦上插值得到拟和点坐标
 /*!
     \param[in] n 三次样条曲线的型值点的点数
     \param[in] knots 型值点坐标数组，元素个数为n
@@ -241,9 +245,8 @@ static bool cubicSplines(
     \param[out] fitpt 拟和点坐标，第i段曲线上参数t对应的曲线坐标
     \see cubicSplines, cubicSplineToBezier
 */
-static void fitCubicSpline(
-    int n, const Point2d* knots, const Vector2d* knotvs,
-    int i, float t, Point2d& fitpt);
+static void fitCubicSpline(int n, const Point2d* knots, const Vector2d* knotvs,
+                           int i, float t, Point2d& fitpt);
 
 //! 得到三次样条曲线的分段贝塞尔曲线段控制点
 /*!
@@ -252,11 +255,11 @@ static void fitCubicSpline(
     \param[in] knotvs 型值点的切矢量数组，元素个数为n
     \param[in] i 分段曲线序号，在0到(n-2)之间，如果曲线是闭合条件，则可取到(n-1)
     \param[out] points 贝塞尔曲线段的控制点，4个点
+    \param[in] hermite 是否为Hermite曲线，不是则切矢加型值点直接形成Bezier段的控制点
     \see cubicSplines, fitCubicSpline
 */
-static void cubicSplineToBezier(
-    int n, const Point2d* knots, const Vector2d* knotvs,
-    int i, Point2d points[4]);
+static void cubicSplineToBezier(int n, const Point2d* knots, const Vector2d* knotvs,
+                                int i, Point2d points[4], bool hermite = true);
 
 //! 得到三次B样条曲线的分段贝塞尔曲线段控制点
 /*!
@@ -266,8 +269,7 @@ static void cubicSplineToBezier(
     \param closed 三次B样条曲线是否为闭合曲线
     \return 实际转换的贝塞尔曲线控制点的个数
 */
-static int bsplinesToBeziers(
-    Point2d points[/*1+n*3*/], int n, const Point2d* ctlpts, bool closed);
+static int bsplinesToBeziers(Point2d points[/*1+n*3*/], int n, const Point2d* ctlpts, bool closed);
 
 #ifndef SWIG
 //! 计算张力样条曲线的型值点参数和弦长
@@ -282,9 +284,8 @@ static int bsplinesToBeziers(
     \return 是否计算成功
     \see fitClampedSpline
 */
-static bool clampedSplines(
-    int& n, Point2d* knots, float sgm, float tol, float& sigma,
-    float* hp, Vector2d* knotvs);
+static bool clampedSplines(int& n, Point2d* knots, float sgm, float tol,
+                           float& sigma, float* hp, Vector2d* knotvs);
 
 //! 在张力样条曲线的一条弦上插值得到拟和点坐标
 /*!
@@ -297,9 +298,8 @@ static bool clampedSplines(
     \param[out] fitpt 拟和点坐标，第i段曲线上参数t对应的曲线坐标
     \see clampedSplines
 */
-static void fitClampedSpline(
-    const Point2d* knots, int i, float t, float sigma,
-    const float* hp, const Vector2d* knotvs, Point2d& fitpt);
+static void fitClampedSpline(const Point2d* knots, int i, float t, float sigma,
+                             const float* hp, const Vector2d* knotvs, Point2d& fitpt);
 #endif
 };
 

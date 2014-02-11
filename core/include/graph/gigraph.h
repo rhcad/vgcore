@@ -140,8 +140,8 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawLine(const GiContext* ctx, 
-        const Point2d& startPt, const Point2d& endPt, bool modelUnit = true);
+    bool drawLine(const GiContext* ctx, const Point2d& startPt,
+                  const Point2d& endPt, bool modelUnit = true);
 
     //! 绘制折线，模型坐标或世界坐标
     /*!
@@ -151,10 +151,9 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawLines(const GiContext* ctx, 
-        int count, const Point2d* points, bool modelUnit = true);
+    bool drawLines(const GiContext* ctx, int count, const Point2d* points, bool modelUnit = true);
 
-    //! 绘制多条贝塞尔曲线，模型坐标或世界坐标
+    //! 绘制多条三次贝塞尔曲线，模型坐标或世界坐标
     /*! 第一条曲线从第一个点绘制到第四个点，以第二个点和第三个点为控制点。
         此序列中的每一条后续曲线都需要三个点：
         前一个曲线的终点作为起点，序列中的另两个点为控制点，第三个点为终点。
@@ -167,6 +166,21 @@ public:
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
     bool drawBeziers(const GiContext* ctx, int count, const Point2d* points,
+                     bool closed = false, bool modelUnit = true);
+    
+    //! 绘制多条贝塞尔曲线，模型坐标或世界坐标
+    /*! 第一条曲线从第一个点绘制到第二个点，以第一个矢量和第二个矢量计算中间的两个控制点。
+        \param ctx 绘图参数，忽略填充参数，为NULL时取为上一个绘图参数
+        \param count 点的个数，至少为4，必须为3的倍数加1
+        \param knot 型值点的数组，点数为count
+        \param knotvs 型值点的切矢量数组，元素个数为count
+        \param closed 是否闭合
+        \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
+        \return 是否显示成功。失败原因为参数错误或超出剪裁区域
+        \see drawQuadSplines
+     */
+    bool drawBeziers(const GiContext* ctx, int count,
+                     const Point2d* knot, const Vector2d* knotvs,
                      bool closed = false, bool modelUnit = true);
 
     //! 绘制椭圆弧，模型坐标或世界坐标
@@ -181,9 +195,8 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawArc(const GiContext* ctx, 
-        const Point2d& center, float rx, float ry, 
-        float startAngle, float sweepAngle, bool modelUnit = true);
+    bool drawArc(const GiContext* ctx, const Point2d& center, float rx, float ry,
+                 float startAngle, float sweepAngle, bool modelUnit = true);
     
     //! 给定线上三点绘制椭圆弧，模型坐标或世界坐标
     /*!
@@ -206,8 +219,19 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawPolygon(const GiContext* ctx, 
-        int count, const Point2d* points, bool modelUnit = true);
+    bool drawPolygon(const GiContext* ctx, int count,
+                     const Point2d* points, bool modelUnit = true);
+    
+    //! 绘制并填充圆，模型坐标或世界坐标
+    /*!
+        \param ctx 绘图参数，为NULL时取为上一个绘图参数
+        \param center 圆心
+        \param r 半径
+        \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
+        \return 是否显示成功。失败原因为参数错误或超出剪裁区域
+     */
+    bool drawCircle(const GiContext* ctx, const Point2d& center, float r,
+                    bool modelUnit = true);
 
     //! 绘制并填充椭圆，模型坐标或世界坐标
     /*! 如果半长轴和半短轴的长度相同，则相当于圆
@@ -219,7 +243,7 @@ public:
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
     bool drawEllipse(const GiContext* ctx, const Point2d& center,
-        float rx, float ry = 0, bool modelUnit = true);
+                     float rx, float ry, bool modelUnit = true);
     
     //! 绘制并填充椭圆，模型坐标或世界坐标
     /*!
@@ -243,9 +267,8 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawPie(const GiContext* ctx, 
-        const Point2d& center, float rx, float ry, 
-        float startAngle, float sweepAngle, bool modelUnit = true);
+    bool drawPie(const GiContext* ctx, const Point2d& center, float rx, float ry,
+                 float startAngle, float sweepAngle, bool modelUnit = true);
 
     //! 绘制并填充直角矩形，模型坐标或世界坐标
     /*! 
@@ -265,77 +288,50 @@ public:
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
     */
-    bool drawRoundRect(const GiContext* ctx, 
-        const Box2d& rect, float rx, float ry = 0, bool modelUnit = true);
+    bool drawRoundRect(const GiContext* ctx, const Box2d& rect,
+                       float rx, float ry = 0, bool modelUnit = true);
 
-
-    //! 绘制三次参数样条曲线，模型坐标或世界坐标
+    //! 绘制三次参数样条曲线(Hermite曲线)，模型坐标或世界坐标
     /*! 切矢量可以通过 mgcurv::cubicSplines 函数计算得到，一般先计算出切矢量供每次显示用
         \param ctx 绘图参数，忽略填充参数，为NULL时取为上一个绘图参数
         \param count 型值点的点数，至少为2
         \param knots 型值点坐标数组，元素个数为count
         \param knotvs 型值点的切矢量数组，元素个数为count
+        \param closed 是否闭合
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
         \see mgcurv::cubicSplines
-        \see drawClosedSplines
     */
-    bool drawSplines(const GiContext* ctx, int count,
-        const Point2d* knots, const Vector2d* knotvs, bool modelUnit = true);
-
-    //! 绘制并填充三次参数样条曲线，自动闭合
-    /*! 首末型值点不必重合，本函数通过绘制从最后一个型值点到第一个型值点的曲线段而自动闭合。\n
-        切矢量可以通过 mgcurv::cubicSplines 函数计算得到，一般先计算出切矢量供每次显示用
-        \param ctx 绘图参数，为NULL时取为上一个绘图参数
-        \param count 型值点的点数，至少为2
-        \param knots 型值点坐标数组，元素个数为count
-        \param knotvs 型值点的切矢量数组，元素个数为count
-        \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
-        \return 是否显示成功。失败原因为参数错误或超出剪裁区域
-        \see mgcurv::cubicSplines
-        \see drawSplines
-    */
-    bool drawClosedSplines(const GiContext* ctx, int count, 
-        const Point2d* knots, const Vector2d* knotvs, bool modelUnit = true);
+    bool drawHermiteSplines(const GiContext* ctx, int count, const Point2d* knots,
+        const Vector2d* knotvs, bool closed = false, bool modelUnit = true);
 
     //! 绘制三次B样条曲线，模型坐标或世界坐标
-    /*! 
+    /*!
         \param ctx 绘图参数，忽略填充参数，为NULL时取为上一个绘图参数
         \param count 控制点的点数，至少为4
         \param ctlpts 控制点坐标数组，点数为count
+        \param closed 是否闭合
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
-        \see drawClosedBSplines
     */
-    bool drawBSplines(const GiContext* ctx, 
-        int count, const Point2d* ctlpts, bool modelUnit = true);
-
-    //! 绘制并填充三次B样条曲线，自动闭合
-    /*! 首末控制点不必重合，本函数通过补充绘制曲线段而自动闭合
-        \param ctx 绘图参数，为NULL时取为上一个绘图参数
-        \param count 控制点的点数，至少为3
-        \param ctlpts 控制点坐标数组，点数为count
-        \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
-        \return 是否显示成功。失败原因为参数错误或超出剪裁区域
-        \see drawBSplines
-    */
-    bool drawClosedBSplines(const GiContext* ctx, 
-        int count, const Point2d* ctlpts, bool modelUnit = true);
+    bool drawBSplines(const GiContext* ctx, int count, const Point2d* ctlpts,
+                      bool closed = false, bool modelUnit = true);
     
     //! 绘制二次B样条曲线，模型坐标或世界坐标
     /*!
         \param ctx 绘图参数，忽略填充参数，为NULL时取为上一个绘图参数
         \param count 控制点的点数，至少为3
         \param ctlpts 控制点坐标数组，点数为count
+        \param closed 是否闭合
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功。失败原因为参数错误或超出剪裁区域
+        \see drawBeziers
     */
-    bool drawQuadSplines(const GiContext* ctx,
-                         int count, const Point2d* ctlpts, bool modelUnit = true);
+    bool drawQuadSplines(const GiContext* ctx, int count, const Point2d* ctlpts,
+                         bool closed = false, bool modelUnit = true);
 
     //! 显示路径对象
-    bool drawPath(const GiContext* ctx, const GiPath& path, 
-        bool fill, bool modelUnit = true);
+    bool drawPath(const GiContext* ctx, const GiPath& path, bool fill, bool modelUnit = true);
     
     //! 在给定中心位置显示特殊符号
     /*!
@@ -361,7 +357,7 @@ public:
     
     bool rawLine(const GiContext* ctx, float x1, float y1, float x2, float y2);
     bool rawLines(const GiContext* ctx, const Point2d* pxs, int count);
-    bool rawBeziers(const GiContext* ctx, const Point2d* pxs, int count);
+    bool rawBeziers(const GiContext* ctx, const Point2d* pxs, int count, bool closed = false);
     bool rawPolygon(const GiContext* ctx, const Point2d* pxs, int count);
     bool rawRect(const GiContext* ctx, float x, float y, float w, float h);
     bool rawEllipse(const GiContext* ctx, float x, float y, float w, float h);

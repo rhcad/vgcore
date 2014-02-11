@@ -235,10 +235,12 @@ public:
     }
 
     void regenAll(bool changed) {
+        bool apply = regenPending != 0;
+        
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
         }
-        else {
+        if (apply) {
             CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
@@ -257,15 +259,19 @@ public:
     }
 
     void regenAppend(int sid) {
-        if (appendPending == 0) {
-            appendPending = sid;
-        }
-        else if (appendPending > 0) {
-            if (appendPending != sid) {
+        bool apply = appendPending != 0;
+        
+        if (appendPending >= 0 && sid) {
+            if (appendPending == 0 || appendPending == sid) {
+                appendPending = sid;
+            }
+            else if (appendPending > 0 && appendPending != sid) {
                 regenAll(true);
             }
         }
-        else {
+        if (apply) {
+            sid = sid ? sid : (int)appendPending;
+            
             CALL_VIEW(deviceView()->regenAppend(sid));
             for (int i = 0; i < _gcdoc->getViewCount(); i++) {
                 if (_gcdoc->getView(i) != curview)
@@ -439,7 +445,7 @@ public:
         _impl->regenPending = -1;
         _impl->appendPending = -1;
         _impl->redrawPending = -1;
-
+        
         if (regenPending > 0) {
             _impl->regenAll(regenPending >= 100);
         }
@@ -760,6 +766,14 @@ void GiCoreView::onSize(GiView* view, int w, int h)
     }
 }
 
+void GiCoreView::setPenWidthRange(GiView* view, float minw, float maxw)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    if (aview) {
+        aview->graph()->setMaxPenWidth(maxw, minw);
+    }
+}
+
 bool GiCoreView::onGesture(GiView* view, GiGestureType type,
                            GiGestureState state, float x, float y, bool switchGesture)
 {
@@ -849,6 +863,12 @@ bool GiCoreView::twoFingersMove(GiView* view, GiGestureState state,
 bool GiCoreView::isPressDragging()
 {
     return impl->motion()->pressDrag;
+}
+
+bool GiCoreView::isDrawingCommand()
+{
+    MgCommand* cmd = impl->_cmds->getCommand();
+    return cmd && cmd->isDrawingCommand();
 }
 
 GiGestureType GiCoreView::getGestureType()
@@ -1164,12 +1184,14 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
 
 int GiCoreView::addImageShape(const char* name, float width, float height)
 {
+    DrawLocker locker(impl);
     MgShape* shape = impl->_cmds->addImageShape(impl->motion(), name, width, height);
     return shape ? shape->getID() : 0;
 }
 
 int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, float h)
 {
+    DrawLocker locker(impl);
     MgShape* shape = impl->_cmds->addImageShape(impl->motion(), name, xc, yc, w, h);
     return shape ? shape->getID() : 0;
 }

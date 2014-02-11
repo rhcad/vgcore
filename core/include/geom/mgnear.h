@@ -20,8 +20,7 @@ struct mgnear {
     \param[out] nearpt 曲线段上的最近点
     \return 给定的点到最近点的距离
 */
-static float nearestOnBezier(
-    const Point2d& pt, const Point2d* pts, Point2d& nearpt);
+static float nearestOnBezier(const Point2d& pt, const Point2d* pts, Point2d& nearpt);
 
 //! 计算贝塞尔曲线的绑定框
 /*!
@@ -31,8 +30,7 @@ static float nearestOnBezier(
     \param[in] closed 是否为闭合曲线
     \see mgcurv::cubicSplines, mgBeziersBox2, beziersIntersectBox
 */
-static void beziersBox(
-    Box2d& box, int count, const Point2d* points, bool closed = false);
+static void beziersBox(Box2d& box, int count, const Point2d* points, bool closed = false);
 
 //! 判断贝塞尔曲线是否与矩形相交
 /*!
@@ -43,8 +41,8 @@ static void beziersBox(
     \return 是否相交
     \see mgcurv::cubicSplines, mgBeziersBox2, mgBeziersBox
 */
-static bool beziersIntersectBox(
-    const Box2d& box, int count, const Point2d* points, bool closed = false);
+static bool beziersIntersectBox(const Box2d& box, int count,
+                                const Point2d* points, bool closed = false);
 
 //! 计算三次样条曲线的绑定框
 /*!
@@ -53,11 +51,11 @@ static bool beziersIntersectBox(
     \param[in] knots 型值点坐标数组，元素个数为n
     \param[in] knotvs 型值点的切矢量数组，元素个数为n
     \param[in] closed 是否为闭合曲线
+    \param[in] hermite 是否为Hermite曲线，不是则切矢加型值点直接形成Bezier段的控制点
     \see mgcurv::cubicSplines, mgcurv::cubicSplinesIntersectBox
 */
-static void cubicSplinesBox(
-    Box2d& box, int n, const Point2d* knots, 
-    const Vector2d* knotvs, bool closed = false);
+static void cubicSplinesBox(Box2d& box, int n, const Point2d* knots, const Vector2d* knotvs,
+                            bool closed = false, bool hermite = true);
 
 //! 判断三次样条曲线是否与矩形相交
 /*!
@@ -66,12 +64,12 @@ static void cubicSplinesBox(
     \param[in] knots 型值点坐标数组，元素个数为n
     \param[in] knotvs 型值点的切矢量数组，元素个数为n
     \param[in] closed 是否为闭合曲线
+    \param[in] hermite 是否为Hermite曲线，不是则切矢加型值点直接形成Bezier段的控制点
     \return 是否相交
     \see mgcurv::cubicSplines, mgcurv::cubicSplinesBox
 */
-static bool cubicSplinesIntersectBox(
-    const Box2d& box, int n, const Point2d* knots, 
-    const Vector2d* knotvs, bool closed = false);
+static bool cubicSplinesIntersectBox(const Box2d& box, int n, const Point2d* knots,
+                                     const Vector2d* knotvs, bool closed = false, bool hermite = true);
 
 #ifndef SWIG
 //! 计算点到三次样条曲线的最近距离
@@ -84,12 +82,13 @@ static bool cubicSplinesIntersectBox(
     \param[in] tol 距离公差，正数，超出则不计算最近点
     \param[out] nearpt 曲线上的最近点
     \param[out] segment 最近点所在曲线段的序号，[0,n-2]，闭合时为[0,n-1]，负数表示失败
+    \param[in] hermite 是否为Hermite曲线，不是则切矢加型值点直接形成Bezier段的控制点
     \return 给定的点到最近点的距离，失败时为极大数
     \see mgcurv::cubicSplines
 */
-static float cubicSplinesHit(
-    int n, const Point2d* knots, const Vector2d* knotvs, bool closed, 
-    const Point2d& pt, float tol, Point2d& nearpt, int& segment);
+static float cubicSplinesHit(int n, const Point2d* knots, const Vector2d* knotvs,
+                             bool closed,const Point2d& pt, float tol, Point2d& nearpt,
+                             int& segment, bool hermite = true);
 
 //! 计算点到折线或多边形的最近距离
 /*!
@@ -104,10 +103,9 @@ static float cubicSplinesHit(
     \param[out] hitType 点击类型，见 MgPtInAreaRet
     \return 给定的点到最近点的距离，失败时为极大数
 */
-static float linesHit(
-    int n, const Point2d* points, bool closed, 
-    const Point2d& pt, float tol, Point2d& nearpt, int& segment, 
-    bool* inside = (bool*)0, int* hitType = (int*)0);
+static float linesHit(int n, const Point2d* points, bool closed,
+                      const Point2d& pt, float tol, Point2d& nearpt, int& segment,
+                      bool* inside = (bool*)0, int* hitType = (int*)0);
 
 //! 计算点到圆角矩形的最近距离
 /*!
@@ -121,9 +119,8 @@ static float linesHit(
         0到3为从左上角起顺时针的四个圆角（有圆角半径时）；4到7为顶右底左边。
     \return 给定的点到最近点的距离，失败时为极大数
 */
-static float roundRectHit(
-    const Box2d& rect, float rx, float ry, 
-    const Point2d& pt, float tol, Point2d& nearpt, int& segment);
+static float roundRectHit(const Box2d& rect, float rx, float ry, const Point2d& pt,
+                          float tol, Point2d& nearpt, int& segment);
 #endif
 
 //! 得到矩形的8个控制手柄坐标
@@ -143,8 +140,8 @@ static void getRectHandle(const Box2d& rect, int index, Point2d& pt);
     \param[in] pt 控制手柄的新坐标
     \param[in] lockCornerScale 当index为0到3时，是否保持宽高比例不变
 */
-static void moveRectHandle(Box2d& rect, int index, 
-                              const Point2d& pt, bool lockCornerScale = true);
+static void moveRectHandle(Box2d& rect, int index, const Point2d& pt,
+                           bool lockCornerScale = true);
 };
 
 #endif // TOUCHVG_CURVENEAR_H_

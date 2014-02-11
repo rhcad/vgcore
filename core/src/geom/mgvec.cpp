@@ -123,7 +123,7 @@ float Vector2d::distanceToVector(const Vector2d& xAxis) const
 
 float Vector2d::projectScaleToVector(const Vector2d& xAxis) const
 {
-    float d2 = xAxis.lengthSqrd();
+    float d2 = xAxis.lengthSquare();
     if (d2 < _MGZERO)
         return 0.f;
     return dotProduct(xAxis) / d2;

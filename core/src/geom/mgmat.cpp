@@ -315,7 +315,7 @@ Matrix2d& Matrix2d::setToMirroring(const Point2d& pnt)
 
 Matrix2d& Matrix2d::setToMirroring(const Point2d& pnt, const Vector2d& dir)
 {
-    float d2 = dir.lengthSqrd();
+    float d2 = dir.lengthSquare();
     if (mgIsZero(d2))
         setToIdentity();
     else

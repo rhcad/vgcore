@@ -276,6 +276,10 @@
 				Name="geom"
 				>
 				<File
+					RelativePath="..\..\..\core\src\geom\fitcurves.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\core\src\geom\mgbase.cpp"
 					>
 				</File>

@@ -225,7 +225,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             for (int i = canTransform(shapes.front(), sender) ? 7 : -1; i >= 0; i--) {
                 mgnear::getRectHandle(selbox, i, pnt);
                 if (!gs->drawHandle(pnt, 0))
-                    gs->drawEllipse(&ctxhd, pnt, radius);
+                    gs->drawCircle(&ctxhd, pnt, radius);
             }
             for (int j = canRotate(shapes.front(), sender) ? 1 : -1;
                 j >= 0; j--) {
@@ -243,20 +243,20 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                             mgbase::deg2Rad(2.f * sangle));
                 
                 if (!gs->drawHandle(pnt, 0))
-                    gs->drawEllipse(&ctxhd, pnt, radius);
+                    gs->drawCircle(&ctxhd, pnt, radius);
             }
 #endif // ENABLE_DRAG_SELBOX
         }
         else if (!selbox.isEmpty()) {   // 正在拖动临时图形
             if (rorate) {               // 旋转提示的参考线
                 if (!gs->drawHandle(selbox.center(), kGiHandleVertex))
-                    gs->drawEllipse(&ctxhd, selbox.center(), radius);
+                    gs->drawCircle(&ctxhd, selbox.center(), radius);
                 GiContext ctxshap(0, GiColor(0, 0, 255, 128), kGiLineDash);
                 gs->drawLine(&ctxshap, selbox.center(), m_ptSnap);
             }
             else {
                 if (!gs->drawHandle(m_ptSnap, kGiHandleVertex))
-                    gs->drawEllipse(&ctxhd, m_ptSnap, radius);
+                    gs->drawCircle(&ctxhd, m_ptSnap, radius);
             }
         }
     }
@@ -274,8 +274,8 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 continue;
             }
             pnt = shape->shapec()->getHandlePoint(i);
-            if (sender->dragging() || !gs->drawHandle(pnt, kGiHandleVertex))
-                gs->drawEllipse(&ctxhd, pnt, radius);
+            if (!sender->dragging() && !gs->drawHandle(pnt, kGiHandleVertex))
+                gs->drawCircle(&ctxhd, pnt, radius);
         }
         
         if ((m_handleIndex > 0 || m_rotateHandle > 0)
@@ -284,18 +284,18 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             int t = m_rotateHandle > 0 ? m_rotateHandle - 1 : m_handleIndex - 1;
             pnt = shape->shapec()->getHandlePoint(t);
             if (!gs->drawHandle(pnt, m_rotateHandle > 0 ? kGiHandleRotate : kGiHandleHotVertex))
-                gs->drawEllipse(&ctxhd, pnt, r2x);
+                gs->drawCircle(&ctxhd, pnt, r2x);
         }
         if (m_insertPt && !m_clones.empty()) {  // 在临时图形上显示新插入顶点
             GiContext insertctx(ctxhd);
             insertctx.setFillColor(GiColor(255, 0, 0, 64));
-            gs->drawEllipse(&insertctx, m_hit.nearpt, r2x);
+            gs->drawCircle(&insertctx, m_hit.nearpt, r2x);
             gs->drawHandle(m_hit.nearpt, kGiHandleHotVertex);
         }
     }
     if (shapes.size() == 1 && m_clones.empty()
         && m_hit.nearpt.distanceTo(pnt) > r2x * 2) {
-        gs->drawEllipse(&ctxhd, m_hit.nearpt, radius / 2);  // 显示线上的最近点，以便用户插入新点
+        gs->drawCircle(&ctxhd, m_hit.nearpt, radius / 2);  // 显示线上的最近点，以便用户插入新点
     }
     
     sender->cmds()->getSnap()->drawSnap(sender, gs); // 显示拖动捕捉提示线

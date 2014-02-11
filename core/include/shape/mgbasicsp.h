@@ -238,16 +238,16 @@ public:
     Point2d endPoint() const;
 
     //! 改变顶点数
-    bool resize(int count);
+    virtual bool resize(int count);
 
     //! 添加一个顶点
-    bool addPoint(const Point2d& pt);
+    virtual bool addPoint(const Point2d& pt);
     
     //! 在指定段插入一个顶点
-    bool insertPoint(int segment, const Point2d& pt);
+    virtual bool insertPoint(int segment, const Point2d& pt);
 
     //! 删除一个顶点
-    bool removePoint(int index);
+    virtual bool removePoint(int index);
 
     //! 返回边的最大序号
     int maxEdgeIndex() const;
@@ -290,6 +290,7 @@ class MgLines : public MgBaseLines
     MG_INHERIT_CREATE(MgLines, MgBaseLines, 15)
 public:
     virtual bool isCurve() const { return false; }
+    
 protected:
     int _getHandleCount() const;
     Point2d _getHandlePoint(int index) const;
@@ -305,10 +306,27 @@ class MgSplines : public MgBaseLines
     MG_INHERIT_CREATE(MgSplines, MgBaseLines, 16)
 public:
     virtual bool isCurve() const { return true; }
+    virtual bool resize(int count);
+    virtual bool addPoint(const Point2d& pt);
+    virtual bool insertPoint(int segment, const Point2d& pt);
+    virtual bool removePoint(int index);
+    
+    bool smooth(const Matrix2d& m2d, float tol);
+    int smoothForPoints(int count, const Point2d* points, const Matrix2d& m2d, float tol);
+    void clearVectors();
 
 protected:
+    void _copy(const MgSplines& src);
+    bool _equals(const MgSplines& src) const;
+    void _transform(const Matrix2d& mat);
+    void _clear();
+    void _setPoint(int index, const Point2d& pt);
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _hitTestBox(const Box2d& rect) const;
+    bool _save(MgStorage* s) const;
+    bool _load(MgShapeFactory* factory, MgStorage* s);
+    
+    Vector2d*   _knotvs;
 };
 
 //! 平行四边形图形基类

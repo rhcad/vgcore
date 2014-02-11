@@ -20,26 +20,21 @@ public:
     float   y;      //!< Y坐标分量
 
     //! 原点(0,0)
-    static const Point2d& kOrigin()
-    {
+    static const Point2d& kOrigin() {
         static const Point2d pnt (0, 0);
         return pnt;
     }
     
     //! 构造为原点
-    Point2d() : x(0), y(0)
-    {
-    }
+    Point2d() : x(0), y(0) {}
     
     //! 构造为点(x, y)
-    Point2d(float xx, float yy)
-    {
+    Point2d(float xx, float yy) {
         x = xx; y = yy;
     }
     
     //! 拷贝构造函数
-    Point2d(const Point2d& src)
-    {
+    Point2d(const Point2d& src) {
         x = src.x; y = src.y;
     }
 
@@ -54,121 +49,102 @@ public:
     Point2d& operator*=(const Matrix2d& m);
     
     //! 矩阵变换, 矩阵 * 点
-    friend Point2d operator*(const Matrix2d& m, const Point2d& pnt)
-    {
+    friend Point2d operator*(const Matrix2d& m, const Point2d& pnt) {
         return pnt * m;
     }
     
     //! 数 * 点
-    friend Point2d operator*(float s, const Point2d& pnt)
-    {
+    friend Point2d operator*(float s, const Point2d& pnt) {
         return Point2d(pnt.x * s, pnt.y * s);
     }
     
     //! 点 * 数
-    Point2d operator*(float s) const
-    {
+    Point2d operator*(float s) const {
         return Point2d(x * s, y * s);
     }
     
     //! 点 *= 数
-    Point2d& operator*=(float s)
-    {
+    Point2d& operator*=(float s) {
         x *= s; y *= s; return *this;
     }
     
     //! 点 / 数
-    Point2d operator/(float s) const
-    {
+    Point2d operator/(float s) const {
         s = 1 / s;
         return Point2d(x * s, y * s);
     }
     
     //! 点 /= 数
-    Point2d& operator/=(float s)
-    {
+    Point2d& operator/=(float s) {
         s = 1 / s;
         x *= s; y *= s; return *this;
     }
 #endif // SWIG
 
     //! 比例放缩
-    Point2d& scaleBy(float sx, float sy)
-    {
+    Point2d& scaleBy(float sx, float sy) {
         x *= sx; y *= sy; return *this;
     }
 
     //! 比例放缩
-    Point2d& scaleBy(float s)
-    {
+    Point2d& scaleBy(float s) {
         x *= s; y *= s; return *this;
     }
     
 #ifndef SWIG
     //! 点累加
-    Point2d operator+(const Point2d& pnt) const
-    {
+    Point2d operator+(const Point2d& pnt) const {
         return Point2d(x + pnt.x, y + pnt.y);
     }
     
     //! 点累加
-    Point2d& operator+=(const Point2d& pnt)
-    {
+    Point2d& operator+=(const Point2d& pnt) {
         x += pnt.x; y += pnt.y; return *this;
     }
 
     //! 用矢量平移, 矢量 + 点 = 点
-    friend Point2d operator+(const Vector2d& vec, const Point2d& pnt)
-    {
+    friend Point2d operator+(const Vector2d& vec, const Point2d& pnt) {
         return Point2d(pnt.x + vec.x, pnt.y + vec.y);
     }
     
     //! 用矢量平移, 点 + 矢量 = 点
-    Point2d operator+(const Vector2d& vec) const
-    {
+    Point2d operator+(const Vector2d& vec) const {
         return Point2d(x + vec.x, y + vec.y);
     }
     
     //! 用矢量平移, 点 += 矢量
-    Point2d& operator+=(const Vector2d& vec)
-    {
+    Point2d& operator+=(const Vector2d& vec) {
         x += vec.x; y += vec.y; return *this;
     }
     
     //! 用矢量平移, 点 - 矢量 = 点
-    Point2d operator-(const Vector2d& vec) const
-    {
+    Point2d operator-(const Vector2d& vec) const {
         return Point2d(x - vec.x, y - vec.y); 
     }
     
     //! 用矢量平移, 点 -= 矢量
-    Point2d& operator-=(const Vector2d& vec)
-    {
+    Point2d& operator-=(const Vector2d& vec) {
         x -= vec.x; y -= vec.y; return *this;
     }
 #endif // SWIG
     
     //! 平移
-    void offset(float dx, float dy)
-    {
+    void offset(float dx, float dy) {
         x += dx; y += dy;
     }
 
     //! 平移
-    void offset(const Vector2d& vec)
-    {
+    void offset(const Vector2d& vec) {
         x += vec.x; y += vec.y;
     }
 
     //! 点累加
-    Point2d add(const Point2d& pnt) const
-    {
+    Point2d add(const Point2d& pnt) const {
         return *this + pnt;
     }
 
     //! 得到两点之间的矢量, 点 - 点 = 矢量
-    Vector2d subtract(const Point2d& pnt) const
-    {
+    Vector2d subtract(const Point2d& pnt) const {
         return *this - pnt;
     }
 
@@ -180,58 +156,49 @@ public:
     
 #ifndef SWIG
     //! 得到两点之间的矢量, 点 - 点 = 矢量
-    Vector2d operator-(const Point2d& pnt) const
-    {
+    Vector2d operator-(const Point2d& pnt) const {
         return Vector2d(x - pnt.x, y - pnt.y);
     }
     
     //! 返回负矢量
-    Vector2d operator-() const
-    {
+    Vector2d operator-() const {
         return Vector2d(-x, -y);
     }
 #endif // SWIG
 
     //! 返回负矢量
-    Vector2d negate() const
-    {
+    Vector2d negate() const {
         return Vector2d(-x, -y);
     }
     
     //! 转换为矢量
-    Vector2d asVector() const
-    {
+    Vector2d asVector() const {
         return Vector2d(x, y);
     }
 
     //! 到原点的距离
-    float length() const
-    {
+    float length() const {
         return mgHypot(x, y);
     }
     
     //! 两点距离
-    float distanceTo(const Point2d& pnt) const
-    {
+    float distanceTo(const Point2d& pnt) const {
         return mgHypot(x - pnt.x, y - pnt.y);
     }
     
     //! 两点距离的平方
-    float distanceSquare(const Point2d& pnt) const
-    {
+    float distanceSquare(const Point2d& pnt) const {
         return mgSquare(x - pnt.x, y - pnt.y);
     }
     
 #ifndef SWIG
     //! 判断两个点是否相等
-    bool operator==(const Point2d& pnt) const
-    {
+    bool operator==(const Point2d& pnt) const {
         return isEqualTo(pnt);
     }
     
     //! 判断两个点是否不相等
-    bool operator!=(const Point2d& pnt) const
-    {
+    bool operator!=(const Point2d& pnt) const {
         return !isEqualTo(pnt);
     }
 #endif
@@ -242,14 +209,12 @@ public:
         \param tol 判断的容差，用到其长度容差
         \return 如果相等，则返回true，否则返回false
     */
-    bool isEqualTo(const Point2d& pnt, const Tol& tol = Tol::gTol()) const
-    {
+    bool isEqualTo(const Point2d& pnt, const Tol& tol = Tol::gTol()) const {
         return mgHypot(x - pnt.x, y - pnt.y) <= tol.equalPoint();
     }
     
     //! 设置为点(xx, yy)
-    Point2d& set(float xx, float yy)
-    {
+    Point2d& set(float xx, float yy) {
         x = xx; y = yy; return *this;
     }
     
@@ -259,8 +224,7 @@ public:
         \param[out] xx 四舍五入后的X坐标分量
         \param[out] yy 四舍五入后的Y坐标分量
     */
-    void get(long& xx, long& yy) const
-    {
+    void get(long& xx, long& yy) const {
         xx = mgRound(x); yy = mgRound(y);
     }
 #endif
@@ -271,8 +235,7 @@ public:
         \param dist 极径长度
         \return 计算出的坐标
     */
-    Point2d polarPoint(float angle, float dist) const
-    {
+    Point2d polarPoint(float angle, float dist) const {
         return Point2d(x + dist * cosf(angle), y + dist * sinf(angle));
     }
     

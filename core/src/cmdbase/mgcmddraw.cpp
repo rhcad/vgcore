@@ -55,6 +55,7 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
     
     if (sender->view->shapeWillAdded(shape)) {
         newsp = sender->view->shapes()->addShape(*shape);
+        m_shape->shape()->clear();
         sender->view->shapeAdded(newsp);
         sender->view->getCmdSubject()->onShapeAdded(sender, newsp);
         if (strcmp(getName(), "splines") != 0) {

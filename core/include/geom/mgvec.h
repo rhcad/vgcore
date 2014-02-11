@@ -22,40 +22,33 @@ public:
     float   y;      //!< Y坐标分量
 
     //! 零矢量(0,0)
-    static const Vector2d& kIdentity()
-    {
+    static const Vector2d& kIdentity() {
         static const Vector2d vec (0, 0);
         return vec;
     }
     
     //! X轴单位矢量(1,0)
-    static const Vector2d& kXAxis()
-    {
+    static const Vector2d& kXAxis() {
         static const Vector2d vec (1, 0);
         return vec;
     }
     
     //! Y轴单位矢量(0,1)
-    static const Vector2d& kYAxis()
-    {
+    static const Vector2d& kYAxis() {
         static const Vector2d vec (0, 1);
         return vec;
     }
     
     //! 构造为零矢量
-    Vector2d() : x(0), y(0)
-    {
-    }
+    Vector2d() : x(0), y(0) {}
     
     //! 构造为矢量(xx, yy)
-    Vector2d(float xx, float yy)
-    {
+    Vector2d(float xx, float yy) {
         x = xx; y = yy;
     }
     
     //! 拷贝构造函数
-    Vector2d(const Vector2d& src)
-    {
+    Vector2d(const Vector2d& src) {
         x = src.x; y = src.y;
     }
 
@@ -70,38 +63,32 @@ public:
     Vector2d& operator*=(const Matrix2d& m);
 
     //! 矩阵变换, 矩阵 * 矢量
-    friend Vector2d operator*(const Matrix2d& m, const Vector2d& v)
-    {
+    friend Vector2d operator*(const Matrix2d& m, const Vector2d& v) {
         return v * m;
     }
     
     //! 矢量加法
-    Vector2d operator+(const Vector2d& v) const
-    {
+    Vector2d operator+(const Vector2d& v) const {
         return Vector2d(x + v.x, y + v.y);
     }
     
     //! 矢量加法
-    Vector2d& operator+=(const Vector2d& v)
-    {
+    Vector2d& operator+=(const Vector2d& v) {
         x += v.x; y += v.y; return *this;
     }
     
     //! 矢量减法
-    Vector2d operator-(const Vector2d& v) const
-    {
+    Vector2d operator-(const Vector2d& v) const {
         return Vector2d(x - v.x, y - v.y);
     }
     
     //! 矢量减法
-    Vector2d& operator-=(const Vector2d& v)
-    {
+    Vector2d& operator-=(const Vector2d& v) {
         x -= v.x; y -= v.y; return *this;
     }
     
     //! 返回负矢量
-    Vector2d operator-() const
-    {
+    Vector2d operator-() const {
         return Vector2d(-x, -y);
     }
 #endif // SWIG
@@ -113,137 +100,116 @@ public:
     Vector2d subtract(const Vector2d& v) const { return *this - v; }
     
     //! 矢量反向，即将该矢量设置为(-x, -y)
-    Vector2d& negate()
-    {
+    Vector2d& negate() {
         x = -x; y = -y; return *this;
     }
     
     //! 返回正交矢量, 即逆时针旋转90度，为(-y, x)
-    Vector2d perpVector() const
-    {
+    Vector2d perpVector() const {
         return Vector2d(-y, x);
     }
     
 #ifndef SWIG
     //! 标量积, 数 * 矢量
-    friend Vector2d operator*(float s, const Vector2d& v)
-    {
+    friend Vector2d operator*(float s, const Vector2d& v) {
         return Vector2d(v.x * s, v.y * s);
     }
     
     //! 标量积, 矢量 * 数
-    Vector2d operator*(float s) const
-    {
+    Vector2d operator*(float s) const {
         return Vector2d(x * s, y * s);
     }
     
     //! 标量积, 矢量 *= 数
-    Vector2d& operator*=(float s)
-    {
+    Vector2d& operator*=(float s) {
         x *= s; y *= s; return *this;
     }
     
     //! 标量积, 矢量 / 数
-    Vector2d operator/(float s) const
-    {
+    Vector2d operator/(float s) const {
         s = 1 / s;
         return Vector2d(x * s, y * s);
     }
     
     //! 标量积, 矢量 /= 数
-    Vector2d& operator/=(float s)
-    {
+    Vector2d& operator/=(float s) {
         s = 1 / s;
         x *= s; y *= s; return *this;
     }
 #endif // SWIG
 
     //! 比例放缩
-    Vector2d& scaleBy(float sx, float sy)
-    {
+    Vector2d& scaleBy(float sx, float sy) {
         x *= sx; y *= sy; return *this;
     }
 
     //! 比例放缩
-    Vector2d& scaleBy(float s)
-    {
+    Vector2d& scaleBy(float s) {
         x *= s; y *= s; return *this;
     }
     
     //! 矢量点积, A·B
-    float dotProduct(const Vector2d& v) const
-    {
+    float dotProduct(const Vector2d& v) const {
         return (x * v.x + y * v.y);
     }
     
     //! 矢量叉积(0,0,z)中的z, |A×B|
-    float crossProduct(const Vector2d& v) const
-    {
+    float crossProduct(const Vector2d& v) const {
         return (x * v.y - y * v.x);
     }
     
 #ifndef SWIG
     //! 矢量点积, A·B
-    float operator/(const Vector2d& v) const
-    {
+    float operator/(const Vector2d& v) const {
         return dotProduct(v);
     }
     
     //! 矢量叉积(0,0,z)中的z, |A×B|
-    float operator*(const Vector2d& v) const
-    {
+    float operator*(const Vector2d& v) const {
         return crossProduct(v);
     }
 #endif // SWIG
     
     //! 矢量与X轴的夹角, [0, PI)
-    float angle() const
-    {
+    float angle() const {
         float len = mgHypot(x, y);
         return len < _MGZERO ? 0 : acosf(x / len);
     }
     
     //! 矢量角度, [-PI, PI), 从X轴逆时针方向为正, 顺时针为负
-    float angle2() const
-    {
+    float angle2() const {
         return (mgIsZero(x) && mgIsZero(y)) ? 0 : atan2f(y, x);
     }
     
     //! 矢量夹角, [0, PI)
-    float angleTo(const Vector2d& v) const
-    {
+    float angleTo(const Vector2d& v) const {
         float len = mgHypot(x, y) * mgHypot(v.x, v.y);
         return len < _MGZERO ? 0 : acosf(dotProduct(v) / len);
     }
     
     //! 沿逆时针方向到指定矢量的转角, [-PI, PI)
-    /*!
-        从本矢量方向逆时针旋转到另一个矢量 v 所在方向时为正，顺时针为负
+    /*! 从本矢量方向逆时针旋转到另一个矢量 v 所在方向时为正，顺时针为负
     */
-    float angleTo2(const Vector2d& v) const
-    {
+    float angleTo2(const Vector2d& v) const {
         float crossz = crossProduct(v);
         float dot = dotProduct(v);
         return (mgIsZero(dot) && mgIsZero(crossz)) ? 0 : atan2f(crossz, dot);
     }
     
     //! 矢量长度
-    float length() const
-    {
+    float length() const {
         return mgHypot(x, y);
     }
     
     //! 矢量长度的平方
-    float lengthSqrd() const
-    {
+    float lengthSquare() const {
         return mgSquare(x, y);
     }
     
     //! 返回单位矢量
     /*! 如果本矢量为零矢量，则复制本矢量
     */
-    Vector2d unitVector() const
-    {
+    Vector2d unitVector() const {
         float len = mgHypot(x, y);
         if (len >= _MGZERO)
             return Vector2d(x / len, y / len);
@@ -256,8 +222,7 @@ public:
         \param tol 判断的容差，用到其长度容差
         \return 如果本矢量为零矢量，则返回false，否则返回true
     */
-    bool normalize(const Tol& tol = Tol::gTol())
-    {
+    bool normalize(const Tol& tol = Tol::gTol()) {
         float len = mgHypot(x, y);
         bool ret = (len >= tol.equalPoint());
         if (ret)
@@ -270,8 +235,7 @@ public:
         \param tol 判断的容差，用到其长度容差
         \return 如果本矢量为单位矢量，则返回true，否则返回false
     */
-    bool isUnitVector(const Tol& tol = Tol::gTol()) const
-    {
+    bool isUnitVector(const Tol& tol = Tol::gTol()) const {
         return fabsf(mgHypot(x, y) - 1) < tol.equalPoint();
     }
     
@@ -280,21 +244,18 @@ public:
         \param tol 判断的容差，用到其长度容差
         \return 如果本矢量为零矢量，则返回true，否则返回false
     */
-    bool isZeroVector(const Tol& tol = Tol::gTol()) const
-    {
+    bool isZeroVector(const Tol& tol = Tol::gTol()) const {
         return mgHypot(x, y) < tol.equalPoint();
     }
     
 #ifndef SWIG
     //! 判断两个矢量是否相等
-    bool operator==(const Vector2d& v) const
-    {
+    bool operator==(const Vector2d& v) const {
         return isEqualTo(v);
     }
     
     //! 判断两个矢量是否不相等
-    bool operator!=(const Vector2d& v) const
-    {
+    bool operator!=(const Vector2d& v) const {
         return !isEqualTo(v);
     }
 #endif // SWIG
@@ -305,14 +266,12 @@ public:
         \param tol 判断的容差，用到其矢量容差
         \return 如果相等，则返回true，否则返回false
     */
-    bool isEqualTo(const Vector2d& v, const Tol& tol = Tol::gTol()) const
-    {
+    bool isEqualTo(const Vector2d& v, const Tol& tol = Tol::gTol()) const {
         return mgHypot(x - v.x, y - v.y) <= tol.equalVector();
     }
     
     //! 设置为矢量(xx, yy)
-    Vector2d& set(float xx, float yy)
-    {
+    Vector2d& set(float xx, float yy) {
         x = xx; y = yy; return *this;
     }
     
@@ -322,16 +281,30 @@ public:
         \param len 矢量的长度
         \return 本矢量的引用
     */
-    Vector2d& setAngleLength(float angle, float len)
-    {
+    Vector2d& setAngleLength(float angle, float len) {
         return set(len * cosf(angle), len * sinf(angle));
     }
     
     //! 设置矢量的长度
-    Vector2d& setLength(float len)
-    {
-        float angle = angle2();
-        return set(len * cosf(angle), len * sinf(angle));
+    Vector2d& setLength(float newLength) {
+        float oldlen = length();
+        float scale = 1.f;
+        
+        if (!mgIsZero(oldlen)) {
+            scale = newLength / oldlen;
+        }
+        return scaleBy(scale);
+    }
+    
+    //! 返回新长度的矢量
+    Vector2d scaledVector(float newLength) const {
+        float oldlen = length();
+        float scale = 1.f;
+        
+        if (!mgIsZero(oldlen)) {
+            scale = newLength / oldlen;
+        }
+        return Vector2d(x * scale, y * scale);
     }
     
 #ifndef SWIG
@@ -340,21 +313,18 @@ public:
         \param[out] cx 四舍五入后的X坐标分量
         \param[out] cy 四舍五入后的Y坐标分量
     */
-    void get(long& cx, long& cy) const
-    {
+    void get(long& cx, long& cy) const {
         cx = mgRound(x); cy = mgRound(y);
     }
 #endif
 
     //! 判断是否在指定矢量的右侧，即沿逆时针方向转到指定矢量时最近
-    bool isRightOf(const Vector2d& vec) const
-    {
+    bool isRightOf(const Vector2d& vec) const {
         return crossProduct(vec) > 0;
     }
 
     //! 判断是否在指定矢量的左侧，即沿顺时针方向转到指定矢量时最近
-    bool isLeftOf(const Vector2d& vec) const
-    {
+    bool isLeftOf(const Vector2d& vec) const {
         return crossProduct(vec) < 0;
     }
     

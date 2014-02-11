@@ -146,10 +146,7 @@ bool MgBaseShape::_setHandlePoint2(int index, const Point2d& pt, float tol, int&
 
 bool MgBaseShape::_offset(const Vector2d& vec, int)
 {
-    for (int i = 0; i < getPointCount(); i++) {
-        setPoint(i, getPoint(i) + vec);
-    }
-    update();
+    transform(Matrix2d::translation(vec));
     return true;
 }
 

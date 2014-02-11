@@ -50,8 +50,7 @@ bool MgBaseLines::_equals(const MgBaseLines& src) const
     if (_count != src._count)
         return false;
 
-    for (int i = 0; i < _count; i++)
-    {
+    for (int i = 0; i < _count; i++) {
         if (_points[i] != src._points[i])
             return false;
     }
@@ -92,9 +91,8 @@ Point2d MgBaseLines::endPoint() const
 
 bool MgBaseLines::resize(int count)
 {
-    if (_maxCount < count)
-    {
-        _maxCount = (count + 7) / 8 * 8;
+    if (_maxCount < count) {
+        _maxCount = (count + 32 - 1) / 32 * 32;
 
         Point2d* pts = new Point2d[_maxCount];
 
@@ -139,8 +137,7 @@ bool MgBaseLines::removePoint(int index)
 {
     bool ret = false;
     
-    if (index < _count && _count > 1)
-    {
+    if (index < _count && _count > 1) {
         for (int i = index + 1; i < _count; i++)
             _points[i - 1] = _points[i];
         _count--;

@@ -407,7 +407,7 @@ static int _InsectTwoCircles(point_t& pt1, point_t& pt2,
         return -1;
     }
     
-    d = c1.distance(c2);
+    d = c1.distanceTo(c2);
     if (d > r1 + r2 || d < fabs(r1 - r2)) {
         return 0;
     }
@@ -461,9 +461,9 @@ static int _InsectTwoCircles(point_t& pt1, point_t& pt2,
 int mgcurv::insectTwoCircles(Point2d& pt1, Point2d& pt2,
                                const Point2d& c1, float r1, const Point2d& c2, float r2)
 {
-    point_t p1 = { 0, 0 }, p2 = { 0, 0 };
-    point_t ca = { c1.x, c1.y };
-    point_t cb = { c2.x, c2.y };
+    point_t p1, p2;
+    point_t ca(c1.x, c1.y);
+    point_t cb(c2.x, c2.y);
     
     int n = _InsectTwoCircles(p1, p2, ca, r1, cb, r2);
     
@@ -715,13 +715,14 @@ void mgcurv::fitCubicSpline(
 
 void mgcurv::cubicSplineToBezier(
     int n, const Point2d* knots, const Vector2d* knotvs,
-    int i, Point2d points[4])
+    int i, Point2d points[4], bool hermite)
 {
     int i1 = i % n;
     int i2 = (i+1) % n;
+    float d = hermite ? 1.f/3.f : 1.f;
     points[0] = knots[i1];
-    points[1] = knots[i1] + knotvs[i1] / 3.f;
-    points[2] = knots[i2] - knotvs[i2] / 3.f;
+    points[1] = knots[i1] + knotvs[i1] * d;
+    points[2] = knots[i2] - knotvs[i2] * d;
     points[3] = knots[i2];
 }
 
@@ -916,4 +917,45 @@ void mgcurv::fitClampedSpline(
     
     fitpt.x = (knotvs[i].x * s1 + knotvs[i+1].x * s2) *s3 + tx1*(hp[i] - t) + tx2*t;
     fitpt.y = (knotvs[i].y * s1 + knotvs[i+1].y * s2) *s3 + ty1*(hp[i] - t) + ty2*t;
+}
+
+typedef void (*FitCubicCallback)(void* data, const Point2d curve[4]);
+extern  void FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error);
+
+struct FitCurveHelper {
+    int index;
+    int knotCount;
+    Point2d* knots;
+    Vector2d* knotvs;
+    
+    static void append(void* data, const Point2d curve[4]) {
+        FitCurveHelper* p = (FitCurveHelper*)data;
+        
+        if (p->index + 1 < p->knotCount) {
+            if (p->index > 0 && p->knots[p->index - 1] == curve[0]) {
+                p->knots[p->index] = curve[3];
+                p->knotvs[p->index++] = curve[3] - curve[2];
+            } else {
+                p->knots[p->index] = curve[0];
+                p->knots[p->index + 1] = curve[3];
+                p->knotvs[p->index] = curve[1] - curve[0];
+                p->knotvs[p->index + 1] = curve[3] - curve[2];
+                p->index += 2;
+            }
+        }
+    }
+};
+
+int mgcurv::fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
+                     int count, const Point2d* pts, float tol)
+{
+    FitCurveHelper helper;
+    
+    helper.index = 0;
+    helper.knotCount = knotCount;
+    helper.knots = knots;
+    helper.knotvs = knotvs;
+    
+    FitCurve(&FitCurveHelper::append, &helper, pts, count, tol);
+    return helper.index;
 }

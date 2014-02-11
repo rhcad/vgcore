@@ -45,6 +45,7 @@ struct MgCoreView
     virtual long getDynamicShapesForEdit() = 0;     //!< 得到动态图形列表用于异步改变内容
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
+    virtual bool isDrawingCommand() = 0;            //!< 当前是否为绘图命令
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称
     virtual bool setCommand(const char* name, const char* params = "") = 0; //!< 启动命令
     virtual bool doContextAction(int action) = 0;   //!< 执行上下文动作

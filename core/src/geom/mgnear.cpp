@@ -51,31 +51,33 @@ bool mgnear::beziersIntersectBox(
 
 void mgnear::cubicSplinesBox(
     Box2d& box, int n, const Point2d* knots, 
-    const Vector2d* knotvs, bool closed)
+    const Vector2d* knotvs, bool closed, bool hermite)
 {
     int n2 = (closed && n > 1) ? n + 1 : n;
+    float d = hermite ? 1.f/3.f : 1.f;
 
     box.empty();
     for (int i = 0; i + 1 < n2; i++)
     {
         box.unionWith(computeCubicBox(knots[i], 
-            knots[i] + knotvs[i] / 3.f, 
-            knots[(i + 1) % n] - knotvs[(i + 1) % n] / 3.f, 
+            knots[i] + knotvs[i] * d,
+            knots[(i + 1) % n] - knotvs[(i + 1) % n] * d,
             knots[(i + 1) % n]));
     }
 }
 
 bool mgnear::cubicSplinesIntersectBox(
     const Box2d& box, int n, const Point2d* knots, 
-    const Vector2d* knotvs, bool closed)
+    const Vector2d* knotvs, bool closed, bool hermite)
 {
     int n2 = (closed && n > 1) ? n + 1 : n;
+    float d = hermite ? 1.f/3.f : 1.f;
     
     for (int i = 0; i + 1 < n2; i++)
     {
         Point2d pts[4] = { knots[i], 
-            knots[i] + knotvs[i] / 3.f, 
-            knots[(i + 1) % n] - knotvs[(i + 1) % n] / 3.f, 
+            knots[i] + knotvs[i] * d,
+            knots[(i + 1) % n] - knotvs[(i + 1) % n] * d,
             knots[(i + 1) % n] };
         if (mgnear::beziersIntersectBox(box, 4, pts, false))
             return true;
@@ -86,7 +88,7 @@ bool mgnear::cubicSplinesIntersectBox(
 
 float mgnear::cubicSplinesHit(
     int n, const Point2d* knots, const Vector2d* knotvs, bool closed, 
-    const Point2d& pt, float tol, Point2d& nearpt, int& segment)
+    const Point2d& pt, float tol, Point2d& nearpt, int& segment, bool hermite)
 {
     Point2d ptTemp;
     float dist, distMin = _FLT_MAX;
@@ -97,7 +99,7 @@ float mgnear::cubicSplinesHit(
     segment = -1;
     for (int i = 0; i + 1 < n2; i++)
     {
-        mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts);
+        mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts, hermite);
         if (rect.isIntersect(computeCubicBox(pts)))
         {
             dist = mgnear::nearestOnBezier(pt, pts, ptTemp);

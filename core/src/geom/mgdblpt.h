@@ -9,6 +9,11 @@
 struct point_t {
     double x, y;
 
+    point_t() : x(0), y(0) {}
+    point_t(double x, double y) : x(x), y(y) {}
+    point_t(const point_t& p) : x(p.x), y(p.y) {}
+    point_t& operator=(const point_t& p) { x = p.x; y = p.y; return *this; }
+    
     double length() const {
         return sqrt(x*x + y*y);
     }
@@ -18,7 +23,7 @@ struct point_t {
     double distanceSquare(const point_t& v) const {
         return (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y);
     }
-    double distance(const point_t& v) const {
+    double distanceTo(const point_t& v) const {
         return sqrt(distanceSquare(v));
     }
     double dotProduct(const point_t& v) const {
@@ -27,26 +32,42 @@ struct point_t {
     double crossProduct(const point_t& v) const {
         return (x * v.y - y * v.x);
     }
+    
+    void normalize() {
+        double oldlen = length();
+        
+        if (oldlen != 0.0) {
+            x /= oldlen;
+            y /= oldlen;
+        }
+    }
+    point_t scaledVector(double newLength) const {
+        double oldlen = length();
+        double scale = 1.0;
+        
+        if (oldlen != 0.0) {
+            scale = newLength / oldlen;
+        }
+        return point_t(x * scale, y * scale);
+    }
 
-    point_t operator-(const point_t& v) const
-    {
-        point_t ret = { x - v.x, y - v.y };
-        return ret;
+    point_t operator-(const point_t& v) const {
+        return point_t(x - v.x, y - v.y);
     }
-    point_t operator+(const point_t& v) const
-    {
-        point_t ret = { x + v.x, y + v.y };
-        return ret;
+    point_t operator+(const point_t& v) const {
+        return point_t(x + v.x, y + v.y);
     }
-    point_t operator*(double d) const
-    {
-        point_t ret = { x * d, y * d };
-        return ret;
+    point_t operator*(double d) const {
+        return point_t(x * d, y * d);
     }
-    friend point_t operator*(double d, const point_t& v)
-    {
-        point_t ret = { v.x * d, v.y * d };
-        return ret;
+    friend point_t operator*(double d, const point_t& v) {
+        return point_t(v.x * d, v.y * d);
+    }
+    point_t operator/(double d) const {
+        return point_t(x / d, y / d);
+    }
+    friend point_t operator/(double d, const point_t& v) {
+        return point_t(v.x / d, v.y / d);
     }
 };
 

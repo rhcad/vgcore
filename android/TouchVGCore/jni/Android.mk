@@ -33,6 +33,7 @@ geom_files := $(core_src)/geom/mgbase.cpp \
               $(core_src)/geom/mgmat.cpp \
               $(core_src)/geom/mgnear.cpp \
               $(core_src)/geom/mgnearbz.cpp \
+              $(core_src)/geom/fitcurves.cpp \
               $(core_src)/geom/mgvec.cpp \
               $(core_src)/geom/mgpnt.cpp
 

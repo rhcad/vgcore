@@ -25,3 +25,4 @@ obj
 gdb.setup
 gdbserver
 *.db
+ios/output

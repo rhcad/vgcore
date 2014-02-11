@@ -399,12 +399,12 @@ static void NearestOnBezier(const point_t& pt, const point_t* pts, point_t& near
 float mgnear::nearestOnBezier(
     const Point2d& pt, const Point2d* pts, Point2d& nearpt)
 {
-    point_t nearpt2, pts2[4], pt2 = { pt.x, pt.y };
+    point_t nearpt2, pts2[4], pt2(pt.x, pt.y);
     for (int i = 0; i < 4; i++) {
         pts2[i].x = pts[i].x;
         pts2[i].y = pts[i].y;
     }
     NearestOnBezier(pt2, pts2, nearpt2);
     nearpt.set((float)nearpt2.x, (float)nearpt2.y);
-    return (float)nearpt2.distance(pt2);
+    return (float)nearpt2.distanceTo(pt2);
 }

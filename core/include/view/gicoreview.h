@@ -44,6 +44,7 @@ public:
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
     static void setScreenDpi(int dpi, float factor = 1.f);          //!< 设置屏幕的点密度和UI放缩系数
     void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
+    void setPenWidthRange(GiView* view, float minw, float maxw);    //!< 设置画笔宽度范围
     
     //! 传递单指触摸手势消息
     bool onGesture(GiView* view, GiGestureType type,
@@ -73,6 +74,7 @@ public:
 // MgCoreView
 public:
     bool isPressDragging();
+    bool isDrawingCommand();
     long viewAdapterHandle();
     long backDoc();
     long backShapes();

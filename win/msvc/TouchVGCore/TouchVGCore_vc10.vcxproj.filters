@@ -442,6 +442,9 @@
     <ClCompile Include="..\..\..\core\src\graph\gixform.cpp">
       <Filter>Source Files\graph</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\core\src\geom\fitcurves.cpp">
+      <Filter>Source Files\geom</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\core\src\geom\mgbase.cpp">
       <Filter>Source Files\geom</Filter>
     </ClCompile>

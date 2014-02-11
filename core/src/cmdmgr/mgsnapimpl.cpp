@@ -338,7 +338,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
         if (_snapType[0] >= kMgSnapPoint) {
             bool isnear = (_snapType[0] >= kMgSnapNearPt);
             GiContext ctx(-2, GiColor(0, 255, 0, 200), kGiLineDash, GiColor(0, 255, 0, 64));
-            ret = gs->drawEllipse(&ctx, _ptSnap, displayMmToModel(isnear ? 3.f : 6.f, gs));
+            ret = gs->drawCircle(&ctx, _ptSnap, displayMmToModel(isnear ? 3.f : 6.f, gs));
             gs->drawHandle(_ptSnap, kGiHandleVertex);
         }
         else {
@@ -350,12 +350,12 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
                     if (_snapType[0] == kMgSnapGridX) {
                         Vector2d vec(0, displayMmToModel(15.f, gs));
                         ret = gs->drawLine(&ctxcross, _ptSnap - vec, _ptSnap + vec);
-                        gs->drawEllipse(&ctx, _snapBase[0], displayMmToModel(4.f, gs));
+                        gs->drawCircle(&ctx, _snapBase[0], displayMmToModel(4.f, gs));
                     }
                 }
                 else {  // kMgSnapSameX
                     ret = gs->drawLine(&ctx, _snapBase[0], _ptSnap);
-                    gs->drawEllipse(&ctx, _snapBase[0], displayMmToModel(2.5f, gs));
+                    gs->drawCircle(&ctx, _snapBase[0], displayMmToModel(2.5f, gs));
                 }
             }
             if (_snapType[1] > 0) {
@@ -363,12 +363,12 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
                     if (_snapType[1] == kMgSnapGridY) {
                         Vector2d vec(displayMmToModel(15.f, gs), 0);
                         ret = gs->drawLine(&ctxcross, _ptSnap - vec, _ptSnap + vec);
-                        gs->drawEllipse(&ctx, _snapBase[1], displayMmToModel(4.f, gs));
+                        gs->drawCircle(&ctx, _snapBase[1], displayMmToModel(4.f, gs));
                     }
                 }
                 else {  // kMgSnapSameY
                     ret = gs->drawLine(&ctx, _snapBase[1], _ptSnap);
-                    gs->drawEllipse(&ctx, _snapBase[1], displayMmToModel(2.5f, gs));
+                    gs->drawCircle(&ctx, _snapBase[1], displayMmToModel(2.5f, gs));
                 }
             }
         }
