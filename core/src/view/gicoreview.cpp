@@ -623,6 +623,15 @@ bool GiCoreView::isDrawing()
     return false;
 }
 
+bool GiCoreView::isStopping()
+{
+    for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
+        if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isStopping())
+            return true;
+    }
+    return false;
+}
+
 int GiCoreView::stopDrawing()
 {
     int n = 0;
@@ -1295,7 +1304,8 @@ bool GiCoreViewImpl::gestureToCommand()
 long GiCoreView::getRecordTick(bool forUndo)
 {
     MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
-    return recorder ? recorder->getCurrentTick() : 0;
+    long tick = recorder ? recorder->getCurrentTick() : 0;
+    return tick;
 }
 
 bool GiCoreView::startRecord(const char* path, long doc, bool forUndo)
@@ -1421,6 +1431,12 @@ int GiCoreView::getFrameIndex() const
     return isPlaying() ? impl->recorder[1]->getFileCount() : -1;
 }
 
+long GiCoreView::getFrameTick()
+{
+    long tick = isPlaying() ? (long)impl->recorder[1]->getFileTick() : 0;
+    return tick;
+}
+
 long GiCoreView::getPlayingDocForEdit()
 {
     if (!impl->docPlay) {
@@ -1465,13 +1481,11 @@ bool GiCoreView::loadFrameIndex(const char* path, mgvector<int>& arr)
     }
     
     s->readNode("records", -1, true);
-    if (arr.setSize((int)v.size())) {
-        for (int i = 0; i < arr.count(); i++) {
-            arr.set(i, v[i]);
-        }
-        return true;
+    arr.setSize((int)v.size());
+    for (int i = 0; i < arr.count(); i++) {
+        arr.set(i, v[i]);
     }
-    return false;
+    return true;
 }
 
 int GiCoreView::loadFirstFrame()
@@ -1484,6 +1498,23 @@ int GiCoreView::loadFirstFrame()
     
     impl->docPlay->setReadOnly(true);
     return MgRecordShapes::STD_CHANGED;
+}
+
+int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index)
+{
+    int tickNow = (int)getPlayingTick();
+    for ( ; index <= head.count() / 3; index++) {
+        int tick = head.get(index * 3 - 2);
+        int flags = head.get(index * 3 - 1);
+        if (flags != MgRecordShapes::DYN || tick + 100 > tickNow)
+            break;
+    }
+    return index;
+}
+
+bool GiCoreView::frameNeedWait()
+{
+    return getFrameTick() - 100 > getPlayingTick() && !isStopping();
 }
 
 int GiCoreView::loadNextFrame(int index)

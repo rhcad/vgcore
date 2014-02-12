@@ -28,19 +28,26 @@ struct MgCoreView
     static void releaseDoc(long hDoc);              //!< 释放 acquireFrontDoc() 得到的文档句柄
     virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
     static void releaseShapes(long hShapes);        //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
+    
+    virtual bool isDrawing() = 0;                   //!< 返回是否正在绘制静态图形
+    virtual bool isStopping() = 0;                  //!< 返回是否需要停止绘图
+    virtual int stopDrawing() = 0;                  //!< 标记需要停止绘图
 
     virtual bool isUndoRecording() const = 0;       //!< 是否正在Undo录制
     virtual bool isRecording() const = 0;           //!< 是否正在录屏
     virtual bool isPlaying() const = 0;             //!< 是否处于播放模式
-    virtual long getRecordTick(bool forUndo) = 0;   //!< 得到录制开始的相对毫秒时刻
+    virtual long getRecordTick(bool forUndo) = 0;    //!< 得到已开始的相对毫秒时刻
     virtual bool isUndoLoading() const = 0;         //!< 是否正加载文档
     virtual bool canUndo() const = 0;               //!< 能否撤销
     virtual bool canRedo() const = 0;               //!< 能否重做
+    
+    long getPlayingTick() { return getRecordTick(false); }  //!< 得到已播放的毫秒数
     virtual int loadFirstFrame() = 0;               //!< 异步加载第0帧
     virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
     virtual int loadPrevFrame(int index) = 0;       //!< 异步加载上一帧
-    virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
+    virtual long getFrameTick() = 0;                //!< 得到当前帧的相对毫秒时刻
     virtual int getFrameIndex() const = 0;          //!< 得到已播放的帧数
+    virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
     virtual long getPlayingDocForEdit() = 0;        //!< 得到文档句柄用于异步改变文档图形内容
     virtual long getDynamicShapesForEdit() = 0;     //!< 得到动态图形列表用于异步改变内容
     

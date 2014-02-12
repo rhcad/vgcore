@@ -101,6 +101,7 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         if (m_step > 0 && !dynshape()->shape()->getExtent().isEmpty(tol, false)) {
             MgShape* newsp = addShape(sender);
             if (newsp) {
+                m_step = 0;
                 sender->view->regenAppend(0);
                 newsp = newsp->cloneShape();
                 lines = (MgSplines*)newsp->shape();

@@ -27,9 +27,6 @@ public:
     void createMagnifierView(GiView* newview, GiView* mainView);    //!< 创建放大镜视图
     void destoryView(GiView* view);                                 //!< 销毁内核视图
     
-    bool isDrawing();                                               //!< 返回是否正在绘制静态图形
-    int stopDrawing();                                              //!< 标记需要停止绘图
-    
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
     void releaseGraphics(long hGs);                                 //!< 释放 GiGraphics 句柄
     
@@ -70,6 +67,8 @@ public:
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
     static bool loadFrameIndex(const char* path, mgvector<int>& arr);  //!< 加载帧索引{index,tick,flags}
+    int skipExpireFrame(const mgvector<int>& head, int index);      //!< 跳过过时的帧
+    bool frameNeedWait();                                           //!< 当前帧是否等待显示
     
 // MgCoreView
 public:
@@ -80,6 +79,9 @@ public:
     long backShapes();
     long acquireFrontDoc();
     long acquireDynamicShapes();
+    bool isDrawing();
+    bool isStopping();
+    int stopDrawing();
     bool isUndoRecording() const;
     bool isRecording() const;
     bool isPlaying() const;
@@ -90,8 +92,9 @@ public:
     int loadFirstFrame();
     int loadNextFrame(int index);
     int loadPrevFrame(int index);
-    void applyFrame(int flags);
+    long getFrameTick();
     int getFrameIndex() const;
+    void applyFrame(int flags);
     long getPlayingDocForEdit();
     long getDynamicShapesForEdit();
     const char* getCommand() const;

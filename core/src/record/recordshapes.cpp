@@ -22,13 +22,14 @@ struct MgRecordShapes::Impl
     volatile long   loading;
     MgShapeDoc      *lastDoc;
     long            startTick;
-    int             tick;
+    int             tick, lastTick;
     int             flags[2];
     int             shapeCount;
     MgJsonStorage   *js[3];
     MgStorage       *s[3];
     
-    Impl() : fileCount(0), maxCount(0), loading(0), startTick(GetTickCount()), tick(0) {
+    Impl() : fileCount(0), maxCount(0), loading(0)
+        , startTick(GetTickCount()), tick(0), lastTick(0) {
         memset(js, 0, sizeof(js));
         memset(s, 0, sizeof(s));
     }
@@ -319,6 +320,9 @@ bool MgRecordShapes::Impl::saveJsonFile()
     bool ret = false;
     std::string filename;
     
+    if (flags[0] == DYN && lastTick == tick)
+        return false;
+    
     for (int i = 0; i < 2; i++) {
         if (lastDoc) {
             s[i]->writeFloatArray("transform", &lastDoc->modelTransform().m11, 6);
@@ -348,6 +352,7 @@ bool MgRecordShapes::Impl::saveJsonFile()
         //    LOGD("Record %03d: tick=%d, flags=%d, count=%d", fileCount, tick, flags[0], shapeCount);
         //}
         maxCount = ++fileCount;
+        lastTick = tick;
     }
     
     return ret;
@@ -490,6 +495,7 @@ int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc
     
     if (index == 1) {
         _im->fileCount = 0;
+        _im->startTick = GetTickCount();
         return DYN_CHANGED;
     }
     
