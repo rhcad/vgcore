@@ -122,6 +122,9 @@ public:
     }
 
     ~GiCoreViewImpl() {
+        for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
+            delete gsBuf[i];
+        }
         MgObject::release_pointer(dynShapesFront);
         MgObject::release_pointer(dynShapesPlay);
         MgObject::release_pointer(docPlay);
@@ -462,7 +465,7 @@ public:
 //
 
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
-    : _mgview(mgview), _view(view), _gsFront(&_xfFront), _gsBack(&_xfBack)
+    : _mgview(mgview), _view(view)
 {
     mgview->document()->addView(this);
 }
@@ -591,9 +594,7 @@ void GiCoreView::destoryView(GiView* view)
         if (impl->curview == aview) {
             impl->curview = impl->_gcdoc->firstView();
         }
-#ifndef __ANDROID__
         delete aview;
-#endif
     }
 }
 
@@ -665,7 +666,7 @@ long GiCoreView::acquireGraphics(GiView* view)
         }
     }
     if (!gs) {
-        gs = new GiGraphics(new GiTransform(), true);
+        gs = new GiGraphics();
         aview->copyGs(gs);
         for (i = 0; i < (int)(sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0])); i++) {
             if (!impl->gsBuf[i]) {

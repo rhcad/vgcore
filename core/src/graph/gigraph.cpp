@@ -11,6 +11,11 @@
 #define SafeCall(p, f)      if (p) p->f
 #endif
 
+GiGraphics::GiGraphics()
+{
+    m_impl = new GiGraphicsImpl(new GiTransform(), true);
+}
+
 GiGraphics::GiGraphics(GiTransform* xform, bool needFreeXf)
 {
     m_impl = new GiGraphicsImpl(xform, needFreeXf);
@@ -33,6 +38,7 @@ void GiGraphics::copy(const GiGraphics& src)
         m_impl->bkcolor = src.m_impl->bkcolor;
         m_impl->maxPenWidth = src.m_impl->maxPenWidth;
         m_impl->drawColors = src.m_impl->drawColors;
+        m_impl->xform->copy(src.xf());
     }
 }
 

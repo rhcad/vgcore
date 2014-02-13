@@ -33,6 +33,9 @@ enum GiHandleTypes {        //!< 符号类型
 class GiGraphics
 {
 public:
+    //! 构造函数，自动创建坐标系管理对象
+    GiGraphics();
+    
     //! 构造函数，坐标系管理对象必须有效
     GiGraphics(GiTransform* xform, bool needFreeXf = false);
     
@@ -381,7 +384,6 @@ private:
                       bool m2d, bool fill, bool edge, bool modelUnit);
 
 private:
-    GiGraphics();
     GiGraphics& operator=(const GiGraphics&);
 
     GiGraphicsImpl* m_impl;     //!< 内部实现

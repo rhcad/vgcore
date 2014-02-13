@@ -63,7 +63,7 @@ struct GiTransformImpl
         matM2D = matM2W * matW2D;
     }
 
-    void coptFrom(const GiTransformImpl* src)
+    void copyFrom(const GiTransformImpl* src)
     {
         cxWnd  = src->cxWnd;
         cyWnd  = src->cyWnd;
@@ -125,7 +125,7 @@ GiTransform::GiTransform(bool ydown)
 GiTransform::GiTransform(const GiTransform& src)
 {
     m_impl = new GiTransformImpl(true);
-    m_impl->coptFrom(src.m_impl);
+    m_impl->copyFrom(src.m_impl);
 }
 
 GiTransform::~GiTransform()
@@ -136,7 +136,7 @@ GiTransform::~GiTransform()
 GiTransform& GiTransform::copy(const GiTransform& src)
 {
     if (this != &src)
-        m_impl->coptFrom(src.m_impl);
+        m_impl->copyFrom(src.m_impl);
     return *this;
 }
 
