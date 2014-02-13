@@ -99,12 +99,13 @@ public:
     
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
+    volatile long   stopping;
 
 public:
     GiCoreViewImpl() : curview(NULL), refcount(1), gestureHandler(0)
         , regenPending(-1), appendPending(-1), redrawPending(-1)
         , changeCount(0), drawCount(0), dynShapesFront(NULL)
-        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0)
+        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0), stopping(0)
     {
         memset(&gsBuf, 0, sizeof(gsBuf));
         memset((void*)&gsUsed, 0, sizeof(gsUsed));
@@ -626,6 +627,9 @@ bool GiCoreView::isDrawing()
 
 bool GiCoreView::isStopping()
 {
+    if (impl->stopping) {
+        return true;
+    }
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
         if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isStopping())
             return true;
@@ -636,6 +640,8 @@ bool GiCoreView::isStopping()
 int GiCoreView::stopDrawing()
 {
     int n = 0;
+    
+    giInterlockedIncrement(&impl->stopping);
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
         if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isDrawing()) {
             impl->gsBuf[i]->stopDrawing();
@@ -1515,7 +1521,7 @@ int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index)
 
 bool GiCoreView::frameNeedWait()
 {
-    return getFrameTick() - 100 > getPlayingTick() && !isStopping();
+    return !isStopping() && getFrameTick() - 100 > getPlayingTick();
 }
 
 int GiCoreView::loadNextFrame(int index)
