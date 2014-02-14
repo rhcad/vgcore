@@ -172,7 +172,7 @@ bool MgRecordShapes::undo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
         _im->fileCount--;
         _im->resetVersion(doc->getCurrentLayer());
         MgObject::release_pointer(_im->lastDoc);
-        LOGD("Undo %d", _im->fileCount);
+        LOGD("Undo with %s", fn.c_str());
     }
     giInterlockedDecrement(&_im->loading);
     
@@ -193,7 +193,7 @@ bool MgRecordShapes::redo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
         _im->fileCount++;
         _im->resetVersion(doc->getCurrentLayer());
         MgObject::release_pointer(_im->lastDoc);
-        LOGD("Redo %d", _im->fileCount);
+        LOGD("Redo with %s", fn.c_str());
     }
     giInterlockedDecrement(&_im->loading);
     
@@ -348,9 +348,10 @@ bool MgRecordShapes::Impl::saveJsonFile()
         s[i] = NULL;
     }
     if (ret) {
-        //if (flags[0] != DYN || shapeCount > 1) {
-        //    LOGD("Record %03d: tick=%d, flags=%d, count=%d", fileCount, tick, flags[0], shapeCount);
-        //}
+        if (flags[1]) {
+            LOGD("Record %03d: tick=%d, flags=%d, count=%d, forUndo:%d",
+                 fileCount, tick, flags[0], shapeCount, (int)forUndo);
+        }
         maxCount = ++fileCount;
         lastTick = tick;
     }
@@ -418,8 +419,10 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
             
             if ((flags & (ADD|EDIT)) && stds->load(f, s, true) > 0) {
                 ret |= (flags == ADD) ? APPEND : STD_CHANGED;
-                if (newId && ret == APPEND)
+                if (newId && ret == APPEND) {
                     *newId = stds->getLastShape()->getID();
+                    LOGD("addShape id=%d", *newId);
+                }
             }
             
             if (s->readNode("delete", -1, false)) {
@@ -429,8 +432,10 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
                     int sid = s->readInt(ss.str().c_str(), 0);
                     if (sid == 0)
                         break;
-                    if (stds->removeShape(sid))
+                    if (stds->removeShape(sid)) {
                         ret |= STD_CHANGED;
+                        LOGD("removeShape id=%d", sid);
+                    }
                 }
                 s->readNode("delete", -1, true);
             }
