@@ -99,12 +99,13 @@ public:
     
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
+    volatile long   stopping;
 
 public:
     GiCoreViewImpl() : curview(NULL), refcount(1), gestureHandler(0)
         , regenPending(-1), appendPending(-1), redrawPending(-1)
         , changeCount(0), drawCount(0), dynShapesFront(NULL)
-        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0)
+        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0), stopping(0)
     {
         memset(&gsBuf, 0, sizeof(gsBuf));
         memset((void*)&gsUsed, 0, sizeof(gsUsed));
@@ -122,6 +123,9 @@ public:
     }
 
     ~GiCoreViewImpl() {
+        for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
+            delete gsBuf[i];
+        }
         MgObject::release_pointer(dynShapesFront);
         MgObject::release_pointer(dynShapesPlay);
         MgObject::release_pointer(docPlay);
@@ -462,7 +466,7 @@ public:
 //
 
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
-    : _mgview(mgview), _view(view), _gsFront(&_xfFront), _gsBack(&_xfBack)
+    : _mgview(mgview), _view(view)
 {
     mgview->document()->addView(this);
 }
@@ -591,9 +595,7 @@ void GiCoreView::destoryView(GiView* view)
         if (impl->curview == aview) {
             impl->curview = impl->_gcdoc->firstView();
         }
-#ifndef __ANDROID__
         delete aview;
-#endif
     }
 }
 
@@ -625,6 +627,9 @@ bool GiCoreView::isDrawing()
 
 bool GiCoreView::isStopping()
 {
+    if (impl->stopping) {
+        return true;
+    }
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
         if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isStopping())
             return true;
@@ -635,6 +640,8 @@ bool GiCoreView::isStopping()
 int GiCoreView::stopDrawing()
 {
     int n = 0;
+    
+    giInterlockedIncrement(&impl->stopping);
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
         if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isDrawing()) {
             impl->gsBuf[i]->stopDrawing();
@@ -665,7 +672,7 @@ long GiCoreView::acquireGraphics(GiView* view)
         }
     }
     if (!gs) {
-        gs = new GiGraphics(new GiTransform(), true);
+        gs = new GiGraphics();
         aview->copyGs(gs);
         for (i = 0; i < (int)(sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0])); i++) {
             if (!impl->gsBuf[i]) {
@@ -1514,7 +1521,12 @@ int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index)
 
 bool GiCoreView::frameNeedWait()
 {
-    return getFrameTick() - 100 > getPlayingTick() && !isStopping();
+    return !isStopping() && getFrameTick() - 100 > getPlayingTick();
+}
+
+int GiCoreView::loadNextFrame(const mgvector<int>& head)
+{
+    return loadNextFrame(skipExpireFrame(head, getFrameIndex()));
 }
 
 int GiCoreView::loadNextFrame(int index)

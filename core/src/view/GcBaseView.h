@@ -27,11 +27,11 @@ public:
     MgShapeDoc* backDoc();
     MgShapes* backShapes();
     
-    void submitBackXform() { _xfFront = _xfBack; _gsFront.copy(_gsBack); }  //!< 应用后端坐标系对象到前端
-    void copyGs(GiGraphics* gs) { gs->_xf().copy(_xfBack); gs->copy(_gsBack); }  //!< 复制坐标系参数
+    void submitBackXform() { _gsFront.copy(_gsBack); }              //!< 应用后端坐标系对象到前端
+    void copyGs(GiGraphics* gs) { gs->copy(_gsBack); }              //!< 复制坐标系参数
     
     GiGraphics* frontGraph() { return &_gsFront; }                  //!< 得到前端图形显示对象
-    GiTransform* xform() { return &_xfBack; }                       //!< 得到后端坐标系对象
+    GiTransform* xform() { return &_gsBack._xf(); }                 //!< 得到后端坐标系对象
     GiGraphics* graph() { return &_gsBack; }                        //!< 得到后端图形显示对象
     virtual void onSize(int dpi, int w, int h);                     //!< 设置视图的宽高
     
@@ -41,8 +41,6 @@ public:
 private:
     MgView*     _mgview;
     GiView*     _view;
-    GiTransform _xfFront;
-    GiTransform _xfBack;
     GiGraphics  _gsFront;
     GiGraphics  _gsBack;
     Point2d     _lastCenter;

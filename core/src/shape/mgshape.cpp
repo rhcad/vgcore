@@ -73,11 +73,11 @@ bool MgBaseShape::_equals(const MgBaseShape& src) const
 
 void MgBaseShape::_update()
 {
-    if (_extent.width() < minTol().equalPoint()) {
-        _extent.inflate(minTol().equalPoint(), 0);
+    if (_extent.width() < minTol().equalPoint() && getPointCount() > 0) {
+        _extent.inflate(minTol().equalPoint() / 2.f, 0);
     }
-    if (_extent.height() < minTol().equalPoint()) {
-        _extent.inflate(0, minTol().equalPoint());
+    if (_extent.height() < minTol().equalPoint() && getPointCount() > 0) {
+        _extent.inflate(0, minTol().equalPoint() / 2.f);
     }
     afterChanged();
 }
