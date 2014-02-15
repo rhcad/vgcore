@@ -421,7 +421,11 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
                 ret |= (flags == ADD) ? APPEND : STD_CHANGED;
                 if (newId && ret == APPEND) {
                     *newId = stds->getLastShape()->getID();
+<<<<<<< HEAD
                     //LOGD("addShape id=%d", *newId);
+=======
+                    LOGD("addShape id=%d", *newId);
+>>>>>>> b44bdf1e0cd528a61ea9818cbec97245d2644593
                 }
             }
             
@@ -434,7 +438,11 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
                         break;
                     if (stds->removeShape(sid)) {
                         ret |= STD_CHANGED;
+<<<<<<< HEAD
                         //LOGD("removeShape id=%d", sid);
+=======
+                        LOGD("removeShape id=%d", sid);
+>>>>>>> b44bdf1e0cd528a61ea9818cbec97245d2644593
                     }
                 }
                 s->readNode("delete", -1, true);
