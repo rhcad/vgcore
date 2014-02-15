@@ -1524,6 +1524,11 @@ bool GiCoreView::frameNeedWait()
     return !isStopping() && getFrameTick() - 100 > getPlayingTick();
 }
 
+int GiCoreView::loadNextFrame(const mgvector<int>& head)
+{
+    return loadNextFrame(skipExpireFrame(head, getFrameIndex()));
+}
+
 int GiCoreView::loadNextFrame(int index)
 {
     if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit())

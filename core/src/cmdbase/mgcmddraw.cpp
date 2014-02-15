@@ -87,8 +87,9 @@ bool MgCommandDraw::draw(const MgMotion* sender, GiGraphics* gs)
 
 bool MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
 {
-    if (m_step > 0 && m_shape)
+    if (m_step > 0 && m_shape && m_shape->shapec()->getPointCount() > 0) {
         shapes->addShape(*m_shape);
+    }
     return false; // gather more shapes via draw()
 }
 

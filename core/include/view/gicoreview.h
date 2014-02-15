@@ -67,6 +67,7 @@ public:
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
     static bool loadFrameIndex(const char* path, mgvector<int>& arr);  //!< 加载帧索引{index,tick,flags}
+    int loadNextFrame(const mgvector<int>& head);                   //!< 加载下一帧，跳过过时的帧
     int skipExpireFrame(const mgvector<int>& head, int index);      //!< 跳过过时的帧
     bool frameNeedWait();                                           //!< 当前帧是否等待显示
     
