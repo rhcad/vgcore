@@ -15,7 +15,7 @@ class MgRecordShapes
 {
 public:
     enum { ADD = 1, EDIT = 2, DEL = 4, DYN = 8,
-        STD_CHANGED = 1, APPEND = 2, DYN_CHANGED = 4 };
+        DOC_CHANGED = 1, SHAPE_APPEND = 2, DYN_CHANGED = 4 };
     MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo);
     ~MgRecordShapes();
     
@@ -25,6 +25,7 @@ public:
     std::string getPath() const;
     bool isLoading() const;
     void setLoading(bool loading);
+    bool onResume(long ticks);
     
     bool canUndo() const;
     bool canRedo() const;
@@ -53,12 +54,7 @@ private:
 #endif
 
 #ifndef WIN32
-#include <sys/time.h>
-inline long GetTickCount() {
-    struct timeval current;
-    gettimeofday(&current, NULL);
-    return current.tv_sec * 1000 + current.tv_usec / 1000;
-}
+long GetTickCount();
 #endif
 
 #endif // TOUCHVG_RECORD_SHAPES_H_

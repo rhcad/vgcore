@@ -31,7 +31,7 @@ struct MgCoreView
     
     virtual bool isDrawing() = 0;                   //!< 返回是否正在绘制静态图形
     virtual bool isStopping() = 0;                  //!< 返回是否需要停止绘图
-    virtual int stopDrawing() = 0;                  //!< 标记需要停止绘图
+    virtual int stopDrawing(bool stop = true) = 0;  //!< 标记需要停止绘图
 
     virtual bool isUndoRecording() const = 0;       //!< 是否正在Undo录制
     virtual bool isRecording() const = 0;           //!< 是否正在录屏
@@ -41,6 +41,7 @@ struct MgCoreView
     virtual bool canUndo() const = 0;               //!< 能否撤销
     virtual bool canRedo() const = 0;               //!< 能否重做
     
+    enum FrameChangeType { DOC_CHANGED = 1, SHAPE_APPEND = 2, DYN_CHANGED = 4 };
     long getPlayingTick() { return getRecordTick(false); }  //!< 得到已播放的毫秒数
     virtual int loadFirstFrame() = 0;               //!< 异步加载第0帧
     virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
@@ -111,14 +112,23 @@ struct MgCoreView
     //! 添加一个容纳图像的矩形图形
     virtual int addImageShape(const char* name, float xc, float yc, float w, float h) = 0;
     
-    //! 返回图形显示范围，四个点单位坐标(left, top, right, bottom)
+    //! 返回是否有容纳图像的图形对象
+    virtual bool hasImageShape() = 0;
+    
+    //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;
+    
+    //! 返回前端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
+    virtual bool getDisplayExtent(long hDoc, long hGs, mgvector<float>& box) = 0;
 
     //! 返回选择包络框，四个点单位坐标(left, top, right, bottom)
     virtual bool getBoundingBox(mgvector<float>& box) = 0;
     
-    //! 返回指定ID的图形的包络框，四个点单位坐标(left, top, right, bottom)
+    //! 返回后端文档中指定ID的图形的包络框，四个点单位坐标(left, top, right, bottom)
     virtual bool getBoundingBox(mgvector<float>& box, int shapeId) = 0;
+    
+    //! 返回前端文档中指定ID的图形的包络框，四个点单位坐标(left, top, right, bottom)
+    virtual bool getBoundingBox(long hDoc, long hGs, mgvector<float>& box, int shapeId) = 0;
 };
 
 inline bool MgCoreView::saveToFile(const char* vgfile, bool pretty) {

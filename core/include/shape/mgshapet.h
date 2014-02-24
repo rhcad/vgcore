@@ -65,12 +65,12 @@ public:
     int getType() const { return Type(); }
     
     void release() {
-        if (giInterlockedDecrement(&_refcount) == 0)
+        if (giAtomicDecrement(&_refcount) == 0)
             delete this;
     }
     
     void addRef() {
-        giInterlockedIncrement(&_refcount);
+        giAtomicIncrement(&_refcount);
     }
     
     MgObject* clone() const {

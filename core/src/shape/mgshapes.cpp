@@ -55,13 +55,13 @@ MgShapes::~MgShapes()
 
 void MgShapes::release()
 {
-    if (giInterlockedDecrement(&im->refcount) == 0)
+    if (giAtomicDecrement(&im->refcount) == 0)
         delete this;
 }
 
 void MgShapes::addRef()
 {
-    giInterlockedIncrement(&im->refcount);
+    giAtomicIncrement(&im->refcount);
 }
 
 MgObject* MgShapes::clone() const

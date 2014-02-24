@@ -16,6 +16,7 @@
 #include "mgselect.h"
 #include "mglog.h"
 #include "mgshapet.h"
+#include "mgshapetype.h"
 #include "girecordcanvas.h"
 #include "girecordshape.h"
 #include "cmdbasic.h"
@@ -51,8 +52,8 @@ public:
     MgBaseShape* shape() { return _shape; }
     const MgBaseShape* shapec() const { return _shape; }
     int getType() const { return 0x20000 | _shape->getType(); }
-    void release() { if (giInterlockedDecrement(&_refcount) == 0) delete this; }
-    void addRef() { giInterlockedIncrement(&_refcount); }
+    void release() { if (giAtomicDecrement(&_refcount) == 0) delete this; }
+    void addRef() { giAtomicIncrement(&_refcount); }
     int getTag() const { return _tag; }
     void setTag(int tag) { _tag = tag; }
     int getID() const { return _id; }
@@ -94,7 +95,7 @@ public:
     MgShapes*       dynShapesFront;
     MgShapes*       dynShapesPlay;
     MgShapeDoc*     docPlay;
-    long            startPlayTick;
+    volatile long   startPauseTick;
     MgRecordShapes* recorder[2];
     
     GiGraphics*     gsBuf[20];
@@ -105,7 +106,7 @@ public:
     GiCoreViewImpl() : curview(NULL), refcount(1), gestureHandler(0)
         , regenPending(-1), appendPending(-1), redrawPending(-1)
         , changeCount(0), drawCount(0), dynShapesFront(NULL)
-        , dynShapesPlay(NULL), docPlay(NULL), startPlayTick(0), stopping(0)
+        , dynShapesPlay(NULL), docPlay(NULL), startPauseTick(0), stopping(0)
     {
         memset(&gsBuf, 0, sizeof(gsBuf));
         memset((void*)&gsUsed, 0, sizeof(gsUsed));
@@ -526,6 +527,8 @@ long GiCoreView::backShapes()
 
 long GiCoreView::acquireFrontDoc()
 {
+    if (!impl->_gcdoc->frontDoc())
+        return 0;
     impl->_gcdoc->frontDoc()->addRef();
     return impl->_gcdoc->frontDoc()->toHandle();
 }
@@ -544,7 +547,7 @@ bool GiCoreView::submitBackDoc(GiView* view)
     if (ret) {
         impl->doc()->saveAll(NULL, aview->xform());  // set viewport from view
         impl->_gcdoc->submitBackDoc(impl->doc());
-        giInterlockedIncrement(&impl->changeCount);
+        giAtomicIncrement(&impl->changeCount);
     }
     if (aview) {
         aview->submitBackXform();
@@ -555,11 +558,10 @@ bool GiCoreView::submitBackDoc(GiView* view)
 
 long GiCoreView::acquireDynamicShapes()
 {
-    if (impl->dynShapesFront) {
-        impl->dynShapesFront->addRef();
-        return impl->dynShapesFront->toHandle();
-    }
-    return 0;
+    if (!impl->dynShapesFront)
+        return 0;
+    impl->dynShapesFront->addRef();
+    return impl->dynShapesFront->toHandle();
 }
 
 void MgCoreView::releaseShapes(long hShapes)
@@ -637,14 +639,18 @@ bool GiCoreView::isStopping()
     return false;
 }
 
-int GiCoreView::stopDrawing()
+int GiCoreView::stopDrawing(bool stop)
 {
     int n = 0;
     
-    giInterlockedIncrement(&impl->stopping);
+    if (impl->stopping == 0 && stop)
+        giAtomicIncrement(&impl->stopping);
+    else while (impl->stopping > 0 && !stop)
+        giAtomicDecrement(&impl->stopping);
+    
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
-        if (impl->gsUsed[i] && impl->gsBuf[i] && impl->gsBuf[i]->isDrawing()) {
-            impl->gsBuf[i]->stopDrawing();
+        if (impl->gsBuf[i]) {
+            impl->gsBuf[i]->stopDrawing(stop);
             n++;
         }
     }
@@ -662,12 +668,12 @@ long GiCoreView::acquireGraphics(GiView* view)
     
     while (--i >= 0) {
         if (!impl->gsUsed[i] && impl->gsBuf[i]) {
-            if (giInterlockedIncrement(&impl->gsUsed[i]) == 1) {
+            if (giAtomicIncrement(&impl->gsUsed[i]) == 1) {
                 gs = impl->gsBuf[i];
                 aview->copyGs(gs);
                 break;
             } else {
-                giInterlockedDecrement(&impl->gsUsed[i]);
+                giAtomicDecrement(&impl->gsUsed[i]);
             }
         }
     }
@@ -676,11 +682,11 @@ long GiCoreView::acquireGraphics(GiView* view)
         aview->copyGs(gs);
         for (i = 0; i < (int)(sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0])); i++) {
             if (!impl->gsBuf[i]) {
-                if (giInterlockedIncrement(&impl->gsUsed[i]) == 1) {
+                if (giAtomicIncrement(&impl->gsUsed[i]) == 1) {
                     impl->gsBuf[i] = gs;
                     break;
                 } else {
-                    giInterlockedDecrement(&impl->gsUsed[i]);
+                    giAtomicDecrement(&impl->gsUsed[i]);
                 }
             }
         }
@@ -698,7 +704,7 @@ void GiCoreView::releaseGraphics(long hGs)
     }
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
         if (impl->gsBuf[i] == gs) {
-            giInterlockedDecrement(&impl->gsUsed[i]);
+            giAtomicDecrement(&impl->gsUsed[i]);
             return;
         }
     }
@@ -1019,7 +1025,7 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
                     v->frontGraph()->endPaint();
                 }
             }
-            giInterlockedIncrement(&impl->drawCount);
+            giAtomicIncrement(&impl->drawCount);
         }
     }
     if (v) {
@@ -1212,12 +1218,32 @@ int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, flo
     return shape ? shape->getID() : 0;
 }
 
+bool GiCoreView::hasImageShape()
+{
+    return !!impl->doc()->getCurrentLayer()->findShapeByType(kMgShapeImage);
+}
+
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)
 {
     bool ret = box.count() == 4 && impl->curview;
     if (ret) {
         Box2d rect(impl->doc()->getExtent());
         rect *= impl->curview->xform()->modelToDisplay();
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::getDisplayExtent(long hDoc, long hGs, mgvector<float>& box)
+{
+    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
+    const GiGraphics* gs = GiGraphics::fromHandle(hGs);
+    bool ret = box.count() == 4 && doc && gs;
+    
+    if (ret) {
+        Box2d rect(doc->getExtent());
+        rect *= gs->xf().modelToDisplay();
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
     }
@@ -1250,6 +1276,22 @@ bool GiCoreView::getBoundingBox(mgvector<float>& box, int shapeId)
     return ret;
 }
 
+bool GiCoreView::getBoundingBox(long hDoc, long hGs, mgvector<float>& box, int shapeId)
+{
+    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
+    const GiGraphics* gs = GiGraphics::fromHandle(hGs);
+    const MgShape* shape = doc ? doc->findShape(shapeId) : NULL;
+    bool ret = box.count() == 4 && shape && gs;
+    
+    if (ret) {
+        Box2d rect(shape->shapec()->getExtent());
+        rect *= gs->xf().modelToDisplay();
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
 bool GiCoreViewImpl::gestureToCommand()
 {
     MgCommand* cmd = _cmds->getCommand();
@@ -1258,7 +1300,9 @@ bool GiCoreViewImpl::gestureToCommand()
     if (!cmd || _motion.gestureState == kMgGestureCancel) {
         return cmd && cmd->cancel(&_motion);
     }
-    if (startPlayTick && _motion.gestureState > kMgGesturePossible) {
+    if (recorder[1] && recorder[1]->isPlaying()
+        && _motion.gestureState > kMgGesturePossible) {
+        LOGE("recorder[1] && recorder[1]->isPlaying()");
         return true;
     }
     if (_motion.gestureState == kMgGesturePossible
@@ -1311,8 +1355,11 @@ bool GiCoreViewImpl::gestureToCommand()
 long GiCoreView::getRecordTick(bool forUndo)
 {
     MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
-    long tick = recorder ? recorder->getCurrentTick() : 0;
-    return tick;
+    if (!recorder)
+        return 0;
+    long tick = recorder->getCurrentTick();
+    long pauseTick = GetTickCount() - impl->startPauseTick;
+    return isPaused() && tick > pauseTick ? tick - pauseTick : tick;
 }
 
 bool GiCoreView::startRecord(const char* path, long doc, bool forUndo)
@@ -1322,12 +1369,8 @@ bool GiCoreView::startRecord(const char* path, long doc, bool forUndo)
         return false;
     
     recorder = new MgRecordShapes(path, MgShapeDoc::fromHandle(doc), forUndo);
-    if (isPlaying()) {
-        impl->startPlayTick = GetTickCount();
-        return true;
-    }
-        
-    return forUndo || saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY);
+    return (isPlaying() || forUndo
+            || saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY));
 }
 
 void GiCoreView::stopRecord(bool forUndo)
@@ -1342,7 +1385,6 @@ void GiCoreView::stopRecord(bool forUndo)
     if (!forUndo && playing != isPlaying()) {
         MgObject::release_pointer(impl->dynShapesPlay);
         MgObject::release_pointer(impl->docPlay);
-        impl->startPlayTick = 0;
         impl->regenAll(true);
     }
 }
@@ -1391,6 +1433,7 @@ bool GiCoreView::undo(GiView* view)
             submitDynamicShapes(view);
             recorder->recordStep(0, impl->changeCount, MgShapeDoc::fromHandle(acquireFrontDoc()), NULL);
             impl->regenAll(true);
+            impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
         }
         recorder->setLoading(false);
     }
@@ -1411,6 +1454,7 @@ bool GiCoreView::redo(GiView* view)
             submitDynamicShapes(view);
             recorder->recordStep(0, impl->changeCount, MgShapeDoc::fromHandle(acquireFrontDoc()), NULL);
             impl->regenAll(true);
+            impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
         }
         recorder->setLoading(false);
     }
@@ -1497,14 +1541,14 @@ bool GiCoreView::loadFrameIndex(const char* path, mgvector<int>& arr)
 
 int GiCoreView::loadFirstFrame()
 {
-    if (!isPlaying() || !getPlayingDocForEdit())
+    if (isStopping() || !isPlaying() || !getPlayingDocForEdit())
         return 0;
     
     if (!impl->recorder[1]->applyFirstFile(impl->getShapeFactory(), impl->docPlay))
         return 0;
     
     impl->docPlay->setReadOnly(true);
-    return MgRecordShapes::STD_CHANGED;
+    return DOC_CHANGED;
 }
 
 int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index)
@@ -1521,7 +1565,39 @@ int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index)
 
 bool GiCoreView::frameNeedWait()
 {
-    return !isStopping() && getFrameTick() - 100 > getPlayingTick();
+    bool more = getFrameTick() - 100 > getPlayingTick();
+    return !isStopping() && (impl->startPauseTick || more);
+}
+
+bool GiCoreView::isPaused()
+{
+    return impl->startPauseTick != 0;
+}
+
+bool GiCoreView::onPause()
+{
+    return giAtomicCompareAndSwap(&impl->startPauseTick, GetTickCount(), 0);
+}
+
+bool GiCoreView::onResume()
+{
+    long startPauseTick = impl->startPauseTick;
+    
+    if (startPauseTick != 0
+        && giAtomicCompareAndSwap(&impl->startPauseTick, 0, startPauseTick)) {
+        long ticks = GetTickCount() - startPauseTick;
+        if (impl->recorder[0] && !impl->recorder[0]->onResume(ticks)) {
+            LOGE("recorder[0]->onResume(%ld) fail", ticks);
+            return false;
+        }
+        if (impl->recorder[1] && !impl->recorder[1]->onResume(ticks)) {
+            LOGE("recorder[1]->onResume(%ld) fail", ticks);
+            return false;
+        }
+        return true;
+    }
+    
+    return false;
 }
 
 int GiCoreView::loadNextFrame(const mgvector<int>& head)
@@ -1531,8 +1607,10 @@ int GiCoreView::loadNextFrame(const mgvector<int>& head)
 
 int GiCoreView::loadNextFrame(int index)
 {
-    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit())
+    if (isStopping() || !isPlaying()
+        || !getPlayingDocForEdit() || !getDynamicShapesForEdit()) {
         return 0;
+    }
     
     int newID = 0;
     int flags = impl->recorder[1]->applyRedoFile(newID, impl->getShapeFactory(),
@@ -1542,8 +1620,10 @@ int GiCoreView::loadNextFrame(int index)
 
 int GiCoreView::loadPrevFrame(int index)
 {
-    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit())
+    if (isStopping() || !isPlaying()
+        || !getPlayingDocForEdit() || !getDynamicShapesForEdit()) {
         return 0;
+    }
     
     int newID = 0;
     int flags = impl->recorder[1]->applyUndoFile(newID, impl->getShapeFactory(),
@@ -1553,14 +1633,17 @@ int GiCoreView::loadPrevFrame(int index)
 
 void GiCoreView::applyFrame(int flags)
 {
-    if (flags & (MgRecordShapes::STD_CHANGED | MgRecordShapes::APPEND)) {
+    if (isStopping() || !flags) {
+        return;
+    }
+    if (flags & (DOC_CHANGED | SHAPE_APPEND)) {
         impl->_gcdoc->submitBackDoc(impl->docPlay);
         if (impl->curview) {
             impl->curview->xform()->setModelTransform(impl->docPlay->modelTransform());
             impl->curview->xform()->zoomTo(impl->docPlay->getPageRectW());
         }
     }
-    if (flags & MgRecordShapes::DYN_CHANGED) {
+    if (flags & DYN_CHANGED) {
         MgObject::release_pointer(impl->dynShapesFront);
         impl->dynShapesFront = impl->dynShapesPlay;
         impl->dynShapesFront->addRef();
@@ -1569,13 +1652,13 @@ void GiCoreView::applyFrame(int flags)
         impl->curview->submitBackXform();
     }
     
-    if (flags & MgRecordShapes::STD_CHANGED) {
+    if (flags & DOC_CHANGED) {
         impl->regenAll(true);
     }
-    else if (flags & MgRecordShapes::APPEND) {
+    else if (flags & SHAPE_APPEND) {
         impl->regenAppend(impl->docPlay->getCurrentLayer()->getLastShape()->getID());
     }
-    else if (flags & MgRecordShapes::DYN_CHANGED) {
+    else if (flags & DYN_CHANGED) {
         impl->redraw();
     }
 }

@@ -70,6 +70,9 @@ public:
     int loadNextFrame(const mgvector<int>& head);                   //!< 加载下一帧，跳过过时的帧
     int skipExpireFrame(const mgvector<int>& head, int index);      //!< 跳过过时的帧
     bool frameNeedWait();                                           //!< 当前帧是否等待显示
+    bool isPaused();                                                //!< 返回是否已暂停
+    bool onPause();                                                 //!< 暂停
+    bool onResume();                                                //!< 继续
     
 // MgCoreView
 public:
@@ -82,7 +85,7 @@ public:
     long acquireDynamicShapes();
     bool isDrawing();
     bool isStopping();
-    int stopDrawing();
+    int stopDrawing(bool stop = true);
     bool isUndoRecording() const;
     bool isRecording() const;
     bool isPlaying() const;
@@ -126,9 +129,12 @@ public:
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
     int addImageShape(const char* name, float xc, float yc, float w, float h);
+    bool hasImageShape();
     bool getDisplayExtent(mgvector<float>& box);
+    bool getDisplayExtent(long hDoc, long hGs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box, int shapeId);
+    bool getBoundingBox(long hDoc, long hGs, mgvector<float>& box, int shapeId);
 
 private:
     GiCoreViewImpl* impl;

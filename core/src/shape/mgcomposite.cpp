@@ -173,7 +173,7 @@ float MgComposite::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
         }
     }
 
-    return res.segment != 0;
+    return res.dist;
 }
 
 bool MgComposite::_offset(const Vector2d& vec, int)

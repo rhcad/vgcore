@@ -27,7 +27,7 @@ public:
     int getViewCount() const;
     GcBaseView* firstView() const;
     
-    MgShapeDoc* frontDoc() const { return _frontDoc ? _frontDoc : _backDoc; }
+    MgShapeDoc* frontDoc() const { return _frontDoc; }
     MgShapeDoc* backDoc() const { return _backDoc; }
     void submitBackDoc(MgShapeDoc* doc);
     

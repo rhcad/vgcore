@@ -161,6 +161,7 @@ public:
 
 protected:
     void _update();
+    void _transform(const Matrix2d& mat);
     int _getHandleCount() const;
     Point2d _getHandlePoint(int index) const;
     int _getHandleType(int index) const;

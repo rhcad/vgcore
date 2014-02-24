@@ -101,14 +101,14 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         if (m_step > 0 && !dynshape()->shape()->getExtent().isEmpty(tol, false)) {
             MgShape* newsp = addShape(sender);
             m_step = 0;
-            if (newsp) {
+            if (newsp) {/*
                 sender->view->regenAppend(0);
                 newsp = newsp->cloneShape();
                 lines = (MgSplines*)newsp->shape();
                 lines->smooth(sender->view->xform()->modelToDisplay(),
                               sender->view->xform()->getWorldToDisplayY() * 0.5f);
                 sender->view->shapes()->updateShape(newsp);
-                sender->view->regenAppend(newsp->getID());
+                sender->view->regenAppend(newsp->getID())*/
             }
         }
         else {

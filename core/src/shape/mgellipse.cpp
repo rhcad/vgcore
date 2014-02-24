@@ -49,6 +49,12 @@ void MgEllipse::_update()
     __super::_update();
 }
 
+void MgEllipse::_transform(const Matrix2d& mat)
+{
+    __super::_transform(mat);
+    _update();
+}
+
 int MgEllipse::_getHandleCount() const
 {
     return getFlag(kMgSquare) ? 5 : 9;

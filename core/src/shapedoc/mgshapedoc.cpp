@@ -47,12 +47,12 @@ MgShapeDoc* MgShapeDoc::createDoc()
 
 void MgShapeDoc::addRef()
 {
-    giInterlockedIncrement(&im->refcount);
+    giAtomicIncrement(&im->refcount);
 }
 
 void MgShapeDoc::release()
 {
-    if (giInterlockedDecrement(&im->refcount) == 0) {
+    if (giAtomicDecrement(&im->refcount) == 0) {
         delete this;
     }
 }

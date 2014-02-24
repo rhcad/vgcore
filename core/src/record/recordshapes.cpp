@@ -12,16 +12,32 @@
 #include <map>
 #include <vector>
 
+#ifndef WIN32
+#include <sys/time.h>
+long GetTickCount()
+{
+    static struct timeval start = { 0, 0 };
+    struct timeval curt;
+    
+    if (start.tv_sec == 0)
+        gettimeofday(&start, NULL);
+    gettimeofday(&curt, NULL);
+    
+    unsigned long u = (unsigned long)(curt.tv_usec - start.tv_usec);
+    return (long)((curt.tv_sec - start.tv_sec) * 1000 + u / 1000 % 1000);
+}
+#endif
+
 struct MgRecordShapes::Impl
 {
     std::string     path;
-    bool            forUndo;
+    int             type;
     std::map<int, long>  id2ver;
     volatile int    fileCount;
     volatile int    maxCount;
     volatile long   loading;
     MgShapeDoc      *lastDoc;
-    long            startTick;
+    volatile long   startTick;
     int             tick, lastTick;
     int             flags[2];
     int             shapeCount;
@@ -43,6 +59,7 @@ struct MgRecordShapes::Impl
     void stopRecord();
     void saveIndexFile(bool ended);
     void recordShapes(const MgShapes* shapes);
+    bool forUndo() const { return type == 0; }
 };
 
 MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo)
@@ -52,7 +69,7 @@ MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo)
     if (*_im->path.rbegin() != '/' && *_im->path.rbegin() != '\\') {
         _im->path += '/';
     }
-    _im->forUndo = forUndo;
+    _im->type = forUndo ? 0 : doc ? 1 : 2;
     _im->lastDoc = doc;
     if (doc) {
         _im->startRecord(doc->getCurrentLayer());
@@ -67,7 +84,7 @@ MgRecordShapes::~MgRecordShapes()
 
 bool MgRecordShapes::isPlaying() const
 {
-    return !_im->lastDoc;
+    return _im->type == 2;
 }
 
 int MgRecordShapes::getFileTick() const
@@ -85,12 +102,17 @@ long MgRecordShapes::getCurrentTick() const
     return GetTickCount() - _im->startTick;
 }
 
+bool MgRecordShapes::onResume(long ticks)
+{
+    return giAtomicCompareAndSwap(&_im->startTick, _im->startTick + ticks, _im->startTick);
+}
+
 bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc, MgShapes* dynShapes)
 {
     _im->beginJsonFile();
     _im->tick = (int)tick;
     
-    bool needDyn = _im->lastDoc && !_im->forUndo;
+    bool needDyn = _im->lastDoc && !_im->forUndo();
     if (doc) {
         if (_im->lastDoc) {     // undo() set lastDoc as null
             _im->recordShapes(doc->getCurrentLayer());
@@ -153,9 +175,9 @@ bool MgRecordShapes::canRedo() const
 void MgRecordShapes::setLoading(bool loading)
 {
     if (loading)
-        giInterlockedIncrement(&_im->loading);
+        giAtomicIncrement(&_im->loading);
     else
-        giInterlockedDecrement(&_im->loading);
+        giAtomicDecrement(&_im->loading);
 }
 
 bool MgRecordShapes::undo(MgShapeFactory *factory, MgShapeDoc* doc, long* changeCount)
@@ -163,7 +185,7 @@ bool MgRecordShapes::undo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
     if (_im->loading > 1 || !_im->lastDoc)
         return false;
     
-    giInterlockedIncrement(&_im->loading);
+    giAtomicIncrement(&_im->loading);
     
     std::string fn(_im->getFileName(true, _im->fileCount - 1));
     int ret = applyFile(_im->tick, NULL, factory, doc, NULL, fn.c_str(), changeCount);
@@ -174,7 +196,7 @@ bool MgRecordShapes::undo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
         MgObject::release_pointer(_im->lastDoc);
         LOGD("Undo with %s", fn.c_str());
     }
-    giInterlockedDecrement(&_im->loading);
+    giAtomicDecrement(&_im->loading);
     
     return ret != 0;
 }
@@ -184,7 +206,7 @@ bool MgRecordShapes::redo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
     if (_im->loading > 1)
         return false;
     
-    giInterlockedIncrement(&_im->loading);
+    giAtomicIncrement(&_im->loading);
     
     std::string fn(_im->getFileName(false, _im->fileCount));
     int ret = applyFile(_im->tick, NULL, factory, doc, NULL, fn.c_str(), changeCount);
@@ -195,7 +217,7 @@ bool MgRecordShapes::redo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
         MgObject::release_pointer(_im->lastDoc);
         LOGD("Redo with %s", fn.c_str());
     }
-    giInterlockedDecrement(&_im->loading);
+    giAtomicDecrement(&_im->loading);
     
     return ret != 0;
 }
@@ -282,7 +304,7 @@ void MgRecordShapes::Impl::resetVersion(const MgShapes* shapes)
 void MgRecordShapes::Impl::startRecord(const MgShapes* shapes)
 {
     resetVersion(shapes);
-    if (!forUndo) {
+    if (!forUndo()) {
         js[2] = new MgJsonStorage();
         s[2] = js[2]->storageForWrite();
         s[2]->writeNode("records", -1, false);
@@ -350,7 +372,7 @@ bool MgRecordShapes::Impl::saveJsonFile()
     if (ret) {
         if (flags[1]) {
             LOGD("Record %03d: tick=%d, flags=%d, count=%d, forUndo:%d",
-                 fileCount, tick, flags[0], shapeCount, (int)forUndo);
+                 fileCount, tick, flags[0], shapeCount, (int)forUndo());
         }
         maxCount = ++fileCount;
         lastTick = tick;
@@ -418,8 +440,8 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
             int flags = s->readInt("flags", 0);
             
             if ((flags & (ADD|EDIT)) && stds->load(f, s, true) > 0) {
-                ret |= (flags == ADD) ? APPEND : STD_CHANGED;
-                if (newId && ret == APPEND) {
+                ret |= (flags == ADD) ? SHAPE_APPEND : DOC_CHANGED;
+                if (newId && ret == SHAPE_APPEND) {
                     *newId = stds->getLastShape()->getID();
                     //LOGD("addShape id=%d", *newId);
                 }
@@ -433,7 +455,7 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
                     if (sid == 0)
                         break;
                     if (stds->removeShape(sid)) {
-                        ret |= STD_CHANGED;
+                        ret |= DOC_CHANGED;
                         //LOGD("removeShape id=%d", sid);
                     }
                 }

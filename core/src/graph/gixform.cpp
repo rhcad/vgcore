@@ -89,7 +89,7 @@ struct GiTransformImpl
 
     void zoomChanged()
     {
-        giInterlockedIncrement(&zoomTimes);
+        giAtomicIncrement(&zoomTimes);
     }
 
     bool zoomNoAdjust(const Point2d& pnt, float scale, bool* changed = NULL)
