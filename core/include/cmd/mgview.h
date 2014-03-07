@@ -59,15 +59,15 @@ struct MgView
     virtual bool toSelectCommand() = 0;                         //!< 取消当前命令
     virtual int getNewShapeID() = 0;                            //!< 返回新绘图形的ID
     virtual void setNewShapeID(int sid) = 0;                    //!< 设置新绘图形的ID
-    virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
     virtual MgCommand* getCommand() = 0;                        //!< 得到当前命令
     virtual MgCommand* findCommand(const char* name) = 0;       //!< 查找命令
     virtual bool setCommand(const char* name) = 0;              //!< 启动命令
     virtual bool isReadOnly() const = 0;                        //!< 返回文档是否只读
+    virtual bool isCommand(const char* name) = 0;               //!< 当前是否为指定名称的命令
     
     virtual void regenAll(bool changed) = 0;                    //!< 标记视图待重新构建显示
     virtual void regenAppend(int sid) = 0;                      //!< 标记视图待追加显示新图形
-    virtual void redraw() = 0;                                  //!< 标记视图待更新显示
+    virtual void redraw(bool changed = true) = 0;               //!< 标记视图待更新显示
     
     virtual bool useFinger() = 0;                               //!< 使用手指或鼠标交互
     virtual void commandChanged() = 0;                          //!< 命令改变
@@ -89,6 +89,7 @@ struct MgView
     virtual bool showContextActions(int selState, const int* actions,
             const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0; //!< 注册命令
+    virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
 #endif
 };
 

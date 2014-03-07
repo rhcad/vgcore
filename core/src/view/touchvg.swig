@@ -1,6 +1,7 @@
 // Copyright (c) 2013, Zhang Yungui, https://github.com/rhcad/touchvg
 
 #ifdef SWIGJAVA
+%javaconst(1);
 %insert("runtime") %{
 #ifdef __ANDROID__
 #define SWIG_JAVA_NO_DETACH_CURRENT_THREAD
@@ -126,6 +127,8 @@
 %feature("director") GiView;
 %include "giview.h"
 
+%feature("director") MgFindImageCallback;
+%feature("director") MgStringCallback;
 %include "mgcoreview.h"
 %include "gigesture.h"
 %include "gicoreview.h"

@@ -6,6 +6,7 @@
 #include "mgstorage.h"
 #include "mgspfactory.h"
 #include "mglog.h"
+#include "mgcomposite.h"
 #include <list>
 #include <map>
 
@@ -75,9 +76,10 @@ void MgShapes::copy(const MgObject&)
 {
 }
 
-int MgShapes::copyShapes(const MgShapes* src, bool deeply)
+int MgShapes::copyShapes(const MgShapes* src, bool deeply, bool needClear)
 {
-    clear();
+    if (needClear)
+        clear();
     
     int ret = 0;
     MgShapeIterator it(src);
@@ -308,6 +310,35 @@ const MgShape* MgShapes::findShapeByType(int type) const
             return *it;
     }
     return NULL;
+}
+
+int MgShapes::traverseByType(int type, void (*c)(const MgShape*, void*), void* d)
+{
+    int count = 0;
+    
+    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
+        const MgBaseShape* shape = (*it)->shapec();
+        if (shape->isKindOf(type)) {
+            (*c)(*it, d);
+            count++;
+        } else if (shape->isKindOf(MgComposite::Type())) {
+            const MgComposite *composite = (const MgComposite *)shape;
+            count += composite->shapes()->traverseByType(type, c, d);
+        }
+    }
+    
+    return count;
+}
+
+const MgShape* MgShapes::getParentShape(const MgShape* shape)
+{
+    const MgComposite *composite = NULL;
+    
+    if (shape && shape->getParent()
+        && shape->getParent()->getOwner()->isKindOf(MgComposite::Type())) {
+        composite = (const MgComposite *)(shape->getParent()->getOwner());
+    }
+    return composite ? composite->getOwnerShape() : NULL;
 }
 
 Box2d MgShapes::getExtent() const

@@ -40,8 +40,9 @@ bool MgSplines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segmen
 {
     if (mode == 2) {
         GiContext ctxl(0, GiColor(0, 0, 128, 128));
+        float r = 0.5f / gs.xf().getViewScale();
         for (int i = 0; i < _count; i++) {
-            gs.drawEllipse(&ctxl, _points[i] * gs.xf().modelToWorld(), 0.5f, 0, false);
+            gs.drawEllipse(&ctxl, _points[i] * gs.xf().modelToWorld(), r, 0, false);
             if (_knotvs) {
                 gs.drawLine(&ctxl, _points[i], _points[i] + _knotvs[i]);
             }

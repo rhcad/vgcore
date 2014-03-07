@@ -73,6 +73,8 @@ private:
 
 private:
     typedef std::map<std::string, MgCommand*> CMDS;
+    typedef std::map<std::string, MgCommand* (*)()> Factories;
+    Factories       _factories;
     CMDS            _cmds;
     std::string     _cmdname;
     std::string     _drawcmd;

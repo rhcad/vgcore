@@ -504,7 +504,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\core\src\view\gicoreplay.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\core\src\view\gicoreview.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\core\src\view\gicoreviewimpl.h"
 					>
 				</File>
 				<File

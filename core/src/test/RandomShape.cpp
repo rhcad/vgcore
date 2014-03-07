@@ -32,7 +32,8 @@ void RandomParam::setShapeProp(GiContext& ctx)
 {
     ctx.setLineColor(GiColor(RandUInt8(10, 255), RandUInt8(0, 255), RandUInt8(0, 255), RandUInt8(32, 255)));
     ctx.setLineWidth(RandF(-20, 200), true);
-    ctx.setLineStyle((randomLineStyle ? (GiLineStyle)RandInt(kGiLineSolid, kGiLineDashDotdot) : kGiLineSolid));
+    ctx.setLineStyle((randomLineStyle ? RandInt(GiContext::kSolidLine, GiContext::kDashDotdot)
+                      : GiContext::kSolidLine));
     if (fill) {
         ctx.setFillColor(GiColor(RandUInt8(0, 255), RandUInt8(0, 255), RandUInt8(0, 255), RandUInt8(32, 240)));
     }

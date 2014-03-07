@@ -11,6 +11,20 @@ class GiCanvas;
 /*! \ingroup GRAPH_INTERFACE
  */
 struct TestCanvas {
+    enum {
+        kRect           = 0x01,
+        kLine           = 0x02,
+        kTextAt         = 0x04,
+        kEllipse        = 0x08,
+        kQuadBezier     = 0x10,
+        kCubicBezier    = 0x20,
+        kPolygon        = 0x40,
+        kClearRect      = 0x80,
+        kClipPath       = 0x100,
+        kHandle         = 0x200,
+        kDynCurves      = 0x400,
+        kClearPolygon   = 0x80|0x40|0x02,
+    };
     static void initRand();
     static int randInt(int minv, int maxv);
     static float randFloat(float minv, float maxv);

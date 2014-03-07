@@ -32,6 +32,8 @@
 		AE20C4DB1866D38200471A19 /* GcShapeDoc.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4C91866D2F400471A19 /* GcShapeDoc.cpp */; };
 		AE20C4DC1866D38200471A19 /* GcShapeDoc.h in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4CA1866D2F400471A19 /* GcShapeDoc.h */; };
 		AE20C4DD1866D38200471A19 /* gicoreview.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4CB1866D2F400471A19 /* gicoreview.cpp */; };
+		AE3A247418C7197400873314 /* gicoreplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE3A247318C7197400873314 /* gicoreplay.cpp */; };
+		AE3A247618C71A1900873314 /* gicoreviewimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = AE3A247518C71A1900873314 /* gicoreviewimpl.h */; };
 		AE57CE7E188D06760080E97D /* recordshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
 		AE60BE03186BBAAC005399DF /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE01186BBAAC005399DF /* girecordcanvas.h */; };
 		AE60BE04186BBAAC005399DF /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE02186BBAAC005399DF /* girecordshape.h */; };
@@ -226,6 +228,7 @@
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
 		024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgcanvas.cpp; sourceTree = "<group>"; };
+		028BD40D18C767F30070EA95 /* touchvg.swig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = touchvg.swig; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
 		AE20C4BB1866C5C600471A19 /* mgpnt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpnt.cpp; sourceTree = "<group>"; };
 		AE20C4BF1866D28B00471A19 /* gicoreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicoreview.h; sourceTree = "<group>"; };
@@ -239,6 +242,8 @@
 		AE20C4C91866D2F400471A19 /* GcShapeDoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GcShapeDoc.cpp; sourceTree = "<group>"; };
 		AE20C4CA1866D2F400471A19 /* GcShapeDoc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GcShapeDoc.h; sourceTree = "<group>"; };
 		AE20C4CB1866D2F400471A19 /* gicoreview.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gicoreview.cpp; sourceTree = "<group>"; };
+		AE3A247318C7197400873314 /* gicoreplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gicoreplay.cpp; sourceTree = "<group>"; };
+		AE3A247518C71A1900873314 /* gicoreviewimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gicoreviewimpl.h; sourceTree = "<group>"; };
 		AE490E54185715D9004F70CC /* libTouchVGCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTouchVGCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE490E5B185715D9004F70CC /* TouchVGCore-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TouchVGCore-Prefix.pch"; sourceTree = "<group>"; };
 		AE57CE7D188D06760080E97D /* recordshapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = recordshapes.cpp; sourceTree = "<group>"; };
@@ -438,6 +443,7 @@
 		AE20C4C31866D2F400471A19 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				028BD40D18C767F30070EA95 /* touchvg.swig */,
 				AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */,
 				AE20C4C41866D2F400471A19 /* GcBaseView.h */,
 				AE20C4C51866D2F400471A19 /* GcGraphView.cpp */,
@@ -446,7 +452,9 @@
 				AE20C4C81866D2F400471A19 /* GcMagnifierView.h */,
 				AE20C4C91866D2F400471A19 /* GcShapeDoc.cpp */,
 				AE20C4CA1866D2F400471A19 /* GcShapeDoc.h */,
+				AE3A247518C71A1900873314 /* gicoreviewimpl.h */,
 				AE20C4CB1866D2F400471A19 /* gicoreview.cpp */,
+				AE3A247318C7197400873314 /* gicoreplay.cpp */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -958,6 +966,7 @@
 				AED37127186689DC00C0A778 /* cmdsubject.cpp in Headers */,
 				AED37128186689DC00C0A778 /* mgactions.cpp in Headers */,
 				AED37129186689DC00C0A778 /* mgcmdmgr2.cpp in Headers */,
+				AE3A247618C71A1900873314 /* gicoreviewimpl.h in Headers */,
 				AED3712A186689DC00C0A778 /* mgcmdmgr_.cpp in Headers */,
 				AED3712B186689DC00C0A778 /* mgcmdmgr_.h in Headers */,
 				AED3712C186689DC00C0A778 /* mgcmdselect.cpp in Headers */,
@@ -1097,6 +1106,7 @@
 				AE20C4CD1866D33600471A19 /* GcGraphView.cpp in Sources */,
 				AE20C4CE1866D33600471A19 /* GcMagnifierView.cpp in Sources */,
 				AE20C4CF1866D33600471A19 /* GcShapeDoc.cpp in Sources */,
+				AE3A247418C7197400873314 /* gicoreplay.cpp in Sources */,
 				02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */,
 				AE20C4D01866D33600471A19 /* gicoreview.cpp in Sources */,
 				AED370CF186688BD00C0A778 /* RandomShape.cpp in Sources */,

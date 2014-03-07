@@ -7,43 +7,40 @@
 #define TOUCHVG_DRAWCONTEXT_H_
 
 #include "gicolor.h"
-
-//! 线型
-typedef enum {
-    kGiLineSolid = 0,     //!< ----------
-    kGiLineDash,          //!< － － － －
-    kGiLineDot,           //!< ..........
-    kGiLineDashDot,       //!< _._._._._
-    kGiLineDashDotdot,    //!< _.._.._.._
-    kGiLineNull           //!< Not draw.
-} GiLineStyle;
-
-//! 设置属性的位掩码类型
-typedef enum {
-    kContextCopyNone  = 0,      //!< 不设置属性
-    kContextLineRGB   = 0x01,   //!< 设置线色的RGB分量
-    kContextLineAlpha = 0x02,   //!< 设置线色的透明度分量
-    kContextLineARGB  = 0x03,   //!< 设置线色的所有分量
-    kContextLineWidth = 0x04,   //!< 设置线宽
-    kContextLineStyle = 0x08,   //!< 设置线型
-    kContextFillRGB   = 0x10,   //!< 设置填充色的RGB分量
-    kContextFillAlpha = 0x20,   //!< 设置填充色的透明度分量
-    kContextFillARGB  = 0x30,   //!< 设置填充色的所有分量
-    kContextCopyAll   = 0xFF,   //!< 设置所有属性
-} GiContextBits;
+#include <math.h>
 
 //! 绘图参数上下文类
 /*! 用于在图形系统的绘图函数中传入绘图参数
     \ingroup GRAPH_INTERFACE
-    \see GiLineStyle, GiColor
+    \see GiColor
 */
 class GiContext
 {
 public:
+    enum {
+        kSolidLine = 0,     //!< ----------
+        kDashLine,          //!< － － － －
+        kDotLine,           //!< ..........
+        kDashDot,           //!< _._._._._
+        kDashDotdot,        //!< _.._.._.._
+        kNullLine,          //!< Not draw.
+        
+        kCopyNone  = 0,     //!< 不设置属性
+        kLineRGB   = 0x01,  //!< 设置线色的RGB分量
+        kLineAlpha = 0x02,  //!< 设置线色的透明度分量
+        kLineARGB  = 0x03,  //!< 设置线色的所有分量
+        kLineWidth = 0x04,  //!< 设置线宽
+        kLineStyle = 0x08,  //!< 设置线型
+        kFillRGB   = 0x10,  //!< 设置填充色的RGB分量
+        kFillAlpha = 0x20,  //!< 设置填充色的透明度分量
+        kFillARGB  = 0x30,  //!< 设置填充色的所有分量
+        kCopyAll   = 0xFF,  //!< 设置所有属性
+    };
+    
     //! 默认构造函数
     /*! 绘图参数为3像素宽的黑实线、不填充
     */
-    GiContext() : m_lineStyle(kGiLineSolid), m_lineWidth(-2)
+    GiContext() : m_lineStyle(kSolidLine), m_lineWidth(-2)
         , m_lineColor(GiColor(0, 0, 0, 168)), m_fillColor(GiColor::Invalid()), m_autoScale(false)
     {
     }
@@ -52,11 +49,11 @@ public:
     /*! 填充参数为不填充
         \param width 线宽，正数表示单位为0.01mm，零表示1像素宽，负数时表示单位为像素
         \param color 线条颜色， GiColor::Invalid() 表示不画线条
-        \param style 线型, GiLineStyle, 取值为 kGiLineSolid 等
+        \param style 线型, 取值为 kSolidLine 等
         \param fillcr 填充颜色， GiColor::Invalid() 表示不填充
         \param autoScale 像素单位线宽(width<0时)是否自动缩放
     */
-    GiContext(float width, GiColor color = GiColor::Black(), int style = kGiLineSolid,
+    GiContext(float width, GiColor color = GiColor::Black(), int style = kSolidLine,
               const GiColor& fillcr = GiColor::Invalid(), bool autoScale = false)
         : m_lineStyle(style), m_lineWidth(width)
         , m_lineColor(color), m_fillColor(fillcr), m_autoScale(autoScale)
@@ -78,25 +75,25 @@ public:
     {
         if (this != &src)
         {
-            if (mask & kContextLineRGB) {
+            if (mask & kLineRGB) {
                 GiColor c = src.m_lineColor;
                 m_lineColor.set(c.r, c.g, c.b);
             }
-            if (mask & kContextLineAlpha) {
+            if (mask & kLineAlpha) {
                 m_lineColor.a = src.m_lineColor.a;
             }
-            if (mask & kContextLineWidth) {
+            if (mask & kLineWidth) {
                 m_lineWidth = src.m_lineWidth;
                 m_autoScale = src.m_autoScale;
             }
-            if (mask & kContextLineStyle) {
+            if (mask & kLineStyle) {
                 m_lineStyle = src.m_lineStyle;
             }
-            if (mask & kContextFillRGB) {
+            if (mask & kFillRGB) {
                 GiColor c = src.m_fillColor;
                 m_fillColor.set(c.r, c.g, c.b);
             }
-            if (mask & kContextFillAlpha) {
+            if (mask & kFillAlpha) {
                 m_fillColor.a = src.m_fillColor.a;
             }
         }
@@ -133,13 +130,13 @@ public:
     }
 #endif // SWIG
     
-    //! 返回线型, GiLineStyle
+    //! 返回线型, kSolidLine..kNullLine
     int getLineStyle() const
     {
-        return m_lineColor.isInvalid() ? kGiLineNull : m_lineStyle;
+        return m_lineColor.isInvalid() ? kNullLine : m_lineStyle;
     }
     
-    //! 设置线型, GiLineStyle
+    //! 设置线型, kSolidLine..kNullLine
     void setLineStyle(int style)
     {
         m_lineStyle = style;
@@ -150,7 +147,17 @@ public:
     */
     float getLineWidth() const
     {
-        return m_lineWidth;
+        return m_lineWidth > 0.f ? fmodf(m_lineWidth, 1e5f) : -fmodf(-m_lineWidth, 1e5f);
+    }
+    
+    //! 返回附加的线宽，像素单位，非负数
+    float getExtraWidth() const
+    {
+        if (m_lineWidth > 1e5f - 1e-7f)
+            return m_lineWidth / 1e5f;
+        if (m_lineWidth < -1e5f + 1e-7f)
+            return m_lineWidth / -1e5f;
+        return 0.f;
     }
     
     //! 返回像素单位线宽是否自动缩放
@@ -170,18 +177,25 @@ public:
         m_autoScale = autoScale;
     }
     
+    //! 设置附加的线宽，像素单位，非负数
+    void setExtraWidth(float pixels)
+    {
+        pixels = floorf(fabsf(pixels)) * (m_lineWidth > 0.f ? 1e5f : -1e5f);
+        m_lineWidth = getLineWidth() + pixels;
+    }
+    
     //! 返回是否为空线，即不画线
     bool isNullLine() const
     {
-        return m_lineStyle == kGiLineNull || m_lineColor.isInvalid();
+        return m_lineStyle == kNullLine || m_lineColor.isInvalid();
     }
     
     //! 设置为空线，即不画线
-    /*! 如果要恢复成普通画线状态，可调setLineStyle(kGiLineSolid)
+    /*! 如果要恢复成普通画线状态，可调setLineStyle(kSolid)
     */
     void setNullLine()
     {
-        m_lineStyle = kGiLineNull;
+        m_lineStyle = kNullLine;
     }
     
     //! 返回线条颜色
@@ -300,7 +314,7 @@ public:
     }
     
 private:
-    int         m_lineStyle;        //!< 线型, GiLineStyle
+    int         m_lineStyle;        //!< 线型, kSolidLine..kNullLine
     float       m_lineWidth;        //!< 线宽, >0: 0.01mm, =0: 1px, <0:px
     GiColor     m_lineColor;        //!< 线条颜色
     GiColor     m_fillColor;        //!< 填充颜色

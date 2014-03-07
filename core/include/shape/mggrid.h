@@ -16,7 +16,7 @@ class MgGrid : public MgBaseRect
     MG_INHERIT_CREATE(MgGrid, MgBaseRect, 20)
 public:
     virtual int snap(Point2d& pnt, Point2d& dist) const;
-    bool valid(float tol) const;
+    bool isValid(float tol) const;
 
 protected:
     virtual void setFlag(MgShapeBit bit, bool on);

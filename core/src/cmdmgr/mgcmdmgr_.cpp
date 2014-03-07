@@ -6,11 +6,7 @@
 #include "mgcmdmgrfactory.h"
 #include "mgcmdselect.h"
 #include "cmdsubject.h"
-#include <string.h>
 #include "mglog.h"
-
-typedef std::map<std::string, MgCommand* (*)()> Factories;
-static Factories    _factories;
 
 MgCmdManager* MgCmdManagerFactory::create()
 {
@@ -66,6 +62,10 @@ MgCommand* MgCmdManagerImpl::getCommand()
 
 MgCommand* MgCmdManagerImpl::findCommand(const char* name)
 {
+    if (!name) {
+        return NULL;
+    }
+    
     CMDS::iterator it = _cmds.find(name);
     
     if (it == _cmds.end() && *name)
@@ -91,6 +91,9 @@ MgCommand* MgCmdManagerImpl::findCommand(const char* name)
 bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
                                   const char* name, MgStorage* s)
 {
+    if (!name) {
+        return cancel(sender);
+    }
     if (strcmp(name, "@draw") == 0) {   // 将 @draw 换成上一次绘图命令名
         name = _drawcmd.empty() ? "splines" : _drawcmd.c_str();
     }

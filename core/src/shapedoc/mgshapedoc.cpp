@@ -286,7 +286,7 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
     Box2d rect;
 
     if (!s || !s->readNode("shapedoc", -1, false)) {
-        return s && s->setError("No root node.");
+        return s && s->setError("No shapedoc node.");
     }
 
     if (!addOnly) {

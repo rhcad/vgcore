@@ -46,8 +46,8 @@ bool MgCmdDrawGrid::touchEnded(const MgMotion* sender)
         return MgCmdDrawRect::touchEnded(sender);
     }
     
-    if ( ((MgGrid*)dynshape()->shape())->valid(sender->displayMmToModel(1.f)) ) {
-        dynshape()->setContext(GiContext(), kContextFillARGB);
+    if ( ((MgGrid*)dynshape()->shape())->isValid(sender->displayMmToModel(1.f)) ) {
+        dynshape()->setContext(GiContext(), GiContext::kFillARGB);
         addShape(sender);
         m_step = 0;
         sender->view->toSelectCommand();

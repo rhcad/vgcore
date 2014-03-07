@@ -382,7 +382,9 @@ class MgImageShape : public MgBaseRect
 {
     MG_INHERIT_CREATE(MgImageShape, MgBaseRect, 18)
 public:
+#ifndef SWIG
     const char* getName() const { return _name; }
+#endif
     void setName(const char* name);
     
     static const MgShape* findShapeByImageID(const MgShapes* shapes, const char* name);

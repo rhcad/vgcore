@@ -93,6 +93,7 @@ view_files := $(core_src)/view/GcGraphView.cpp \
               $(core_src)/view/GcShapeDoc.cpp \
               $(core_src)/view/girecordcanvas.cpp \
               $(core_src)/view/gicoreview.cpp \
+              $(core_src)/view/gicoreplay.cpp \
               $(core_src)/export/svgcanvas.cpp \
               $(core_src)/record/recordshapes.cpp
 

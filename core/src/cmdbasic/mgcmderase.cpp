@@ -39,7 +39,8 @@ bool MgCmdErase::draw(const MgMotion* sender, GiGraphics* gs)
 {
     if (m_boxsel) {
         GiContext ctxshap(0, GiColor(0, 0, 255, 80), 
-                          isIntersectMode(sender) ? kGiLineDash : kGiLineSolid, GiColor(0, 0, 255, 24));
+                          isIntersectMode(sender) ? GiContext::kDashLine : GiContext::kSolidLine,
+                          GiColor(0, 0, 255, 24));
         gs->drawRect(&ctxshap, Box2d(sender->startPtM, sender->pointM));
     }
     

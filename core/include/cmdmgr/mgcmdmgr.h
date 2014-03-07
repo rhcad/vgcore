@@ -20,11 +20,11 @@ struct MgCmdManager {
 #ifndef SWIG
     //! 注册外部命令, 为NULL则取消注册
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0;
+    virtual const char* getCommandName() = 0;               //!< 得到当前命令名称
 #endif
 
     virtual void release() = 0;                             //!< 销毁管理器
     
-    virtual const char* getCommandName() = 0;               //!< 得到当前命令名称
     virtual MgCommand* getCommand() = 0;                    //!< 得到当前命令
     virtual MgCommand* findCommand(const char* name) = 0;   //!< 查找命令
     virtual bool setCommand(const MgMotion* sender,

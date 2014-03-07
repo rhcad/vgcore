@@ -1023,6 +1023,10 @@ bool GiGraphics::setPen(const GiContext* ctx)
             m_impl->ctx.setLineWidth(ctx->getLineWidth(), ctx->isAutoScale());
             changed = true;
         }
+        if (ctx && !mgEquals(ctx->getExtraWidth(), m_impl->ctx.getExtraWidth())) {
+            m_impl->ctx.setExtraWidth(ctx->getExtraWidth());
+            changed = true;
+        }
         if (ctx && ctx->getLineColor() != m_impl->ctx.getLineColor()) {
             m_impl->ctx.setLineColor(ctx->getLineColor());
             changed = true;
@@ -1036,10 +1040,11 @@ bool GiGraphics::setPen(const GiContext* ctx)
     ctx = &(m_impl->ctx);
     if (m_impl->canvas && changed) {
         m_impl->ctxused &= 1;
+        float w = calcPenWidth(ctx->getLineWidth(), ctx->isAutoScale());
         float orgw = ctx->getLineWidth();
         orgw = (orgw < -0.1f && ctx->isAutoScale()) ? orgw - 1e4f : orgw;
         m_impl->canvas->setPen(calcPenColor(ctx->getLineColor()).getARGB(),
-                               calcPenWidth(ctx->getLineWidth(), ctx->isAutoScale()),
+                               w + ctx->getExtraWidth(),
                                ctx->getLineStyle(), 0, orgw);
     }
     

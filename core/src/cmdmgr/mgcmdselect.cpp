@@ -150,7 +150,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     std::vector<const MgShape*>::const_iterator it;
     Point2d pnt;
     GiContext ctxhd(0, GiColor(128, 128, 64, 172), 
-                    kGiLineSolid, GiColor(172, 172, 172, 64));
+                    GiContext::kSolidLine, GiColor(172, 172, 172, 64));
     float radius = sender->displayMmToModel(sender->view->useFinger() ? 1.f : 3.f, gs);
     float r2x = radius * 2.5f;
     bool rorate = (!isEditMode(sender->view)
@@ -176,7 +176,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         }
         
         if (m_showSel && !rorate) {                 // 拖动提示的参考线
-            GiContext ctxshap(-1.05f, GiColor(0, 0, 255, 32), kGiLineDot);
+            GiContext ctxshap(-1.05f, GiColor(0, 0, 255, 32), GiContext::kDotLine);
             gs->drawLine(&ctxshap, m_ptStart, m_ptSnap);
         }
     }
@@ -188,28 +188,29 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         }
     }
     else if (m_clones.empty()) {                    // 蓝色显示选中的图形
-        GiContext ctx(-1.f, GiColor(0, 0, 255, 48));
+        float w = 0.5f * gs->xf().getWorldToDisplayY();
+        GiContext ctx(-w, GiColor(0, 0, 255, 48));
         for (it = shapes.begin(); it != shapes.end(); ++it) {
             (*it)->draw(1, *gs, &ctx, m_hit.segment);
         }
     }
     
     if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)) {
-        GiContext ctxshap(0, GiColor(0, 0, 255, 64), kGiLineDot);
+        GiContext ctxshap(0, GiColor(0, 0, 255, 64), GiContext::kDotLine);
         Box2d rect(sender->view->shapes()->getExtent());
         rect.inflate(sender->displayMmToModel(2.f));
         gs->drawRect(&ctxshap, rect);
     }
     
     if (m_boxsel) {                 // 显示框选半透明蓝色边框
-        GiContext ctxshap(0, GiColor(0, 0, 255, 80), 
-                          isIntersectMode(sender) ? kGiLineDash : kGiLineSolid,
+        GiContext ctxshap(0, GiColor(0, 0, 255, 80),
+                          isIntersectMode(sender) ? GiContext::kDashLine : GiContext::kSolidLine,
                           GiColor(0, 0, 255, 24));
         gs->drawRect(&ctxshap, Box2d(sender->startPtM, sender->pointM));
     }
     else if (sender->view->isContextActionsVisible() && !selection.empty()) {
         Box2d selbox(getBoundingBox(sender));
-        GiContext ctxshap(0, GiColor(0, 0, 255, 80), kGiLineDash);  // 蓝色虚线包络框
+        GiContext ctxshap(0, GiColor(0, 0, 255, 80), GiContext::kDashLine);  // 蓝色虚线包络框
         gs->drawRect(&ctxshap, selbox);
     }
     else if (!selection.empty() && m_showSel
@@ -217,7 +218,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         Box2d selbox(getBoundingBox(sender));
         
         if (!selbox.isEmpty()) {
-            GiContext ctxshap(0, GiColor(0, 0, 255, 128), kGiLineDash);
+            GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
             gs->drawRect(&ctxshap, selbox);
         }
         if (m_clones.empty() && !shapes.empty()) {
@@ -237,7 +238,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 float r = pnt.distanceTo(selbox.center());
                 float sangle = mgMin(30.f, mgMax(10.f, mgbase::rad2Deg(12.f / r)));
                 GiContext ctxarc(w, GiColor(0, 255, 0, 128),
-                                 j ? kGiLineSolid : kGiLineDot);
+                                 j ? GiContext::kSolidLine : GiContext::kDotLine);
                 gs->drawArc(&ctxarc, selbox.center(), r, r,
                             j ? -mgbase::deg2Rad(sangle) : mgbase::deg2Rad(180.f - sangle), 
                             mgbase::deg2Rad(2.f * sangle));
@@ -251,7 +252,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             if (rorate) {               // 旋转提示的参考线
                 if (!gs->drawHandle(selbox.center(), kGiHandleVertex))
                     gs->drawCircle(&ctxhd, selbox.center(), radius);
-                GiContext ctxshap(0, GiColor(0, 0, 255, 128), kGiLineDash);
+                GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
                 gs->drawLine(&ctxshap, selbox.center(), m_ptSnap);
             }
             else {

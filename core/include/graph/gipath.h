@@ -65,9 +65,10 @@ public:
     //! 返回节点坐标数组
     const Point2d* getPoints() const;
 
+#ifndef SWIG
     //! 返回节点类型数组，由 GiPathNode 值组成
     const char* getTypes() const;
-    
+#endif
 
     //! 清除所有节点
     void clear();

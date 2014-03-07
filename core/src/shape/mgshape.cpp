@@ -190,18 +190,15 @@ bool MgShape::draw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) 
     GiContext tmpctx(context());
 
     if (shapec()->isKindOf(6)) { // MgComposite
-        tmpctx = ctx ? *ctx : GiContext(0, GiColor(), kGiLineNull);
+        tmpctx = ctx ? *ctx : GiContext(0, GiColor(), GiContext::kNullLine);
     }
     else {
         if (ctx) {
-            float addw  = ctx->getLineWidth();
-            float width = tmpctx.getLineWidth();
+            float addw = ctx->getLineWidth();
 
-            width = -gs.calcPenWidth(width, tmpctx.isAutoScale());  // 像素宽度，负数
-            if (addw <= 0) {
-                addw = -gs.calcPenWidth(addw, false);
-                tmpctx.setLineWidth(width + addw - 1e3f, false);    // 像素宽度加宽，不放缩
-            } else {                                                // 传入正数表示像素宽度
+            if (addw < -0.1f) {
+                tmpctx.setExtraWidth(-addw);
+            } else if (addw > 0.1f) {                               // 传入正数表示像素宽度
                 tmpctx.setLineWidth(-addw, ctx->isAutoScale());     // 换成新的像素宽度
             }
         }
@@ -288,7 +285,7 @@ bool MgShape::load(MgShapeFactory* factory, MgStorage* s)
     setTag(s->readInt("tag", getTag()));
 
     GiContext ctx;
-    ctx.setLineStyle((GiLineStyle)s->readInt("lineStyle", 0));
+    ctx.setLineStyle(s->readInt("lineStyle", 0));
     ctx.setLineWidth(s->readFloat("lineWidth", 0), true);
     ctx.setLineColor(GiColor(s->readInt("lineColor", 0xFF000000), true));
     ctx.setFillColor(GiColor(s->readInt("fillColor", 0), true));

@@ -17,12 +17,16 @@ public:
     mgvector(int n = 0) {
         _v = n > 0 ? new T[n] : (T*)0;
         _n = n;
+        for (int i = 0; i < n; i++)
+            _v[i] = (T)0;
     }
     void setSize(int n) {
         if (n != _n) {
             delete[] _v;
             _v = n > 0 ? new T[n] : (T*)0;
             _n = n;
+            for (int i = 0; i < n; i++)
+                _v[i] = (T)0;
         }
     }
     template<class T2>

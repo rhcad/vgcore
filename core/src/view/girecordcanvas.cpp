@@ -42,13 +42,9 @@ struct CmdSetPen : public MgRecordShape::ICmd {
         return true;
     }
     virtual void draw(GiGraphics& gs, const Matrix2d&) const {
-        bool autoScale = orgw > 1e-3f || orgw < -1e4f;
-        float w;
+        float w = width;
         if (orgw < -1e4f && orgw + 1e4f > -1e2f)
             w = orgw + 1e4f;
-        else
-            w = orgw > -1e2f && orgw < 1e4f ? orgw : width;
-        w = mgIsZero(w) ? width : gs.calcPenWidth(w, autoScale);
         gs.getCanvas()->setPen(argb, w, style, phase, orgw);
     }
 };

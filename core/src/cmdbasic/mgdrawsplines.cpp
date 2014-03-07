@@ -29,7 +29,7 @@ bool MgCmdDrawSplines::backStep(const MgMotion* sender)
 bool MgCmdDrawSplines::draw(const MgMotion* sender, GiGraphics* gs)
 {
     if (getStep() > 0 && !m_freehand) {
-        GiContext ctx(0, GiColor(64, 128, 64, 172), kGiLineSolid, GiColor(0, 64, 64, 128));
+        GiContext ctx(0, GiColor(64, 128, 64, 172), GiContext::kSolidLine, GiColor(0, 64, 64, 128));
         float radius = sender->displayMmToModel(0.8f, gs);
         
         for (int i = 1, n = dynshape()->shape()->getPointCount(); i < 6 && n >= i; i++) {

@@ -10,23 +10,6 @@
 #include "mglog.h"
 #include <sstream>
 #include <map>
-#include <vector>
-
-#ifndef WIN32
-#include <sys/time.h>
-long GetTickCount()
-{
-    static struct timeval start = { 0, 0 };
-    struct timeval curt;
-    
-    if (start.tv_sec == 0)
-        gettimeofday(&start, NULL);
-    gettimeofday(&curt, NULL);
-    
-    unsigned long u = (unsigned long)(curt.tv_usec - start.tv_usec);
-    return (long)((curt.tv_sec - start.tv_sec) * 1000 + u / 1000 % 1000);
-}
-#endif
 
 struct MgRecordShapes::Impl
 {
@@ -44,8 +27,8 @@ struct MgRecordShapes::Impl
     MgJsonStorage   *js[3];
     MgStorage       *s[3];
     
-    Impl() : fileCount(0), maxCount(0), loading(0)
-        , startTick(GetTickCount()), tick(0), lastTick(0) {
+    Impl(long curTick) : fileCount(0), maxCount(0), loading(0)
+        , startTick(curTick), tick(0), lastTick(0) {
         memset(js, 0, sizeof(js));
         memset(s, 0, sizeof(s));
     }
@@ -62,9 +45,9 @@ struct MgRecordShapes::Impl
     bool forUndo() const { return type == 0; }
 };
 
-MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo)
+MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo, long curTick)
 {
-    _im = new Impl();
+    _im = new Impl(curTick);
     _im->path = path;
     if (*_im->path.rbegin() != '/' && *_im->path.rbegin() != '\\') {
         _im->path += '/';
@@ -84,7 +67,7 @@ MgRecordShapes::~MgRecordShapes()
 
 bool MgRecordShapes::isPlaying() const
 {
-    return _im->type == 2;
+    return _im->type > 1;
 }
 
 int MgRecordShapes::getFileTick() const
@@ -97,9 +80,14 @@ int MgRecordShapes::getFileCount() const
     return _im->fileCount;
 }
 
-long MgRecordShapes::getCurrentTick() const
+int MgRecordShapes::getMaxFileCount() const
 {
-    return GetTickCount() - _im->startTick;
+    return _im->maxCount;
+}
+
+long MgRecordShapes::getCurrentTick(long curTick) const
+{
+    return curTick - _im->startTick;
 }
 
 bool MgRecordShapes::onResume(long ticks)
@@ -107,7 +95,8 @@ bool MgRecordShapes::onResume(long ticks)
     return giAtomicCompareAndSwap(&_im->startTick, _im->startTick + ticks, _im->startTick);
 }
 
-bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc, MgShapes* dynShapes)
+bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
+                                MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes)
 {
     _im->beginJsonFile();
     _im->tick = (int)tick;
@@ -120,6 +109,16 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc, Mg
         }
         _im->lastDoc = doc;
     }
+    
+    if (!extShapes.empty()) {
+        MgShapes* newsp = MgShapes::create();
+        newsp->copyShapes(dynShapes, false, false);
+        for (size_t i = 0; i < extShapes.size(); i++) {
+            newsp->copyShapes(extShapes[i], false, false);
+        }
+        MgObject::release_pointer(dynShapes);
+        dynShapes = newsp;
+    }
     if (needDyn && dynShapes && dynShapes->getShapeCount() > 0) {
         _im->flags[0] |= DYN;
         _im->s[0]->writeNode("dynamic", -1, false);
@@ -127,6 +126,7 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc, Mg
         _im->s[0]->writeNode("dynamic", -1, true);
     }
     MgObject::release_pointer(dynShapes);
+    
     _im->s[0]->writeInt("flags", _im->flags[0]);
     _im->s[0]->writeInt("changeCount", (int)changeCount);
     _im->s[1]->writeInt("changeCount", (int)changeCount);
@@ -145,6 +145,61 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc, Mg
     }
     
     return ret;
+}
+
+void MgRecordShapes::resetDoc(MgShapeDoc* doc)
+{
+    if (doc) {
+        MgObject::release_pointer(_im->lastDoc);
+        _im->lastDoc = doc;
+    }
+}
+
+void MgRecordShapes::restore(int index, int count, int tick, long curTick)
+{
+    std::vector<int> arr;
+    
+    if (_im->s[2] && loadFrameIndex(_im->path, arr)) {
+        for (unsigned i = 0; i + 2 < arr.size(); i += 3) {
+            _im->s[2]->writeNode("r", i / 3, false);
+            _im->s[2]->writeInt("tick", arr[i + 1]);
+            _im->s[2]->writeInt("flags", arr[i + 2]);
+            _im->s[2]->writeNode("r", i / 3, true);
+        }
+    }
+    _im->fileCount = index;
+    _im->maxCount = count ? count : index;
+    _im->startTick = curTick - tick;
+    LOGD("restore fileCount=%d, maxCount=%d, startTick=%d, frames=%d",
+         _im->fileCount, _im->maxCount, tick, (int)arr.size() / 3);
+}
+
+bool MgRecordShapes::loadFrameIndex(std::string path, std::vector<int>& arr)
+{
+    if (*path.rbegin() != '/' && *path.rbegin() != '\\')
+        path += '/';
+    path += "records.json";
+    
+    FILE *fp = mgopenfile(path.c_str(), "rt");
+    if (!fp) {
+        LOGE("Fail to read file: %s", path.c_str());
+        return false;
+    }
+    
+    MgJsonStorage js;
+    MgStorage* s = js.storageForRead(fp);
+    
+    fclose(fp);
+    s->readNode("records", -1, false);
+    
+    for (int i = 0; s->readNode("r", i, false); i++) {
+        arr.push_back(i + 1);
+        arr.push_back(s->readInt("tick", 0));
+        arr.push_back(s->readInt("flags", 0));
+        s->readNode("r", i, true);
+    }
+    
+    return s->readNode("records", -1, true);
 }
 
 std::string MgRecordShapes::getFileName(bool back) const
@@ -342,8 +397,10 @@ bool MgRecordShapes::Impl::saveJsonFile()
     bool ret = false;
     std::string filename;
     
-    if (flags[0] == DYN && lastTick == tick)
+    if (flags[0] == DYN && lastTick == tick) {
+        LOGD("Ignore record at the same time %d", tick);
         return false;
+    }
     
     for (int i = 0; i < 2; i++) {
         if (lastDoc) {
@@ -483,9 +540,14 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
 bool MgRecordShapes::applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc)
 {
     std::string filename(_im->getFileName(false, 0));
-    FILE *fp = mgopenfile(filename.c_str(), "rt");
+    return applyFirstFile(factory, doc, filename.c_str());
+}
+
+bool MgRecordShapes::applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc, const char* filename)
+{
+    FILE *fp = mgopenfile(filename, "rt");
     if (!fp) {
-        LOGE("Fail to read file: %s", filename.c_str());
+        LOGE("Fail to read file: %s", filename);
         return 0;
     }
     
@@ -513,7 +575,8 @@ int MgRecordShapes::applyRedoFile(int& newID, MgShapeFactory *f,
     return ret;
 }
 
-int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index)
+int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc,
+                                  MgShapes* dyns, int index, long curTick)
 {
     if (index <= 0)
         index = _im->fileCount;
@@ -522,7 +585,7 @@ int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc
     
     if (index == 1) {
         _im->fileCount = 0;
-        _im->startTick = GetTickCount();
+        _im->startTick = curTick;
         return DYN_CHANGED;
     }
     

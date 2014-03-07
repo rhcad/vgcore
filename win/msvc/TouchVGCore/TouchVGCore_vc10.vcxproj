@@ -105,6 +105,7 @@
     <ClInclude Include="..\..\..\core\src\view\GcGraphView.h" />
     <ClInclude Include="..\..\..\core\src\view\GcMagnifierView.h" />
     <ClInclude Include="..\..\..\core\src\view\GcShapeDoc.h" />
+    <ClInclude Include="..\..\..\core\src\view\gicoreviewimpl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\cmdbase\mgcmddraw.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="..\..\..\core\src\view\GcGraphView.cpp" />
     <ClCompile Include="..\..\..\core\src\view\GcMagnifierView.cpp" />
     <ClCompile Include="..\..\..\core\src\view\GcShapeDoc.cpp" />
+    <ClCompile Include="..\..\..\core\src\view\gicoreplay.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gicoreview.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gimousehelper.cpp" />
     <ClCompile Include="..\..\..\core\src\view\girecordcanvas.cpp" />

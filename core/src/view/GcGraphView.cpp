@@ -10,6 +10,7 @@
 
 GcBaseView::~GcBaseView()
 {
+    LOGD("View %p destroyed", this);
 }
 
 void GcBaseView::onSize(int dpi, int w, int h)

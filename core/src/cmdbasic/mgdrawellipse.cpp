@@ -14,7 +14,7 @@ bool MgCmdDrawEllipse::initialize(const MgMotion* sender, MgStorage*)
 bool MgCmdDrawEllipse::draw(const MgMotion* sender, GiGraphics* gs)
 {
     if (getStep() > 0 && sender->dragging()) {
-        GiContext ctxshap(0, GiColor(0, 0, 255, 128), kGiLineDash);
+        GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
         gs->drawRect(&ctxshap, dynshape()->shape()->getExtent());
     }
     return MgCmdDrawRect::draw(sender, gs);

@@ -380,6 +380,9 @@
     <ClInclude Include="..\..\..\core\include\record\recordshapes.h">
       <Filter>Header Files\record</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\src\view\gicoreviewimpl.h">
+      <Filter>Source Files\view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\shape\mgbasicspreg.cpp">
@@ -564,6 +567,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\record\recordshapes.cpp">
       <Filter>Source Files\record</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\view\gicoreplay.cpp">
+      <Filter>Source Files\view</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

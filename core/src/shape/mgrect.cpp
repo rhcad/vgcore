@@ -274,6 +274,7 @@ bool MgRect::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) 
 
 #include <string.h>
 #include "mgshapes.h"
+#include "mgcomposite.h"
 
 MG_IMPLEMENT_CREATE(MgImageShape)
 
@@ -305,7 +306,7 @@ bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     GiContext tmpctx(ctx);
     tmpctx.setNoFillColor();
     if (mode) {
-        tmpctx.setLineStyle(kGiLineSolid);
+        tmpctx.setLineStyle(GiContext::kSolidLine);
     }
     
     bool ret = gs.drawPolygon(&tmpctx, 4, _points);
@@ -360,6 +361,12 @@ const MgShape* MgImageShape::findShapeByImageID(const MgShapes* shapes, const ch
             const MgImageShape *image = (const MgImageShape*)sp->shapec();
             if (strcmp(name, image->getName()) == 0) {
                 ret = sp;
+                break;
+            }
+        } else if (sp->shapec()->isKindOf(MgComposite::Type())) {
+            const MgComposite *composite = (const MgComposite *)sp->shapec();
+            ret = findShapeByImageID(composite->shapes(), name);
+            if (ret) {
                 break;
             }
         }

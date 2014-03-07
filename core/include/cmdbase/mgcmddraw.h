@@ -46,8 +46,9 @@ public:
     virtual bool click(const MgMotion* sender);
     virtual bool longPress(const MgMotion* sender);
     virtual bool mouseHover(const MgMotion* sender);
+#ifndef SWIG
     virtual const MgShape* getShape(const MgMotion* sender) { return m_shape; }
-
+#endif
     int getStep() { return m_step; }
     MgShape* dynshape() { return m_shape; }
     void setStep(int step) { m_step = step; }

@@ -6,7 +6,6 @@
 #include "mgshapet.h"
 #include "mgbasicsp.h"
 #include "mgcmdselect.h"
-#include <string.h>
 #include "mglog.h"
 
 MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, 
@@ -36,7 +35,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     
     MgShapeT<MgImageShape> shape;
     
-    shape._context.setLineStyle(kGiLineNull);
+    shape._context.setLineStyle(GiContext::kNullLine);
     shape._context.setFillColor(GiColor::White());    // avoid can't hitted inside
     shape._shape.setName(name);
     shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());

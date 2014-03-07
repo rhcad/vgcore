@@ -315,7 +315,7 @@ bool MgArc::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) c
 {
     bool ret = gs.drawArc(&ctx, getCenter(), getRadius(), 0, getStartAngle(), getSweepAngle());
     if (mode > 0) {
-        GiContext ctxln(0, GiColor(0, 126, 0, 64), kGiLineDashDot);
+        GiContext ctxln(0, GiColor(0, 126, 0, 64), GiContext::kDashDot);
         gs.drawLine(&ctxln, getCenter(), getStartPoint());
         gs.drawLine(&ctxln, getCenter(), getEndPoint());
         gs.drawLine(&ctxln, getStartPoint(), getStartPoint() + getStartTangent());

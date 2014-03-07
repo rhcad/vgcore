@@ -16,9 +16,10 @@ class MgCmdDrawRect : public MgCommandDraw
 {
 public:
     MgCmdDrawRect(const char* name = Name()) : MgCommandDraw(name) {}
+#ifndef SWIG
     static const char* Name() { return "rect"; }
     static MgCommand* Create() { return new MgCmdDrawRect; }
-
+#endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool backStep(const MgMotion* sender);

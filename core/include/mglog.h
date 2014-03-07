@@ -8,8 +8,8 @@
 #ifdef __ANDROID__
 
 #include <android/log.h>
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,"vgjni",__VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"vgjni",__VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,"touchvg",__VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"touchvg",__VA_ARGS__)
 
 #elif defined(__APPLE__)
 
@@ -26,7 +26,7 @@ static inline void __clog_log(int level, const char * fmt, va_list ap) {
     static aslclient __clog_client = (aslclient)0;
     
     if (!__clog_client) {
-        __clog_client = asl_open("vg", "com.apple.console", ASL_OPT_STDERR | ASL_OPT_NO_DELAY);
+        __clog_client = asl_open("touchvg", "com.apple.console", ASL_OPT_STDERR | ASL_OPT_NO_DELAY);
     }
     if (__clog_client) {
         msg = asl_new(ASL_TYPE_MSG);

@@ -32,6 +32,7 @@ public:
     const MgShape* getNextShape(void*& it) const;
     void freeIterator(void*& it) const;
     typedef bool (*Filter)(const MgShape*);
+    int traverseByType(int type, void (*c)(const MgShape*, void*), void* d);
 #endif
 
     int getShapeCount() const;
@@ -64,7 +65,7 @@ public:
     void clearCachedData();
 
     //! 复制(默认为深拷贝)每一个图形，浅拷贝则添加图形的引用计数且不改变图形的拥有者
-    int copyShapes(const MgShapes* src, bool deeply = true);
+    int copyShapes(const MgShapes* src, bool deeply = true, bool needClear = true);
     
     //! 复制出新图形并添加到图形列表中
     MgShape* addShape(const MgShape& src);
@@ -86,6 +87,9 @@ public:
     
     //! 移动图形到最后，以便显示在最前面
     bool bringToFront(int sid);
+    
+    //! 得到上一级图形对象，或NULL
+    static const MgShape* getParentShape(const MgShape* shape);
 
     //! 返回拥有者对象
     MgObject* getOwner() const;

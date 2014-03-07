@@ -65,7 +65,7 @@ bool MgGrid::_setHandlePoint(int index, const Point2d& pt, float tol)
     return true;
 }
 
-bool MgGrid::valid(float tol) const
+bool MgGrid::isValid(float tol) const
 {
     return (m_cell.x > tol && m_cell.y > tol
             && m_cell.x < getWidth() && m_cell.y < getHeight());
@@ -75,7 +75,7 @@ bool MgGrid::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) 
 {
     Vector2d cell(m_cell / 2);
     
-    if (!valid(_MGZERO)) {
+    if (!isValid(_MGZERO)) {
         Box2d rect(getRect());
         
         GiContext ctxedge(ctx);
@@ -86,7 +86,7 @@ bool MgGrid::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) 
         if (!m_cell.isZeroVector()) {
             GiContext ctxerr(ctx);
             ctxerr.setLineColor(255, 0, 0);
-            ctxerr.setLineStyle(kGiLineDash);
+            ctxerr.setLineStyle(GiContext::kDashLine);
             ctxerr.setLineWidth(0, false);
             
             gs.drawLine(&ctxerr, rect.leftTop(), rect.rightBottom());

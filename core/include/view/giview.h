@@ -23,7 +23,7 @@ public:
     virtual void regenAppend(int sid) {}
 
     //! 标记视图待更新显示
-    virtual void redraw() {}
+    virtual void redraw(bool changed) {}
 
     //! 使用手指(true)或鼠标(false)交互
     virtual bool useFinger() { return true; }

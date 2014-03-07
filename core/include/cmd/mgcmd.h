@@ -20,7 +20,10 @@ public:
         unsigned i=0; for(;name[i] && i<sizeof(_name)-1;i++) {_name[i]=name[i];} _name[i]=0; }
     virtual ~MgCommand() {}
     
+#ifndef SWIG
     const char* getName() const { return _name; }               //!< 返回命令名称
+    virtual const MgShape* getShape(const MgMotion* sender) { return (MgShape*)0; }   //!< 当前临时图形
+#endif
     virtual void release() = 0;                                 //!< 销毁对象
     
     virtual bool cancel(const MgMotion* sender) { return !sender; } //!< 取消命令
@@ -45,7 +48,6 @@ public:
     virtual bool isFloatingCommand() { return false; }      //!< 是否可嵌套在其他命令中
     virtual bool doContextAction(const MgMotion* sender, int action) {
         return !sender && !action; }                        //!< 执行上下文动作
-    virtual const MgShape* getShape(const MgMotion* sender) { return (MgShape*)0; }   //!< 当前临时图形
     
 private:
     char _name[31];

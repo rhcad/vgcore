@@ -15,9 +15,10 @@ class MgCmdArc3P : public MgCommandDraw
 {
 public:
     MgCmdArc3P(const char* name = Name()) : MgCommandDraw(name) {}
+#ifndef SWIG
     static const char* Name() { return "arc3p"; }
     static MgCommand* Create() { return new MgCmdArc3P; }
-
+#endif
     virtual void release() { delete this; }
     virtual bool touchBegan(const MgMotion* sender) { return touchBeganStep(sender); }
     virtual bool touchMoved(const MgMotion* sender) { return touchMovedStep(sender); }
@@ -41,8 +42,10 @@ class MgCmdArcCSE : public MgCmdArc3P
 {
 public:
     MgCmdArcCSE(const char* name = Name()) : MgCmdArc3P(name) {}
+#ifndef SWIG
     static const char* Name() { return "arc_cse"; }
     static MgCommand* Create() { return new MgCmdArcCSE; }
+#endif
     virtual void release() { delete this; }
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
 protected:
@@ -51,14 +54,16 @@ protected:
 
 //! 切线圆弧绘图命令类
 /*! \ingroup CORE_COMMAND
- \see MgArc
+    \see MgArc
  */
 class MgCmdArcTan : public MgCmdArc3P
 {
 public:
     MgCmdArcTan(const char* name = Name()) : MgCmdArc3P(name) {}
+#ifndef SWIG
     static const char* Name() { return "arc_tan"; }
     static MgCommand* Create() { return new MgCmdArcTan; }
+#endif
     virtual void release() { delete this; }
 protected:
     virtual void setStepPoint(int step, const Point2d& pt);

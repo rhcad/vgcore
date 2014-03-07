@@ -30,31 +30,31 @@ float TestCanvas::randFloat(float minv, float maxv)
 void TestCanvas::test(GiCanvas* canvas, int bits, int n, bool randStyle)
 {
     s_randStyle = randStyle;
-    if ((bits & 0x400) == 0 || !s_inited) {
+    if ((bits & kDynCurves) == 0 || !s_inited) {
         initRand();
     }
     
-    if (bits & 0x01)
+    if (bits & kRect)
         testRect(canvas, n * 2);
-    if (bits & 0x02)
+    if (bits & kLine)
         testLine(canvas, n * 2);
-    if (bits & 0x04)
+    if (bits & kTextAt)
         testTextAt(canvas, n);
-    if (bits & 0x08)
+    if (bits & kEllipse)
         testEllipse(canvas, n * 2);
-    if (bits & 0x10)
+    if (bits & kQuadBezier)
         testQuadBezier(canvas, n);
-    if (bits & 0x20)
+    if (bits & kCubicBezier)
         testCubicBezier(canvas, n);
-    if (bits & 0x40)
+    if (bits & kPolygon)
         testPolygon(canvas, n);
-    if (bits & 0x80)
+    if (bits & kClearRect)
         canvas->clearRect(100, 100, 200, 200);
-    if (bits & 0x100)
+    if (bits & kClipPath)
         testClipPath(canvas, n);
-    if (bits & 0x200)
+    if (bits & kHandle)
         testHandle(canvas, n);
-    if (bits & 0x400)
+    if (bits & kDynCurves)
         testDynCurves(canvas);
 }
 
