@@ -68,7 +68,6 @@ void GcShapeDoc::submitBackDoc(MgShapeDoc* doc)
 {
     MgObject::release_pointer(_frontDoc);
     if (doc) {
-        _frontDoc = _backDoc->cloneDoc();
-        _frontDoc->copyShapes(doc, false);
+        _frontDoc = doc->shallowCopy();
     }
 }

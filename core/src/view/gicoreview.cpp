@@ -363,6 +363,10 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector
         }
         gs->endPaint();
     }
+    for (int i = 0; i < exts.count(); i++) {
+        MgShapes* extShapes = MgShapes::fromHandle(exts.get(i));
+        MgObject::release_pointer(extShapes);
+    }
     
     return n;
 }

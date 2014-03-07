@@ -210,7 +210,7 @@ public:
         int n = 0;
         for (; actions && actions[n] > 0; n++) {}
         
-        if (n > 0 && motion()->pressDrag && isContextActionsVisible()) {
+        if (!curview || (n > 0 && motion()->pressDrag && isContextActionsVisible())) {
             return false;
         }
         mgvector<int> arr(actions, n);

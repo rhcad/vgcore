@@ -17,7 +17,7 @@ bool MgBaseShape::isKindOf(int type) const {
 }
 Box2d MgBaseShape::getExtent() const { return _getExtent(); }
 long MgBaseShape::getChangeCount() const { return _changeCount; }
-void MgBaseShape::resetChangeCount(long count) { _changeCount = count; }
+void MgBaseShape::resetChangeCount(long count) { update(); _changeCount = count; }
 void MgBaseShape::afterChanged() { _changeCount++; }
 void MgBaseShape::update() { _update(); }
 void MgBaseShape::transform(const Matrix2d& mat) { _transform(mat); }

@@ -76,6 +76,13 @@ void MgShapes::copy(const MgObject&)
 {
 }
 
+MgShapes* MgShapes::shallowCopy() const
+{
+    MgShapes *p = new MgShapes(im->owner, im->index);
+    p->copyShapes(this, false);
+    return p;
+}
+
 int MgShapes::copyShapes(const MgShapes* src, bool deeply, bool needClear)
 {
     if (needClear)
@@ -136,19 +143,29 @@ int MgShapes::getIndex() const
     return im->index;
 }
 
-bool MgShapes::updateShape(MgShape* shape)
+bool MgShapes::updateShape(MgShape* shape, bool force)
 {
-    if (shape && (!shape->getParent() || shape->getParent() == this)) {
+    if (shape && (force || !shape->getParent() || shape->getParent() == this)) {
         I::iterator it = im->findPosition(shape->getID());
         if (it != im->shapes.end()) {
             shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount() + 1);
             (*it)->release();
             *it = shape;
+            shape->setParent(this, shape->getID());
             im->id2shape[shape->getID()] = shape;
             return true;
         }
     }
     return false;
+}
+
+void MgShapes::transform(const Matrix2d& mat)
+{
+    for (I::iterator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
+        MgShape* newsp = (*it)->cloneShape();
+        newsp->shape()->transform(mat);
+        updateShape(newsp, true);
+    }
 }
 
 MgShape* MgShapes::addShape(const MgShape& src)

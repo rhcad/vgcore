@@ -163,14 +163,17 @@ private:
 class MgPlaying
 {
 public:
-    MgPlaying();
+    MgPlaying(int tag);
     ~MgPlaying();
     
+    int getTag() const;                         //!< 得到标识号
     long acquireShapes();                       //!< 得到显示用的图形列表句柄，需要并发保护
     static void releaseShapes(long shapes);     //!< 释放 acquireShapes() 句柄
     
-    long getShapesForEdit();                    //!< 得到修改图形用的图形列表句柄
+    long getShapesForEdit(bool needClear);      //!< 得到修改图形用的图形列表句柄
     void submitShapes();                        //!< 提交图形列表结果，需要并发保护
+    void stop();                                //!< 标记需要停止
+    bool isStopping() const;                    //!< 返回是否待停止
     
 private:
     struct Impl;

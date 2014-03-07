@@ -76,6 +76,13 @@ void MgShapeDoc::copy(const MgObject& src)
     }
 }
 
+MgShapeDoc* MgShapeDoc::shallowCopy() const
+{
+    MgShapeDoc* p = new MgShapeDoc();
+    p->copyShapes(this, false);
+    return p;
+}
+
 int MgShapeDoc::copyShapes(const MgShapeDoc* src, bool deeply)
 {
     unsigned i;

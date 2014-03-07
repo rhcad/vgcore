@@ -139,7 +139,7 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
         _im->s[2]->writeInt("flags", _im->flags[0]);
         _im->s[2]->writeNode("r", _im->fileCount - 2, true);
         
-        if (_im->fileCount % 10 == 0 && _im->flags[0] != MgRecordShapes::DYN) {
+        if (_im->fileCount % 10 == 0 || _im->flags[0] != MgRecordShapes::DYN) {
             _im->saveIndexFile(false);
         }
     }

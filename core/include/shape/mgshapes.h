@@ -21,6 +21,9 @@ public:
     //! 复制出一个新图形列表对象
     MgShapes* cloneShapes() const { return (MgShapes*)clone(); }
     
+    //! 复制出一个新图形列表对象，并添加所有图形的引用
+    MgShapes* shallowCopy() const;
+    
     //! 创建图形列表
     static MgShapes* create(MgObject* owner = NULL, int index = -1);
 
@@ -74,7 +77,10 @@ public:
     bool addShapeDirect(MgShape* shape);
     
     //! 更新为新的图形，该图形从原来图形克隆得到
-    bool updateShape(MgShape* shape);
+    bool updateShape(MgShape* shape, bool force = false);
+    
+    //! 对每个图形进行变形
+    void transform(const Matrix2d& mat);
     
     //! 移除一个图形
     bool removeShape(int sid);

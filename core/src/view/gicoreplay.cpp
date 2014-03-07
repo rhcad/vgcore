@@ -362,20 +362,38 @@ void GiCoreView::applyFrame(int flags)
 struct MgPlaying::Impl {
     MgShapes*   front;
     MgShapes*   back;
-    Impl() : front(NULL), back(NULL) {}
+    int         tag;
+    volatile long stopping;
+    
+    Impl(int tag) : front(NULL), back(NULL), tag(tag), stopping(0) {}
     ~Impl() {
         MgObject::release_pointer(front);
         MgObject::release_pointer(back);
     }
 };
 
-MgPlaying::MgPlaying() : impl(new Impl())
+MgPlaying::MgPlaying(int tag) : impl(new Impl(tag))
 {
 }
 
 MgPlaying::~MgPlaying()
 {
     delete impl;
+}
+
+int MgPlaying::getTag() const
+{
+    return impl->tag;
+}
+
+void MgPlaying::stop()
+{
+    giAtomicIncrement(&impl->stopping);
+}
+
+bool MgPlaying::isStopping() const
+{
+    return impl->stopping > 0;
 }
 
 long MgPlaying::acquireShapes()
@@ -392,10 +410,16 @@ void MgPlaying::releaseShapes(long shapes)
     MgObject::release_pointer(p);
 }
 
-long MgPlaying::getShapesForEdit()
+long MgPlaying::getShapesForEdit(bool needClear)
 {
-    MgObject::release_pointer(impl->back);
-    impl->back = MgShapes::create();
+    if (needClear || !impl->back) {
+        MgObject::release_pointer(impl->back);
+        impl->back = MgShapes::create();
+    } else {
+        MgShapes* old = impl->back;
+        impl->back = old->shallowCopy();
+        MgObject::release_pointer(old);
+    }
     return impl->back->toHandle();
 }
 

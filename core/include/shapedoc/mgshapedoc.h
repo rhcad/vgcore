@@ -23,6 +23,9 @@ public:
     //! 复制出一个新图形文档对象，不复制图形
     MgShapeDoc* cloneDoc() const { return (MgShapeDoc*)clone(); }
     
+    //! 复制出一个新图形文档对象，并添加所有图形的引用
+    MgShapeDoc* shallowCopy() const;
+    
     //! 复制(默认为深拷贝)每一个图形，浅拷贝则添加图形的引用计数且不改变图形的拥有者
     int copyShapes(const MgShapeDoc* src, bool deeply);
 
