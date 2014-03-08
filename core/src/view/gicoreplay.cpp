@@ -46,20 +46,19 @@ void GiCoreView::stopRecord(GiView* view, bool forUndo)
 
 bool GiCoreView::recordShapes(bool forUndo, long tick, long doc, long shapes)
 {
-    mgvector<int> exts;
-    return recordShapes(forUndo, tick, doc, shapes, exts);
+    return recordShapes(forUndo, tick, doc, shapes, NULL);
 }
 
 bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
-                              long shapes, const mgvector<int>& exts)
+                              long shapes, const mgvector<int>* exts)
 {
     MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
     bool ret = false;
     std::vector<MgShapes*> arr;
     int i;
     
-    for (i = 0; i < exts.count(); i++) {
-        MgShapes* p = MgShapes::fromHandle(exts.get(i));
+    for (i = 0; i < (exts ? exts->count() : 0); i++) {
+        MgShapes* p = MgShapes::fromHandle(exts->get(i));
         if (p) {
             arr.push_back(p);
         }

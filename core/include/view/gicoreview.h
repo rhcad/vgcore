@@ -31,7 +31,7 @@ public:
     int drawAll(long doc, long gs, GiCanvas* canvas);               //!< 显示所有图形
     int drawAppend(long doc, long gs, GiCanvas* canvas, int sid);   //!< 显示新图形
     int dynDraw(long shapes, long gs, GiCanvas* canvas);            //!< 显示动态图形
-    int dynDraw(long shapes, long gs, GiCanvas* canvas, const mgvector<int>& exts); //!< 显示动态图形
+    int dynDraw(long shapes, long gs, GiCanvas* canvas, const mgvector<int>* exts); //!< 显示动态图形
     
     int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，主线程中用
     int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，主线程中用
@@ -65,7 +65,7 @@ public:
     void stopRecord(GiView* view, bool forUndo);                    //!< 停止录制图形
     bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
     bool recordShapes(bool forUndo, long tick, long doc,
-                      long shapes, const mgvector<int>& exts);      //!< 录制图形，自动释放
+                      long shapes, const mgvector<int>* exts);      //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
     static bool loadFrameIndex(const char* path, mgvector<int>& arr);   //!< 加载帧索引{index,tick,flags}
@@ -149,6 +149,7 @@ public:
 
 private:
     GiCoreView(GiCoreView* mainView = (GiCoreView*)0);
+    GiCoreView(GiView* view, int type);
     virtual ~GiCoreView();
     void createView_(GiView* view, int type = 1);                   //!< 创建内核视图
     void createMagnifierView_(GiView* newview, GiView* mainView);   //!< 创建放大镜视图

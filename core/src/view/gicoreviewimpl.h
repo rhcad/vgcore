@@ -95,8 +95,8 @@ public:
     volatile long   stopping;
     
 public:
-    GiCoreViewImpl() : curview(NULL), refcount(1), gestureHandler(0)
-        , regenPending(-1), appendPending(-1), redrawPending(-1)
+    GiCoreViewImpl(bool useView = true) : _cmds(NULL), curview(NULL), refcount(1)
+        , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
         , changeCount(0), drawCount(0), dynShapesFront(NULL)
         , dynShapesPlay(NULL), dynShapesPlayFront(NULL), docPlay(NULL)
         , startPauseTick(0), stopping(0)
@@ -109,11 +109,13 @@ public:
         _motion.gestureState = kMgGesturePossible;
         recorder[0] = recorder[1] = NULL;
         _gcdoc = new GcShapeDoc();
-        _cmds = MgCmdManagerFactory::create();
         
         MgBasicShapes::registerShapes(this);
-        MgBasicCommands::registerCmds(this);
-        MgShapeT<MgRecordShape>::registerCreator(this);
+        if (useView) {
+            _cmds = MgCmdManagerFactory::create();
+            MgBasicCommands::registerCmds(this);
+            MgShapeT<MgRecordShape>::registerCreator(this);
+        }
     }
     
     ~GiCoreViewImpl() {
@@ -124,7 +126,7 @@ public:
         MgObject::release_pointer(dynShapesPlay);
         MgObject::release_pointer(dynShapesPlayFront);
         MgObject::release_pointer(docPlay);
-        _cmds->release();
+        MgObject::release_pointer(_cmds);
         delete _gcdoc;
     }
     
@@ -150,7 +152,7 @@ public:
         return _cmds->registerCommand(name, creator); }
     bool toSelectCommand() { return _cmds->setCommand(&_motion, "select", NULL); }
     const char* getCommandName() { return _cmds->getCommandName(); }
-    MgCommand* getCommand() { return _cmds->getCommand(); }
+    MgCommand* getCommand() { return _cmds ? _cmds->getCommand() : NULL; }
     MgCommand* findCommand(const char* name) {
         return _cmds->findCommand(name); }
     bool setCommand(const char* name) { return _cmds->setCommand(&_motion, name, NULL); }

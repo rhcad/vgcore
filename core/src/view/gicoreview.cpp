@@ -51,9 +51,16 @@ GiCoreView::GiCoreView(GiCoreView* mainView)
         impl->refcount++;
     }
     else {
-        impl = new GiCoreViewImpl;
+        impl = new GiCoreViewImpl();
     }
     LOGD("GiCoreView %p created, refcount=%ld", this, impl->refcount);
+}
+
+GiCoreView::GiCoreView(GiView* view, int type)
+{
+    impl = new GiCoreViewImpl(!!view);
+    LOGD("GiCoreView %p created, type=%d", this, type);
+    createView_(view, type);
 }
 
 GiCoreView::~GiCoreView()
@@ -126,9 +133,7 @@ void MgCoreView::releaseShapes(long hShapes)
 
 GiCoreView* GiCoreView::createView(GiView* view, int type)
 {
-    GiCoreView* ret = new GiCoreView();
-    ret->createView_(view, type);
-    return ret;
+    return new GiCoreView(view, type);
 }
 
 GiCoreView* GiCoreView::createMagnifierView(GiView* newview, GiCoreView* mainView,
@@ -349,7 +354,7 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
     return n;
 }
 
-int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector<int>& exts)
+int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector<int>* exts)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
@@ -357,14 +362,14 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector
     if (hShapes && gs && gs->beginPaint(canvas)) {
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
         n = MgShapes::fromHandle(hShapes)->draw(*gs);
-        for (int i = 0; i < exts.count(); i++) {
-            MgShapes* extShapes = MgShapes::fromHandle(exts.get(i));
+        for (int i = 0; i < (exts ? exts->count() : 0); i++) {
+            MgShapes* extShapes = MgShapes::fromHandle(exts->get(i));
             n += extShapes ? extShapes->draw(*gs) : 0;
         }
         gs->endPaint();
     }
-    for (int i = 0; i < exts.count(); i++) {
-        MgShapes* extShapes = MgShapes::fromHandle(exts.get(i));
+    for (int i = 0; i < (exts ? exts->count() : 0); i++) {
+        MgShapes* extShapes = MgShapes::fromHandle(exts->get(i));
         MgObject::release_pointer(extShapes);
     }
     
@@ -585,7 +590,9 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
         ret = true;
     }
     impl->regenAll(true);
-    impl->getCmdSubject()->onDocLoaded(impl->motion());
+    if (impl->curview) {
+        impl->getCmdSubject()->onDocLoaded(impl->motion());
+    }
 
     return ret;
 }
