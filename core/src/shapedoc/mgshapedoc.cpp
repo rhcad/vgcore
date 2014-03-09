@@ -8,6 +8,7 @@
 #include <vector>
 #include "mglayer.h"
 #include "mgcomposite.h"
+#include "mglog.h"
 
 struct MgShapeDoc::Impl {
     std::vector<MgLayer*> layers;
@@ -21,8 +22,11 @@ struct MgShapeDoc::Impl {
     bool        readOnly;
 };
 
+static volatile long _n = 0;
+
 MgShapeDoc::MgShapeDoc()
 {
+    LOGD("+MgShapeDoc %ld", giAtomicIncrement(&_n));
     im = new Impl();
     im->curLayer = MgLayer::create(this, 0);
     im->layers.push_back(im->curLayer);
@@ -38,6 +42,7 @@ MgShapeDoc::~MgShapeDoc()
         im->layers[i]->release();
     }
     delete im;
+    LOGD("-MgShapeDoc %ld", giAtomicDecrement(&_n));
 }
 
 MgShapeDoc* MgShapeDoc::createDoc()

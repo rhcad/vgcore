@@ -40,7 +40,7 @@ struct MgRecordShapes::Impl
     void resetVersion(const MgShapes* shapes);
     void startRecord(const MgShapes* shapes);
     void stopRecord();
-    void saveIndexFile(bool ended);
+    bool saveIndexFile(bool ended);
     void recordShapes(const MgShapes* shapes);
     bool forUndo() const { return type == 0; }
 };
@@ -398,12 +398,12 @@ bool MgRecordShapes::Impl::saveJsonFile()
     std::string filename;
     
     if (flags[0] == DYN && lastTick == tick) {
-        LOGD("Ignore record at the same time %d", tick);
-        return false;
+        //LOGD("Ignore record at the same time %d", tick);
+        flags[0] = flags[1] = 0;
     }
     
     for (int i = 0; i < 2; i++) {
-        if (lastDoc) {
+        if (lastDoc && flags[i]) {
             s[i]->writeFloatArray("transform", &lastDoc->modelTransform().m11, 6);
             s[i]->writeFloatArray("pageExtent", &lastDoc->getPageRectW().xmin, 4);
             s[i]->writeFloat("viewScale", lastDoc->getViewScale());
@@ -438,10 +438,11 @@ bool MgRecordShapes::Impl::saveJsonFile()
     return ret;
 }
 
-void MgRecordShapes::Impl::saveIndexFile(bool ended)
+bool MgRecordShapes::Impl::saveIndexFile(bool ended)
 {
     std::string filename(path + "records.json");
     FILE *fp = mgopenfile(filename.c_str(), "wt");
+    bool ret = false;
     
     if (!fp) {
         LOGE("Fail to save file: %s", filename.c_str());
@@ -449,19 +450,22 @@ void MgRecordShapes::Impl::saveIndexFile(bool ended)
         if (ended) {
             s[2]->writeNode("records", -1, true);
         }
-        if (js[2]->save(fp, VG_PRETTY)) {
-            LOGD("Save records: %s", filename.c_str());
-        } else {
+        ret = js[2]->save(fp, VG_PRETTY);
+        if (!ret) {
             LOGE("Fail to save records: %s", filename.c_str());
         }
         fclose(fp);
     }
+    
+    return ret;
 }
 
 void MgRecordShapes::Impl::stopRecord()
 {
     if (js[2]) {
-        saveIndexFile(true);
+        if (saveIndexFile(true)) {
+            LOGD("Save records.json in %s", path.c_str());
+        }
         delete js[2];
         js[2] = NULL;
         s[2] = NULL;

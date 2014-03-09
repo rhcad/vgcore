@@ -32,6 +32,7 @@ static inline void __clog_log(int level, const char * fmt, va_list ap) {
         msg = asl_new(ASL_TYPE_MSG);
         asl_set(msg, ASL_KEY_FACILITY, "com.apple.console");
         asl_vlog(__clog_client, msg, level, fmt, ap);
+        asl_free(msg);
     }
 }
 

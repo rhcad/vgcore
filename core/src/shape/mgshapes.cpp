@@ -39,8 +39,11 @@ MgShapes* MgShapes::create(MgObject* owner, int index)
     return new MgShapes(owner, owner ? index : -1);
 }
 
+//static volatile long _n = 0;
+
 MgShapes::MgShapes(MgObject* owner, int index)
 {
+    //LOGD("+MgShapes %ld", giAtomicIncrement(&_n));
     im = new I();
     im->owner = owner;
     im->index = index;
@@ -52,6 +55,7 @@ MgShapes::~MgShapes()
 {
     clear();
     delete im;
+    //LOGD("-MgShapes %ld", giAtomicDecrement(&_n));
 }
 
 void MgShapes::release()
@@ -164,7 +168,8 @@ void MgShapes::transform(const Matrix2d& mat)
     for (I::iterator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         MgShape* newsp = (*it)->cloneShape();
         newsp->shape()->transform(mat);
-        updateShape(newsp, true);
+        if (!updateShape(newsp, true))
+            MgObject::release_pointer(newsp);
     }
 }
 

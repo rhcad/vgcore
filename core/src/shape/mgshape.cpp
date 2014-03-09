@@ -4,6 +4,16 @@
 
 #include "mgshape.h"
 #include "mgstorage.h"
+#include "mglog.h"
+
+//static volatile long _n = 0;
+
+MgBaseShape::MgBaseShape() : _flags(0), _changeCount(0) {
+    //LOGD("+MgBaseShape %ld", giAtomicIncrement(&_n));
+}
+MgBaseShape::~MgBaseShape() {
+    //LOGD("-MgBaseShape %ld", giAtomicDecrement(&_n));
+}
 
 void MgBaseShape::copy(const MgObject& src) {
     if (src.isKindOf(Type()))

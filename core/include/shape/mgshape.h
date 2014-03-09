@@ -120,8 +120,8 @@ struct MgHitResult {
 class MgBaseShape : public MgObject
 {
 public:
-    MgBaseShape() : _flags(0), _changeCount(0) {}
-    virtual ~MgBaseShape() {}
+    MgBaseShape();
+    virtual ~MgBaseShape();
 
     //! 返回本对象的类型
     static int Type() { return 3; }
