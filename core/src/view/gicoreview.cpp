@@ -527,6 +527,7 @@ int GiCoreView::addShapesForTest()
 {
     int n = RandomParam().addShapes(impl->shapes());
     impl->regenAll(true);
+    LOGD("Add %d shapes for test", n);
     return n;
 }
 
@@ -920,6 +921,26 @@ bool GiCoreView::getBoundingBox(long hDoc, long hGs, mgvector<float>& box, int s
         rect *= gs->xf().modelToDisplay();
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::displayToModel(mgvector<float>& d)
+{
+    bool ret = impl->curview && (d.count() == 2 || d.count() == 4);
+    
+    if (ret) {
+        if (d.count() == 2) {
+            Point2d pt(d.get(0), d.get(1));
+            pt *= impl->curview->xform()->displayToModel();
+            d.set(0, pt.x, pt.y);
+        }
+        else {
+            Box2d rect(d.get(0), d.get(1), d.get(2), d.get(3));
+            rect *= impl->curview->xform()->displayToModel();
+            d.set(0, rect.xmin, rect.ymin);
+            d.set(2, rect.xmax, rect.ymax);
+        }
     }
     return ret;
 }

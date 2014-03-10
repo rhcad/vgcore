@@ -150,7 +150,7 @@ struct MgCoreView {
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;
     
     //! 返回前端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
-    virtual bool getDisplayExtent(long doc, long hGs, mgvector<float>& box) = 0;
+    virtual bool getDisplayExtent(long doc, long gs, mgvector<float>& box) = 0;
 
     //! 返回选择包络框，四个点单位坐标(left, top, right, bottom)
     virtual bool getBoundingBox(mgvector<float>& box) = 0;
@@ -159,7 +159,10 @@ struct MgCoreView {
     virtual bool getBoundingBox(mgvector<float>& box, int shapeId) = 0;
     
     //! 返回前端文档中指定ID的图形的包络框，四个点单位坐标(left, top, right, bottom)
-    virtual bool getBoundingBox(long doc, long hGs, mgvector<float>& box, int shapeId) = 0;
+    virtual bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId) = 0;
+    
+    //! 视图坐标转为模型坐标，可传入2或4个分量
+    virtual bool displayToModel(mgvector<float>& d) = 0;
 };
 
 inline bool MgCoreView::saveToFile(const char* vgfile, bool pretty) {

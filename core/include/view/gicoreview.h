@@ -145,6 +145,7 @@ public:
     bool getBoundingBox(mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box, int shapeId);
     bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId);
+    bool displayToModel(mgvector<float>& d);
 #endif // SWIG
 
 private:
