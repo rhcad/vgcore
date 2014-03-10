@@ -38,21 +38,19 @@ public:
                 _v[i] = (T)v[i];
         }
     }
-    template<class T2>
-    mgvector(const T2 v1, const T2 v2) {
+    mgvector(T v1, T v2) {
         _v = new T[2];
         _n = 2;
-        _v[0] = (T)v1;
-        _v[1] = (T)v2;
+        _v[0] = v1;
+        _v[1] = v2;
     }
-    template<class T2>
-    mgvector(const T2 v1, const T2 v2, const T2 v3, const T2 v4) {
+    mgvector(T v1, T v2, T v3, T v4) {
         _v = new T[4];
         _n = 4;
-        _v[0] = (T)v1;
-        _v[1] = (T)v2;
-        _v[2] = (T)v3;
-        _v[3] = (T)v4;
+        _v[0] = v1;
+        _v[1] = v2;
+        _v[2] = v3;
+        _v[3] = v4;
     }
 #ifndef SWIG
     T *address() { return _v; }

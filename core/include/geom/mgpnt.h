@@ -218,6 +218,11 @@ public:
         x = xx; y = yy; return *this;
     }
     
+    //! 设置为新的点
+    Point2d& set(const Point2d& pnt) {
+        x = pnt.x; y = pnt.y; return *this;
+    }
+    
 #ifndef SWIG
     //! 得到四舍五入后的坐标
     /*! 利用该函数可以将矢量转换为POINT、CPoint值

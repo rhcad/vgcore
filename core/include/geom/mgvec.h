@@ -275,6 +275,11 @@ public:
         x = xx; y = yy; return *this;
     }
     
+    //! 设置为新的矢量
+    Vector2d& set(const Vector2d& v) {
+        x = v.x; y = v.y; return *this;
+    }
+    
     //! 设置矢量的角度和长度
     /*!
         \param angle 矢量的角度，弧度
