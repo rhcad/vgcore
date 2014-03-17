@@ -94,6 +94,7 @@ typedef enum {
     kMgShapeLocked,     //!< 锁定形状
     kMgNoSnap,          //!< 禁止捕捉
     kMgNoAction,        //!< 禁止上下文按钮
+    kMgHideContent,     //!< 隐藏内容
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -266,6 +267,7 @@ protected:
             int _flagShapeLocked:1;
             int _flagNoSnap:1;
             int _flagNoAction:1;
+            int _flagHide:1;
         } _bits;
     };
     long _changeCount;

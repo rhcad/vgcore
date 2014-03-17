@@ -23,7 +23,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
         return NULL;
     
     Vector2d size(Vector2d(w, h) * sender->view->xform()->displayToWorld());
-    while (fabsf(size.x) > 200.f || fabsf(size.y) > 200.f) {
+    while (fabsf(size.x) > 100.f || fabsf(size.y) > 100.f) {
         size *= 0.95f;
     }
     size *= sender->view->xform()->worldToDisplay();

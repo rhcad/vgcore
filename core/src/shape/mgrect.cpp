@@ -296,6 +296,10 @@ void MgImageShape::setName(const char* name)
     strncpy(_name, name, len);
 #endif
     _name[len] = 0;
+    
+    if (strstr(_name, "%d.")) {
+        setFlag(kMgHideContent, true);
+    }
 }
 
 bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
@@ -310,8 +314,10 @@ bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     }
     
     bool ret = gs.drawPolygon(&tmpctx, 4, _points);
-    ret = (mode == 0 && gs.rawImage(_name, rect.center().x, rect.center().y,
-        rect.width(), rect.height(), vec.angle2())) || ret;
+    ret = (mode == 0
+           && !getFlag(kMgHideContent)
+           && gs.rawImage(_name, rect.center().x, rect.center().y,
+                          rect.width(), rect.height(), vec.angle2())) || ret;
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
