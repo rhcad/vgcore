@@ -192,6 +192,7 @@ public:
                     && shape->getParent()->findShape(shape->getID()) == shape
                     && !shape->shapec()->getFlag(kMgShapeLocked));
         if (ret) {
+            CALL_VIEW(deviceView()->shapeDeleted(shape->getID()));
             getCmdSubject()->onShapeDeleted(motion(), shape);
             ret = shape->getParent()->removeShape(shape->getID());
         }

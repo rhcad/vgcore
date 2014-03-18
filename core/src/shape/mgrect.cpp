@@ -299,6 +299,7 @@ void MgImageShape::setName(const char* name)
     
     if (strstr(_name, "%d.")) {
         setFlag(kMgHideContent, true);
+        setFlag(kMgNoClone, true);
     }
 }
 

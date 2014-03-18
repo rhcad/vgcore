@@ -43,7 +43,9 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             if (!locked) {
                 actions[n++] = kMgActionDelete;
             }
-            actions[n++] = kMgActionClone;
+            if (shape && !shape->shapec()->getFlag(kMgNoClone)) {
+                actions[n++] = kMgActionClone;
+            }
             if (!locked && shape
                 && (shape->shapec()->isKindOf(kMgShapeImage)
                     || shape->shapec()->isKindOf(kMgShapeLine))) {

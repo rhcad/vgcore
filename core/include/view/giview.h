@@ -41,6 +41,7 @@ public:
     virtual void contentChanged() {}        //!< 图形数据改变的通知
     virtual void dynamicChanged() {}        //!< 图形动态拖拉改变的通知
     virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
+    virtual void shapeDeleted(int sid) {}   //!< 删除图形的通知
 };
 
 #endif // TOUCHVG_CORE_GIVIEW_H
