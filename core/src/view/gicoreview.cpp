@@ -356,12 +356,14 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 
 int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector<int>* exts)
 {
-    int n = -1;
+    int n = (hShapes || exts) ? 0 : -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (hShapes && gs && gs->beginPaint(canvas)) {
-        mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
-        n = MgShapes::fromHandle(hShapes)->draw(*gs);
+    if (n == 0 && gs && gs->beginPaint(canvas)) {
+        if (hShapes) {
+            mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+            n += MgShapes::fromHandle(hShapes)->draw(*gs);
+        }
         for (int i = 0; i < (exts ? exts->count() : 0); i++) {
             MgShapes* extShapes = MgShapes::fromHandle(exts->get(i));
             n += extShapes ? extShapes->draw(*gs) : 0;
