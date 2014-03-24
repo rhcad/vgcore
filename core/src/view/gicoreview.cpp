@@ -491,6 +491,11 @@ bool GiCoreView::isDrawingCommand()
     return cmd && cmd->isDrawingCommand();
 }
 
+bool GiCoreView::isCommand(const char* name)
+{
+    return impl->isCommand(name);
+}
+
 GiGestureType GiCoreView::getGestureType()
 {
     return (GiGestureType)impl->motion()->gestureType;

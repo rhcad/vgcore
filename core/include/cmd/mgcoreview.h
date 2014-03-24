@@ -72,6 +72,7 @@ struct MgCoreView {
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual bool isDrawingCommand() = 0;            //!< 当前是否为绘图命令
+    virtual bool isCommand(const char* name) = 0;   //!< 当前是否为指定名称的命令
 #ifndef SWIG
     virtual const char* getCommand() const = 0;     //!< 返回当前命令名称
 #endif

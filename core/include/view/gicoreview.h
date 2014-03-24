@@ -82,6 +82,7 @@ public:
 public:
     bool isPressDragging();
     bool isDrawingCommand();
+    bool isCommand(const char* name);
     long viewAdapterHandle();
     long backDoc();
     long backShapes();
