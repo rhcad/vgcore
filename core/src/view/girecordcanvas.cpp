@@ -42,10 +42,7 @@ struct CmdSetPen : public MgRecordShape::ICmd {
         return true;
     }
     virtual void draw(GiGraphics& gs, const Matrix2d&) const {
-        float w = width;
-        if (orgw < -1e4f && orgw + 1e4f > -1e2f)
-            w = orgw + 1e4f;
-        gs.getCanvas()->setPen(argb, w, style, phase, orgw);
+        gs.getCanvas()->setPen(argb, width, style, phase, orgw);
     }
 };
 

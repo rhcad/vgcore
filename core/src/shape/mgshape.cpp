@@ -81,14 +81,27 @@ bool MgBaseShape::_equals(const MgBaseShape& src) const
     return _flags == src._flags;
 }
 
+Box2d MgBaseShape::_getExtent() const
+{
+    if (_extent.isNull() || !_extent.isEmpty(minTol())) {
+        return _extent;
+    }
+    
+    Box2d rect(_extent);
+    
+    if (rect.width() < minTol().equalPoint() && getPointCount() > 0) {
+        rect.inflate(minTol().equalPoint() / 2.f, 0);
+    }
+    if (rect.height() < minTol().equalPoint() && getPointCount() > 0) {
+        rect.inflate(0, minTol().equalPoint() / 2.f);
+    }
+    
+    return rect;
+}
+
 void MgBaseShape::_update()
 {
-    if (_extent.width() < minTol().equalPoint() && getPointCount() > 0) {
-        _extent.inflate(minTol().equalPoint() / 2.f, 0);
-    }
-    if (_extent.height() < minTol().equalPoint() && getPointCount() > 0) {
-        _extent.inflate(0, minTol().equalPoint() / 2.f);
-    }
+    _extent = _getExtent();
     afterChanged();
 }
 

@@ -279,7 +279,7 @@ protected:
     void _copy(const MgBaseShape& src);
     bool _equals(const MgBaseShape& src) const;
     bool _isKindOf(int type) const { return type == Type(); }
-    Box2d _getExtent() const { return _extent; }
+    Box2d _getExtent() const;
     void _update();
     void _transform(const Matrix2d& mat);
     void _clear();

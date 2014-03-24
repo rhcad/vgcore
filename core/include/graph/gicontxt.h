@@ -147,15 +147,15 @@ public:
     */
     float getLineWidth() const
     {
-        return m_lineWidth > 0.f ? fmodf(m_lineWidth, 1e5f) : -fmodf(-m_lineWidth, 1e5f);
+        return m_lineWidth > 0.f ? fmodf(m_lineWidth, 1e4f) : -fmodf(-m_lineWidth, 1e4f);
     }
     
     //! 返回附加的线宽，像素单位，非负数
     float getExtraWidth() const
     {
-        if (m_lineWidth > 1e5f - 1e-7f)
+        if (m_lineWidth > 1e4f - 1e-7f)
             return m_lineWidth / 1e5f;
-        if (m_lineWidth < -1e5f + 1e-7f)
+        if (m_lineWidth < -1e4f + 1e-7f)
             return m_lineWidth / -1e5f;
         return 0.f;
     }
@@ -180,7 +180,7 @@ public:
     //! 设置附加的线宽，像素单位，非负数
     void setExtraWidth(float pixels)
     {
-        pixels = floorf(fabsf(pixels)) * (m_lineWidth > 0.f ? 1e5f : -1e5f);
+        pixels = floorf(fabsf(pixels * 10.f) + 0.5f) * (m_lineWidth > 0.f ? 1e4f : -1e4f);
         m_lineWidth = getLineWidth() + pixels;
     }
     
