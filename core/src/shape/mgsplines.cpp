@@ -19,11 +19,15 @@ MgSplines::~MgSplines()
 
 float MgSplines::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
+    if (_count == 2) {
+        return mglnrel::ptToLine(_points[0], _points[1], pt, res.nearpt);
+    }
     if (_knotvs) {
         return mgnear::cubicSplinesHit(_count, _points, _knotvs, isClosed(),
                                        pt, tol, res.nearpt, res.segment, false);
     }
-    return __super::_hitTest(pt, tol, res);
+    return mgnear::quadSplinesHit(_count, _points, isClosed(),
+                                  pt, tol, res.nearpt, res.segment);
 }
 
 bool MgSplines::_hitTestBox(const Box2d& rect) const
@@ -51,7 +55,7 @@ bool MgSplines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segmen
     
     bool ret = (_count == 2 ? gs.drawLine(&ctx, _points[0], _points[1])
                 : (_knotvs ? gs.drawBeziers(&ctx, _count, _points, _knotvs, isClosed())
-                   : gs.drawQuadSplines(&ctx, _count, _points)));
+                   : gs.drawQuadSplines(&ctx, _count, _points, isClosed())));
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 

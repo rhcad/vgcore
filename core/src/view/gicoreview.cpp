@@ -519,6 +519,12 @@ bool GiCoreView::setCommand(const char* name, const char* params)
     return impl->curview && impl->_cmds->setCommand(impl->motion(), name, s);
 }
 
+bool GiCoreView::switchCommand()
+{
+    DrawLocker locker(impl);
+    return impl->curview && impl->_cmds->switchCommand(impl->motion());
+}
+
 bool GiCoreView::doContextAction(int action)
 {
     DrawLocker locker(impl);

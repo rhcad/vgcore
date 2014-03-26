@@ -62,6 +62,9 @@ static void bezier4P(const Point2d& pt1, const Point2d& pt2, const Point2d& pt3,
 static int fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
                     int count, const Point2d* pts, float tol);
 
+//! 二次贝塞尔曲线段转为三次贝塞尔曲线段
+static void quadBezierToCubic(const Point2d quad[3], Point2d cubic[4]);
+
 //! 用给定的起点和终点构造90度椭圆弧，并转换为一个三次贝塞尔曲线段
 /*! 椭圆弧为从起点到终点逆时针转90度。
     计算出的贝塞尔曲线段的起点为pt1、终点为pt4，中间两个控制点为ctrpt1、ctrpt2

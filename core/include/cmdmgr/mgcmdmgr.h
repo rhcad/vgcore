@@ -21,6 +21,7 @@ struct MgCmdManager {
     //! 注册外部命令, 为NULL则取消注册
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0;
     virtual const char* getCommandName() = 0;               //!< 得到当前命令名称
+    virtual const char* getCommandName(int index) = 0;      //!< 得到指定序号命令的名称
 #endif
 
     virtual void release() = 0;                             //!< 销毁管理器
@@ -29,6 +30,7 @@ struct MgCmdManager {
     virtual MgCommand* findCommand(const char* name) = 0;   //!< 查找命令
     virtual bool setCommand(const MgMotion* sender,
         const char* name, MgStorage* s) = 0;                //!< 启动命令
+    virtual bool switchCommand(const MgMotion* sender) = 0; //!< 切换到下一命令
     virtual bool cancel(const MgMotion* sender) = 0;        //!< 取消当前命令
     virtual void unloadCommands() = 0;                      //!< 退出时卸载命令
     

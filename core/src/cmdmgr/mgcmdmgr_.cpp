@@ -54,6 +54,27 @@ const char* MgCmdManagerImpl::getCommandName()
     return cmd ? cmd->getName() : "";
 }
 
+const char* MgCmdManagerImpl::getCommandName(int index)
+{
+    Factories::iterator it = _factories.begin();
+    for (; it != _factories.end() && index-- > 0; ++it) ;
+    return it != _factories.end() ? it->first.c_str() : "";
+}
+
+bool MgCmdManagerImpl::switchCommand(const MgMotion* sender)
+{
+    const char* name;
+    
+    for (int i = 0; *(name = getCommandName(i)); i++) {
+        if (_cmdname == name) {
+            name = getCommandName(i + 1);
+            name = *name ? name : getCommandName(0);
+            return setCommand(sender, name, NULL);
+        }
+    }
+    return setCommand(sender, getCommandName(0), NULL);
+}
+
 MgCommand* MgCmdManagerImpl::getCommand()
 {
     CMDS::iterator it = _cmds.find(_cmdname);
@@ -147,6 +168,7 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     if (oldname != _cmdname) {
         sender->view->commandChanged();
     }
+    sender->view->redraw(false);
     
     return ret;
 }

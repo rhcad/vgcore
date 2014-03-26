@@ -112,6 +112,7 @@ public:
     long getDynamicShapesForEdit();
     const char* getCommand() const;
     bool setCommand(const char* name, const char* params = "");
+    bool switchCommand();
     bool doContextAction(int action);
     void clearCachedData();
     int addShapesForTest();

@@ -30,10 +30,12 @@ private:
     virtual bool registerCommand(const char* name, MgCommand* (*creator)());
     virtual void release() { delete this; }
     virtual const char* getCommandName();
+    virtual const char* getCommandName(int index);
     virtual MgCommand* getCommand();
     virtual MgCommand* findCommand(const char* name);
     virtual bool setCommand(const MgMotion* sender,
         const char* name, MgStorage* s);
+    virtual bool switchCommand(const MgMotion* sender);
     virtual bool cancel(const MgMotion* sender);
     virtual void unloadCommands();
     virtual int getNewShapeID() { return _newShapeID; }

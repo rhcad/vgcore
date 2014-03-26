@@ -97,15 +97,11 @@ float mgnear::cubicSplinesHit(
     int n2 = (closed && n > 1) ? n + 1 : n;
 
     segment = -1;
-    for (int i = 0; i + 1 < n2; i++)
-    {
+    for (int i = 0; i + 1 < n2; i++) {
         mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts, hermite);
-        if (rect.isIntersect(computeCubicBox(pts)))
-        {
+        if (rect.isIntersect(computeCubicBox(pts))) {
             dist = mgnear::nearestOnBezier(pt, pts, ptTemp);
-            //dist = pt.distanceTo(ptTemp);
-            if (dist < distMin)
-            {
+            if (dist < distMin) {
                 distMin = dist;
                 nearpt = ptTemp;
                 segment = i;
@@ -113,6 +109,39 @@ float mgnear::cubicSplinesHit(
         }
     }
 
+    return distMin;
+}
+
+float mgnear::quadSplinesHit(int n, const Point2d* knots, bool closed,
+                             const Point2d& pt, float tol, Point2d& nearpt, int& segment)
+{
+    Point2d ptTemp;
+    float dist, distMin = _FLT_MAX;
+    Point2d pts[3 + 4];
+    const Box2d rect (pt, 2 * tol, 2 * tol);
+    
+    segment = -1;
+    for (int i = 0; i < (closed ? n : n - 2); i++, pts[0] = pts[2]) {
+        if (i == 0) {
+            pts[0] = closed ? (knots[0] + knots[1]) / 2 : knots[0];
+        }
+        pts[1] = knots[(i+1) % n];
+        if (closed || i + 3 < n)
+            pts[2] = (knots[(i+1) % n] + knots[(i+2) % n]) / 2;
+        else
+            pts[2] = knots[i+2];
+        
+        mgcurv::quadBezierToCubic(pts, pts + 3);
+        if (rect.isIntersect(computeCubicBox(pts + 3))) {
+            dist = mgnear::nearestOnBezier(pt, pts + 3, ptTemp);
+            if (dist < distMin) {
+                distMin = dist;
+                nearpt = ptTemp;
+                segment = i;
+            }
+        }
+    }
+    
     return distMin;
 }
 

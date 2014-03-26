@@ -7,6 +7,14 @@
 #include "mglnrel.h"
 #include "mgdblpt.h"
 
+void mgcurv::quadBezierToCubic(const Point2d quad[3], Point2d cubic[4])
+{
+    cubic[0] = quad[0];
+    cubic[1] = quad[0] + 2.f / 3.f * (quad[1] - quad[0]);
+    cubic[2] = quad[2] + 2.f / 3.f * (quad[1] - quad[2]);
+    cubic[3] = quad[2];
+}
+
 void mgcurv::fitBezier(const Point2d* pts, float t, Point2d& fitpt)
 {
     float v = 1.f - t;

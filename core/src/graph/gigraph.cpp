@@ -889,11 +889,11 @@ bool GiGraphics::drawBSplines(const GiContext* ctx, int count, const Point2d* ct
                               bool closed, bool modelUnit)
 {
     if (closed) {
-        if (count < 3 || ctlpts == NULL || isStopping())
+        if (count < 3 || !ctlpts || isStopping())
             return false;
         count = mgMin(count, static_cast<int>((0x2000 - 1) / 3));
     } else {
-        if (count < 4 || ctlpts == NULL || isStopping())
+        if (count < 4 || !ctlpts || isStopping())
             return false;
         count = mgMin(count, static_cast<int>(3 + (0x2000 - 1) / 3));
     }
@@ -940,7 +940,7 @@ bool GiGraphics::drawBSplines(const GiContext* ctx, int count, const Point2d* ct
 bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count, const Point2d* ctlpts,
                                  bool closed, bool modelUnit)
 {
-    if (count < 3 || ctlpts == NULL || isStopping())
+    if (count < 3 || !ctlpts || isStopping())
         return false;
     
     const Box2d wndrect (DRAW_RECT(m_impl, modelUnit));
@@ -949,18 +949,19 @@ bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count, const Point2d*
     
     rawBeginPath();
     
-    for (int i = 0; i + 2 < count; i++) {
+    for (int i = 0; i < (closed ? count : count - 2); i++) {
         if (i == 0) {
             pt = (closed ? (ctlpts[0] + ctlpts[1]) / 2 : ctlpts[0]) * matD;
             rawMoveTo(pt.x, pt.y);
         }
-        pt = ctlpts[i+1] * matD;
-        mid = (!closed && i + 3 < count ? (ctlpts[i+1] + ctlpts[i+2]) / 2 : ctlpts[i+2]) * matD;
+        pt = ctlpts[(i+1) % count] * matD;
+        if (closed || i + 3 < count)
+            mid = (ctlpts[(i+1) % count] + ctlpts[(i+2) % count]) / 2 * matD;
+        else
+            mid = ctlpts[i+2] * matD;
         rawQuadTo(pt.x, pt.y, mid.x, mid.y);
     }
     if (closed) {
-        pt = ctlpts[0] * matD;
-        mid = (ctlpts[0] + ctlpts[1]) / 2 * matD;
         rawClosePath();
     }
     

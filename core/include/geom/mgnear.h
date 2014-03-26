@@ -90,6 +90,20 @@ static float cubicSplinesHit(int n, const Point2d* knots, const Vector2d* knotvs
                              bool closed,const Point2d& pt, float tol, Point2d& nearpt,
                              int& segment, bool hermite = true);
 
+//! 计算点到二次样条曲线的最近距离
+/*!
+    \param[in] n 二次样条曲线的控制点的点数
+    \param[in] knots 控制点坐标数组，元素个数为n
+    \param[in] closed 是否为闭合曲线
+    \param[in] pt 曲线段外给定的点
+    \param[in] tol 距离公差，正数，超出则不计算最近点
+    \param[out] nearpt 曲线上的最近点
+    \param[out] segment 最近点所在曲线段的序号，[0,n-2]，闭合时为[0,n-1]，负数表示失败
+    \return 给定的点到最近点的距离，失败时为极大数
+*/
+static float quadSplinesHit(int n, const Point2d* knots, bool closed,
+                            const Point2d& pt, float tol, Point2d& nearpt, int& segment);
+
 //! 计算点到折线或多边形的最近距离
 /*!
     \param[in] n 顶点数

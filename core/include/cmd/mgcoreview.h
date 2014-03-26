@@ -78,6 +78,7 @@ struct MgCoreView {
 #endif
     void getCommand(MgStringCallback* c) { c->onGetString(getCommand()); }  //!< 得到当前命令名称
     virtual bool setCommand(const char* name, const char* params = "") = 0; //!< 启动命令
+    virtual bool switchCommand() = 0;               //!< 切换到下一命令
     virtual bool doContextAction(int action) = 0;   //!< 执行上下文动作
     
     virtual void clearCachedData() = 0;             //!< 释放临时数据内存，未做线程保护
