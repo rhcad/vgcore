@@ -397,7 +397,7 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values, int cou
                         values[ret++] = (float)v.GetInt();
                     }
                     else {
-                        LOGD("Invalid value for readFloatArray(%s)", name);
+                        //LOGD("Invalid value for readFloatArray(%s)", name);
                     }
                 }
             }

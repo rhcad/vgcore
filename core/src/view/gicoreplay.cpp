@@ -15,15 +15,24 @@ long GiCoreView::getRecordTick(bool forUndo, long curTick)
     return isPaused() && tick > pauseTick ? tick - pauseTick : tick;
 }
 
-bool GiCoreView::startRecord(const char* path, long doc, bool forUndo, long curTick)
+bool GiCoreView::startRecord(const char* path, long doc, bool forUndo,
+                             long curTick, MgStringCallback* c)
 {
     MgRecordShapes*& recorder = impl->recorder[forUndo ? 0 : 1];
     if (recorder || !path)
         return false;
     
     recorder = new MgRecordShapes(path, MgShapeDoc::fromHandle(doc), forUndo, curTick);
-    return (isPlaying() || forUndo
-            || saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY));
+    if (isPlaying() || forUndo)
+        return true;
+    
+    if (!saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY))
+        return false;
+    
+    if (c) {
+        c->onGetString(recorder->getFileName().c_str());
+    }
+    return true;
 }
 
 void GiCoreView::stopRecord(GiView* view, bool forUndo)
@@ -50,10 +59,10 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc, long shapes)
 }
 
 bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
-                              long shapes, const mgvector<int>* exts)
+                              long shapes, const mgvector<int>* exts, MgStringCallback* c)
 {
     MgRecordShapes* recorder = impl->recorder[forUndo ? 0 : 1];
-    bool ret = false;
+    int ret = 0;
     std::vector<MgShapes*> arr;
     int i;
     
@@ -66,7 +75,10 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
     
     if (recorder && !recorder->isLoading() && !recorder->isPlaying()) {
         ret = recorder->recordStep(tick, impl->changeCount, MgShapeDoc::fromHandle(doc),
-                                   MgShapes::fromHandle(shapes), arr);
+                                   MgShapes::fromHandle(shapes), arr) ? 2 : 1;
+        if (ret > 1 && c) {
+            c->onGetString(recorder->getFileName(false, recorder->getFileCount() - 1).c_str());
+        }
     } else {
         releaseDoc(doc);
         releaseShapes(shapes);
@@ -75,7 +87,7 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
         MgObject::release_pointer(arr[i]);
     }
     
-    return ret;
+    return ret > 0;
 }
 
 bool GiCoreView::restoreRecord(int type, const char* path, long doc, long changeCount,
@@ -182,13 +194,17 @@ bool GiCoreView::isPlaying() const
 
 int GiCoreView::getFrameIndex() const
 {
-    return impl->recorder[1] ? impl->recorder[1]->getFileCount() : -1;
+    return impl->recorder[1] ? impl->recorder[1]->getFileCount() - 1 : -1;
 }
 
 long GiCoreView::getFrameTick()
 {
-    long tick = impl->recorder[1] ? (long)impl->recorder[1]->getFileTick() : 0;
-    return tick;
+    return impl->recorder[1] ? (long)impl->recorder[1]->getFileTick() : 0;
+}
+
+int GiCoreView::getFrameFlags()
+{
+    return impl->recorder[1] ? impl->recorder[1]->getFileFlags() : 0;
 }
 
 long GiCoreView::getPlayingDocForEdit()

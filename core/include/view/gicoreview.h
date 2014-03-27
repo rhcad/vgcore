@@ -61,11 +61,13 @@ public:
     int exportSVG(long doc, long gs, const char* filename);         //!< 导出图形到SVG文件
     int exportSVG(GiView* view, const char* filename);              //!< 导出图形到SVG文件，主线程中用
     bool startRecord(const char* path, long doc,
-                     bool forUndo, long curTick);                   //!< 开始录制图形，自动释放，在主线程用
+                     bool forUndo, long curTick,
+                     MgStringCallback* c = (MgStringCallback*)0);   //!< 开始录制图形，自动释放，在主线程用
     void stopRecord(GiView* view, bool forUndo);                    //!< 停止录制图形
     bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
     bool recordShapes(bool forUndo, long tick, long doc,
-                      long shapes, const mgvector<int>* exts);      //!< 录制图形，自动释放
+                      long shapes, const mgvector<int>* exts,
+                      MgStringCallback* c = (MgStringCallback*)0);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
     static bool loadFrameIndex(const char* path, mgvector<int>& arr);   //!< 加载帧索引{index,tick,flags}
@@ -106,6 +108,7 @@ public:
     int loadNextFrame(int index);
     int loadPrevFrame(int index, long curTick);
     long getFrameTick();
+    int getFrameFlags();
     int getFrameIndex() const;
     void applyFrame(int flags);
     long getPlayingDocForEdit();

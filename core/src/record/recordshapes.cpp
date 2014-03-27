@@ -38,8 +38,8 @@ struct MgRecordShapes::Impl
     bool saveJsonFile();
     std::string getFileName(bool back, int index = -1) const;
     void resetVersion(const MgShapes* shapes);
-    void startRecord(const MgShapes* shapes);
-    void stopRecord();
+    void startRecord();
+    void stopRecordIndex();
     bool saveIndexFile(bool ended);
     void recordShapes(const MgShapes* shapes);
     bool forUndo() const { return type == 0; }
@@ -55,14 +55,20 @@ MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo, 
     _im->type = forUndo ? 0 : doc ? 1 : 2;
     _im->lastDoc = doc;
     if (doc) {
-        _im->startRecord(doc->getCurrentLayer());
+        _im->resetVersion(doc->getCurrentLayer());
+        _im->startRecord();
     }
 }
 
 MgRecordShapes::~MgRecordShapes()
 {
-    _im->stopRecord();
+    _im->stopRecordIndex();
     delete _im;
+}
+
+void MgRecordShapes::stopRecordIndex()
+{
+    _im->stopRecordIndex();
 }
 
 bool MgRecordShapes::isPlaying() const
@@ -73,6 +79,11 @@ bool MgRecordShapes::isPlaying() const
 int MgRecordShapes::getFileTick() const
 {
     return _im->tick;
+}
+
+int MgRecordShapes::getFileFlags() const
+{
+    return _im->flags[0];
 }
 
 int MgRecordShapes::getFileCount() const
@@ -202,9 +213,9 @@ bool MgRecordShapes::loadFrameIndex(std::string path, std::vector<int>& arr)
     return s->readNode("records", -1, true);
 }
 
-std::string MgRecordShapes::getFileName(bool back) const
+std::string MgRecordShapes::getFileName(bool back, int index) const
 {
-    return _im->getFileName(back);
+    return _im->getFileName(back, index);
 }
 
 std::string MgRecordShapes::getPath() const
@@ -356,9 +367,8 @@ void MgRecordShapes::Impl::resetVersion(const MgShapes* shapes)
     }
 }
 
-void MgRecordShapes::Impl::startRecord(const MgShapes* shapes)
+void MgRecordShapes::Impl::startRecord()
 {
-    resetVersion(shapes);
     if (!forUndo()) {
         js[2] = new MgJsonStorage();
         s[2] = js[2]->storageForWrite();
@@ -397,7 +407,7 @@ bool MgRecordShapes::Impl::saveJsonFile()
     bool ret = false;
     std::string filename;
     
-    if (flags[0] == DYN && lastTick == tick) {
+    if (flags[0] == DYN && tick - lastTick < 20) {
         //LOGD("Ignore record at the same time %d", tick);
         flags[0] = flags[1] = 0;
     }
@@ -460,10 +470,10 @@ bool MgRecordShapes::Impl::saveIndexFile(bool ended)
     return ret;
 }
 
-void MgRecordShapes::Impl::stopRecord()
+void MgRecordShapes::Impl::stopRecordIndex()
 {
     if (js[2]) {
-        if (saveIndexFile(true)) {
+        if (fileCount > 1 && saveIndexFile(true)) {
             LOGD("Save records.json in %s", path.c_str());
         }
         delete js[2];

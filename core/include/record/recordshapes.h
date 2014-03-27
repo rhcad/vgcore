@@ -23,12 +23,13 @@ public:
     long getCurrentTick(long curTick) const;
     bool recordStep(long tick, long changeCount, MgShapeDoc* doc,
                     MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes);
-    std::string getFileName(bool back = false) const;
+    std::string getFileName(bool back = false, int index = -1) const;
     std::string getPath() const;
     bool isLoading() const;
     void setLoading(bool loading);
     bool onResume(long ticks);
     void restore(int index, int count, int tick, long curTick);
+    void stopRecordIndex();
     
     bool canUndo() const;
     bool canRedo() const;
@@ -39,6 +40,7 @@ public:
     
     bool isPlaying() const;
     int getFileTick() const;
+    int getFileFlags() const;
     int getFileCount() const;
     bool applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc);
     bool applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc, const char* filename);
@@ -54,10 +56,10 @@ private:
     Impl* _im;
 };
 
-#ifdef DEBUG
-#define VG_PRETTY true
-#else
+//#ifdef DEBUG
+//#define VG_PRETTY true
+//#else
 #define VG_PRETTY false
-#endif
+//#endif
 
 #endif // TOUCHVG_RECORD_SHAPES_H_

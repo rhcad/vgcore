@@ -65,6 +65,7 @@ struct MgCoreView {
     virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
     virtual int loadPrevFrame(int index, long curTick) = 0; //!< 异步加载上一帧
     virtual long getFrameTick() = 0;                //!< 得到当前帧的相对毫秒时刻
+    virtual int getFrameFlags() = 0;                //!< 得到当前帧的改动标志
     virtual int getFrameIndex() const = 0;          //!< 得到已播放的帧数
     virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
     virtual long getPlayingDocForEdit() = 0;        //!< 得到文档句柄用于异步改变文档图形内容
@@ -105,8 +106,8 @@ struct MgCoreView {
     virtual const char* getContent(long doc) = 0;       //!< 得到图形的JSON内容，需要调用 freeContent()
     const char* getContent();                           //!< 得到图形内容，需调用 freeContent()，主线程中用
 #endif
-    void getContent(long doc, MgStringCallback* c) { c->onGetString(getContent(doc)); }   //!< 得到图形的JSON内容
-    void getContent(MgStringCallback* c) { c->onGetString(getContent()); }  //!< 得到图形的JSON内容，主线程中用
+    void getContent(long doc, MgStringCallback* c);     //!< 得到图形的JSON内容，自动 freeContent()
+    void getContent(MgStringCallback* c);               //!< 得到图形的JSON内容，主线程中用
     virtual void freeContent() = 0;                     //!< 释放 getContent() 产生的缓冲资源
     virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
 
@@ -184,6 +185,14 @@ inline const char* MgCoreView::getContent() {
     const char* ret = getContent(doc);
     releaseDoc(doc);
     return ret;
+}
+inline void MgCoreView::getContent(long doc, MgStringCallback* c) {
+    c->onGetString(getContent(doc));
+    freeContent();
+}
+inline void MgCoreView::getContent(MgStringCallback* c) {
+    c->onGetString(getContent());
+    freeContent();
 }
 
 #endif // TOUCHVG_CORE_VIEW_INTERFACE_H
