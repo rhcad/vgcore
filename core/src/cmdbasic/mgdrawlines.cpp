@@ -64,11 +64,12 @@ bool MgCmdDrawLines::touchBegan(const MgMotion* sender)
                     lines->getPoints(), lines->isClosed(), sender->pointM,
                     sender->displayMmToModel(5.f),
                     nearpt, segment, &inside, &hitType);
-                if (hitType == mglnrel::kPtOnEdge) {
+                
+                /*if (hitType == mglnrel::kPtOnEdge) {
                     lines->insertPoint(segment, pnt);
                     m_index = segment + 1;
                 }
-                else if (hitType == mglnrel::kPtAtVertex) {
+                else*/if (hitType == mglnrel::kPtAtVertex) {
                     m_index = segment;
                 }
                 else {
