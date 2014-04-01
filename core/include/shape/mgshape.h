@@ -35,6 +35,7 @@ public:
 
     //! 设置显示属性
     virtual void setContext(const GiContext& ctx, int mask) = 0;
+    void setContext(const GiContext& ctx) { setContext(ctx, GiContext::kCopyAll); }
 
     //! 返回几何图形对象
     virtual MgBaseShape* shape() = 0;

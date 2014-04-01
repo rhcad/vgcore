@@ -43,7 +43,7 @@ bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
     sender->view->setNewShapeID(0);
     m_step = 0;
     m_shape->shape()->clear();
-    m_shape->setContext(*sender->view->context(), -1);
+    m_shape->setContext(*sender->view->context());
     
     return true;
 }
@@ -63,7 +63,7 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
         }
     }
     if (m_shape && sender->view->context()) {
-        m_shape->setContext(*sender->view->context(), -1);
+        m_shape->setContext(*sender->view->context());
     }
     
     return newsp;
@@ -121,7 +121,7 @@ bool MgCommandDraw::longPress(const MgMotion* sender)
 
 bool MgCommandDraw::touchBegan(const MgMotion* sender)
 {
-    m_shape->setContext(*sender->view->context(), -1);
+    m_shape->setContext(*sender->view->context());
     sender->view->redraw();
     return true;
 }

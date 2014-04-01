@@ -259,7 +259,7 @@ void MgShape::copy(const MgObject& src)
     if (src.isKindOf(Type())) {
         const MgShape& _src = (const MgShape&)src;
         shape()->copy(*_src.shapec());
-        setContext(_src.context(), -1);
+        setContext(_src.context());
         setTag(_src.getTag());
         if (!getParent() && 0 == getID()) {
             setParent(_src.getParent(), _src.getID());
@@ -315,7 +315,7 @@ bool MgShape::load(MgShapeFactory* factory, MgStorage* s)
     ctx.setLineWidth(s->readFloat("lineWidth", 0), true);
     ctx.setLineColor(GiColor(s->readInt("lineColor", 0xFF000000), true));
     ctx.setFillColor(GiColor(s->readInt("fillColor", 0), true));
-    setContext(ctx, -1);
+    setContext(ctx);
 
     bool ret = shape()->load(factory, s);
     if (ret) {
