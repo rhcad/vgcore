@@ -235,7 +235,8 @@ float GiGraphics::calcPenWidth(float lineWidth, bool useViewScale) const
 
     if (lineWidth > 0) {            // 单位：0.01mm
         w = lineWidth / 2540.f * xf().getDpiY();
-        w *= xf().getViewScale();
+        if (useViewScale)
+            w *= xf().getViewScale();
     }
     else if (lineWidth < 0) {       // 单位：像素
         if (lineWidth < -1e3f)      // 不使用UI放缩系数

@@ -15,14 +15,34 @@
 class MgCmdDrawLine : public MgCommandDraw
 {
 public:
-    MgCmdDrawLine(const char* name = Name()) : MgCommandDraw(name) {}
     static const char* Name() { return "line"; }
     static MgCommand* Create() { return new MgCmdDrawLine; }
-
+    
 private:
+    MgCmdDrawLine() : MgCommandDraw(Name()) {}
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool backStep(const MgMotion* sender);
+    virtual bool touchBegan(const MgMotion* sender);
+    virtual bool touchMoved(const MgMotion* sender);
+    virtual bool touchEnded(const MgMotion* sender);
+};
+
+//! 点绘图命令
+/*! \ingroup CORE_COMMAND
+    \see MgDot
+*/
+class MgCmdDrawDot : public MgCommandDraw
+{
+public:
+    static const char* Name() { return "dot"; }
+    static MgCommand* Create() { return new MgCmdDrawDot; }
+
+private:
+    MgCmdDrawDot() : MgCommandDraw(Name()) {}
+    virtual void release() { delete this; }
+    virtual bool initialize(const MgMotion* sender, MgStorage* s);
+    virtual bool click(const MgMotion* sender);
     virtual bool touchBegan(const MgMotion* sender);
     virtual bool touchMoved(const MgMotion* sender);
     virtual bool touchEnded(const MgMotion* sender);

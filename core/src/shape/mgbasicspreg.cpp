@@ -10,6 +10,7 @@
 void MgBasicShapes::registerShapes(MgShapeFactory* factory)
 {
     MgShapeT<MgGroup>::registerCreator(factory);
+    MgShapeT<MgDot>::registerCreator(factory);
     MgShapeT<MgLine>::registerCreator(factory);
     MgShapeT<MgRect>::registerCreator(factory);
     MgShapeT<MgEllipse>::registerCreator(factory);

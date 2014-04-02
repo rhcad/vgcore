@@ -14,8 +14,11 @@
 */
 class MgCmdDrawEllipse : public MgCmdDrawRect
 {
-public:
+protected:
     MgCmdDrawEllipse(const char* name = Name()) : MgCmdDrawRect(name) {}
+    virtual ~MgCmdDrawEllipse() {}
+    
+public:
     static const char* Name() { return "ellipse"; }
     static MgCommand* Create() { return new MgCmdDrawEllipse; }
     

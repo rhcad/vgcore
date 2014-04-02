@@ -16,6 +16,8 @@ class MgCmdDrawSplines : public MgCommandDraw
 {
 protected:
     MgCmdDrawSplines(const char* name = Name(), bool freehand = true);
+    virtual ~MgCmdDrawSplines() {}
+    
 public:
     static const char* Name() { return "splines"; }
     static MgCommand* Create() { return new MgCmdDrawSplines; }
@@ -45,13 +47,11 @@ private:
 */
 class MgCmdDrawSplineMouse : public MgCmdDrawSplines
 {
-protected:
-    MgCmdDrawSplineMouse() : MgCmdDrawSplines(Name(), false) {}
-    virtual ~MgCmdDrawSplineMouse() {}
-
 public:
     static const char* Name() { return "spline_mouse"; }
     static MgCommand* Create() { return new MgCmdDrawSplineMouse; }
+private:
+    MgCmdDrawSplineMouse() : MgCmdDrawSplines(Name(), false) {}
 };
 
 #endif // TOUCHVG_CMD_DRAW_SPLINES_H_

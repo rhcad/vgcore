@@ -15,6 +15,23 @@
 #include "mglnrel.h"
 #endif
 
+//! 点图形类
+/*! \ingroup CORE_SHAPE
+ */
+class MgDot : public MgBaseShape
+{
+    MG_DECLARE_CREATE(MgDot, MgBaseShape, 31)
+public:
+    virtual bool isCurve() const { return false; }
+    
+protected:
+    bool _save(MgStorage* s) const;
+    bool _load(MgShapeFactory* factory, MgStorage* s);
+    
+private:
+    Point2d     _point;
+};
+
 //! 线段图形类
 /*! \ingroup CORE_SHAPE
 */
