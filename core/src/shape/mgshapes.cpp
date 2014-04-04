@@ -184,9 +184,9 @@ MgShape* MgShapes::addShape(const MgShape& src)
     return p;
 }
 
-bool MgShapes::addShapeDirect(MgShape* shape)
+bool MgShapes::addShapeDirect(MgShape* shape, bool force)
 {
-    if (shape && (!shape->getParent() || shape->getParent() == this)) {
+    if (shape && (force || !shape->getParent() || shape->getParent() == this)) {
         shape->setParent(this, im->getNewID(0));
         im->shapes.push_back(shape);
         im->id2shape[shape->getID()] = shape;
@@ -476,13 +476,13 @@ int MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
             clear();
         
         ret = loadExtra(s);
-        //s->readFloatArray("extent", &rect.xmin, 4); Comment out to avoid reporting absence warning
+        s->readFloatArray("extent", &rect.xmin, 4, false);
         int n = s->readInt("count", 0);
         
         for (; ret && s->readNode("shape", index, false); n--) {
             const int type = s->readInt("type", 0);
             const int sid = s->readInt("id", 0);
-            s->readFloatArray("extent", &rect.xmin, 4);
+            s->readFloatArray("extent", &rect.xmin, 4, false);
             
             const MgShape* oldsp = addOnly && sid ? findShape(sid) : NULL;
             MgShape* newsp = factory->createShape(type);

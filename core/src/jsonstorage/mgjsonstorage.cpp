@@ -33,7 +33,7 @@ private:
     int readInt(const char* name, int defvalue);
     bool readBool(const char* name, bool defvalue);
     float readFloat(const char* name, float defvalue);
-    int readFloatArray(const char* name, float* values, int count);
+    int readFloatArray(const char* name, float* values, int count, bool report = true);
     int readString(const char* name, char* value, int count);
     
     void writeInt(const char* name, int value);
@@ -374,11 +374,13 @@ float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
     return ret;
 }
 
-int MgJsonStorage::Impl::readFloatArray(const char* name, float* values, int count)
+int MgJsonStorage::Impl::readFloatArray(const char* name, float* values,
+                                        int count, bool report)
 {
     int ret = 0;
     Value *node = _stack.empty() ? NULL : _stack.back();
     
+    report = report && count > 0 && values;
     if (node && node->HasMember(name)) {
         const Value &item = node->GetMember(name);
         
@@ -396,17 +398,17 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values, int cou
                     else if (v.IsInt()) {
                         values[ret++] = (float)v.GetInt();
                     }
-                    else {
-                        //LOGD("Invalid value for readFloatArray(%s)", name);
+                    else if (report) {
+                        LOGD("Invalid value for readFloatArray(%s)", name);
                     }
                 }
             }
         }
-        else {
+        else if (report) {
             LOGD("Invalid value for readFloatArray(%s)", name);
         }
     }
-    if (values && ret < count) {
+    if (values && ret < count && report) {
         setError("readFloatArray: lose numbers.");
     }
     

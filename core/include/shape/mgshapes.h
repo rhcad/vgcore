@@ -74,7 +74,7 @@ public:
     MgShape* addShape(const MgShape& src);
     
     //! 添加新图形到图形列表中
-    bool addShapeDirect(MgShape* shape);
+    bool addShapeDirect(MgShape* shape, bool force = false);
     
     //! 更新为新的图形，该图形从原来图形克隆得到
     bool updateShape(MgShape* shape, bool force = false);

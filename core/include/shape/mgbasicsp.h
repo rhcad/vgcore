@@ -270,9 +270,13 @@ public:
     //! 返回边的最大序号
     int maxEdgeIndex() const;
     
+    //! 增量路径比较
+    bool isIncrementFrom(const MgBaseLines& src) const;
+    
 #ifndef SWIG
     //! 返回坐标数组
     Point2d* getPoints() { return _points; }
+    const Point2d* getPoints() const { return _points; }
 #endif
 
 protected:

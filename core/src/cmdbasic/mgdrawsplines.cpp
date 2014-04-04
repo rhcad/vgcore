@@ -55,11 +55,12 @@ bool MgCmdDrawSplines::touchBegan(const MgMotion* sender)
         return MgCommandDraw::touchMoved(sender);
     }
     else {
-        lines->resize(2);
+        lines->resize(m_freehand ? 1 : 2);
         lines->setClosed(false);
         m_step = 1;
         dynshape()->shape()->setPoint(0, pnt);
-        dynshape()->shape()->setPoint(1, pnt);
+        if (!m_freehand)
+            dynshape()->shape()->setPoint(1, pnt);
         dynshape()->shape()->update();
         
         return MgCommandDraw::touchBegan(sender);
@@ -76,11 +77,18 @@ bool MgCmdDrawSplines::touchMoved(const MgMotion* sender)
     MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
     Point2d pnt(!m_freehand ? snapPoint(sender) : (sender->pointM + sender->lastPtM) / 2.f);
     
-    dynshape()->shape()->setPoint(m_step, pnt);
-    if (m_step > 0 && canAddPoint(sender, false)) {
-        m_step++;
-        if (m_step >= dynshape()->shape()->getPointCount()) {
+    if (m_freehand) {
+        if (canAddPoint(sender, false)) {
             lines->addPoint(pnt);
+            m_step++;
+        }
+    } else {
+        dynshape()->shape()->setPoint(m_step, pnt);
+        if (m_step > 0 && canAddPoint(sender, false)) {
+            m_step++;
+            if (m_step >= dynshape()->shape()->getPointCount()) {
+                lines->addPoint(pnt);
+            }
         }
     }
     dynshape()->shape()->update();
@@ -94,14 +102,16 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
     Point2d pnt(!m_freehand ? snapPoint(sender) : (sender->pointM + sender->lastPtM) / 2.f);
     
     if (m_freehand) {
-        dynshape()->shape()->setPoint(m_step, pnt);
-        dynshape()->shape()->update();
+        if (lines->endPoint() != pnt) {
+            lines->addPoint(pnt);
+            dynshape()->shape()->update();
+        }
         
         Tol tol(sender->displayMmToModel(1.f));
         if (m_step > 0 && !dynshape()->shape()->getExtent().isEmpty(tol, false)) {
             MgShape* newsp = addShape(sender);
-            m_step = 0;
             if (newsp) {/*
+                m_step = 0;
                 sender->view->regenAppend(0);
                 newsp = newsp->cloneShape();
                 lines = (MgSplines*)newsp->shape();
@@ -188,7 +198,8 @@ bool MgCmdDrawSplines::canAddPoint(const MgMotion* sender, bool ended)
         return false;
     
     if (m_step > 0) {
-        float dist = sender->pointM.distanceTo(dynshape()->shape()->getPoint(m_step - 1));
+        MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
+        float dist = sender->pointM.distanceTo(lines->endPoint());
         if (dist < sender->displayMmToModel(ended ? 0.3f : 0.5f))
             return false;
     }
@@ -215,9 +226,6 @@ bool MgCmdDrawSplines::click(const MgMotion* sender)
         
         return true;
     }
-
-    if (!m_freehand && m_step == 0) {
-        return touchBegan(sender) && touchEnded(sender);
-    }
+    
     return MgCommandDraw::click(sender);
 }

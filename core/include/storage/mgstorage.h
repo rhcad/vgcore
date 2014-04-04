@@ -46,7 +46,7 @@ struct MgStorage
     
 #ifndef SWIG
     //! 给定字段名称(常量)，取出浮点数数组. 传入缓冲为空时返回所需个数
-    virtual int readFloatArray(const char* name, float* values, int count) = 0;
+    virtual int readFloatArray(const char* name, float* values, int count, bool report = true) = 0;
     //! 给定字段名称(常量)，取出字符串内容，不含零结束符. 传入缓冲为空时返回所需字符个数
     virtual int readString(const char* name, char* value, int count) = 0;
     //! 添加一个给定字段名称(常量)的浮点数数组

@@ -22,11 +22,11 @@ struct MgShapeDoc::Impl {
     bool        readOnly;
 };
 
-static volatile long _n = 0;
+//static volatile long _n = 0;
 
 MgShapeDoc::MgShapeDoc()
 {
-    LOGD("+MgShapeDoc %ld", giAtomicIncrement(&_n));
+    //LOGD("+MgShapeDoc %ld", giAtomicIncrement(&_n));
     im = new Impl();
     im->curLayer = MgLayer::create(this, 0);
     im->layers.push_back(im->curLayer);
@@ -42,7 +42,7 @@ MgShapeDoc::~MgShapeDoc()
         im->layers[i]->release();
     }
     delete im;
-    LOGD("-MgShapeDoc %ld", giAtomicDecrement(&_n));
+    //LOGD("-MgShapeDoc %ld", giAtomicDecrement(&_n));
 }
 
 MgShapeDoc* MgShapeDoc::createDoc()
@@ -302,11 +302,11 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
     }
 
     if (!addOnly) {
-        s->readFloatArray("transform", &im->xf.m11, 6);
-        if (s->readFloatArray("pageExtent", &im->rectW.xmin, 4) != 4)
-            s->readFloatArray("zoomExtent", &im->rectW.xmin, 4);
+        s->readFloatArray("transform", &im->xf.m11, 6, false);
+        if (s->readFloatArray("pageExtent", &im->rectW.xmin, 4, false) != 4)
+            s->readFloatArray("zoomExtent", &im->rectW.xmin, 4, false);
         im->viewScale = s->readFloat("viewScale", im->viewScale);
-        s->readFloatArray("extent", &rect.xmin, 4);
+        s->readFloatArray("extent", &rect.xmin, 4, false);
         s->readInt("count", 0);
     }
 

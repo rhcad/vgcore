@@ -58,6 +58,19 @@ bool MgBaseLines::_equals(const MgBaseLines& src) const
     return __super::_equals(src);
 }
 
+bool MgBaseLines::isIncrementFrom(const MgBaseLines& src) const
+{
+    if (_count <= src._count)
+        return false;
+    
+    for (int i = 0; i < src._count; i++) {
+        if (!_points[i].isEqualTo(src._points[i], minTol()))
+            return false;
+    }
+    
+    return true;
+}
+
 bool MgBaseLines::_isKindOf(int type) const
 {
     return type == Type() || __super::_isKindOf(type);
