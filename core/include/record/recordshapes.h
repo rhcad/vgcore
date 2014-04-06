@@ -10,6 +10,7 @@
 
 class MgShapeDoc;
 class MgShapes;
+class MgShape;
 struct MgShapeFactory;
 
 class MgRecordShapes
@@ -48,8 +49,9 @@ public:
     int applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index, long curTick);
     static bool loadFrameIndex(std::string path, std::vector<int>& arr);
     
-    static int applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeDoc* doc,
-                         MgShapes* dyns, const char* fn, long* changeCount = NULL);
+    static int applyFile(int& tick, int* newId, MgShapeFactory *f,
+                         MgShapeDoc* doc, MgShapes* dyns, const char* fn,
+                         long* changeCount = NULL, MgShape* lastShape = NULL);
     
 private:
     struct Impl;

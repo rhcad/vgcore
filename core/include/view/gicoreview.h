@@ -27,11 +27,16 @@ public:
     
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
     void releaseGraphics(long gs);                                  //!< 释放 GiGraphics 句柄
+    int acquireFrontDocs(mgvector<int>& docs);                      //!< 获取前端图形文档的句柄
+    static void releaseDocs(const mgvector<int>& docs);             //!< 释放文档句柄
+    int acquireDynamicShapesArray(mgvector<int>& shapes);           //!< 获取前端图形列表的句柄
+    static void releaseShapesArray(const mgvector<int>& shapes);    //!< 释放图形列表句柄
     
     int drawAll(long doc, long gs, GiCanvas* canvas);               //!< 显示所有图形
+    int drawAll(const mgvector<int>& docs, long gs, GiCanvas* canvas);  //!< 显示所有图形
     int drawAppend(long doc, long gs, GiCanvas* canvas, int sid);   //!< 显示新图形
     int dynDraw(long shapes, long gs, GiCanvas* canvas);            //!< 显示动态图形
-    int dynDraw(long shapes, long gs, GiCanvas* canvas, const mgvector<int>* exts); //!< 显示动态图形
+    int dynDraw(const mgvector<int>& shapes, long gs, GiCanvas* canvas); //!< 显示动态图形
     
     int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，主线程中用
     int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，主线程中用
@@ -63,17 +68,13 @@ public:
     bool startRecord(const char* path, long doc,
                      bool forUndo, long curTick,
                      MgStringCallback* c = (MgStringCallback*)0);   //!< 开始录制图形，自动释放，在主线程用
-    void stopRecord(GiView* view, bool forUndo);                    //!< 停止录制图形
+    void stopRecord(bool forUndo);                                  //!< 停止录制图形
     bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
     bool recordShapes(bool forUndo, long tick, long doc,
                       long shapes, const mgvector<int>* exts,
                       MgStringCallback* c = (MgStringCallback*)0);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
-    static bool loadFrameIndex(const char* path, mgvector<int>& arr);   //!< 加载帧索引{index,tick,flags}
-    int loadNextFrame(const mgvector<int>& head, long curTick);     //!< 加载下一帧，跳过过时的帧
-    int skipExpireFrame(const mgvector<int>& head, int index, long curTick);    //!< 跳过过时的帧
-    bool frameNeedWait(long curTick);                               //!< 当前帧是否等待显示
     bool onPause(long curTick);                                     //!< 暂停
     bool onResume(long curTick);                                    //!< 继续
     bool restoreRecord(int type, const char* path, long doc, long changeCount,
@@ -103,16 +104,9 @@ public:
     bool canRedo() const;
     int getRedoIndex() const;
     int getRedoCount() const;
-    int loadFirstFrame();
-    int loadFirstFrame(const char* file);
-    int loadNextFrame(int index);
-    int loadPrevFrame(int index, long curTick);
     long getFrameTick();
     int getFrameFlags();
     int getFrameIndex() const;
-    void applyFrame(int flags);
-    long getPlayingDocForEdit();
-    long getDynamicShapesForEdit();
     const char* getCommand() const;
     bool setCommand(const char* name, const char* params = "");
     bool switchCommand();
@@ -151,6 +145,7 @@ public:
     bool getBoundingBox(mgvector<float>& box, int shapeId);
     bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId);
     bool displayToModel(mgvector<float>& d);
+    GiCoreViewImpl* getImpl() { return impl; }
 #endif // SWIG
 
 private:
@@ -161,30 +156,6 @@ private:
     void createMagnifierView_(GiView* newview, GiView* mainView);   //!< 创建放大镜视图
     
     GiCoreViewImpl* impl;
-};
-
-//! 图形播放项
-/*!
-    \ingroup CORE_VIEW
- */
-class MgPlaying
-{
-public:
-    MgPlaying(int tag);
-    ~MgPlaying();
-    
-    int getTag() const;                         //!< 得到标识号
-    long acquireShapes();                       //!< 得到显示用的图形列表句柄，需要并发保护
-    static void releaseShapes(long shapes);     //!< 释放 acquireShapes() 句柄
-    
-    long getShapesForEdit(bool needClear);      //!< 得到修改图形用的图形列表句柄
-    void submitShapes();                        //!< 提交图形列表结果，需要并发保护
-    void stop();                                //!< 标记需要停止
-    bool isStopping() const;                    //!< 返回是否待停止
-    
-private:
-    struct Impl;
-    Impl* impl;
 };
 
 #ifndef DOXYGEN

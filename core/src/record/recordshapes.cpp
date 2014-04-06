@@ -5,8 +5,10 @@
 #include "recordshapes.h"
 #include "mgshapedoc.h"
 #include "mglayer.h"
+#include "mgbasicsp.h"
 #include "mgjsonstorage.h"
 #include "mgstorage.h"
+#include "mgvector.h"
 #include "mglog.h"
 #include <sstream>
 #include <map>
@@ -20,6 +22,7 @@ struct MgRecordShapes::Impl
     volatile int    maxCount;
     volatile long   loading;
     MgShapeDoc      *lastDoc;
+    MgShape         *lastShape;
     volatile long   startTick;
     int             tick, lastTick;
     int             flags[2];
@@ -27,12 +30,17 @@ struct MgRecordShapes::Impl
     MgJsonStorage   *js[3];
     MgStorage       *s[3];
     
-    Impl(long curTick) : fileCount(0), maxCount(0), loading(0)
-        , startTick(curTick), tick(0), lastTick(0) {
+    Impl(long curTick) : fileCount(0), maxCount(0), loading(0), lastDoc(NULL)
+        , lastShape(NULL), startTick(curTick), tick(0), lastTick(0)
+    {
+        memset(flags, 0, sizeof(flags));
         memset(js, 0, sizeof(js));
         memset(s, 0, sizeof(s));
     }
-    ~Impl() { MgObject::release_pointer(lastDoc); }
+    ~Impl() {
+        MgObject::release_pointer(lastDoc);
+        MgObject::release_pointer(lastShape);
+    }
     
     void beginJsonFile();
     bool saveJsonFile();
@@ -43,6 +51,7 @@ struct MgRecordShapes::Impl
     bool saveIndexFile(bool ended);
     void recordShapes(const MgShapes* shapes);
     bool forUndo() const { return type == 0; }
+    bool incrementRecord(MgShapes* dynShapes);
 };
 
 MgRecordShapes::MgRecordShapes(const char* path, MgShapeDoc* doc, bool forUndo, long curTick)
@@ -117,6 +126,8 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
         if (_im->lastDoc) {     // undo() set lastDoc as null
             _im->recordShapes(doc->getCurrentLayer());
             MgObject::release_pointer(_im->lastDoc);
+            if (_im->flags[0])
+                MgObject::release_pointer(_im->lastShape);
         }
         _im->lastDoc = doc;
     }
@@ -131,16 +142,20 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
         dynShapes = newsp;
     }
     if (needDyn && dynShapes && dynShapes->getShapeCount() > 0) {
-        _im->flags[0] |= DYN;
-        _im->s[0]->writeNode("dynamic", -1, false);
-        dynShapes->save(_im->s[0]);
-        _im->s[0]->writeNode("dynamic", -1, true);
+        if (!_im->incrementRecord(dynShapes)) {
+            _im->flags[0] |= DYN;
+            _im->s[0]->writeNode("dynamic", -1, false);
+            dynShapes->save(_im->s[0]);
+            _im->s[0]->writeNode("dynamic", -1, true);
+        }
     }
     MgObject::release_pointer(dynShapes);
     
     _im->s[0]->writeInt("flags", _im->flags[0]);
-    _im->s[0]->writeInt("changeCount", (int)changeCount);
-    _im->s[1]->writeInt("changeCount", (int)changeCount);
+    if (_im->flags[0] != DYN) {
+        _im->s[0]->writeInt("changeCount", (int)changeCount);
+        _im->s[1]->writeInt("changeCount", (int)changeCount);
+    }
     
     bool ret = _im->saveJsonFile();
     
@@ -154,6 +169,37 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
             _im->saveIndexFile(false);
         }
     }
+    
+    return ret;
+}
+
+bool MgRecordShapes::Impl::incrementRecord(MgShapes* dynShapes)
+{
+    bool ret = false;
+    
+    if (flags[0] == 0 && lastShape
+        && dynShapes->getShapeCount() == 1
+        && dynShapes->getLastShape()->shapec()->isKindOf(MgBaseLines::Type())
+        && dynShapes->getLastShape()->getType() == lastShape->getType())
+    {
+        if (lastShape->equals(*dynShapes->getLastShape()))
+            return true;
+            
+        const MgBaseLines* oldlines = (const MgBaseLines*)lastShape->shapec();
+        const MgBaseLines* lines = (const MgBaseLines*)dynShapes->getLastShape()->shapec();
+        
+        if (lines->isIncrementFrom(*oldlines)) {
+            const Point2d* pts = lines->getPoints() + oldlines->getPointCount();
+            s[0]->writeFloatArray("dyninc", (const float*)pts,
+                                  (lines->getPointCount() - oldlines->getPointCount()) * 2);
+            flags[0] |= DYN;
+            ret = true;
+        }
+    }
+    
+    MgObject::release_pointer(lastShape);
+    lastShape = const_cast<MgShape*>(dynShapes->getLastShape());
+    lastShape->addRef();
     
     return ret;
 }
@@ -413,7 +459,7 @@ bool MgRecordShapes::Impl::saveJsonFile()
     }
     
     for (int i = 0; i < 2; i++) {
-        if (lastDoc && flags[i]) {
+        if (lastDoc && flags[i] && flags[i] != DYN) {
             s[i]->writeFloatArray("transform", &lastDoc->modelTransform().m11, 6);
             s[i]->writeFloatArray("pageExtent", &lastDoc->getPageRectW().xmin, 4);
             s[i]->writeFloat("viewScale", lastDoc->getViewScale());
@@ -437,10 +483,14 @@ bool MgRecordShapes::Impl::saveJsonFile()
         s[i] = NULL;
     }
     if (ret) {
-        if (flags[1]) {
-            LOGD("Record %03d: tick=%d, flags=%d, count=%d, forUndo:%d",
-                 fileCount, tick, flags[0], shapeCount, (int)forUndo());
-        }
+        /*if (flags[0] && !forUndo()) {
+            struct stat stat1;
+            filename = getFileName(false);
+            stat(filename.c_str(), &stat1);
+            
+            LOGD("Record %03d: tick=%d, flags=%d, count=%d, filesize=%ld",
+                 fileCount, tick, flags[0], shapeCount, (long)stat1.st_size);
+        }*/
         maxCount = ++fileCount;
         lastTick = tick;
     }
@@ -480,10 +530,12 @@ void MgRecordShapes::Impl::stopRecordIndex()
         js[2] = NULL;
         s[2] = NULL;
     }
+    MgObject::release_pointer(lastShape);
 }
 
-int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeDoc* doc,
-                              MgShapes* dyns, const char* fn, long* changeCount)
+int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f,
+                              MgShapeDoc* doc, MgShapes* dyns, const char* fn,
+                              long* changeCount, MgShape* lastShape)
 {
     FILE *fp = mgopenfile(fn, "rt");
     if (!fp) {
@@ -500,7 +552,7 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
     fclose(fp);
     if (s->readNode("record", -1, false)) {
         if (doc) {
-            if (s->readFloatArray("transform", &doc->modelTransform().m11, 6) == 6) {
+            if (s->readFloatArray("transform", &doc->modelTransform().m11, 6, false) == 6) {
                 Box2d rect(doc->getPageRectW());
                 s->readFloatArray("pageExtent", &rect.xmin, 4);
                 float viewScale = s->readFloat("viewScale", doc->getViewScale());
@@ -537,12 +589,28 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f, MgShapeD
             if (dyns->load(f, s) >= 0)
                 ret |= DYN_CHANGED;
             s->readNode("dynamic", -1, true);
+        } else if (dyns && lastShape
+                   && lastShape->shapec()->isKindOf(MgBaseLines::Type())) {
+            int n = s->readFloatArray("dyninc", NULL, 0);
+            mgvector<float> buf(n);
+            
+            if (n > 0 && s->readFloatArray("dyninc", buf.address(), n) == n) {
+                MgShape* sp = lastShape->cloneShape();
+                MgBaseLines* lines = (MgBaseLines*)sp->shape();
+                
+                for (int i = 0; i + 1 < n; i += 2) {
+                    lines->addPoint(Point2d(buf.get(i), buf.get(i + 1)));
+                }
+                lines->update();
+                dyns->addShapeDirect(sp, true);
+                ret |= DYN_CHANGED;
+            }
         }
         if (ret) {
             tick = s->readInt("tick", tick);
         }
         if (ret && changeCount) {
-            *changeCount = s->readInt("changeCount", 0);
+            *changeCount = s->readInt("changeCount", (int)*changeCount);
         }
         
         s->readNode("record", -1, true);
@@ -570,6 +638,7 @@ bool MgRecordShapes::applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc, co
     
     fclose(fp);
     _im->fileCount = 1;
+    MgObject::release_pointer(_im->lastShape);
     
     return doc->load(factory, s, false);
 }
@@ -581,10 +650,17 @@ int MgRecordShapes::applyRedoFile(int& newID, MgShapeFactory *f,
         index = _im->fileCount;
     
     std::string filename(_im->getFileName(false, index));
-    int ret = applyFile(_im->tick, &newID, f, doc, dyns, filename.c_str());
+    int ret = applyFile(_im->tick, &newID, f, doc, dyns,
+                        filename.c_str(), NULL, _im->lastShape);
     
     if (ret) {
         _im->fileCount = index + 1;
+        MgObject::release_pointer(_im->lastShape);
+        if (dyns) {
+            _im->lastShape = const_cast<MgShape*>(dyns->getLastShape());
+            if (_im->lastShape)
+                _im->lastShape->addRef();
+        }
     }
     return ret;
 }
@@ -611,6 +687,12 @@ int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc
     
     if (ret) {
         _im->fileCount = index - 1;
+        MgObject::release_pointer(_im->lastShape);
+        if (dyns) {
+            _im->lastShape = const_cast<MgShape*>(dyns->getLastShape());
+            if (_im->lastShape)
+                _im->lastShape->addRef();
+        }
     }
     return ret;
 }

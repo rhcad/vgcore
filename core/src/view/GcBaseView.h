@@ -21,11 +21,7 @@ public:
     virtual ~GcBaseView();
     
     GiView* deviceView() { return _view; }                          //!< 返回回调视图对象
-    
     MgView* cmdView() { return _mgview; }
-    MgShapeDoc* frontDoc();
-    MgShapeDoc* backDoc();
-    MgShapes* backShapes();
     
     void submitBackXform() { _gsFront.copy(_gsBack); }              //!< 应用后端坐标系对象到前端
     void copyGs(GiGraphics* gs) { gs->copy(_gsBack); }              //!< 复制坐标系参数

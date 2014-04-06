@@ -60,16 +60,9 @@ struct MgCoreView {
     
     enum { DOC_CHANGED = 1, SHAPE_APPEND = 2, DYN_CHANGED = 4 };
     long getPlayingTick(long curTick) { return getRecordTick(false, curTick); }  //!< 得到已播放的毫秒数
-    virtual int loadFirstFrame() = 0;               //!< 异步加载第0帧
-    virtual int loadFirstFrame(const char* file) = 0;   //!< 加载第0帧
-    virtual int loadNextFrame(int index) = 0;       //!< 异步加载下一帧
-    virtual int loadPrevFrame(int index, long curTick) = 0; //!< 异步加载上一帧
     virtual long getFrameTick() = 0;                //!< 得到当前帧的相对毫秒时刻
     virtual int getFrameFlags() = 0;                //!< 得到当前帧的改动标志
     virtual int getFrameIndex() const = 0;          //!< 得到已播放的帧数
-    virtual void applyFrame(int flags) = 0;         //!< 播放当前帧, 需要并发访问保护
-    virtual long getPlayingDocForEdit() = 0;        //!< 得到文档句柄用于异步改变文档图形内容
-    virtual long getDynamicShapesForEdit() = 0;     //!< 得到动态图形列表用于异步改变内容
     
     virtual bool isPressDragging() = 0;             //!< 是否按下并拖动
     virtual bool isDrawingCommand() = 0;            //!< 当前是否为绘图命令

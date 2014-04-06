@@ -4,6 +4,7 @@
 
 #include "gicoreview.h"
 #include "gicoreviewimpl.h"
+#include <algorithm>
 
 long GiCoreView::getRecordTick(bool forUndo, long curTick)
 {
@@ -23,11 +24,13 @@ bool GiCoreView::startRecord(const char* path, long doc, bool forUndo,
         return false;
     
     recorder = new MgRecordShapes(path, MgShapeDoc::fromHandle(doc), forUndo, curTick);
-    if (isPlaying() || forUndo)
+    if (isPlaying() || forUndo) {
         return true;
+    }
     
-    if (!saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY))
+    if (!saveToFile(doc, recorder->getFileName().c_str(), VG_PRETTY)) {
         return false;
+    }
     
     if (c) {
         c->onGetString(recorder->getFileName().c_str());
@@ -35,7 +38,7 @@ bool GiCoreView::startRecord(const char* path, long doc, bool forUndo,
     return true;
 }
 
-void GiCoreView::stopRecord(GiView* view, bool forUndo)
+void GiCoreView::stopRecord(bool forUndo)
 {
     MgRecordShapes*& recorder = impl->recorder[forUndo ? 0 : 1];
     
@@ -43,13 +46,8 @@ void GiCoreView::stopRecord(GiView* view, bool forUndo)
         delete recorder;
         recorder = NULL;
     }
-    if (!forUndo && (impl->dynShapesPlay || impl->docPlay)) {
-        MgObject::release_pointer(impl->dynShapesPlay);
-        MgObject::release_pointer(impl->docPlay);
-        if (view) {
-            submitBackDoc(view);
-            submitDynamicShapes(view);
-        }
+    if (!forUndo && impl->play.playing) {
+        impl->play.playing->clear();
     }
 }
 
@@ -80,8 +78,8 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
             c->onGetString(recorder->getFileName(false, recorder->getFileCount() - 1).c_str());
         }
     } else {
-        releaseDoc(doc);
-        releaseShapes(shapes);
+        GiPlaying::releaseDoc(doc);
+        GiPlaying::releaseShapes(shapes);
     }
     for (i = 0; i < (int)arr.size(); i++) {
         MgObject::release_pointer(arr[i]);
@@ -99,7 +97,7 @@ bool GiCoreView::restoreRecord(int type, const char* path, long doc, long change
     
     recorder = new MgRecordShapes(path, MgShapeDoc::fromHandle(doc), type == 0, curTick);
     recorder->restore(index, count, tick, curTick);
-    if (type == 0) {
+    if (type == 0 && changeCount != 0) {
         giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
     }
     
@@ -135,7 +133,7 @@ bool GiCoreView::undo(GiView* view)
 {
     MgRecordShapes* recorder = impl->recorder[0];
     bool ret = false;
-    long changeCount;
+    long changeCount = impl->changeCount;
     
     if (recorder) {
         recorder->setLoading(true);
@@ -158,7 +156,7 @@ bool GiCoreView::redo(GiView* view)
 {
     MgRecordShapes* recorder = impl->recorder[0];
     bool ret = false;
-    long changeCount;
+    long changeCount = impl->changeCount;
     
     if (recorder) {
         recorder->setLoading(true);
@@ -194,7 +192,7 @@ bool GiCoreView::isPlaying() const
 
 int GiCoreView::getFrameIndex() const
 {
-    return impl->recorder[1] ? impl->recorder[1]->getFileCount() - 1 : -1;
+    return impl->recorder[1] ? impl->recorder[1]->getFileCount() : -1;
 }
 
 long GiCoreView::getFrameTick()
@@ -205,81 +203,6 @@ long GiCoreView::getFrameTick()
 int GiCoreView::getFrameFlags()
 {
     return impl->recorder[1] ? impl->recorder[1]->getFileFlags() : 0;
-}
-
-long GiCoreView::getPlayingDocForEdit()
-{
-    if (!impl->docPlay) {
-        impl->docPlay = impl->doc()->cloneDoc();
-    }
-    return impl->docPlay->toHandle();
-}
-
-long GiCoreView::getDynamicShapesForEdit()
-{
-    MgObject::release_pointer(impl->dynShapesPlay);
-    impl->dynShapesPlay = MgShapes::create();
-    return impl->dynShapesPlay->toHandle();
-}
-
-bool GiCoreView::loadFrameIndex(const char* path, mgvector<int>& arr)
-{
-    std::vector<int> v;
-    
-    if (MgRecordShapes::loadFrameIndex(path, v)) {
-        arr.setSize((int)v.size());
-        for (int i = 0; i < arr.count(); i++) {
-            arr.set(i, v[i]);
-        }
-    }
-    return !v.empty() && arr.count() > 0;
-}
-
-int GiCoreView::loadFirstFrame()
-{
-    if (!isPlaying() || !getPlayingDocForEdit())
-        return 0;
-    
-    if (!impl->recorder[1]->applyFirstFile(impl->getShapeFactory(), impl->docPlay))
-        return 0;
-    
-    impl->docPlay->setReadOnly(true);
-    return DOC_CHANGED;
-}
-
-int GiCoreView::loadFirstFrame(const char* filename)
-{
-    if (!isPlaying() || !getPlayingDocForEdit())
-        return 0;
-    
-    if (!impl->recorder[1]->applyFirstFile(impl->getShapeFactory(), impl->docPlay, filename))
-        return 0;
-    
-    impl->docPlay->setReadOnly(true);
-    return DOC_CHANGED;
-}
-
-int GiCoreView::skipExpireFrame(const mgvector<int>& head, int index, long curTick)
-{
-    int from = index;
-    int tickNow = (int)getPlayingTick(curTick);
-    
-    for ( ; index <= head.count() / 3; index++) {
-        int tick = head.get(index * 3 - 2);
-        int flags = head.get(index * 3 - 1);
-        if (flags != MgRecordShapes::DYN || tick + 200 > tickNow)
-            break;
-    }
-    if (index > from) {
-        LOGD("Skip %d frames from #%d, tick=%d, now=%d",
-             index - from, from, head.get(from * 3 - 2), tickNow);
-    }
-    return index;
-}
-
-bool GiCoreView::frameNeedWait(long curTick)
-{
-    return impl->startPauseTick || getFrameTick() - 100 > getPlayingTick(curTick);
 }
 
 bool GiCoreView::isPaused() const
@@ -313,119 +236,122 @@ bool GiCoreView::onResume(long curTick)
     return false;
 }
 
-int GiCoreView::loadNextFrame(const mgvector<int>& head, long curTick)
-{
-    return loadNextFrame(skipExpireFrame(head, getFrameIndex(), curTick));
-}
-
-int GiCoreView::loadNextFrame(int index)
-{
-    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit()) {
-        return 0;
-    }
-    
-    int newID = 0;
-    int flags = impl->recorder[1]->applyRedoFile(newID, impl->getShapeFactory(),
-                                                 impl->docPlay, impl->dynShapesPlay, index);
-    return flags;
-}
-
-int GiCoreView::loadPrevFrame(int index, long curTick)
-{
-    if (!isPlaying() || !getPlayingDocForEdit() || !getDynamicShapesForEdit()) {
-        return 0;
-    }
-    
-    int newID = 0;
-    int flags = impl->recorder[1]->applyUndoFile(newID, impl->getShapeFactory(),
-                                                 impl->docPlay, impl->dynShapesPlay, index, curTick);
-    return flags;
-}
-
-void GiCoreView::applyFrame(int flags)
-{
-    if (flags & (DOC_CHANGED | SHAPE_APPEND)) {
-        impl->_gcdoc->submitBackDoc(impl->docPlay);
-        if (impl->curview) {
-            impl->curview->xform()->setModelTransform(impl->docPlay->modelTransform());
-            impl->curview->xform()->zoomTo(impl->docPlay->getPageRectW());
-        }
-    }
-    if (flags & DYN_CHANGED) {
-        MgObject::release_pointer(impl->dynShapesFront);
-        impl->dynShapesFront = impl->dynShapesPlay;
-        impl->dynShapesFront->addRef();
-    }
-    if (impl->curview) {
-        impl->curview->submitBackXform();
-    }
-    
-    if (flags & DOC_CHANGED) {
-        impl->regenAll(true);
-    }
-    else if (flags & SHAPE_APPEND) {
-        impl->regenAppend(impl->docPlay->getCurrentLayer()->getLastShape()->getID());
-    }
-    else if (flags & DYN_CHANGED) {
-        impl->redraw();
-    }
-}
-
-// MgPlaying
+// GiPlaying
 //
 
-struct MgPlaying::Impl {
+struct GiPlaying::Impl {
+    MgShapeDoc* frontDoc;
+    MgShapeDoc* backDoc;
     MgShapes*   front;
     MgShapes*   back;
     int         tag;
     volatile long stopping;
     
-    Impl(int tag) : front(NULL), back(NULL), tag(tag), stopping(0) {}
-    ~Impl() {
-        MgObject::release_pointer(front);
-        MgObject::release_pointer(back);
-    }
+    Impl(int tag) : frontDoc(NULL), backDoc(NULL), front(NULL), back(NULL)
+        , tag(tag), stopping(0) {}
 };
 
-MgPlaying::MgPlaying(int tag) : impl(new Impl(tag))
+GiPlaying* GiPlaying::create(GiCoreView* v, int tag)
+{
+    GiPlaying* p = new GiPlaying(tag);
+    if (v && tag >= 0) {
+        v->getImpl()->playings.push_back(p);
+    }
+    return p;
+}
+
+void GiPlaying::release(GiCoreView* v)
+{
+    if (v) {
+        std::vector<GiPlaying*>& s = v->getImpl()->playings;
+        s.erase(std::find(s.begin(), s.end(), this));
+    }
+    delete this;
+}
+
+GiPlaying::GiPlaying(int tag) : impl(new Impl(tag))
 {
 }
 
-MgPlaying::~MgPlaying()
+GiPlaying::~GiPlaying()
 {
+    clear();
     delete impl;
 }
 
-int MgPlaying::getTag() const
+void GiPlaying::clear()
+{
+    MgObject::release_pointer(impl->frontDoc);
+    MgObject::release_pointer(impl->backDoc);
+    MgObject::release_pointer(impl->front);
+    MgObject::release_pointer(impl->back);
+}
+
+int GiPlaying::getTag() const
 {
     return impl->tag;
 }
 
-void MgPlaying::stop()
+void GiPlaying::stop()
 {
     giAtomicIncrement(&impl->stopping);
 }
 
-bool MgPlaying::isStopping() const
+bool GiPlaying::isStopping() const
 {
     return impl->stopping > 0;
 }
 
-long MgPlaying::acquireShapes()
+long GiPlaying::acquireFrontDoc()
 {
-    if (!impl->front)
+    if (!this || !impl->frontDoc)
+        return 0;
+    impl->frontDoc->addRef();
+    return impl->frontDoc->toHandle();
+}
+
+void GiPlaying::releaseDoc(long doc)
+{
+    MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    MgObject::release_pointer(p);
+}
+
+MgShapeDoc* GiPlaying::getBackDoc()
+{
+    if (!impl->backDoc) {
+        impl->backDoc = MgShapeDoc::createDoc();
+    }
+    return impl->backDoc;
+}
+
+void GiPlaying::submitBackDoc()
+{
+    MgObject::release_pointer(impl->frontDoc);
+    if (impl->backDoc) {
+        impl->frontDoc = impl->backDoc->shallowCopy();
+    }
+}
+
+long GiPlaying::acquireFrontShapes()
+{
+    if (!this || !impl->front)
         return 0;
     impl->front->addRef();
     return impl->front->toHandle();
 }
 
-void MgPlaying::releaseShapes(long shapes)
+void GiPlaying::releaseShapes(long shapes)
 {
     MgShapes* p = MgShapes::fromHandle(shapes);
     MgObject::release_pointer(p);
 }
 
-long MgPlaying::getShapesForEdit(bool needClear)
+long GiPlaying::getBackShapesHandle(bool needClear)
+{
+    return getBackShapes(needClear)->toHandle();
+}
+
+MgShapes* GiPlaying::getBackShapes(bool needClear)
 {
     if (needClear || !impl->back) {
         MgObject::release_pointer(impl->back);
@@ -435,10 +361,10 @@ long MgPlaying::getShapesForEdit(bool needClear)
         impl->back = old->shallowCopy();
         MgObject::release_pointer(old);
     }
-    return impl->back->toHandle();
+    return impl->back;
 }
 
-void MgPlaying::submitShapes()
+void GiPlaying::submitBackShapes()
 {
     MgObject::release_pointer(impl->front);
     impl->front = impl->back;

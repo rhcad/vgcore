@@ -2,6 +2,9 @@
 //! \brief 定义GiCoreView实现类 GiCoreViewImpl
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
+#ifndef TOUCHVG_CORE_VIEWIMPL_H
+#define TOUCHVG_CORE_VIEWIMPL_H
+
 #include "GcShapeDoc.h"
 #include "GcMagnifierView.h"
 #include "mgcmdmgr.h"
@@ -12,6 +15,7 @@
 #include "mgstorage.h"
 #include "recordshapes.h"
 #include "girecordshape.h"
+#include "giplaying.h"
 #include "mgshapet.h"
 #include "cmdbasic.h"
 #include "mglayer.h"
@@ -61,6 +65,13 @@ public:
     }
 };
 
+struct GiPlayShapes
+{
+    GiPlaying*      playing;
+    MgRecordShapes* player;
+    GiPlayShapes() : playing(NULL), player(NULL) {}
+};
+
 //! GiCoreView实现类
 class GiCoreViewImpl
     : public MgView
@@ -83,61 +94,29 @@ public:
     volatile long   drawCount;
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
-    MgShapes*       dynShapesFront;
-    MgShapes*       dynShapesPlay;
-    MgShapes*       dynShapesPlayFront;
-    MgShapeDoc*     docPlay;
     volatile long   startPauseTick;
     MgRecordShapes* recorder[2];
+    std::vector<GiPlaying*> playings;
+    GiPlaying*      drawing;
+    MgShapeDoc*     backDoc;
+    GiPlayShapes    play;
     
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
     volatile long   stopping;
     
 public:
-    GiCoreViewImpl(bool useView = true) : _cmds(NULL), curview(NULL), refcount(1)
-        , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
-        , changeCount(0), drawCount(0), dynShapesFront(NULL)
-        , dynShapesPlay(NULL), dynShapesPlayFront(NULL), docPlay(NULL)
-        , startPauseTick(0), stopping(0)
-    {
-        memset(&gsBuf, 0, sizeof(gsBuf));
-        memset((void*)&gsUsed, 0, sizeof(gsUsed));
-        
-        _motion.view = this;
-        _motion.gestureType = 0;
-        _motion.gestureState = kMgGesturePossible;
-        recorder[0] = recorder[1] = NULL;
-        _gcdoc = new GcShapeDoc();
-        
-        MgBasicShapes::registerShapes(this);
-        if (useView) {
-            _cmds = MgCmdManagerFactory::create();
-            MgBasicCommands::registerCmds(this);
-            MgShapeT<MgRecordShape>::registerCreator(this);
-        }
-    }
-    
-    ~GiCoreViewImpl() {
-        for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
-            delete gsBuf[i];
-        }
-        MgObject::release_pointer(dynShapesFront);
-        MgObject::release_pointer(dynShapesPlay);
-        MgObject::release_pointer(dynShapesPlayFront);
-        MgObject::release_pointer(docPlay);
-        MgObject::release_pointer(_cmds);
-        delete _gcdoc;
-    }
+    GiCoreViewImpl(GiCoreView* owner, bool useView = true);
+    ~GiCoreViewImpl();
     
     MgMotion* motion() { return &_motion; }
     MgCmdManager* cmds() const { return _cmds; }
     GcShapeDoc* document() const { return _gcdoc; }
-    MgShapeDoc* doc() const { return _gcdoc->backDoc(); }
-    MgShapes* shapes() const { return doc()->getCurrentShapes(); }
-    GiContext* context() const { return doc()->context(); }
+    MgShapeDoc* doc() const { return backDoc; }
+    MgShapes* shapes() const { return backDoc->getCurrentShapes(); }
+    GiContext* context() const { return backDoc->context(); }
     GiTransform* xform() const { return CALL_VIEW2(xform(), NULL); }
-    Matrix2d& modelTransform() const { return doc()->modelTransform(); }
+    Matrix2d& modelTransform() const { return backDoc->modelTransform(); }
     
     int getNewShapeID() { return _cmds->getNewShapeID(); }
     void setNewShapeID(int sid) { _cmds->setNewShapeID(sid); }
@@ -192,9 +171,10 @@ public:
                     && shape->getParent()->findShape(shape->getID()) == shape
                     && !shape->shapec()->getFlag(kMgShapeLocked));
         if (ret) {
-            CALL_VIEW(deviceView()->shapeDeleted(shape->getID()));
+            int sid = shape->getID();
             getCmdSubject()->onShapeDeleted(motion(), shape);
             ret = shape->getParent()->removeShape(shape->getID());
+            CALL_VIEW(deviceView()->shapeDeleted(sid));
         }
         return ret;
     }
@@ -321,102 +301,9 @@ private:
     }
     
 private:
-    void calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
-    {
-        Box2d selbox(box);
-        
-        selbox.inflate(12 * _factor, 18 * _factor);
-        if (box.height() < (n < 7 ? 40 : 80) * _factor) {
-            selbox.deflate(0, (box.height() - (n < 7 ? 40 : 80) * _factor) / 2);
-        }
-        if (box.width() < (n == 3 || n > 4 ? 120 : 40) * _factor) {
-            selbox.deflate((box.width() - (n==3||n>4 ? 120 : 40) * _factor) / 2, 0);
-        }
-        
-        Box2d rect(calcButtonPosition(pos, n, selbox));
-        Vector2d off(moveActionsInView(rect, 16 * _factor));
-        
-        for (int i = 0; i < n; i++) {
-            pos.set(2 * i, pos.get(2 * i) + off.x, pos.get(2 * i + 1) + off.y);
-        }
-    }
-    
-    Box2d calcButtonPosition(mgvector<float>& pos, int n, const Box2d& selbox)
-    {
-        Box2d rect;
-        
-        for (int i = 0; i < n; i++) {
-            switch (i)
-            {
-                case 0:
-                    if (n == 1) {
-                        pos.set(2 * i, selbox.center().x, selbox.ymin); // MT
-                    } else {
-                        pos.set(2 * i, selbox.xmin, selbox.ymin);       // LT
-                    }
-                    break;
-                case 1:
-                    if (n == 3) {
-                        pos.set(2 * i, selbox.center().x, selbox.ymin); // MT
-                    } else {
-                        pos.set(2 * i, selbox.xmax, selbox.ymin);       // RT
-                    }
-                    break;
-                case 2:
-                    if (n == 3) {
-                        pos.set(2 * i, selbox.xmax, selbox.ymin);       // RT
-                    } else {
-                        pos.set(2 * i, selbox.xmax, selbox.ymax);       // RB
-                    }
-                    break;
-                case 3:
-                    pos.set(2 * i, selbox.xmin, selbox.ymax);           // LB
-                    break;
-                case 4:
-                    pos.set(2 * i, selbox.center().x, selbox.ymin);     // MT
-                    break;
-                case 5:
-                    pos.set(2 * i, selbox.center().x, selbox.ymax);     // MB
-                    break;
-                case 6:
-                    pos.set(2 * i, selbox.xmax, selbox.center().y);     // RM
-                    break;
-                case 7:
-                    pos.set(2 * i, selbox.xmin, selbox.center().y);     // LM
-                    break;
-                default:
-                    return rect;
-            }
-            rect.unionWith(Box2d(Point2d(pos.get(2 * i), pos.get(2 * i + 1)),
-                                 32 * _factor, 32 * _factor));
-        }
-        
-        return rect;
-    }
-    
-    Vector2d moveActionsInView(Box2d& rect, float btnHalfW)
-    {
-        Vector2d off;
-        Box2d viewrect(xform()->getWndRect());
-        
-        if (!rect.isEmpty() && !viewrect.contains(rect)) {
-            if (rect.xmin < btnHalfW) {
-                off.x = btnHalfW - rect.xmin;
-            }
-            else if (rect.xmax > viewrect.xmax - btnHalfW) {
-                off.x = viewrect.xmax - btnHalfW - rect.xmax;
-            }
-            
-            if (rect.ymin < btnHalfW) {
-                off.y = btnHalfW - rect.ymin;
-            }
-            else if (rect.ymax > viewrect.ymax - btnHalfW) {
-                off.y = viewrect.ymax - btnHalfW - rect.ymax;
-            }
-        }
-        
-        return off;
-    }
+    void calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box);
+    Box2d calcButtonPosition(mgvector<float>& pos, int n, const Box2d& selbox);
+    Vector2d moveActionsInView(Box2d& rect, float btnHalfW);
 };
 
 // DrawLocker
@@ -461,3 +348,5 @@ public:
         }
     }
 };
+
+#endif // TOUCHVG_CORE_VIEWIMPL_H

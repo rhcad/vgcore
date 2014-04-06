@@ -24,19 +24,145 @@ GcBaseView::GcBaseView(MgView* mgview, GiView *view)
     LOGD("View %p created", this);
 }
 
-MgShapeDoc* GcBaseView::backDoc()
+// GiCoreViewImpl
+//
+
+GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
+    : _cmds(NULL), curview(NULL), refcount(1)
+    , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
+    , changeCount(0), drawCount(0), startPauseTick(0), backDoc(NULL), stopping(0)
 {
-    return cmdView()->document()->backDoc();
+    memset(&gsBuf, 0, sizeof(gsBuf));
+    memset((void*)&gsUsed, 0, sizeof(gsUsed));
+    
+    drawing = GiPlaying::create(NULL, -1);
+    backDoc = drawing->getBackDoc();
+    playings.push_back(drawing);
+    
+    play.playing = GiPlaying::create(NULL, -2);
+    playings.push_back(play.playing);
+    
+    _motion.view = this;
+    _motion.gestureType = 0;
+    _motion.gestureState = kMgGesturePossible;
+    recorder[0] = recorder[1] = NULL;
+    _gcdoc = new GcShapeDoc();
+    
+    MgBasicShapes::registerShapes(this);
+    if (useView) {
+        _cmds = MgCmdManagerFactory::create();
+        MgBasicCommands::registerCmds(this);
+        MgShapeT<MgRecordShape>::registerCreator(this);
+    }
 }
 
-MgShapeDoc* GcBaseView::frontDoc()
+GiCoreViewImpl::~GiCoreViewImpl()
 {
-    return cmdView()->document()->frontDoc();
+    for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
+        delete gsBuf[i];
+    }
+    for (unsigned j = 0; j < playings.size(); j++) {
+        playings[j]->release(NULL);
+    }
+    MgObject::release_pointer(_cmds);
+    delete _gcdoc;
 }
 
-MgShapes* GcBaseView::backShapes()
+void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
 {
-    return backDoc()->getCurrentShapes();
+    Box2d selbox(box);
+    
+    selbox.inflate(12 * _factor, 18 * _factor);
+    if (box.height() < (n < 7 ? 40 : 80) * _factor) {
+        selbox.deflate(0, (box.height() - (n < 7 ? 40 : 80) * _factor) / 2);
+    }
+    if (box.width() < (n == 3 || n > 4 ? 120 : 40) * _factor) {
+        selbox.deflate((box.width() - (n==3||n>4 ? 120 : 40) * _factor) / 2, 0);
+    }
+    
+    Box2d rect(calcButtonPosition(pos, n, selbox));
+    Vector2d off(moveActionsInView(rect, 16 * _factor));
+    
+    for (int i = 0; i < n; i++) {
+        pos.set(2 * i, pos.get(2 * i) + off.x, pos.get(2 * i + 1) + off.y);
+    }
+}
+
+Box2d GiCoreViewImpl::calcButtonPosition(mgvector<float>& pos, int n, const Box2d& selbox)
+{
+    Box2d rect;
+    
+    for (int i = 0; i < n; i++) {
+        switch (i)
+        {
+            case 0:
+                if (n == 1) {
+                    pos.set(2 * i, selbox.center().x, selbox.ymin); // MT
+                } else {
+                    pos.set(2 * i, selbox.xmin, selbox.ymin);       // LT
+                }
+                break;
+            case 1:
+                if (n == 3) {
+                    pos.set(2 * i, selbox.center().x, selbox.ymin); // MT
+                } else {
+                    pos.set(2 * i, selbox.xmax, selbox.ymin);       // RT
+                }
+                break;
+            case 2:
+                if (n == 3) {
+                    pos.set(2 * i, selbox.xmax, selbox.ymin);       // RT
+                } else {
+                    pos.set(2 * i, selbox.xmax, selbox.ymax);       // RB
+                }
+                break;
+            case 3:
+                pos.set(2 * i, selbox.xmin, selbox.ymax);           // LB
+                break;
+            case 4:
+                pos.set(2 * i, selbox.center().x, selbox.ymin);     // MT
+                break;
+            case 5:
+                pos.set(2 * i, selbox.center().x, selbox.ymax);     // MB
+                break;
+            case 6:
+                pos.set(2 * i, selbox.xmax, selbox.center().y);     // RM
+                break;
+            case 7:
+                pos.set(2 * i, selbox.xmin, selbox.center().y);     // LM
+                break;
+            default:
+                return rect;
+        }
+        rect.unionWith(Box2d(Point2d(pos.get(2 * i), pos.get(2 * i + 1)),
+                             32 * _factor, 32 * _factor));
+    }
+    
+    return rect;
+}
+
+Vector2d GiCoreViewImpl::moveActionsInView(Box2d& rect, float btnHalfW)
+{
+    Vector2d off;
+    Box2d viewrect(xform()->getWndRect());
+    
+    if (!rect.isEmpty() && !viewrect.contains(rect)) {
+        if (rect.xmin < btnHalfW) {
+            off.x = btnHalfW - rect.xmin;
+        }
+        else if (rect.xmax > viewrect.xmax - btnHalfW) {
+            off.x = viewrect.xmax - btnHalfW - rect.xmax;
+        }
+        
+        if (rect.ymin < btnHalfW) {
+            off.y = btnHalfW - rect.ymin;
+        }
+        else if (rect.ymax > viewrect.ymax - btnHalfW) {
+            off.y = viewrect.ymax - btnHalfW - rect.ymax;
+        }
+    }
+    
+    return off;
 }
 
 // GiCoreView
@@ -51,14 +177,14 @@ GiCoreView::GiCoreView(GiCoreView* mainView)
         impl->refcount++;
     }
     else {
-        impl = new GiCoreViewImpl();
+        impl = new GiCoreViewImpl(this);
     }
     LOGD("GiCoreView %p created, refcount=%ld", this, impl->refcount);
 }
 
 GiCoreView::GiCoreView(GiView* view, int type)
 {
-    impl = new GiCoreViewImpl(!!view);
+    impl = new GiCoreViewImpl(this, !!view);
     LOGD("GiCoreView %p created, type=%d", this, type);
     createView_(view, type);
 }
@@ -88,26 +214,82 @@ long GiCoreView::backShapes()
 
 long GiCoreView::acquireFrontDoc()
 {
-    if (!impl->_gcdoc->frontDoc())
-        return 0;
-    impl->_gcdoc->frontDoc()->addRef();
-    return impl->_gcdoc->frontDoc()->toHandle();
+    return impl->drawing->acquireFrontDoc();
 }
 
-void MgCoreView::releaseDoc(long hDoc)
+void MgCoreView::releaseDoc(long doc)
 {
-    MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    MgObject::release_pointer(doc);
+    MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    MgObject::release_pointer(p);
+}
+
+long GiCoreView::acquireDynamicShapes()
+{
+    return impl->drawing->acquireFrontShapes();
+}
+
+void MgCoreView::releaseShapes(long shapes)
+{
+    MgShapes* p = MgShapes::fromHandle(shapes);
+    MgObject::release_pointer(p);
+}
+
+int GiCoreView::acquireFrontDocs(mgvector<int>& docs)
+{
+    int n = 0;
+    
+    docs.setSize(1 + (int)impl->playings.size());
+    for (int i = 0; i < docs.count() - 1; i++) {
+        if (i == 0 && isPlaying())
+            continue;
+        int doc = (int)impl->playings[i]->acquireFrontDoc();
+        if (doc) {
+            docs.set(n++, doc);
+        }
+    }
+    
+    return n;
+}
+
+void GiCoreView::releaseDocs(const mgvector<int>& docs)
+{
+    for (int i = 0; i < docs.count(); i++) {
+        MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
+        MgObject::release_pointer(doc);
+    }
+}
+
+int GiCoreView::acquireDynamicShapesArray(mgvector<int>& shapes)
+{
+    int n = 0;
+    
+    shapes.setSize(1 + (int)impl->playings.size());
+    for (int i = 0; i < shapes.count() - 1; i++) {
+        int s = (int)impl->playings[i]->acquireFrontShapes();
+        if (s) {
+            shapes.set(n++, s);
+        }
+    }
+    
+    return n;
+}
+
+void GiCoreView::releaseShapesArray(const mgvector<int>& shapes)
+{
+    for (int i = 0; i < shapes.count(); i++) {
+        MgShapes* s = MgShapes::fromHandle(shapes.get(i));
+        MgObject::release_pointer(s);
+    }
 }
 
 bool GiCoreView::submitBackDoc(GiView* view)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
-    bool ret = aview && aview == impl->curview && !isPlaying();
+    bool ret = aview && aview == impl->curview;
     
     if (ret) {
         impl->doc()->saveAll(NULL, aview->xform());  // set viewport from view
-        impl->_gcdoc->submitBackDoc(impl->doc());
+        impl->drawing->submitBackDoc();
         giAtomicIncrement(&impl->changeCount);
     }
     if (aview) {
@@ -115,20 +297,6 @@ bool GiCoreView::submitBackDoc(GiView* view)
     }
     
     return ret;
-}
-
-long GiCoreView::acquireDynamicShapes()
-{
-    if (!impl->dynShapesFront)
-        return 0;
-    impl->dynShapesFront->addRef();
-    return impl->dynShapesFront->toHandle();
-}
-
-void MgCoreView::releaseShapes(long hShapes)
-{
-    MgShapes* p = MgShapes::fromHandle(hShapes);
-    MgObject::release_pointer(p);
 }
 
 GiCoreView* GiCoreView::createView(GiView* view, int type)
@@ -286,19 +454,19 @@ void GiCoreView::releaseGraphics(long hGs)
 }
 
 int GiCoreView::drawAll(GiView* view, GiCanvas* canvas) {
-    long hDoc = acquireFrontDoc();
+    long doc = acquireFrontDoc();
     long hGs = acquireGraphics(view);
-    int n = drawAll(hDoc, hGs, canvas);
-    releaseDoc(hDoc);
+    int n = drawAll(doc, hGs, canvas);
+    releaseDoc(doc);
     releaseGraphics(hGs);
     return n;
 }
 
 int GiCoreView::drawAppend(GiView* view, GiCanvas* canvas, int sid) {
-    long hDoc = acquireFrontDoc();
+    long doc = acquireFrontDoc();
     long hGs = acquireGraphics(view);
-    int n = drawAppend(hDoc, hGs, canvas, sid);
-    releaseDoc(hDoc);
+    int n = drawAppend(doc, hGs, canvas, sid);
+    releaseDoc(doc);
     releaseGraphics(hGs);
     return n;
 }
@@ -306,32 +474,49 @@ int GiCoreView::drawAppend(GiView* view, GiCanvas* canvas, int sid) {
 int GiCoreView::dynDraw(GiView* view, GiCanvas* canvas){
     long hShapes = acquireDynamicShapes();
     long hGs = acquireGraphics(view);
-    int n = dynDraw(hShapes, hGs, canvas, 0);
+    int n = dynDraw(hShapes, hGs, canvas);
     releaseShapes(hShapes);
     releaseGraphics(hGs);
     return n;
 }
 
-int GiCoreView::drawAll(long hDoc, long hGs, GiCanvas* canvas)
+int GiCoreView::drawAll(long doc, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (hDoc && gs && gs->beginPaint(canvas)) {
-        n = MgShapeDoc::fromHandle(hDoc)->draw(*gs);
+    if (doc && gs && gs->beginPaint(canvas)) {
+        n = MgShapeDoc::fromHandle(doc)->draw(*gs);
         gs->endPaint();
     }
 
     return n;
 }
 
-int GiCoreView::drawAppend(long hDoc, long hGs, GiCanvas* canvas, int sid)
+int GiCoreView::drawAll(const mgvector<int>& docs, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (hDoc && gs && sid && gs->beginPaint(canvas)) {
-        const MgShapes* sps = MgShapeDoc::fromHandle(hDoc)->getCurrentShapes();
+    if (gs && gs->beginPaint(canvas)) {
+        n = 0;
+        for (int i = 0; i < docs.count(); i++) {
+            MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
+            n += doc ? doc->draw(*gs) : 0;
+        }
+        gs->endPaint();
+    }
+    
+    return n;
+}
+
+int GiCoreView::drawAppend(long doc, long hGs, GiCanvas* canvas, int sid)
+{
+    int n = -1;
+    GiGraphics* gs = GiGraphics::fromHandle(hGs);
+    
+    if (doc && gs && sid && gs->beginPaint(canvas)) {
+        const MgShapes* sps = MgShapeDoc::fromHandle(doc)->getCurrentShapes();
         const MgShape* sp = sps->findShape(sid);
         n = (sp && sp->draw(0, *gs, NULL, -1)) ? 1 : 0;
         gs->endPaint();
@@ -354,25 +539,19 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
     return n;
 }
 
-int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas, const mgvector<int>* exts)
+int GiCoreView::dynDraw(const mgvector<int>& shapes, long hGs, GiCanvas* canvas)
 {
-    int n = (hShapes || exts) ? 0 : -1;
+    int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (n == 0 && gs && gs->beginPaint(canvas)) {
-        if (hShapes) {
-            mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
-            n += MgShapes::fromHandle(hShapes)->draw(*gs);
-        }
-        for (int i = 0; i < (exts ? exts->count() : 0); i++) {
-            MgShapes* extShapes = MgShapes::fromHandle(exts->get(i));
-            n += extShapes ? extShapes->draw(*gs) : 0;
+    if (gs && gs->beginPaint(canvas)) {
+        n = 0;
+        mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+        for (int i = 0; i < shapes.count(); i++) {
+            MgShapes* sp = MgShapes::fromHandle(shapes.get(i));
+            n += sp ? sp->draw(*gs) : 0;
         }
         gs->endPaint();
-    }
-    for (int i = 0; i < (exts ? exts->count() : 0); i++) {
-        MgShapes* extShapes = MgShapes::fromHandle(exts->get(i));
-        MgObject::release_pointer(extShapes);
     }
     
     return n;
@@ -549,10 +728,10 @@ int GiCoreView::getShapeCount()
     return impl->doc()->getShapeCount();
 }
 
-int GiCoreView::getShapeCount(long hDoc)
+int GiCoreView::getShapeCount(long doc)
 {
-    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    return doc ? doc->getShapeCount() : 0;
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    return p ? p->getShapeCount() : 0;
 }
 
 long GiCoreView::getChangeCount()
@@ -611,16 +790,16 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     return ret;
 }
 
-bool GiCoreView::saveShapes(long hDoc, MgStorage* s)
+bool GiCoreView::saveShapes(long doc, MgStorage* s)
 {
-    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    return doc && doc->save(s, 0);
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    return p && p->save(s, 0);
 }
 
 bool GiCoreView::submitDynamicShapes(GiView* view)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
-    bool ret = (aview && aview == impl->curview && !isPlaying());
+    bool ret = aview && aview == impl->curview;
     
     if (ret) {
         impl->submitDynamicShapes(aview);
@@ -634,13 +813,11 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
 void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
 {
     MgCommand* cmd = getCommand();
+    MgShapes* shapes = drawing->getBackShapes(true);
     
-    MgObject::release_pointer(dynShapesFront);
     if (cmd) {
-        dynShapesFront = MgShapes::create();
-        if (!cmd->gatherShapes(motion(), dynShapesFront)) {
-            GiRecordCanvas canvas(dynShapesFront, v->xform(),
-                                  cmd->isDrawingCommand() ? 0 : -1);
+        if (!cmd->gatherShapes(motion(), shapes)) {
+            GiRecordCanvas canvas(shapes, v->xform(), cmd->isDrawingCommand() ? 0 : -1);
             if (v->frontGraph()->beginPaint(&canvas)) {
                 mgCopy(motion()->d2mgs, cmds()->displayMmToModel(1, v->frontGraph()));
                 cmd->draw(motion(), v->frontGraph());
@@ -650,6 +827,7 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
                 v->frontGraph()->endPaint();
             }
         }
+        drawing->submitBackShapes();
         giAtomicIncrement(&drawCount);
     }
 }
@@ -659,10 +837,10 @@ void GiCoreView::clear()
     loadShapes((MgStorage*)0);
 }
 
-const char* GiCoreView::getContent(long hDoc)
+const char* GiCoreView::getContent(long doc)
 {
     const char* content = "";
-    if (saveShapes(hDoc, impl->defaultStorage.storageForWrite())) {
+    if (saveShapes(doc, impl->defaultStorage.storageForWrite())) {
         content = impl->defaultStorage.stringify();
     }
     return content; // has't free defaultStorage's string buffer
@@ -699,12 +877,12 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
     return ret;
 }
 
-bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
+bool GiCoreView::saveToFile(long doc, const char* vgfile, bool pretty)
 {
-    FILE *fp = hDoc ? mgopenfile(vgfile, "wt") : NULL;
+    FILE *fp = doc ? mgopenfile(vgfile, "wt") : NULL;
     MgJsonStorage s;
     bool ret = (fp != NULL
-                && saveShapes(hDoc, s.storageForWrite())
+                && saveShapes(doc, s.storageForWrite())
                 && s.save(fp, pretty));
     
     if (fp) {
@@ -717,26 +895,26 @@ bool GiCoreView::saveToFile(long hDoc, const char* vgfile, bool pretty)
     return ret;
 }
 
-int GiCoreView::exportSVG(long hDoc, long hGs, const char* filename)
+int GiCoreView::exportSVG(long doc, long hGs, const char* filename)
 {
     GiSvgCanvas canvas;
     int n = -1;
     
-    if (hDoc && impl->curview
+    if (doc && impl->curview
         && canvas.open(filename, impl->curview->xform()->getWidth(),
                        impl->curview->xform()->getHeight()))
     {
-        n = drawAll(hDoc, hGs, &canvas);
+        n = drawAll(doc, hGs, &canvas);
     }
     
     return canvas.close() ? n : -1;
 }
 
 int GiCoreView::exportSVG(GiView* view, const char* filename) {
-    long hDoc = acquireFrontDoc();
+    long doc = acquireFrontDoc();
     long hGs = acquireGraphics(view);
-    int n = exportSVG(hDoc, hGs, filename);
-    releaseDoc(hDoc);
+    int n = exportSVG(doc, hGs, filename);
+    releaseDoc(doc);
     releaseGraphics(hGs);
     return n;
 }
@@ -840,16 +1018,16 @@ int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, flo
     return shape ? shape->getID() : 0;
 }
 
-bool GiCoreView::hasImageShape(long hDoc)
+bool GiCoreView::hasImageShape(long doc)
 {
-    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    return doc && doc->getCurrentLayer()->findShapeByType(MgImageShape::Type());
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    return p && p->getCurrentLayer()->findShapeByType(MgImageShape::Type());
 }
 
-int GiCoreView::findShapeByImageID(long hDoc, const char* name)
+int GiCoreView::findShapeByImageID(long doc, const char* name)
 {
-    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    const MgShape* sp = doc ? MgImageShape::findShapeByImageID(doc->getCurrentLayer(), name) : NULL;
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    const MgShape* sp = p ? MgImageShape::findShapeByImageID(p->getCurrentLayer(), name) : NULL;
     return sp ? sp->getID() : 0;
 }
 
@@ -863,10 +1041,10 @@ static void traverseImage(const MgShape* sp, void* d) {
     c->onFindImage(sp->getID(), shape->getName());
 }
 
-int GiCoreView::traverseImageShapes(long hDoc, MgFindImageCallback* c)
+int GiCoreView::traverseImageShapes(long doc, MgFindImageCallback* c)
 {
-    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hDoc);
-    return doc ? doc->getCurrentLayer()->traverseByType(MgImageShape::Type(), traverseImage, c) : 0;
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    return p ? p->getCurrentLayer()->traverseByType(MgImageShape::Type(), traverseImage, c) : 0;
 }
 
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)
@@ -966,8 +1144,7 @@ bool GiCoreViewImpl::gestureToCommand()
     if (!cmd || _motion.gestureState == kMgGestureCancel) {
         return cmd && cmd->cancel(&_motion);
     }
-    if (recorder[1] && recorder[1]->isPlaying()
-        && _motion.gestureState > kMgGesturePossible) {
+    if (recorder[1] && recorder[1]->isPlaying()) {
         return true;
     }
     if (_motion.gestureState == kMgGesturePossible
