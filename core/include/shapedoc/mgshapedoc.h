@@ -61,6 +61,9 @@ public:
     
     //! 查找指定ID的图形
     const MgShape* findShape(int sid) const;
+    
+    //! 得到最新添加的图形
+    const MgShape* getLastShape() const;
 
     //! 返回当前图形列表（图层或复合图形）
     MgShapes* getCurrentShapes() const;

@@ -11,6 +11,7 @@
 
 class GiCanvas;
 class GiCoreViewImpl;
+class GiCoreViewData;
 
 //! 内核视图分发器类
 /*! 本对象拥有图形文档对象，负责显示和手势动作的分发。
@@ -145,7 +146,7 @@ public:
     bool getBoundingBox(mgvector<float>& box, int shapeId);
     bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId);
     bool displayToModel(mgvector<float>& d);
-    GiCoreViewImpl* getImpl() { return impl; }
+    GiCoreViewData* getData();
 #endif // SWIG
 
 private:

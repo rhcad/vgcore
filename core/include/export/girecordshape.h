@@ -17,6 +17,7 @@ public:
     MgRecordShape() : _sid(0) {}
     virtual ~MgRecordShape() { _clear(); }
     
+    //! Interface of recording items.
     struct ICmd {
         virtual ~ICmd() {}
         virtual int type() const = 0;

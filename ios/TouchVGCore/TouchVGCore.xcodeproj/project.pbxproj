@@ -13,9 +13,12 @@
 		024FCF78188A8552000B0C41 /* recordshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF66188A84A6000B0C41 /* recordshapes.h */; };
 		024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6B188A84E3000B0C41 /* simple_svg.hpp */; };
 		024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
+		0269CE1718F25DA500999778 /* gicoreviewdata.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE1618F25DA500999778 /* gicoreviewdata.h */; };
+		0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2C18F29DC300999778 /* girecordcanvas.h */; };
+		0269CE2F18F29DC300999778 /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2D18F29DC300999778 /* girecordshape.h */; };
+		0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0269CE3018F29DD000999778 /* girecordcanvas.cpp */; };
 		02ED017C18F13E280060BE0A /* giplaying.h in Headers */ = {isa = PBXBuildFile; fileRef = 02ED017B18F13E280060BE0A /* giplaying.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF196418A2F7DF00B15999 /* fitcurves.cpp */; };
-		AE208E5618867E4800FE68E1 /* girecordcanvas.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */; };
 		AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
 		AE20C4BD1866C5F000471A19 /* mgpnt.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
 		AE20C4CD1866D33600471A19 /* GcGraphView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE20C4C51866D2F400471A19 /* GcGraphView.cpp */; };
@@ -36,9 +39,6 @@
 		AE3A247418C7197400873314 /* gicoreplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE3A247318C7197400873314 /* gicoreplay.cpp */; };
 		AE3A247618C71A1900873314 /* gicoreviewimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = AE3A247518C71A1900873314 /* gicoreviewimpl.h */; };
 		AE57CE7E188D06760080E97D /* recordshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
-		AE60BE03186BBAAC005399DF /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE01186BBAAC005399DF /* girecordcanvas.h */; };
-		AE60BE04186BBAAC005399DF /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = AE60BE02186BBAAC005399DF /* girecordshape.h */; };
-		AE60BE08186BBDB4005399DF /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */; };
 		AEC058C1186D1010005F8479 /* corever.h in Headers */ = {isa = PBXBuildFile; fileRef = AEC058C0186D1010005F8479 /* corever.h */; };
 		AED3709A1866883700C0A778 /* mgcmddraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37047186681DB00C0A778 /* mgcmddraw.cpp */; };
 		AED3709B1866883700C0A778 /* mgdrawarc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37048186681DB00C0A778 /* mgdrawarc.cpp */; };
@@ -229,6 +229,10 @@
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
 		024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgcanvas.cpp; sourceTree = "<group>"; };
+		0269CE1618F25DA500999778 /* gicoreviewdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gicoreviewdata.h; sourceTree = "<group>"; };
+		0269CE2C18F29DC300999778 /* girecordcanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordcanvas.h; sourceTree = "<group>"; };
+		0269CE2D18F29DC300999778 /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
+		0269CE3018F29DD000999778 /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
 		028BD40D18C767F30070EA95 /* touchvg.swig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = touchvg.swig; sourceTree = "<group>"; };
 		02ED017B18F13E280060BE0A /* giplaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = giplaying.h; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
@@ -249,9 +253,6 @@
 		AE490E54185715D9004F70CC /* libTouchVGCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTouchVGCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE490E5B185715D9004F70CC /* TouchVGCore-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TouchVGCore-Prefix.pch"; sourceTree = "<group>"; };
 		AE57CE7D188D06760080E97D /* recordshapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = recordshapes.cpp; sourceTree = "<group>"; };
-		AE60BE01186BBAAC005399DF /* girecordcanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordcanvas.h; sourceTree = "<group>"; };
-		AE60BE02186BBAAC005399DF /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
-		AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
 		AEC058C0186D1010005F8479 /* corever.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = corever.h; path = src/corever.h; sourceTree = "<group>"; };
 		AED36FF6186681DB00C0A778 /* gicanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicanvas.h; sourceTree = "<group>"; };
 		AED36FF8186681DB00C0A778 /* mgaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgaction.h; sourceTree = "<group>"; };
@@ -400,6 +401,8 @@
 		024FCF62188A84A6000B0C41 /* export */ = {
 			isa = PBXGroup;
 			children = (
+				0269CE2C18F29DC300999778 /* girecordcanvas.h */,
+				0269CE2D18F29DC300999778 /* girecordshape.h */,
 				024FCF63188A84A6000B0C41 /* svgcanvas.h */,
 			);
 			path = export;
@@ -416,6 +419,7 @@
 		024FCF67188A84E3000B0C41 /* export */ = {
 			isa = PBXGroup;
 			children = (
+				0269CE3018F29DD000999778 /* girecordcanvas.cpp */,
 				024FCF6B188A84E3000B0C41 /* simple_svg.hpp */,
 				024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */,
 			);
@@ -434,8 +438,6 @@
 			isa = PBXGroup;
 			children = (
 				02ED017B18F13E280060BE0A /* giplaying.h */,
-				AE60BE01186BBAAC005399DF /* girecordcanvas.h */,
-				AE60BE02186BBAAC005399DF /* girecordshape.h */,
 				AE20C4BF1866D28B00471A19 /* gicoreview.h */,
 				AE20C4C01866D28B00471A19 /* gigesture.h */,
 				AE20C4C21866D28B00471A19 /* giview.h */,
@@ -447,7 +449,6 @@
 			isa = PBXGroup;
 			children = (
 				028BD40D18C767F30070EA95 /* touchvg.swig */,
-				AE60BE06186BBDB4005399DF /* girecordcanvas.cpp */,
 				AE20C4C41866D2F400471A19 /* GcBaseView.h */,
 				AE20C4C51866D2F400471A19 /* GcGraphView.cpp */,
 				AE20C4C61866D2F400471A19 /* GcGraphView.h */,
@@ -456,6 +457,7 @@
 				AE20C4C91866D2F400471A19 /* GcShapeDoc.cpp */,
 				AE20C4CA1866D2F400471A19 /* GcShapeDoc.h */,
 				AE3A247518C71A1900873314 /* gicoreviewimpl.h */,
+				0269CE1618F25DA500999778 /* gicoreviewdata.h */,
 				AE20C4CB1866D2F400471A19 /* gicoreview.cpp */,
 				AE3A247318C7197400873314 /* gicoreplay.cpp */,
 			);
@@ -893,6 +895,7 @@
 				AED370F71866899C00C0A778 /* mgbasicspreg.h in Headers */,
 				AED370F81866899C00C0A778 /* mgcomposite.h in Headers */,
 				AED370F91866899C00C0A778 /* mggrid.h in Headers */,
+				0269CE1718F25DA500999778 /* gicoreviewdata.h in Headers */,
 				AED370FA1866899C00C0A778 /* mgobject.h in Headers */,
 				AED370FB1866899C00C0A778 /* mgshape.h in Headers */,
 				AED370FC1866899C00C0A778 /* mgshape_.h in Headers */,
@@ -912,6 +915,7 @@
 				AED370D41866897B00C0A778 /* mgcoreview.h in Headers */,
 				AED370D61866897B00C0A778 /* mgselect.h in Headers */,
 				AED370D81866897B00C0A778 /* mgsnap.h in Headers */,
+				0269CE2F18F29DC300999778 /* girecordshape.h in Headers */,
 				AED370D91866897B00C0A778 /* mgview.h in Headers */,
 				AED370DA1866897B00C0A778 /* mgcmddraw.h in Headers */,
 				AED370DB1866897B00C0A778 /* mgdrawarc.h in Headers */,
@@ -926,7 +930,6 @@
 				024FCF78188A8552000B0C41 /* recordshapes.h in Headers */,
 				024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */,
 				024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */,
-				AE208E5618867E4800FE68E1 /* girecordcanvas.cpp in Headers */,
 				AE20C4D61866D38200471A19 /* GcBaseView.h in Headers */,
 				AE20C4D71866D38200471A19 /* GcGraphView.cpp in Headers */,
 				AE20C4D81866D38200471A19 /* GcGraphView.h in Headers */,
@@ -941,6 +944,7 @@
 				AED37109186689DC00C0A778 /* mgdrawellipse.h in Headers */,
 				AED3710A186689DC00C0A778 /* mgdrawfreelines.h in Headers */,
 				AED3710B186689DC00C0A778 /* mgdrawgrid.h in Headers */,
+				0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */,
 				AED3710C186689DC00C0A778 /* mgdrawline.h in Headers */,
 				AED3710D186689DC00C0A778 /* mgdrawlines.h in Headers */,
 				AED3710E186689DC00C0A778 /* mgdrawparallel.h in Headers */,
@@ -994,7 +998,6 @@
 				AED3713F186689DC00C0A778 /* document.h in Headers */,
 				AED37140186689DC00C0A778 /* filestream.h in Headers */,
 				AEC058C1186D1010005F8479 /* corever.h in Headers */,
-				AE60BE04186BBAAC005399DF /* girecordshape.h in Headers */,
 				AED37141186689DC00C0A778 /* pow10.h in Headers */,
 				AED37142186689DC00C0A778 /* stack.h in Headers */,
 				AED37143186689DC00C0A778 /* strfunc.h in Headers */,
@@ -1005,7 +1008,6 @@
 				AED37148186689DC00C0A778 /* writer.h in Headers */,
 				AED37149186689DC00C0A778 /* mgbasicspreg.cpp in Headers */,
 				AED3714A186689DC00C0A778 /* mgcomposite.cpp in Headers */,
-				AE60BE03186BBAAC005399DF /* girecordcanvas.h in Headers */,
 				AED3714B186689DC00C0A778 /* mgellipse.cpp in Headers */,
 				AED3714C186689DC00C0A778 /* mggrid.cpp in Headers */,
 				AED3714D186689DC00C0A778 /* mgline.cpp in Headers */,
@@ -1141,13 +1143,13 @@
 				AED370B61866887500C0A778 /* mgcurv.cpp in Sources */,
 				AED370B71866887500C0A778 /* mglnrel.cpp in Sources */,
 				AED370B81866887500C0A778 /* mgmat.cpp in Sources */,
-				AE60BE08186BBDB4005399DF /* girecordcanvas.cpp in Sources */,
 				AED370B91866887500C0A778 /* mgnear.cpp in Sources */,
 				AED370BA1866887500C0A778 /* mgnearbz.cpp in Sources */,
 				AED370BB1866887500C0A778 /* mgvec.cpp in Sources */,
 				AED370AD1866885E00C0A778 /* cmdsubject.cpp in Sources */,
 				AED370AE1866885E00C0A778 /* mgactions.cpp in Sources */,
 				AED370AF1866885E00C0A778 /* mgcmdmgr2.cpp in Sources */,
+				0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */,
 				AED370B01866885E00C0A778 /* mgcmdmgr_.cpp in Sources */,
 				AED370B11866885E00C0A778 /* mgcmdselect.cpp in Sources */,
 				AED370B21866885E00C0A778 /* mgsnapimpl.cpp in Sources */,

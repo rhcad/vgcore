@@ -255,7 +255,7 @@ GiPlaying* GiPlaying::create(GiCoreView* v, int tag)
 {
     GiPlaying* p = new GiPlaying(tag);
     if (v && tag >= 0) {
-        v->getImpl()->playings.push_back(p);
+        v->getData()->playings.push_back(p);
     }
     return p;
 }
@@ -263,7 +263,7 @@ GiPlaying* GiPlaying::create(GiCoreView* v, int tag)
 void GiPlaying::release(GiCoreView* v)
 {
     if (v) {
-        std::vector<GiPlaying*>& s = v->getImpl()->playings;
+        std::vector<GiPlaying*>& s = v->getData()->playings;
         s.erase(std::find(s.begin(), s.end(), this));
     }
     delete this;

@@ -16,6 +16,8 @@ TouchVGCore contains the following cross-platform modules using C++ for 2D vecto
 - export: SVG exportor module.
 - record: Undo/redo and shape record module.
 
+![modules](https://raw.githubusercontent.com/rhcad/TouchVG/master/doc/images/core_modules.svg)
+
 This is an open source LGPL 2.1 licensed project that is in active development. Contributors and sponsors are welcome.
 
 ## Build

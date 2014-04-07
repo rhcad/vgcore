@@ -12,7 +12,7 @@ struct MgStorage;
 
 //! 遍历图像对象的回调接口
 /*! \ingroup CORE_VIEW
-    \interface MgImageCallback
+    \interface MgFindImageCallback
  */
 struct MgFindImageCallback {
     virtual ~MgFindImageCallback() {}
@@ -20,6 +20,10 @@ struct MgFindImageCallback {
     virtual void onFindImage(int sid, const char* name) = 0;
 };
 
+//! 获取字符串的回调接口，可避免JNI串泄露
+/*! \ingroup CORE_VIEW
+    \interface MgStringCallback
+ */
 struct MgStringCallback {
     virtual ~MgStringCallback() {}
     virtual void onGetString(const char* text) = 0;
@@ -58,7 +62,6 @@ struct MgCoreView {
     virtual int getRedoIndex() const = 0;           //!< 得到当前Undo位置
     virtual int getRedoCount() const = 0;           //!< 得到Undo文件数
     
-    enum { DOC_CHANGED = 1, SHAPE_APPEND = 2, DYN_CHANGED = 4 };
     long getPlayingTick(long curTick) { return getRecordTick(false, curTick); }  //!< 得到已播放的毫秒数
     virtual long getFrameTick() = 0;                //!< 得到当前帧的相对毫秒时刻
     virtual int getFrameFlags() = 0;                //!< 得到当前帧的改动标志

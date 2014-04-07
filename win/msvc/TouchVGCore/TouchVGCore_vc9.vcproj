@@ -519,14 +519,14 @@
 					RelativePath="..\..\..\core\src\view\gimousehelper.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\..\core\src\view\girecordcanvas.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="export"
 				>
+				<File
+					RelativePath="..\..\..\core\src\export\girecordcanvas.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\..\..\core\src\export\simple_svg.hpp"
 					>
@@ -874,14 +874,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\core\include\view\girecordcanvas.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\core\include\view\girecordshape.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\core\include\view\giview.h"
 					>
 				</File>
@@ -889,6 +881,14 @@
 			<Filter
 				Name="export"
 				>
+				<File
+					RelativePath="..\..\..\core\include\export\girecordcanvas.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\core\include\export\girecordshape.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\..\core\include\export\svgcanvas.h"
 					>

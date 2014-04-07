@@ -362,12 +362,6 @@
     <ClInclude Include="..\..\..\core\src\view\GcShapeDoc.h">
       <Filter>Source Files\view</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\view\girecordcanvas.h">
-      <Filter>Header Files\view</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\core\include\view\girecordshape.h">
-      <Filter>Header Files\view</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\src\corever.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -382,6 +376,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\core\src\view\gicoreviewimpl.h">
       <Filter>Source Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\export\girecordcanvas.h">
+      <Filter>Header Files\export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\export\girecordshape.h">
+      <Filter>Header Files\export</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -559,9 +559,6 @@
     <ClCompile Include="..\..\..\core\src\view\gimousehelper.cpp">
       <Filter>Source Files\view</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\core\src\view\girecordcanvas.cpp">
-      <Filter>Source Files\view</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\core\src\export\svgcanvas.cpp">
       <Filter>Source Files\export</Filter>
     </ClCompile>
@@ -570,6 +567,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\view\gicoreplay.cpp">
       <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\export\girecordcanvas.cpp">
+      <Filter>Source Files\export</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

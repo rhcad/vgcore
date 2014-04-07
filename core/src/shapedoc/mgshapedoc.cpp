@@ -213,6 +213,11 @@ const MgShape* MgShapeDoc::findShape(int sid) const
     return NULL;
 }
 
+const MgShape* MgShapeDoc::getLastShape() const
+{
+    return im->curLayer->getLastShape();
+}
+
 MgShapes* MgShapeDoc::getCurrentShapes() const
 {
     return im->curShapes;

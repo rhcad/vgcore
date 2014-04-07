@@ -30,7 +30,7 @@ GcBaseView::GcBaseView(MgView* mgview, GiView *view)
 GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     : _cmds(NULL), curview(NULL), refcount(1)
     , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
-    , changeCount(0), drawCount(0), startPauseTick(0), backDoc(NULL), stopping(0)
+    , changeCount(0), drawCount(0), stopping(0)
 {
     memset(&gsBuf, 0, sizeof(gsBuf));
     memset((void*)&gsUsed, 0, sizeof(gsUsed));
@@ -195,6 +195,11 @@ GiCoreView::~GiCoreView()
     if (--impl->refcount == 0) {
         delete impl;
     }
+}
+
+GiCoreViewData* GiCoreView::getData()
+{
+    return impl;
 }
 
 long GiCoreView::viewAdapterHandle()

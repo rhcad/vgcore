@@ -1,10 +1,11 @@
 ﻿//! \file gicoreviewimpl.h
 //! \brief 定义GiCoreView实现类 GiCoreViewImpl
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2012-2014, https://github.com/rhcad/touchvg
 
 #ifndef TOUCHVG_CORE_VIEWIMPL_H
 #define TOUCHVG_CORE_VIEWIMPL_H
 
+#include "gicoreviewdata.h"
 #include "GcShapeDoc.h"
 #include "GcMagnifierView.h"
 #include "mgcmdmgr.h"
@@ -13,9 +14,7 @@
 #include "mgbasicspreg.h"
 #include "mgjsonstorage.h"
 #include "mgstorage.h"
-#include "recordshapes.h"
 #include "girecordshape.h"
-#include "giplaying.h"
 #include "mgshapet.h"
 #include "cmdbasic.h"
 #include "mglayer.h"
@@ -65,17 +64,8 @@ public:
     }
 };
 
-struct GiPlayShapes
-{
-    GiPlaying*      playing;
-    MgRecordShapes* player;
-    GiPlayShapes() : playing(NULL), player(NULL) {}
-};
-
 //! GiCoreView实现类
-class GiCoreViewImpl
-    : public MgView
-    , private MgShapeFactory
+class GiCoreViewImpl : public GiCoreViewData
 {
 public:
     static float    _factor;
@@ -94,12 +84,6 @@ public:
     volatile long   drawCount;
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
-    volatile long   startPauseTick;
-    MgRecordShapes* recorder[2];
-    std::vector<GiPlaying*> playings;
-    GiPlaying*      drawing;
-    MgShapeDoc*     backDoc;
-    GiPlayShapes    play;
     
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
@@ -108,6 +92,8 @@ public:
 public:
     GiCoreViewImpl(GiCoreView* owner, bool useView = true);
     ~GiCoreViewImpl();
+    
+    void submitBackXform() { CALL_VIEW(submitBackXform()); }
     
     MgMotion* motion() { return &_motion; }
     MgCmdManager* cmds() const { return _cmds; }
