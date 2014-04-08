@@ -11,7 +11,6 @@
 #include "mgcmdmgr.h"
 #include "mgcmdmgrfactory.h"
 #include "cmdsubject.h"
-#include "mgbasicspreg.h"
 #include "mgjsonstorage.h"
 #include "mgstorage.h"
 #include "girecordshape.h"

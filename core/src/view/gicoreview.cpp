@@ -8,6 +8,7 @@
 #include "mgselect.h"
 #include "mgbasicsp.h"
 #include "girecordcanvas.h"
+#include "mgbasicspreg.h"
 #include "svgcanvas.h"
 #include "../corever.h"
 

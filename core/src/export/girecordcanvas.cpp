@@ -5,7 +5,6 @@
 #include "mgshapes.h"
 #include "mgshapet.h"
 #include "mgstorage.h"
-#include "gicanvas.h"
 #include <string>
 
 struct CmdSetPen : public MgRecordShape::ICmd {

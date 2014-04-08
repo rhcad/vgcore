@@ -7,9 +7,9 @@
 #define TOUCHVG_SHAPEDOC_H_
 
 #include "mgshapes.h"
-#include "mgspfactory.h"
 
 class MgLayer;
+struct MgShapeFactory;
 
 //! 图形文档
 /*! \ingroup CORE_SHAPE
