@@ -71,7 +71,7 @@ private:
     
 private:
     void eraseWnd(const MgMotion* sender);
-    void checkResult(SnapItem* arr);
+    void checkResult(SnapItem arr[3]);
 
 private:
     typedef std::map<std::string, MgCommand*> CMDS;

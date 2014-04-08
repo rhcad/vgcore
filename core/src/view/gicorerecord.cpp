@@ -1,5 +1,5 @@
-﻿//! \file gicoreplay.cpp
-//! \brief 实现内核视图类 GiCoreView 的录制和播放功能
+﻿//! \file gicorerecord.cpp
+//! \brief 实现内核视图类 GiCoreView 的录制功能
 // Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
 
 #include "gicoreview.h"

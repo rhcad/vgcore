@@ -167,7 +167,7 @@
     <ClCompile Include="..\..\..\core\src\view\GcGraphView.cpp" />
     <ClCompile Include="..\..\..\core\src\view\GcMagnifierView.cpp" />
     <ClCompile Include="..\..\..\core\src\view\GcShapeDoc.cpp" />
-    <ClCompile Include="..\..\..\core\src\view\gicoreplay.cpp" />
+    <ClCompile Include="..\..\..\core\src\view\gicorerecord.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gicoreview.cpp" />
     <ClCompile Include="..\..\..\core\src\view\gimousehelper.cpp" />
   </ItemGroup>

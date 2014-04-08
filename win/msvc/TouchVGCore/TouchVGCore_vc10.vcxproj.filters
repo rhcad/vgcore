@@ -565,7 +565,7 @@
     <ClCompile Include="..\..\..\core\src\record\recordshapes.cpp">
       <Filter>Source Files\record</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\core\src\view\gicoreplay.cpp">
+    <ClCompile Include="..\..\..\core\src\view\gicorerecord.cpp">
       <Filter>Source Files\view</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\export\girecordcanvas.cpp">

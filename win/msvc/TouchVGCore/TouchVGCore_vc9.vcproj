@@ -504,7 +504,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\core\src\view\gicoreplay.cpp"
+					RelativePath="..\..\..\core\src\view\gicorerecord.cpp"
 					>
 				</File>
 				<File
