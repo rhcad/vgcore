@@ -85,6 +85,7 @@ struct MgView
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
     
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
+    virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
 #ifndef SWIG
     virtual bool showContextActions(int selState, const int* actions,
             const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单

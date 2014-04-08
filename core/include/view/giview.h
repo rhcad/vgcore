@@ -35,6 +35,8 @@ public:
     virtual bool showContextActions(const mgvector<int>& actions,
                                     const mgvector<float>& buttonXY,
                                     float x, float y, float w, float h) { return false; }
+    
+    virtual void hideContextActions() {}    //!< 隐藏上下文操作菜单
 
     virtual void commandChanged() {}        //!< 当前命令已改变
     virtual void selectionChanged() {}      //!< 选择集改变的通知

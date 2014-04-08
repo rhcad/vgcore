@@ -177,8 +177,7 @@ bool MgCmdManagerImpl::cancel(const MgMotion* sender)
 {
     clearSnap(sender);
     
-    int actions[] = { 0 };
-    sender->view->showContextActions(0, actions, Box2d(), NULL);
+    sender->view->hideContextActions();
 
     CMDS::iterator it = _cmds.find(_cmdname);
     if (it != _cmds.end()) {

@@ -776,7 +776,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     MgCommand* cmd = impl->getCommand();
     if (cmd) cmd->cancel(impl->motion());
     
-    impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
+    impl->hideContextActions();
 
     if (s) {
         ret = impl->doc()->loadAll(impl->getShapeFactory(), s, impl->xform());

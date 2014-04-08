@@ -144,7 +144,7 @@ bool GiCoreView::undo(GiView* view)
             submitDynamicShapes(view);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
-            impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
+            impl->hideContextActions();
         }
         recorder->setLoading(false);
     }
@@ -167,7 +167,7 @@ bool GiCoreView::redo(GiView* view)
             submitDynamicShapes(view);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
-            impl->showContextActions(0, NULL, Box2d::kIdentity(), NULL);
+            impl->hideContextActions();
         }
         recorder->setLoading(false);
     }

@@ -151,7 +151,7 @@ public:
     }
     
     bool removeShape(const MgShape* shape) {
-        showContextActions(0, NULL, Box2d::kIdentity(), NULL);
+        hideContextActions();
         bool ret = (shape && shape->getParent()
                     && shape->getParent()->findShape(shape->getID()) == shape
                     && !shape->shapec()->getFlag(kMgShapeLocked));
@@ -170,6 +170,10 @@ public:
     
     bool isContextActionsVisible() {
         return CALL_VIEW2(deviceView()->isContextActionsVisible(), false);
+    }
+    
+    void hideContextActions() {
+        CALL_VIEW(deviceView()->hideContextActions());
     }
     
     bool showContextActions(int /*selState*/, const int* actions,
