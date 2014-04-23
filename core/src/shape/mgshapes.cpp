@@ -2,7 +2,6 @@
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "mgshapes.h"
 #include "mgstorage.h"
 #include "mgspfactory.h"
 #include "mglog.h"

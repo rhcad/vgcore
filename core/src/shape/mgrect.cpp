@@ -273,7 +273,6 @@ bool MgRect::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) 
 //
 
 #include <string.h>
-#include "mgshapes.h"
 #include "mgcomposite.h"
 
 MG_IMPLEMENT_CREATE(MgImageShape)
