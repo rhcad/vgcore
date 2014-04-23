@@ -291,10 +291,12 @@ void GiCoreView::releaseShapesArray(const mgvector<int>& shapes)
 bool GiCoreView::submitBackDoc(GiView* view)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
-    bool ret = aview && aview == impl->curview;
+    bool ret = !aview || aview == impl->curview;
     
     if (ret) {
-        impl->doc()->saveAll(NULL, aview->xform());  // set viewport from view
+        if (aview) {    // set viewport from view
+            impl->doc()->saveAll(NULL, aview->xform());
+        }
         impl->drawing->submitBackDoc();
         giAtomicIncrement(&impl->changeCount);
     }
