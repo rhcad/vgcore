@@ -53,6 +53,7 @@
 #include "gicoreview.h"
 #include "gimousehelper.h"
 #include "testcanvas.h"
+#include "giplaying.h"
 %}
 
 %include <mgdef.h>
@@ -133,6 +134,7 @@
 %include "gigesture.h"
 %include "gicoreview.h"
 %include "testcanvas.h"
+%include "giplaying.h"
 
 #ifndef __ANDROID__
 %include "gimousehelper.h"
