@@ -198,9 +198,11 @@ GiCoreView::~GiCoreView()
     }
 }
 
-GiCoreViewData* GiCoreView::getData()
+long GiCoreView::viewDataHandle()
 {
-    return impl;
+    long h;
+    *(MgView**)&h = (GiCoreViewData*)impl;
+    return h;
 }
 
 long GiCoreView::viewAdapterHandle()

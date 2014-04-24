@@ -5,7 +5,7 @@
 #ifndef TOUCHVG_CORE_PLAYING_H
 #define TOUCHVG_CORE_PLAYING_H
 
-class GiCoreView;
+struct MgCoreView;
 class MgShapeDoc;
 class MgShapes;
 
@@ -16,8 +16,8 @@ class MgShapes;
 class GiPlaying
 {
 public:
-    static GiPlaying* create(GiCoreView* v, int tag);   //!< 创建播放项
-    void release(GiCoreView* v);                //!< 销毁播放项
+    static GiPlaying* create(MgCoreView* v, int tag);   //!< 创建播放项
+    void release(MgCoreView* v);                //!< 销毁播放项
     void clear();                               //!< 清除图形
     int getTag() const;                         //!< 得到标识号
     

@@ -251,19 +251,19 @@ struct GiPlaying::Impl {
         , tag(tag), stopping(0) {}
 };
 
-GiPlaying* GiPlaying::create(GiCoreView* v, int tag)
+GiPlaying* GiPlaying::create(MgCoreView* v, int tag)
 {
     GiPlaying* p = new GiPlaying(tag);
     if (v && tag >= 0) {
-        v->getData()->playings.push_back(p);
+        GiCoreViewData::fromHandle(v->viewDataHandle())->playings.push_back(p);
     }
     return p;
 }
 
-void GiPlaying::release(GiCoreView* v)
+void GiPlaying::release(MgCoreView* v)
 {
     if (v) {
-        std::vector<GiPlaying*>& s = v->getData()->playings;
+        std::vector<GiPlaying*>& s = GiCoreViewData::fromHandle(v->viewDataHandle())->playings;
         s.erase(std::find(s.begin(), s.end(), this));
     }
     delete this;

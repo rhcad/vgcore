@@ -29,6 +29,7 @@ public:
     GiPlayShapes    play;
     
     GiCoreViewData() : startPauseTick(0) {}
+    static GiCoreViewData* fromHandle(long h) { GiCoreViewData* p; *(long*)&p = h; return p; } //!< 转为对象
     
     virtual void submitBackXform() = 0;         //!< 应用后端坐标系对象到前端
 };
