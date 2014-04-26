@@ -44,6 +44,7 @@ struct MgCoreView {
     virtual long backShapes() = 0;                  //!< 当前图形列表的句柄, 用 MgShapes::fromHandle() 转换
     
     virtual long acquireFrontDoc() = 0;             //!< 获取前端图形文档的句柄, 需要并发访问保护
+    virtual long acquireFrontDoc(long playh) = 0;   //!< 获取指定数据源的前端图形文档的句柄
     static void releaseDoc(long doc);               //!< 释放 acquireFrontDoc() 得到的文档句柄
     virtual long acquireDynamicShapes() = 0;        //!< 获取动态图形列表的句柄, 需要并发访问保护
     static void releaseShapes(long shapes);         //!< 释放 acquireDynamicShapes() 得到的图形列表句柄

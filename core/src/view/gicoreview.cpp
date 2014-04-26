@@ -225,6 +225,12 @@ long GiCoreView::acquireFrontDoc()
     return impl->drawing->acquireFrontDoc();
 }
 
+long GiCoreView::acquireFrontDoc(long playh)
+{
+    GiPlaying* p = GiPlaying::fromHandle(playh);
+    return (p ? p : impl->drawing)->acquireFrontDoc();
+}
+
 void MgCoreView::releaseDoc(long doc)
 {
     MgShapeDoc* p = MgShapeDoc::fromHandle(doc);

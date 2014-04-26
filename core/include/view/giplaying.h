@@ -16,6 +16,9 @@ class MgShapes;
 class GiPlaying
 {
 public:
+    static GiPlaying* fromHandle(long h) { GiPlaying* p; *(long*)&p = h; return p; } //!< 转为对象
+    long toHandle() { long h; *(GiPlaying**)&h = this; return h; }   //!< 得到句柄
+    
     static GiPlaying* create(MgCoreView* v, int tag);   //!< 创建播放项
     void release(MgCoreView* v);                //!< 销毁播放项
     void clear();                               //!< 清除图形

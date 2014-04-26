@@ -66,7 +66,7 @@ struct MgView
     virtual bool isCommand(const char* name) = 0;               //!< 当前是否为指定名称的命令
     
     virtual void regenAll(bool changed) = 0;                    //!< 标记视图待重新构建显示
-    virtual void regenAppend(int sid) = 0;                      //!< 标记视图待追加显示新图形
+    virtual void regenAppend(int sid, long playh = 0) = 0;      //!< 标记视图待追加显示新图形
     virtual void redraw(bool changed = true) = 0;               //!< 标记视图待更新显示
     
     virtual bool useFinger() = 0;                               //!< 使用手指或鼠标交互

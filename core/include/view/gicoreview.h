@@ -91,6 +91,7 @@ public:
     long backDoc();
     long backShapes();
     long acquireFrontDoc();
+    long acquireFrontDoc(long playh);
     long acquireDynamicShapes();
     bool isDrawing();
     bool isStopping();

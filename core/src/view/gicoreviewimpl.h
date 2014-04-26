@@ -230,7 +230,7 @@ public:
         }
     }
     
-    void regenAppend(int sid) {
+    void regenAppend(int sid, long playh = 0) {
         bool apply = appendPending != 0;
         
         if (appendPending >= 0 && sid) {
@@ -244,10 +244,10 @@ public:
         if (apply) {
             sid = sid ? sid : (int)appendPending;
             
-            CALL_VIEW(deviceView()->regenAppend(sid));
+            CALL_VIEW(deviceView()->regenAppend(sid, playh));
             for (int i = 0; i < _gcdoc->getViewCount(); i++) {
                 if (_gcdoc->getView(i) != curview)
-                    _gcdoc->getView(i)->deviceView()->regenAppend(sid);
+                    _gcdoc->getView(i)->deviceView()->regenAppend(sid, playh);
             }
             CALL_VIEW(deviceView()->contentChanged());
         }
