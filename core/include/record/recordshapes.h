@@ -22,22 +22,26 @@ public:
     ~MgRecordShapes();
     
     long getCurrentTick(long curTick) const;
+#ifndef SWIG
     bool recordStep(long tick, long changeCount, MgShapeDoc* doc,
                     MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes);
     std::string getFileName(bool back = false, int index = -1) const;
     std::string getPath() const;
+#endif
     bool isLoading() const;
     void setLoading(bool loading);
     bool onResume(long ticks);
     void restore(int index, int count, int tick, long curTick);
     void stopRecordIndex();
     
+#ifndef SWIG
     bool canUndo() const;
     bool canRedo() const;
     bool undo(MgShapeFactory *factory, MgShapeDoc* doc, long* changeCount);
     bool redo(MgShapeFactory *factory, MgShapeDoc* doc, long* changeCount);
     void resetDoc(MgShapeDoc* doc);
     int getMaxFileCount() const;
+#endif
     
     bool isPlaying() const;
     int getFileTick() const;
@@ -45,11 +49,14 @@ public:
     int getFileCount() const;
     bool applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc);
     bool applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc, const char* filename);
-    int applyRedoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index);
-    int applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index, long curTick);
+    int applyRedoFile(MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index);
+    int applyUndoFile(MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index, long curTick);
+#ifndef SWIG
     static bool loadFrameIndex(std::string path, std::vector<int>& arr);
-    
-    static int applyFile(int& tick, int* newId, MgShapeFactory *f,
+#endif
+
+private:
+    static int applyFile(int& tick, MgShapeFactory *f,
                          MgShapeDoc* doc, MgShapes* dyns, const char* fn,
                          long* changeCount = NULL, MgShape* lastShape = NULL);
     
@@ -57,11 +64,5 @@ private:
     struct Impl;
     Impl* _im;
 };
-
-//#ifdef DEBUG
-//#define VG_PRETTY true
-//#else
-#define VG_PRETTY false
-//#endif
 
 #endif // TOUCHVG_RECORD_SHAPES_H_

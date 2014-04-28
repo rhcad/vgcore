@@ -38,15 +38,14 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     
     drawing = GiPlaying::create(NULL, -1);
     backDoc = drawing->getBackDoc();
-    playings.push_back(drawing);
+    addPlaying(drawing);
     
     play.playing = GiPlaying::create(NULL, -2);
-    playings.push_back(play.playing);
+    addPlaying(play.playing);
     
     _motion.view = this;
     _motion.gestureType = 0;
     _motion.gestureState = kMgGesturePossible;
-    recorder[0] = recorder[1] = NULL;
     _gcdoc = new GcShapeDoc();
     
     MgBasicShapes::registerShapes(this);
@@ -61,9 +60,6 @@ GiCoreViewImpl::~GiCoreViewImpl()
 {
     for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
         delete gsBuf[i];
-    }
-    for (unsigned j = 0; j < playings.size(); j++) {
-        playings[j]->release(NULL);
     }
     MgObject::release_pointer(_cmds);
     delete _gcdoc;
@@ -252,11 +248,11 @@ int GiCoreView::acquireFrontDocs(mgvector<int>& docs)
 {
     int n = 0;
     
-    docs.setSize(1 + (int)impl->playings.size());
+    docs.setSize(1 + impl->getPlayingCount());
     for (int i = 0; i < docs.count() - 1; i++) {
         if (i == 0 && isPlaying())
             continue;
-        int doc = (int)impl->playings[i]->acquireFrontDoc();
+        int doc = (int)impl->acquireFrontDoc(i);
         if (doc) {
             docs.set(n++, doc);
         }
@@ -277,9 +273,9 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<int>& shapes)
 {
     int n = 0;
     
-    shapes.setSize(1 + (int)impl->playings.size());
+    shapes.setSize(1 + impl->getPlayingCount());
     for (int i = 0; i < shapes.count() - 1; i++) {
-        int s = (int)impl->playings[i]->acquireFrontShapes();
+        int s = (int)impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
@@ -1160,7 +1156,7 @@ bool GiCoreViewImpl::gestureToCommand()
     if (!cmd || _motion.gestureState == kMgGestureCancel) {
         return cmd && cmd->cancel(&_motion);
     }
-    if (recorder[1] && recorder[1]->isPlaying()) {
+    if (recorder(false) && recorder(false)->isPlaying()) {
         return true;
     }
     if (_motion.gestureState == kMgGesturePossible

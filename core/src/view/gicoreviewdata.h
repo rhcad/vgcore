@@ -7,8 +7,9 @@
 
 #include "recordshapes.h"
 #include "giplaying.h"
-#include "mgspfactory.h"
 #include "mgview.h"
+#include "mgspfactory.h"
+#include <algorithm>
 
 struct GiPlayShapes
 {
@@ -18,20 +19,51 @@ struct GiPlayShapes
 };
 
 //! GiCoreView内部数据类
-class GiCoreViewData : public MgView, public MgShapeFactory
+class GiCoreViewData : public MgView
 {
 public:
     volatile long   startPauseTick;
-    MgRecordShapes* recorder[2];
-    std::vector<GiPlaying*> playings;
     GiPlaying*      drawing;
     MgShapeDoc*     backDoc;
     GiPlayShapes    play;
+private:
+    MgRecordShapes* _recorder[2];
+    std::vector<GiPlaying*> playings;
     
-    GiCoreViewData() : startPauseTick(0) {}
-    static GiCoreViewData* fromHandle(long h) { GiCoreViewData* p; *(long*)&p = h; return p; } //!< 转为对象
-    
+public:
     virtual void submitBackXform() = 0;         //!< 应用后端坐标系对象到前端
+    
+    static GiCoreViewData* fromHandle(long h) { GiCoreViewData* p; *(long*)&p = h; return p; } //!< 转为对象
+    GiCoreViewData() : startPauseTick(0) {
+        _recorder[0] = _recorder[1] = NULL;
+    }
+    ~GiCoreViewData() {
+        for (unsigned j = 0; j < playings.size(); j++) {
+            playings[j]->release(NULL);
+        }
+    }
+    MgRecordShapes* recorder(bool forUndo) {
+        return _recorder[forUndo ? 0 : 1];
+    }
+    void setRecorder(bool forUndo, MgRecordShapes* p) {
+        delete _recorder[forUndo ? 0 : 1];
+        _recorder[forUndo ? 0 : 1] = p;
+    }
+    int getPlayingCount() {
+        return (int)playings.size();
+    }
+    long acquireFrontDoc(int index) {
+        return playings[index]->acquireFrontDoc();
+    }
+    long acquireFrontShapes(int index) {
+        return playings[index]->acquireFrontShapes();
+    }
+    void addPlaying(GiPlaying* p) {
+        playings.push_back(p);
+    }
+    void removePlaying(GiPlaying* p) {
+        playings.erase(std::find(playings.begin(), playings.end(), p));
+    }
 };
 
 #endif // TOUCHVG_CORE_VIEWDATA_H

@@ -64,7 +64,7 @@ public:
 };
 
 //! GiCoreView实现类
-class GiCoreViewImpl : public GiCoreViewData
+class GiCoreViewImpl : public GiCoreViewData, public MgShapeFactory
 {
 public:
     static float    _factor;

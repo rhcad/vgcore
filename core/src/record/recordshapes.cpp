@@ -13,6 +13,8 @@
 #include <sstream>
 #include <map>
 
+static const bool VG_PRETTY = false;
+
 struct MgRecordShapes::Impl
 {
     std::string     path;
@@ -300,7 +302,7 @@ bool MgRecordShapes::undo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
     giAtomicIncrement(&_im->loading);
     
     std::string fn(_im->getFileName(true, _im->fileCount - 1));
-    int ret = applyFile(_im->tick, NULL, factory, doc, NULL, fn.c_str(), changeCount);
+    int ret = applyFile(_im->tick, factory, doc, NULL, fn.c_str(), changeCount);
     
     if (ret) {
         _im->fileCount--;
@@ -321,7 +323,7 @@ bool MgRecordShapes::redo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
     giAtomicIncrement(&_im->loading);
     
     std::string fn(_im->getFileName(false, _im->fileCount));
-    int ret = applyFile(_im->tick, NULL, factory, doc, NULL, fn.c_str(), changeCount);
+    int ret = applyFile(_im->tick, factory, doc, NULL, fn.c_str(), changeCount);
     
     if (ret) {
         _im->fileCount++;
@@ -533,15 +535,13 @@ void MgRecordShapes::Impl::stopRecordIndex()
     MgObject::release_pointer(lastShape);
 }
 
-int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f,
+int MgRecordShapes::applyFile(int& tick, MgShapeFactory *f,
                               MgShapeDoc* doc, MgShapes* dyns, const char* fn,
                               long* changeCount, MgShape* lastShape)
 {
     FILE *fp = mgopenfile(fn, "rt");
     if (!fp) {
-        if (!newId) {
-            LOGE("Fail to read file: %s", fn);
-        }
+        //LOGE("Fail to read file: %s", fn);
         return 0;
     }
     
@@ -564,10 +564,6 @@ int MgRecordShapes::applyFile(int& tick, int* newId, MgShapeFactory *f,
             
             if ((flags & (ADD|EDIT)) && stds->load(f, s, true) > 0) {
                 ret |= (flags == ADD) ? SHAPE_APPEND : DOC_CHANGED;
-                if (newId && ret == SHAPE_APPEND) {
-                    *newId = stds->getLastShape()->getID();
-                    //LOGD("addShape id=%d", *newId);
-                }
             }
             
             if (s->readNode("delete", -1, false)) {
@@ -643,15 +639,13 @@ bool MgRecordShapes::applyFirstFile(MgShapeFactory *factory, MgShapeDoc* doc, co
     return doc->load(factory, s, false);
 }
 
-int MgRecordShapes::applyRedoFile(int& newID, MgShapeFactory *f,
-                                  MgShapeDoc* doc, MgShapes* dyns, int index)
+int MgRecordShapes::applyRedoFile(MgShapeFactory *f, MgShapeDoc* doc, MgShapes* dyns, int index)
 {
     if (index <= 0)
         index = _im->fileCount;
     
     std::string filename(_im->getFileName(false, index));
-    int ret = applyFile(_im->tick, &newID, f, doc, dyns,
-                        filename.c_str(), NULL, _im->lastShape);
+    int ret = applyFile(_im->tick, f, doc, dyns, filename.c_str(), NULL, _im->lastShape);
     
     if (ret) {
         _im->fileCount = index + 1;
@@ -665,7 +659,7 @@ int MgRecordShapes::applyRedoFile(int& newID, MgShapeFactory *f,
     return ret;
 }
 
-int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc,
+int MgRecordShapes::applyUndoFile(MgShapeFactory *f, MgShapeDoc* doc,
                                   MgShapes* dyns, int index, long curTick)
 {
     if (index <= 0)
@@ -680,10 +674,10 @@ int MgRecordShapes::applyUndoFile(int& newID, MgShapeFactory *f, MgShapeDoc* doc
     }
     
     std::string filename(_im->getFileName(true, index - 1));
-    int ret = applyFile(_im->tick, &newID, f, doc, NULL, filename.c_str());
+    int ret = applyFile(_im->tick, f, doc, NULL, filename.c_str());
     
     filename = _im->getFileName(false, index - 1);
-    ret |= applyFile(_im->tick, NULL, f, NULL, dyns, filename.c_str()) | DYN_CHANGED;
+    ret |= applyFile(_im->tick, f, NULL, dyns, filename.c_str()) | DYN_CHANGED;
     
     if (ret) {
         _im->fileCount = index - 1;
