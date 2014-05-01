@@ -80,6 +80,7 @@
 
 %include <mgvector.h>
 %template(Ints) mgvector<int>;
+%template(Longs) mgvector<long>;
 %template(Floats) mgvector<float>;
 %template(Chars) mgvector<char>;
 %template(ConstShapes) mgvector<const MgShape*>;

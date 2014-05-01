@@ -244,7 +244,7 @@ void MgCoreView::releaseShapes(long shapes)
     MgObject::release_pointer(p);
 }
 
-int GiCoreView::acquireFrontDocs(mgvector<int>& docs)
+int GiCoreView::acquireFrontDocs(mgvector<long>& docs)
 {
     int n = 0;
     
@@ -252,7 +252,7 @@ int GiCoreView::acquireFrontDocs(mgvector<int>& docs)
     for (int i = 0; i < docs.count() - 1; i++) {
         if (i == 0 && isPlaying())
             continue;
-        int doc = (int)impl->acquireFrontDoc(i);
+        long doc = impl->acquireFrontDoc(i);
         if (doc) {
             docs.set(n++, doc);
         }
@@ -261,7 +261,7 @@ int GiCoreView::acquireFrontDocs(mgvector<int>& docs)
     return n;
 }
 
-void GiCoreView::releaseDocs(const mgvector<int>& docs)
+void GiCoreView::releaseDocs(const mgvector<long>& docs)
 {
     for (int i = 0; i < docs.count(); i++) {
         MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
@@ -269,13 +269,13 @@ void GiCoreView::releaseDocs(const mgvector<int>& docs)
     }
 }
 
-int GiCoreView::acquireDynamicShapesArray(mgvector<int>& shapes)
+int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
 {
     int n = 0;
     
     shapes.setSize(1 + impl->getPlayingCount());
     for (int i = 0; i < shapes.count() - 1; i++) {
-        int s = (int)impl->acquireFrontShapes(i);
+        long s = impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
@@ -284,7 +284,7 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<int>& shapes)
     return n;
 }
 
-void GiCoreView::releaseShapesArray(const mgvector<int>& shapes)
+void GiCoreView::releaseShapesArray(const mgvector<long>& shapes)
 {
     for (int i = 0; i < shapes.count(); i++) {
         MgShapes* s = MgShapes::fromHandle(shapes.get(i));
@@ -505,7 +505,7 @@ int GiCoreView::drawAll(long doc, long hGs, GiCanvas* canvas)
     return n;
 }
 
-int GiCoreView::drawAll(const mgvector<int>& docs, long hGs, GiCanvas* canvas)
+int GiCoreView::drawAll(const mgvector<long>& docs, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
@@ -551,7 +551,7 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
     return n;
 }
 
-int GiCoreView::dynDraw(const mgvector<int>& shapes, long hGs, GiCanvas* canvas)
+int GiCoreView::dynDraw(const mgvector<long>& shapes, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);

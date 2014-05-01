@@ -52,7 +52,7 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc, long shapes)
 }
 
 bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
-                              long shapes, const mgvector<int>* exts, MgStringCallback* c)
+                              long shapes, const mgvector<long>* exts, MgStringCallback* c)
 {
     MgRecordShapes* recorder = impl->recorder(forUndo);
     int ret = 0;

@@ -27,6 +27,8 @@ This is an open source LGPL 2.1 licensed project that is in active development. 
   > Open `ios/TouchVGCore/TouchVGCore.xcodeproj` in Xcode, then build the library project.
   >
   > Or cd the 'ios' folder of this project and type `./build.sh` to build `ios/output/libTouchVGCore.a`.
+  >
+  > Type `./build.sh -arch arm64` to make iOS libraries for iOS 64-bit. Type `./build.sh clean` to remove object files.
 
 * Build for **Android** platform on Mac, Linux or Windows.
 

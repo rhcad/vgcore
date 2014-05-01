@@ -27,16 +27,16 @@ public:
     
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
     void releaseGraphics(long gs);                                  //!< 释放 GiGraphics 句柄
-    int acquireFrontDocs(mgvector<int>& docs);                      //!< 获取前端图形文档的句柄
-    static void releaseDocs(const mgvector<int>& docs);             //!< 释放文档句柄
-    int acquireDynamicShapesArray(mgvector<int>& shapes);           //!< 获取前端图形列表的句柄
-    static void releaseShapesArray(const mgvector<int>& shapes);    //!< 释放图形列表句柄
+    int acquireFrontDocs(mgvector<long>& docs);                     //!< 获取前端图形文档的句柄
+    static void releaseDocs(const mgvector<long>& docs);            //!< 释放文档句柄
+    int acquireDynamicShapesArray(mgvector<long>& shapes);          //!< 获取前端图形列表的句柄
+    static void releaseShapesArray(const mgvector<long>& shapes);   //!< 释放图形列表句柄
     
     int drawAll(long doc, long gs, GiCanvas* canvas);               //!< 显示所有图形
-    int drawAll(const mgvector<int>& docs, long gs, GiCanvas* canvas);  //!< 显示所有图形
+    int drawAll(const mgvector<long>& docs, long gs, GiCanvas* canvas);  //!< 显示所有图形
     int drawAppend(long doc, long gs, GiCanvas* canvas, int sid);   //!< 显示新图形
     int dynDraw(long shapes, long gs, GiCanvas* canvas);            //!< 显示动态图形
-    int dynDraw(const mgvector<int>& shapes, long gs, GiCanvas* canvas); //!< 显示动态图形
+    int dynDraw(const mgvector<long>& shapes, long gs, GiCanvas* canvas); //!< 显示动态图形
     
     int drawAll(GiView* view, GiCanvas* canvas);                    //!< 显示所有图形，主线程中用
     int drawAppend(GiView* view, GiCanvas* canvas, int sid);        //!< 显示新图形，主线程中用
@@ -71,7 +71,7 @@ public:
     void stopRecord(bool forUndo);                                  //!< 停止录制图形
     bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
     bool recordShapes(bool forUndo, long tick, long doc,
-                      long shapes, const mgvector<int>* exts,
+                      long shapes, const mgvector<long>* exts,
                       MgStringCallback* c = (MgStringCallback*)0);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
     bool redo(GiView* view);                                        //!< 重做, 需要并发访问保护
