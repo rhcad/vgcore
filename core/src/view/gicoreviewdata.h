@@ -22,7 +22,9 @@ struct GiPlayShapes
 class GiCoreViewData : public MgView
 {
 public:
+#ifndef SWIG
     volatile long   startPauseTick;
+#endif
     GiPlaying*      drawing;
     MgShapeDoc*     backDoc;
     GiPlayShapes    play;
