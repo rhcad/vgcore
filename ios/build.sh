@@ -29,6 +29,6 @@ fi
 fi
 fi
 
-mkdir -p output/TouchVG
+mkdir -p output/TouchVGCore
 cp -R TouchVGCore/build/Release-universal/libTouchVGCore.a output
-cp -R TouchVGCore/build/Release-universal/include/TouchVGCore/*.h output/TouchVG
+cp -R TouchVGCore/build/Release-universal/include/TouchVGCore/*.h output/TouchVGCore
