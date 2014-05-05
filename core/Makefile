@@ -1,16 +1,14 @@
-# The simplest way to compile TouchVG on MinGW, Cygwin, Linux or Mac OS X is:
+# The simplest way to compile this project on MinGW, Cygwin, Linux or Mac OS X is:
 #
 # 1. `cd' to the directory containing the file of 'Makefile'.
 #
-# 2. Type `make java' to compile the swig projects for java.
-#    The program binaries files are outputed to './build/java'.
-#
-# 3. Type `make all install' for C++ applications.
-#    Type `make python' or `make perl' for more language applications.
+# 2. Type `make` or `make all install` for C++ applications.
+#    Type `make java`, `make python` or `make perl` for more language applications.
+#    The program binaries files are outputed to '../build'.
 # 
-# 4. You can remove the program object files from the source code
-#    directory by typing `make java.clean'.
-#    Type `make clean' to remove object files for C++ applications.
+# 3. You can remove the program object files from the source code directory.
+#    Type `make clean` to remove object files for C++ applications.
+#    Type `make java.clean` to remove object files for Java applications.
 #
 # Readme about variables: https://github.com/rhcad/x3py/wiki/MakeVars
 #
@@ -28,16 +26,22 @@ clean:      $(CLEANDIRS)
 install:    $(INSTALLDIRS)
 swig:       $(SWIGDIRS)
 
+ifdef SWIG_TYPE
+makefile    =Makefile.swig
+else
+makefile    =Makefile
+endif
+
 $(SUBDIRS):
 	@! test -e $@/Makefile || $(MAKE) -C $@
 
 $(SWIGDIRS):
-	@ ! test -e $(basename $@)/Makefile || \
-	$(MAKE) -C $(basename $@) swig
+	@ ! test -e $(basename $@)/$(makefile) || \
+	$(MAKE) -C $(basename $@) -f $(makefile) swig
 
 $(CLEANDIRS) $(INSTALLDIRS):
-	@ ! test -e $(basename $@)/Makefile || \
-	$(MAKE) -C $(basename $@) $(subst .,,$(suffix $@))
+	@ ! test -e $(basename $@)/$(makefile) || \
+	$(MAKE) -C $(basename $@) -f $(makefile) $(subst .,,$(suffix $@))
 
 $(SWIGS):
 	@test -d ../build || mkdir ../build

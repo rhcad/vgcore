@@ -38,7 +38,7 @@ This is an open source LGPL 2.1 licensed project that is in active development. 
 
 * Build for **Windows** platform with Visual Studio.
 
-  > Open `win\msvc\vc2010.sln` in Visual Studio 2010, then build the TouchVGCore library project (Win32 VC++ static library).
+  > Open `win\vc2010.sln` in Visual Studio 2010, then build the TouchVGCore library project (Win32 VC++ static library).
    
 * Build for more platforms and targets.
 
