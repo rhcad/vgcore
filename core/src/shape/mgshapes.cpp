@@ -172,6 +172,12 @@ void MgShapes::transform(const Matrix2d& mat)
     }
 }
 
+MgShape* MgShapes::cloneShape(int sid) const
+{
+    const MgShape* p = im->findShape(sid);
+    return p ? p->cloneShape() : NULL;
+}
+
 MgShape* MgShapes::addShape(const MgShape& src)
 {
     MgShape* p = src.cloneShape();

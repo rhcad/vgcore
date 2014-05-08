@@ -79,6 +79,9 @@ public:
     //! 更新为新的图形，该图形从原来图形克隆得到
     bool updateShape(MgShape* shape, bool force = false);
     
+    //! 复制出一个新图形对象
+    MgShape* cloneShape(int sid) const;
+    
     //! 对每个图形进行变形
     void transform(const Matrix2d& mat);
     
