@@ -207,7 +207,7 @@ public:
     }
     
     void regenAll(bool changed) {
-        bool apply = regenPending != 0;
+        bool apply = regenPending || appendPending;
         
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
@@ -231,7 +231,7 @@ public:
     }
     
     void regenAppend(int sid, long playh = 0) {
-        bool apply = appendPending != 0;
+        bool apply = regenPending || appendPending;
         
         if (appendPending >= 0 && sid) {
             if (appendPending == 0 || appendPending == sid) {

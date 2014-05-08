@@ -100,6 +100,12 @@ view_files := $(core_src)/view/GcGraphView.cpp \
 include $(CLEAR_VARS)
 LOCAL_MODULE     := libTouchVGCore
 LOCAL_CFLAGS     := $(cflags)
+
+ifeq ($(TARGET_ARCH),x86)
+# For SWIG, http://stackoverflow.com/questions/6753241
+LOCAL_CFLAGS += -fno-strict-aliasing
+endif
+
 LOCAL_C_INCLUDES := $(shape_incs) $(cmd_incs) $(view_incs)
 LOCAL_SRC_FILES  := $(geom_files) $(graph_files) $(shape_files) \
                     $(json_files) $(test_files) $(doc_files) \
