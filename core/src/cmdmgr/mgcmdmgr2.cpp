@@ -43,10 +43,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     if (sender->view->shapeWillAdded(&shape)) {
         MgShape* newsp = sender->view->shapes()->addShape(shape);
         sender->view->shapeAdded(newsp);
-        
         sender->view->setNewShapeID(newsp->getID());
-        sender->view->toSelectCommand();
-        
         return newsp;
     }
     
