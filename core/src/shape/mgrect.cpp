@@ -306,19 +306,33 @@ bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
 {
     Box2d rect(getRect() * gs.xf().modelToDisplay());
     Vector2d vec((_points[1] - _points[0]) * gs.xf().modelToWorld());
+    bool ret = false;
     
-    GiContext tmpctx(ctx);
-    tmpctx.setNoFillColor();
-    if (mode) {
-        tmpctx.setLineStyle(GiContext::kSolidLine);
+    if (mode == 0) {
+        if (!getFlag(kMgHideContent)) {
+            ret = (gs.rawImage(_name, rect.center().x, rect.center().y,
+                              rect.width(), rect.height(), vec.angle2())
+                   || drawBox(gs, ctx));
+        }
+    } else {
+        ret = drawBox(gs, ctx);
     }
     
-    bool ret = gs.drawPolygon(&tmpctx, 4, _points);
-    ret = (mode == 0
-           && !getFlag(kMgHideContent)
-           && gs.rawImage(_name, rect.center().x, rect.center().y,
-                          rect.width(), rect.height(), vec.angle2())) || ret;
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+bool MgImageShape::drawBox(GiGraphics& gs, const GiContext& ctx) const
+{
+    GiContext tmpctx(ctx);
+    tmpctx.setNoFillColor();
+    tmpctx.setLineStyle(GiContext::kSolidLine);
+    
+    GiContext ctxline(tmpctx);
+    ctxline.setLineWidth(0, false);
+    
+    return (gs.drawPolygon(&tmpctx, 4, _points)
+            && gs.drawLine(&ctxline, _points[0], _points[2])
+            && gs.drawLine(&ctxline, _points[1], _points[3]));
 }
 
 void MgImageShape::_copy(const MgImageShape& src)

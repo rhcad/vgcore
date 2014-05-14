@@ -416,6 +416,8 @@ protected:
     void _clear();
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
+private:
+    bool drawBox(GiGraphics& gs, const GiContext& ctx) const;
     
 protected:
     char    _name[64];

@@ -50,6 +50,7 @@ struct MgCoreView {
     static void releaseShapes(long shapes);         //!< 释放 acquireDynamicShapes() 得到的图形列表句柄
     
     virtual bool isDrawing() = 0;                   //!< 返回是否正在绘制静态图形
+    virtual bool isZooming() = 0;                   //!< 返回是否正在动态放缩显示
     virtual bool isStopping() = 0;                  //!< 返回是否需要停止绘图
     virtual int stopDrawing(bool stop = true) = 0;  //!< 标记需要停止绘图
 

@@ -24,14 +24,18 @@ bool GcBaseView::onGesture(const MgMotion& motion)
     if (motion.gestureType != kGiGesturePan){
         return false;
     }
-    if (motion.gestureState == kMgGestureBegan) {
+    if (motion.gestureState <= kMgGestureBegan) {
         _lastScale = xform()->getZoomValue(_lastCenter);
     }
-    if (motion.gestureState == kMgGestureMoved) {
+    else if (motion.gestureState == kMgGestureMoved) {
         Vector2d vec(motion.point - motion.startPt);
         xform()->zoom(_lastCenter, _lastScale);     // 先恢复
         xform()->zoomPan(vec.x, vec.y);             // 平移到当前点
-        
+        _zooming = true;
+        cmdView()->regenAll(false);
+    }
+    else if (_zooming) {
+        _zooming = false;
         cmdView()->regenAll(false);
     }
     
@@ -40,10 +44,10 @@ bool GcBaseView::onGesture(const MgMotion& motion)
 
 bool GcBaseView::twoFingersMove(const MgMotion& motion)
 {
-    if (motion.gestureState == kMgGestureBegan) {
+    if (motion.gestureState <= kMgGestureBegan) {
         _lastScale = xform()->getZoomValue(_lastCenter);
     }
-    if (motion.gestureState == kMgGestureMoved
+    else if (motion.gestureState == kMgGestureMoved
         && motion.startPt != motion.startPt2
         && motion.point != motion.point2) {         // 双指变单指则忽略移动
         Point2d at((motion.startPt + motion.startPt2) / 2);
@@ -56,6 +60,11 @@ bool GcBaseView::twoFingersMove(const MgMotion& motion)
         xform()->zoomByFactor(scale - 1, &at);      // 以起始点为中心放缩显示
         xform()->zoomPan(pt.x - at.x, pt.y - at.y); // 平移到当前点
         
+        _zooming = true;
+        cmdView()->regenAll(false);
+    }
+    else if (_zooming) {
+        _zooming = false;
         cmdView()->regenAll(false);
     }
     

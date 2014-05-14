@@ -19,7 +19,7 @@ float GiCoreViewImpl::_factor = 1.0f;
 //
 
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
-    : _mgview(mgview), _view(view)
+    : _mgview(mgview), _view(view), _zooming(false)
 {
     mgview->document()->addView(this);
     LOGD("View %p created", this);
@@ -381,6 +381,11 @@ bool GiCoreView::isDrawing()
     return false;
 }
 
+bool GiCoreView::isZooming()
+{
+    return impl->curview && impl->curview->isZooming();
+}
+
 bool GiCoreView::isStopping()
 {
     if (!this || !impl || impl->stopping) {
@@ -498,7 +503,7 @@ int GiCoreView::drawAll(long doc, long hGs, GiCanvas* canvas)
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
     if (doc && gs && gs->beginPaint(canvas)) {
-        n = MgShapeDoc::fromHandle(doc)->draw(*gs);
+        n = MgShapeDoc::fromHandle(doc)->dyndraw(isZooming() ? 2 : 0, *gs);
         gs->endPaint();
     }
 
@@ -514,7 +519,7 @@ int GiCoreView::drawAll(const mgvector<long>& docs, long hGs, GiCanvas* canvas)
         n = 0;
         for (int i = 0; i < docs.count(); i++) {
             MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
-            n += doc ? doc->draw(*gs) : 0;
+            n += doc ? doc->dyndraw(isZooming() ? 2 : 0, *gs) : 0;
         }
         gs->endPaint();
     }
@@ -530,7 +535,7 @@ int GiCoreView::drawAppend(long doc, long hGs, GiCanvas* canvas, int sid)
     if (doc && gs && sid && gs->beginPaint(canvas)) {
         const MgShapes* sps = MgShapeDoc::fromHandle(doc)->getCurrentShapes();
         const MgShape* sp = sps->findShape(sid);
-        n = (sp && sp->draw(0, *gs, NULL, -1)) ? 1 : 0;
+        n = (sp && sp->draw(isZooming() ? 2 : 0, *gs, NULL, -1)) ? 1 : 0;
         gs->endPaint();
     }
     
@@ -544,7 +549,7 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 
     if (hShapes && gs && gs->beginPaint(canvas)) {
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
-        n = MgShapes::fromHandle(hShapes)->draw(*gs);
+        n = MgShapes::fromHandle(hShapes)->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1);
         gs->endPaint();
     }
     
@@ -561,7 +566,7 @@ int GiCoreView::dynDraw(const mgvector<long>& shapes, long hGs, GiCanvas* canvas
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
         for (int i = 0; i < shapes.count(); i++) {
             MgShapes* sp = MgShapes::fromHandle(shapes.get(i));
-            n += sp ? sp->draw(*gs) : 0;
+            n += sp ? sp->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1) : 0;
         }
         gs->endPaint();
     }

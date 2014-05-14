@@ -94,6 +94,7 @@ public:
     long acquireFrontDoc(long playh);
     long acquireDynamicShapes();
     bool isDrawing();
+    bool isZooming();
     bool isStopping();
     int stopDrawing(bool stop = true);
     bool isUndoRecording() const;

@@ -269,6 +269,19 @@ int MgShapeDoc::draw(GiGraphics& gs) const
     return n;
 }
 
+int MgShapeDoc::dyndraw(int mode, GiGraphics& gs) const
+{
+    int n = 0;
+    
+    for (unsigned i = 0; i < im->layers.size(); i++) {
+        if (!im->layers[i]->isHided()) {
+            n += im->layers[i]->dyndraw(mode, gs, NULL, -1);
+        }
+    }
+    
+    return n;
+}
+
 bool MgShapeDoc::save(MgStorage* s, int startIndex) const
 {
     bool ret = true;

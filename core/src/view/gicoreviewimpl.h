@@ -208,6 +208,7 @@ public:
     
     void regenAll(bool changed) {
         bool apply = regenPending || appendPending;
+        bool zooming = CALL_VIEW2(isZooming(), false);
         
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
@@ -216,14 +217,14 @@ public:
             CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
-                    if (_gcdoc->getView(i) != curview)
+                    if (_gcdoc->getView(i) != curview && !zooming)
                         _gcdoc->getView(i)->deviceView()->regenAll(changed);
                 }
                 CALL_VIEW(deviceView()->contentChanged());
             }
             else {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
-                    if (_gcdoc->getView(i) != curview)
+                    if (_gcdoc->getView(i) != curview && !zooming)
                         _gcdoc->getView(i)->deviceView()->redraw(changed);
                 }
             }

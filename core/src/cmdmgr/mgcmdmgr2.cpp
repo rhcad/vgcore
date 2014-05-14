@@ -35,7 +35,6 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     
     MgShapeT<MgImageShape> shape;
     
-    shape._context.setLineStyle(GiContext::kNullLine);
     shape._context.setFillColor(GiColor::White());    // avoid can't hitted inside
     shape._shape.setName(name);
     shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());

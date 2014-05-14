@@ -52,6 +52,9 @@ public:
 
     //! 显示所有图形
     int draw(GiGraphics& gs) const;
+    
+    //! 动态显示所有图形
+    int dyndraw(int mode, GiGraphics& gs) const;
 
     //! 返回图形范围
     Box2d getExtent() const;
