@@ -22,28 +22,38 @@ This is an open source LGPL 2.1 licensed project that is in active development. 
 
 ## Build
 
-* Build for **iOS** platform on Mac OS X.
+### Build for **iOS** platform on Mac OS X.
 
-  > Open `ios/TouchVGCore/TouchVGCore.xcodeproj` in Xcode, then build the library project.
-  >
-  > Or cd the 'ios' folder of this project and type `./build.sh` to build `ios/output/libTouchVGCore.a`.
-  >
-  > Type `./build.sh -arch arm64` to make iOS libraries for iOS 64-bit. Type `./build.sh clean` to remove object files.
+TouchVGCore is available on [CocoaPods](http://cocoapods.org). Just add the following to your project Podfile:
 
-* Build for **Android** platform on Mac, Linux or Windows.
+```ruby
+pod 'TouchVGCore', '~> 0.29'
+```
 
-  > Cd the 'android' folder of this project and type `./build.sh` to build with ndk-build. MinGW and MSYS are recommend on Windows.
-  >
-  > The library `libTouchVGCore.a` will be outputed to `android/TouchVGCore/obj/local/armeabi`.
+Alternatively, you can add the project to your workspace and build as one of the following methods:
 
-* Build for **Windows** platform with Visual Studio.
+- Open `ios/TouchVGCore/TouchVGCore.xcodeproj` in Xcode, then build the library project.
 
-  > Open `win\vc2010.sln` in Visual Studio 2010, then build the TouchVGCore library project (Win32 VC++ static library).
+- Or cd the 'ios' folder of this project and type `./build.sh` to build `ios/output/libTouchVGCore.a`.
+   - Type `./build.sh -arch arm64` to make iOS libraries for iOS 64-bit. Type `./build.sh clean` to remove object files.
+
+### Build for **Android** platform on Mac, Linux or Windows.
+
+- Cd the 'android' folder of this project and type `./build.sh` to build with ndk-build.
+  - MSYS is recommend on Windows.
+  - The library `libTouchVGCore.a` will be outputed to `android/TouchVGCore/obj/local/armeabi`.
+  - Type `./build.sh -B` to rebuild the native libraries.
+
+- Type `./build.sh APP_ABI=x86` to build for the x86 Emulator. The library will be outputed to `android/TouchVGCore/obj/local/x86`.
+
+### Build for **Windows** platform with Visual Studio.
+
+- Open `win\vc2010.sln` in Visual Studio 2010, then build the TouchVGCore library project (Win32 VC++ static library).
    
-* Build for more platforms and targets.
+### Build for more platforms and targets.
 
-  > Cd the 'core' folder of this project and type `make` or `make all install` to generate libraries on Mac, Linux or Windows.
-  > 
-  > Type `make java`, `make python` or `make csharp` to generate libraries for another language applications using Java, Python or C#.
-  > 
-  > Type `make clean java.clean python.clean` to remove the program object files.
+- Cd the 'core' folder of this project and type `make` or `make all install` to generate libraries on Mac, Linux or Windows.
+
+- Type `make java`, `make python` or `make csharp` to generate libraries for another language applications using Java, Python or C#.
+
+- Type `make clean java.clean python.clean` to remove the program object files.
