@@ -30,6 +30,12 @@ TouchVGCore is available on [CocoaPods](http://cocoapods.org). Just add the foll
 pod 'TouchVGCore', '~> 0.29'
 ```
 
+Or use the develop version:
+
+```ruby
+pod 'TouchVGCore', :podspec => 'https://raw.githubusercontent.com/touchvg/TouchVGCore/develop/TouchVGCore.podspec'
+```
+
 Alternatively, you can add the project to your workspace and build as one of the following methods:
 
 - Open `ios/TouchVGCore/TouchVGCore.xcodeproj` in Xcode, then build the library project.
