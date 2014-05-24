@@ -149,6 +149,9 @@ public:
     void dynamicChanged() {
         CALL_VIEW(deviceView()->dynamicChanged());
     }
+    bool shapeClicked(int sid, int tag, float x, float y) {
+        return CALL_VIEW2(deviceView()->shapeClicked(sid, tag, x, y), false);
+    }
     
     bool removeShape(const MgShape* shape) {
         hideContextActions();

@@ -182,6 +182,16 @@ private:
 
 CmdSubject* MgCmdManagerImpl::getCmdSubject()
 {
-    static CmdSubjectImpl obj;
-    return &obj;
+    if (!_subject) {
+        _subject = new CmdSubjectImpl();
+    }
+    return _subject;
+}
+
+void MgCmdManagerImpl::freeSubject()
+{
+    if (_subject) {
+        delete _subject;
+        _subject = NULL;
+    }
 }

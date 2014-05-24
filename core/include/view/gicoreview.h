@@ -23,7 +23,6 @@ public:
     static GiCoreView* createMagnifierView(GiView* newview, GiCoreView* mainView,
                                            GiView* mainDevView);    //!< 创建放大镜视图
     void destoryView(GiView* view);                                 //!< 销毁内核视图
-    void release() { delete this; }                                 //!< 销毁自身
     
     long acquireGraphics(GiView* view);                             //!< 获取前端 GiGraphics 的句柄
     void releaseGraphics(long gs);                                  //!< 释放 GiGraphics 句柄
@@ -62,6 +61,7 @@ public:
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
     GiGestureState getGestureState();                               //!< 得到当前手势状态
     static int getVersion();                                        //!< 得到内核版本号
+    void setZoomEnabled(GiView* view, bool enabled);                //!< 是否允许放缩显示
     
     int exportSVG(long doc, long gs, const char* filename);         //!< 导出图形到SVG文件
     int exportSVG(GiView* view, const char* filename);              //!< 导出图形到SVG文件，主线程中用
@@ -83,6 +83,8 @@ public:
 // MgCoreView
 #ifndef SWIG
 public:
+    void release();
+    void addRef();
     bool isPressDragging();
     bool isDrawingCommand();
     bool isCommand(const char* name);
@@ -138,9 +140,10 @@ public:
     void setContext(int mask);
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
-    int addImageShape(const char* name, float xc, float yc, float w, float h);
+    int addImageShape(const char* name, float xc, float yc, float w, float h, int tag);
     bool hasImageShape(long doc);
     int findShapeByImageID(long doc, const char* name);
+    int findShapeByTag(long doc, int tag);
     int traverseImageShapes(long doc, MgFindImageCallback* c);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
@@ -158,6 +161,7 @@ private:
     void createMagnifierView_(GiView* newview, GiView* mainView);   //!< 创建放大镜视图
     
     GiCoreViewImpl* impl;
+    volatile long refcount;
 };
 
 #ifndef DOXYGEN

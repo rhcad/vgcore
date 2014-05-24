@@ -23,6 +23,7 @@ public:
     GiView* deviceView() { return _view; }                          //!< 返回回调视图对象
     MgView* cmdView() { return _mgview; }
     bool isZooming() { return _zooming; }
+    void setZoomEnabled(bool enabled) { _zoomEnabled = enabled; }
     
     void submitBackXform() { _gsFront.copy(_gsBack); }              //!< 应用后端坐标系对象到前端
     void copyGs(GiGraphics* gs) { gs->copy(_gsBack); }              //!< 复制坐标系参数
@@ -43,6 +44,7 @@ private:
     Point2d     _lastCenter;
     float       _lastScale;
     bool        _zooming;
+    bool        _zoomEnabled;
 };
 
 #endif // TOUCHVG_CORE_BASEVIEW_H

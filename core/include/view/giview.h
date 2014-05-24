@@ -44,6 +44,9 @@ public:
     virtual void dynamicChanged() {}        //!< 图形动态拖拉改变的通知
     virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
     virtual void shapeDeleted(int sid) {}   //!< 删除图形的通知
+    
+    //! 图形点击的通知，返回false继续显示上下文按钮
+    virtual bool shapeClicked(int sid, int tag, float x, float y) { return false; }
 };
 
 #endif // TOUCHVG_CORE_GIVIEW_H

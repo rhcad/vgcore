@@ -464,6 +464,14 @@ bool MgCmdSelect::click(const MgMotion* sender)
     sender->view->setNewShapeID(m_id);
     sender->view->redraw();
     
+    if (shape && m_selIds.size() == 1
+        && (shape->shapec()->isKindOf(kMgShapeImage)
+            || shape->shapec()->isKindOf(kMgShapeComposite))
+        && sender->view->shapeClicked(shape->getID(), shape->getTag(),
+                                      sender->point.x, sender->point.y))
+    {
+        return true;
+    }
     if (!sender->pressDrag && (m_editMode || m_handleIndex == 0)) {
         MgActionDispatcher* dispatcher = sender->cmds()->getActionDispatcher();
         dispatcher->showInSelect(sender, getSelectState(sender->view),

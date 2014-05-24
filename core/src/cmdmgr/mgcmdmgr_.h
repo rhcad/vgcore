@@ -13,6 +13,7 @@
 #include <string>
 
 class SnapItem;
+class CmdSubjectImpl;
 
 //! 命令管理器实现类
 /*! \ingroup CORE_COMMAND
@@ -50,9 +51,10 @@ private:
     virtual bool doContextAction(const MgMotion* sender, int action);
     virtual MgSnap* getSnap();
     virtual CmdSubject* getCmdSubject();
-    virtual MgShape* addImageShape(const MgMotion* sender, const char* name, float width, float height);
     virtual MgShape* addImageShape(const MgMotion* sender, const char* name,
-                                   float xc, float yc, float w, float h);
+                                   float width, float height);
+    virtual MgShape* addImageShape(const MgMotion* sender, const char* name,
+                                   float xc, float yc, float w, float h, int tag);
     virtual void getBoundingBox(Box2d& box, const MgMotion* sender);
     
 private:
@@ -72,6 +74,7 @@ private:
 private:
     void eraseWnd(const MgMotion* sender);
     void checkResult(SnapItem arr[3]);
+    void freeSubject();
 
 private:
     typedef std::map<std::string, MgCommand*> CMDS;
@@ -81,6 +84,7 @@ private:
     std::string     _cmdname;
     std::string     _drawcmd;
     int             _newShapeID;
+    CmdSubjectImpl* _subject;
     
     Point2d         _ptSnap;
     Point2d         _snapBase[2];

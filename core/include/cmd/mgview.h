@@ -84,6 +84,9 @@ struct MgView
     virtual bool shapeCanUngroup(const MgShape* shape) = 0;     //!< 通知是否能对成组图形解散
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
     
+    //! 图形点击的通知，返回false继续显示上下文按钮
+    virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
 #ifndef SWIG

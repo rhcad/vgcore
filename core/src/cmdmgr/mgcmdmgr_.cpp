@@ -29,7 +29,7 @@ bool MgCmdManagerImpl::registerCommand(const char* name, MgCommand* (*creator)()
     return ret;
 }
 
-MgCmdManagerImpl::MgCmdManagerImpl() : _newShapeID(0), _snapShapeId(0)
+MgCmdManagerImpl::MgCmdManagerImpl() : _newShapeID(0), _subject(NULL), _snapShapeId(0)
 {
     _snapType[0] = _snapType[1] = 0;
 }
@@ -46,6 +46,7 @@ void MgCmdManagerImpl::unloadCommands()
     _cmds.clear();
     _cmdname = "";
     getCmdSubject()->onUnloadCommands(this);
+    freeSubject();
 }
 
 const char* MgCmdManagerImpl::getCommandName()

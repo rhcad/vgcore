@@ -58,12 +58,12 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             else {
                 //actions[n++] = kMgActionSelReset;
             }
-            if (selState == kMgSelOneShape
-                && shape && shape->shapec()->isClosed()
+            if (selState == kMgSelOneShape && shape
                 && !shape->shapec()->getFlag(kMgRotateDisnable)
                 && !shape->shapec()->getFlag(kMgShapeLocked)
                 && (shape->shapec()->isKindOf(kMgShapeParallel)
-                    || shape->shapec()->isKindOf(kMgShapeLines)) ) {
+                    || shape->shapec()->isKindOf(kMgShapeBaseLines)
+                    || shape->shapec()->isKindOf(kMgShapeComposite)) ) {
                 actions[n++] = kMgActionOverturn;
             }
             break;
