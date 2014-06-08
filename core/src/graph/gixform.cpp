@@ -85,6 +85,7 @@ struct GiTransformImpl
         rectLimitsW = src->rectLimitsW;
         tmpCenterW = src->tmpCenterW;
         tmpViewScale = src->tmpViewScale;
+        zoomTimes = src->zoomTimes;
     }
 
     void zoomChanged()
