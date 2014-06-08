@@ -282,7 +282,7 @@ public:
 protected:
     MgBaseLines();
     virtual ~MgBaseLines();
-    bool _isClosed() const { return _count > 2 && __super::_isClosed(); }
+    bool _isClosed() const;
     int _getPointCount() const;
     Point2d _getPoint(int index) const;
     void _setPoint(int index, const Point2d& pt);

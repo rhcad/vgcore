@@ -19,6 +19,11 @@ MgBaseLines::~MgBaseLines()
         delete[] _points;
 }
 
+bool MgBaseLines::_isClosed() const
+{
+    return _count > 2 && __super::_isClosed();
+}
+
 int MgBaseLines::_getPointCount() const
 {
     return _count;
