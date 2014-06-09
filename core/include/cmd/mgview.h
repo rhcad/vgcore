@@ -130,9 +130,13 @@ public:
     
     MgCmdManager* cmds() const { return view->cmds(); } //!< 返回命令管理器对象
 
+    //! 双指起始位置的中心点，模型坐标
     Point2d startCenterM() const { return (startPtM + startPt2M) / 2; }
+    //! 双指中心点，模型坐标
     Point2d centerM() const { return (pointM + point2M) / 2; }
+    //! 双指起始位置的距离，模型坐标
     float startDistanceM() const { return startPtM.distanceTo(startPt2M); }
+    //! 双指距离，模型坐标
     float distanceM() const { return pointM.distanceTo(point2M); }
 
     //! 返回屏幕毫米长度对应的模型长度，在命令显示函数中使用

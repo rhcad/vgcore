@@ -549,6 +549,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         sender->view->redraw();
     }
     
+    m_dragging = false;
     m_insertPt = false;                     // setted in hitTestHandles
     if (m_clones.size() == 1) {
         canSelect(shape, sender);           // calc m_hit.nearpt
@@ -746,10 +747,17 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
 {
     Point2d pointM(sender->pointM);
     Matrix2d mat;
-    bool dragCorner = isDragRectCorner(sender, mat);
+    const bool dragCorner = isDragRectCorner(sender, mat);
     
     if (m_insertPt && pointM.distanceTo(m_hit.nearpt) < sender->displayMmToModel(5.f)) {
         pointM = m_hit.nearpt;  // 拖动刚新加的点到起始点时取消新增
+    }
+    if (!m_dragging) {
+        m_dragging = sender->pointM.distanceTo(sender->startPtM) > sender->displayMmToModel(2.f);
+        if (!m_dragging) {
+            sender->view->redraw();
+            return true;
+        }
     }
     
     Vector2d minsnap(1e8f, 1e8f);

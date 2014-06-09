@@ -96,6 +96,7 @@ private:
     bool                    m_insertPt;         // 是否可插入新点
     bool                    m_showSel;          // 是否亮显选中的图形
     bool                    m_boxsel;           // 是否开始框选
+    bool                    m_dragging;         // 是否正在拖动
 };
 
 #endif // TOUCHVG_CMD_SELECT_H_
