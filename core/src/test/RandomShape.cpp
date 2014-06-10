@@ -43,10 +43,8 @@ int RandomParam::addShapes(MgShapes* shapes)
 {
     int ret = 0;
     
-    for (int n = getShapeCount(); n > 0; n--)
-    {
+    for (int n = getShapeCount(); n > 0; n--) {
         int type = RandInt(0, 2);
-        MgShape* sp = NULL;
         
         if (0 == type && 0 == lineCount)
             type = 1;
@@ -59,70 +57,56 @@ int RandomParam::addShapes(MgShapes* shapes)
         if (0 == type && 0 == lineCount)
             type = 1;
         
-        if (3 == type)
-        {
+        if (3 == type) {
             MgShapeT<MgSplines> shape;
 
             shape._shape.resize(RandInt(3, 20));
-            setShapeProp(shape._context);
-            sp = shapes->addShape(shape);
-            curveCount--;
-            ret++;
-            
-            for (int i = 0; i < sp->shape()->getPointCount(); i++)
-            {
-                if (0 == i)
-                {
-                    sp->shape()->setPoint(i, 
+            for (int i = 0; i < shape._shape.getPointCount(); i++) {
+                if (0 == i) {
+                    shape._shape.setPoint(i, 
                         Point2d(RandF(-1000, 1000), RandF(-1000, 1000)));
-                }
-                else
-                {
-                    sp->shape()->setPoint(i, sp->shape()->getPoint(i-1)
+                } else {
+                    shape._shape.setPoint(i, shape._shape.getPoint(i-1)
                         + Vector2d(RandF(-100, 100), RandF(-100, 100)));
                 }
             }
-        }
-        else if (2 == type)
-        {
-            MgShapeT<MgEllipse> shape;
             
+            setShapeProp(shape._context);
+            shapes->addShape(shape);
+            curveCount--;
+            ret++;
+        }
+        else if (2 == type) {
+            MgShapeT<MgEllipse> shape;
             Box2d rect(Point2d(RandF(-1000, 1000), RandF(-1000, 1000)), RandF(1, 200), 0);
+            
             shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());
             setShapeProp(shape._context);
-            sp = shapes->addShape(shape);
+            shapes->addShape(shape);
             arcCount--;
             ret++;
         }
-        else if (1 == type)
-        {
+        else if (1 == type) {
             MgShapeT<MgRect> shape;
-            
             Box2d rect(Point2d(RandF(-1000, 1000), RandF(-1000, 1000)), RandF(1, 200), 0);
+            
             shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());
             setShapeProp(shape._context);
-            sp = shapes->addShape(shape);
+            shapes->addShape(shape);
             rectCount--;
             ret++;
         }
-        else
-        {
-            lineCount--;
-        }
-
-        if (NULL == sp)
-        {
+        else {
             MgShapeT<MgLine> shape;
             Point2d pt(Point2d(RandF(-1000, 1000), RandF(-1000, 1000)));
 
+            shape._shape.setPoint(0, pt);
+            shape._shape.setPoint(1, pt + Vector2d(RandF(-100, 100), RandF(-100, 100)));
             setShapeProp(shape._context);
-            sp = shapes->addShape(shape);
+            shapes->addShape(shape);
+            lineCount--;
             ret++;
-            sp->shape()->setPoint(0, pt);
-            sp->shape()->setPoint(1, pt + Vector2d(RandF(-100, 100), RandF(-100, 100)));
         }
-        
-        sp->shape()->update();
     }
     
     return ret;
