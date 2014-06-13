@@ -308,14 +308,10 @@ bool MgImageShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     Vector2d vec((_points[1] - _points[0]) * gs.xf().modelToWorld());
     bool ret = false;
     
-    if (mode == 0) {
-        if (!getFlag(kMgHideContent)) {
-            ret = (gs.rawImage(_name, rect.center().x, rect.center().y,
-                              rect.width(), rect.height(), vec.angle2())
-                   || drawBox(gs, ctx));
-        }
-    } else {
-        ret = drawBox(gs, ctx);
+    if (!getFlag(kMgHideContent)) {
+        ret = (gs.rawImage(_name, rect.center().x, rect.center().y,
+                           rect.width(), rect.height(), vec.angle2())
+               || drawBox(gs, ctx));
     }
     
     return __super::_draw(mode, gs, ctx, segment) || ret;

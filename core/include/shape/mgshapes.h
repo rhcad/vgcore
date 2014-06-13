@@ -80,10 +80,11 @@ public:
     bool updateShape(MgShape* shape, bool force = false);
     
 #ifndef SWIG
+    //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象(oldsp)会被删除并指向新的图形对象
     static bool updateShape(const MgShape*& oldsp, MgShape* newsp) {
         bool ret = oldsp->getParent()->updateShape(newsp, true);
         if (ret) {
-            oldsp = NULL;
+            oldsp = newsp;
         } else {
             newsp->release();
         }

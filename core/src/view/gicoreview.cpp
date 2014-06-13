@@ -1222,7 +1222,7 @@ bool GiCoreViewImpl::gestureToCommand()
         ret = cmd->doubleClick(&_motion);
         break;
     case kGiGesturePress:
-        ret = cmd->longPress(&_motion);
+        ret = _motion.gestureState > kMgGestureBegan || cmd->longPress(&_motion);
         break;
     }
 
