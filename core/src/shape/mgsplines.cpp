@@ -42,17 +42,6 @@ bool MgSplines::_hitTestBox(const Box2d& rect) const
 
 bool MgSplines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
 {
-    if (mode == 2) {
-        GiContext ctxl(0, GiColor(0, 0, 128, 128));
-        float r = 0.5f / gs.xf().getViewScale();
-        for (int i = 0; i < _count; i++) {
-            gs.drawEllipse(&ctxl, _points[i] * gs.xf().modelToWorld(), r, 0, false);
-            if (_knotvs) {
-                gs.drawLine(&ctxl, _points[i], _points[i] + _knotvs[i]);
-            }
-        }
-    }
-    
     bool ret = (_count == 2 ? gs.drawLine(&ctx, _points[0], _points[1])
                 : (_knotvs ? gs.drawBeziers(&ctx, _count, _points, _knotvs, isClosed())
                    : gs.drawQuadSplines(&ctx, _count, _points, isClosed())));

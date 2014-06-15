@@ -19,7 +19,7 @@ float GiCoreViewImpl::_factor = 1.0f;
 //
 
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
-    : _mgview(mgview), _view(view), _zooming(false)
+    : _mgview(mgview), _view(view), _zooming(false), _zoomEnabled(true)
 {
     mgview->document()->addView(this);
     LOGD("View %p created", this);
@@ -167,7 +167,7 @@ Vector2d GiCoreViewImpl::moveActionsInView(Box2d& rect, float btnHalfW)
 
 int GiCoreView::getVersion() { return COREVERSION; }
 
-GiCoreView::GiCoreView(GiCoreView* mainView)
+GiCoreView::GiCoreView(GiCoreView* mainView) : refcount(1)
 {
     if (mainView) {
         impl = mainView->impl;
@@ -179,7 +179,7 @@ GiCoreView::GiCoreView(GiCoreView* mainView)
     LOGD("GiCoreView %p created, refcount=%ld", this, impl->refcount);
 }
 
-GiCoreView::GiCoreView(GiView* view, int type)
+GiCoreView::GiCoreView(GiView* view, int type) : refcount(1)
 {
     impl = new GiCoreViewImpl(this, !!view);
     LOGD("GiCoreView %p created, type=%d", this, type);
@@ -192,6 +192,18 @@ GiCoreView::~GiCoreView()
     if (--impl->refcount == 0) {
         delete impl;
     }
+}
+
+void GiCoreView::release()
+{
+    if (giAtomicDecrement(&refcount) == 0) {
+        delete this;
+    }
+}
+
+void GiCoreView::addRef()
+{
+    giAtomicIncrement(&refcount);
 }
 
 long GiCoreView::viewDataHandle()
@@ -956,6 +968,13 @@ bool GiCoreView::zoomToModel(float x, float y, float w, float h)
     return ret;
 }
 
+void GiCoreView::setZoomEnabled(GiView* view, bool enabled)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    if (aview)
+        aview->setZoomEnabled(enabled);
+}
+
 float GiCoreView::calcPenWidth(GiView* view, float lineWidth)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
@@ -1028,10 +1047,10 @@ int GiCoreView::addImageShape(const char* name, float width, float height)
     return shape ? shape->getID() : 0;
 }
 
-int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, float h)
+int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, float h, int tag)
 {
     DrawLocker locker(impl);
-    MgShape* shape = impl->_cmds->addImageShape(impl->motion(), name, xc, yc, w, h);
+    MgShape* shape = impl->_cmds->addImageShape(impl->motion(), name, xc, yc, w, h, tag);
     return shape ? shape->getID() : 0;
 }
 
@@ -1045,6 +1064,13 @@ int GiCoreView::findShapeByImageID(long doc, const char* name)
 {
     const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
     const MgShape* sp = p ? MgImageShape::findShapeByImageID(p->getCurrentLayer(), name) : NULL;
+    return sp ? sp->getID() : 0;
+}
+
+int GiCoreView::findShapeByTag(long doc, int tag)
+{
+    const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
+    const MgShape* sp = p ? p->getCurrentLayer()->findShapeByTag(tag) : NULL;
     return sp ? sp->getID() : 0;
 }
 
@@ -1196,7 +1222,7 @@ bool GiCoreViewImpl::gestureToCommand()
         ret = cmd->doubleClick(&_motion);
         break;
     case kGiGesturePress:
-        ret = cmd->longPress(&_motion);
+        ret = _motion.gestureState > kMgGestureBegan || cmd->longPress(&_motion);
         break;
     }
 

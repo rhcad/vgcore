@@ -262,7 +262,7 @@ struct CmdMoveTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->moveTo(pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdLineTo : public MgRecordShape::ICmd {
@@ -291,7 +291,7 @@ struct CmdLineTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->lineTo(pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdBezierTo : public MgRecordShape::ICmd {
@@ -442,7 +442,7 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->drawHandle(pt2.x, pt2.y, t);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-5f, 0); }
+    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdDrawBitmap : public MgRecordShape::ICmd {
@@ -785,15 +785,17 @@ bool GiRecordCanvas::clipPath()
     return false;
 }
 
-void GiRecordCanvas::drawHandle(float x, float y, int type)
+bool GiRecordCanvas::drawHandle(float x, float y, int type)
 {
     _sp->addItem(new CmdDrawHandle(d2w(), x, y, type));
+    return true;
 }
 
-void GiRecordCanvas::drawBitmap(const char* name, float xc, float yc,
+bool GiRecordCanvas::drawBitmap(const char* name, float xc, float yc,
                                 float w, float h, float angle)
 {
     _sp->addItem(new CmdDrawBitmap(d2w(), name, xc, yc, w, h, angle));
+    return true;
 }
 
 float GiRecordCanvas::drawTextAt(const char* text, float x, float y, float h, int align)

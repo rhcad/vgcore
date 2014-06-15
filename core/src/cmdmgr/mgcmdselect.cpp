@@ -464,6 +464,14 @@ bool MgCmdSelect::click(const MgMotion* sender)
     sender->view->setNewShapeID(m_id);
     sender->view->redraw();
     
+    if (shape && m_selIds.size() == 1
+        && (shape->shapec()->isKindOf(kMgShapeImage)
+            || shape->shapec()->isKindOf(kMgShapeComposite))
+        && sender->view->shapeClicked(shape->getID(), shape->getTag(),
+                                      sender->point.x, sender->point.y))
+    {
+        return true;
+    }
     if (!sender->pressDrag && (m_editMode || m_handleIndex == 0)) {
         MgActionDispatcher* dispatcher = sender->cmds()->getActionDispatcher();
         dispatcher->showInSelect(sender, getSelectState(sender->view),
@@ -541,6 +549,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         sender->view->redraw();
     }
     
+    m_dragging = false;
     m_insertPt = false;                     // setted in hitTestHandles
     if (m_clones.size() == 1) {
         canSelect(shape, sender);           // calc m_hit.nearpt
@@ -738,10 +747,17 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
 {
     Point2d pointM(sender->pointM);
     Matrix2d mat;
-    bool dragCorner = isDragRectCorner(sender, mat);
+    const bool dragCorner = isDragRectCorner(sender, mat);
     
     if (m_insertPt && pointM.distanceTo(m_hit.nearpt) < sender->displayMmToModel(5.f)) {
         pointM = m_hit.nearpt;  // 拖动刚新加的点到起始点时取消新增
+    }
+    if (!m_dragging) {
+        m_dragging = sender->pointM.distanceTo(sender->startPtM) > sender->displayMmToModel(2.f);
+        if (!m_dragging) {
+            sender->view->redraw();
+            return true;
+        }
     }
     
     Vector2d minsnap(1e8f, 1e8f);

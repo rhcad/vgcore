@@ -51,6 +51,8 @@ bool MgCmdDrawRect::touchEnded(const MgMotion* sender)
 
     if (shape->getWidth() > minDist && shape->getHeight() > minDist) {
         addRectShape(sender);
+    } else if (sender->point.distanceTo(sender->startPt) < 2) {
+        return _click(sender);
     }
 
     return MgCommandDraw::touchEnded(sender);

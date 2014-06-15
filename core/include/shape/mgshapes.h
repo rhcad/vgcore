@@ -76,8 +76,21 @@ public:
     //! 添加新图形到图形列表中
     bool addShapeDirect(MgShape* shape, bool force = false);
     
-    //! 更新为新的图形，该图形从原来图形克隆得到
+    //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象会被删除!
     bool updateShape(MgShape* shape, bool force = false);
+    
+#ifndef SWIG
+    //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象(oldsp)会被删除并指向新的图形对象
+    static bool updateShape(const MgShape*& oldsp, MgShape* newsp) {
+        bool ret = oldsp->getParent()->updateShape(newsp, true);
+        if (ret) {
+            oldsp = newsp;
+        } else {
+            newsp->release();
+        }
+        return ret;
+    }
+#endif
     
     //! 复制出一个新图形对象
     MgShape* cloneShape(int sid) const;

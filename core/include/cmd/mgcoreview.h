@@ -38,6 +38,8 @@ struct MgCoreView {
     static MgCoreView* fromHandle(long h) { MgCoreView* p; *(long*)&p = h; return p; } //!< 转为对象
     long toHandle() { long h; *(MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
     
+    virtual void release() = 0;                     //!< 释放引用计数，为0时销毁对象
+    virtual void addRef() = 0;                      //!< 添加引用计数
     virtual long viewDataHandle() = 0;              //!< 内部数据句柄, 可转换为 GiCoreViewData 指针
     virtual long viewAdapterHandle() = 0;           //!< 命令视图回调适配器的句柄, 可转换为 MgView 指针
     virtual long backDoc() = 0;                     //!< 图形文档的句柄, 用 MgShapeDoc::fromHandle() 转换
@@ -137,13 +139,16 @@ struct MgCoreView {
     virtual int addImageShape(const char* name, float width, float height) = 0;
     
     //! 添加一个容纳图像的矩形图形
-    virtual int addImageShape(const char* name, float xc, float yc, float w, float h) = 0;
+    virtual int addImageShape(const char* name, float xc, float yc, float w, float h, int tag) = 0;
     
     //! 返回是否有容纳图像的图形对象
     virtual bool hasImageShape(long doc) = 0;
     
     //! 查找指定名称的图像对应的图形对象ID
     virtual int findShapeByImageID(long doc, const char* name) = 0;
+    
+    //! 查找指定Tag的图形对象ID
+    virtual int findShapeByTag(long doc, int tag) = 0;
     
     //! 遍历有容纳图像的图形对象
     virtual int traverseImageShapes(long doc, MgFindImageCallback* c) = 0;

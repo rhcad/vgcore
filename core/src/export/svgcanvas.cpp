@@ -192,13 +192,14 @@ bool GiSvgCanvas::clipPath()
     return false;
 }
 
-void GiSvgCanvas::drawHandle(float, float, int)
+bool GiSvgCanvas::drawHandle(float, float, int)
 {
+    return false;
 }
 
-void GiSvgCanvas::drawBitmap(const char*, float, float, 
-                             float, float, float)
+bool GiSvgCanvas::drawBitmap(const char*, float, float, float, float, float)
 {
+    return false;
 }
 
 float GiSvgCanvas::drawTextAt(const char* text, float x, float y, float, int)

@@ -1230,8 +1230,7 @@ bool GiGraphics::rawImage(const char* name, float xc, float yc,
                           float w, float h, float angle)
 {
     if (m_impl->canvas && name && !m_impl->stopping) {
-        m_impl->canvas->drawBitmap(name, xc, yc, w, h, angle);
-        return true;
+        return m_impl->canvas->drawBitmap(name, xc, yc, w, h, angle);
     }
     return false;
 }
@@ -1240,8 +1239,7 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, bool modelUnit)
 {
     if (m_impl->canvas && type >= 0 && !m_impl->stopping) {
         Point2d ptd(pnt * S2D(xf(), modelUnit));
-        m_impl->canvas->drawHandle(ptd.x, ptd.y, type);
-        return true;
+        return m_impl->canvas->drawHandle(ptd.x, ptd.y, type);
     }
     return false;
 }

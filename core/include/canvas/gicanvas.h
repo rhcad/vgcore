@@ -96,7 +96,7 @@ public:
     virtual bool clipPath() = 0;
     
     //! Draw a symbol (GiHandleTypes) whose center will at (x, y).
-    virtual void drawHandle(float x, float y, int type) = 0;
+    virtual bool drawHandle(float x, float y, int type) = 0;
     
     //! Draw a image whose center will at (xc, yc).
     /*!
@@ -107,8 +107,9 @@ public:
         \param h Display height of the image.
         \param angle Rotate angle in radians, it's positive direction is CCW 
                 in the world coordinate system.
+        \return true if successful
      */
-    virtual void drawBitmap(const char* name, float xc, float yc, 
+    virtual bool drawBitmap(const char* name, float xc, float yc, 
                             float w, float h, float angle) = 0;
     
     //! Draw text in one line.

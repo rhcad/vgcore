@@ -12,7 +12,7 @@
 #
 # Readme about variables: https://github.com/rhcad/x3py/wiki/MakeVars
 #
-SUBDIRS         =$(subst /,,$(dir $(wildcard */)))
+SUBDIRS         =src
 CLEANDIRS       =$(addsuffix .clean, $(SUBDIRS))
 INSTALLDIRS     =$(addsuffix .install, $(SUBDIRS))
 SWIGDIRS        =$(addsuffix .swig, $(SUBDIRS))
@@ -26,22 +26,14 @@ clean:      $(CLEANDIRS)
 install:    $(INSTALLDIRS)
 swig:       $(SWIGDIRS)
 
-ifdef SWIG_TYPE
-makefile    =Makefile.swig
-else
-makefile    =Makefile
-endif
-
 $(SUBDIRS):
-	@! test -e $@/Makefile || $(MAKE) -C $@
+	@$(MAKE) -C $@
 
 $(SWIGDIRS):
-	@ ! test -e $(basename $@)/$(makefile) || \
-	$(MAKE) -C $(basename $@) -f $(makefile) swig
+	@$(MAKE) -C $(basename $@) swig
 
 $(CLEANDIRS) $(INSTALLDIRS):
-	@ ! test -e $(basename $@)/$(makefile) || \
-	$(MAKE) -C $(basename $@) -f $(makefile) $(subst .,,$(suffix $@))
+	@$(MAKE) -C $(basename $@) $(subst .,,$(suffix $@))
 
 $(SWIGS):
 	@test -d ../build || mkdir ../build

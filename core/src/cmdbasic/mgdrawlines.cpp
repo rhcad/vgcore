@@ -56,29 +56,10 @@ bool MgCmdDrawLines::touchBegan(const MgMotion* sender)
     else {
         if (m_step >= dynshape()->shape()->getPointCount()) {
             if (m_step > 2) {
-                Point2d nearpt;
-                int segment, hitType = 0;
-                bool inside;
-                
-                mgnear::linesHit(lines->getPointCount(),
-                    lines->getPoints(), lines->isClosed(), sender->pointM,
-                    sender->displayMmToModel(5.f),
-                    nearpt, segment, &inside, &hitType);
-                
-                /*if (hitType == mglnrel::kPtOnEdge) {
-                    lines->insertPoint(segment, pnt);
-                    m_index = segment + 1;
-                }
-                else*/if (hitType == mglnrel::kPtAtVertex) {
-                    m_index = segment;
-                }
-                else {
-                    lines->addPoint(pnt);
-                    m_step = mgMin(m_step, lines->getPointCount() - 1);
-                    m_index = m_step;
-                }
-            }
-            if (m_step <= 2) {
+                lines->addPoint(pnt);
+                m_step = mgMin(m_step, lines->getPointCount() - 1);
+                m_index = m_step;
+            } else {
                 lines->addPoint(pnt);
                 m_index = m_step;
             }

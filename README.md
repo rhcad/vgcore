@@ -27,7 +27,7 @@ This is an open source LGPL 2.1 licensed project that is in active development. 
 TouchVGCore is available on [CocoaPods](http://cocoapods.org). Just add the following to your project Podfile:
 
 ```ruby
-pod 'TouchVGCore', '~> 0.29'
+pod 'TouchVGCore'
 ```
 
 Alternatively, you can add the project to your workspace and build as one of the following methods:

@@ -13,11 +13,11 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender,
 {
     Box2d rect(sender->view->xform()->getWndRectW());
     rect *= sender->view->xform()->worldToDisplay();
-    return addImageShape(sender, name, rect.center().x, rect.center().y, width, height);
+    return addImageShape(sender, name, rect.center().x, rect.center().y, width, height, 0);
 }
 
 MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* name,
-                                         float xc, float yc, float w, float h)
+                                         float xc, float yc, float w, float h, int tag)
 {
     if (!name || *name == 0 || w < 1 || h < 1)
         return NULL;
@@ -38,6 +38,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     shape._context.setFillColor(GiColor::White());    // avoid can't hitted inside
     shape._shape.setName(name);
     shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());
+    shape.setTag(tag);
     
     if (sender->view->shapeWillAdded(&shape)) {
         MgShape* newsp = sender->view->shapes()->addShape(shape);

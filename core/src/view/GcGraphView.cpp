@@ -21,7 +21,7 @@ void GcBaseView::onSize(int dpi, int w, int h)
 
 bool GcBaseView::onGesture(const MgMotion& motion)
 {
-    if (motion.gestureType != kGiGesturePan){
+    if (motion.gestureType != kGiGesturePan || !_zoomEnabled){
         return false;
     }
     if (motion.gestureState <= kMgGestureBegan) {
@@ -44,6 +44,9 @@ bool GcBaseView::onGesture(const MgMotion& motion)
 
 bool GcBaseView::twoFingersMove(const MgMotion& motion)
 {
+    if (!_zoomEnabled) {
+        return false;
+    }
     if (motion.gestureState <= kMgGestureBegan) {
         _lastScale = xform()->getZoomValue(_lastCenter);
     }

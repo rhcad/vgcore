@@ -84,6 +84,9 @@ struct MgView
     virtual bool shapeCanUngroup(const MgShape* shape) = 0;     //!< 通知是否能对成组图形解散
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
     
+    //! 图形点击的通知，返回false继续显示上下文按钮
+    virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
 #ifndef SWIG
@@ -127,9 +130,13 @@ public:
     
     MgCmdManager* cmds() const { return view->cmds(); } //!< 返回命令管理器对象
 
+    //! 双指起始位置的中心点，模型坐标
     Point2d startCenterM() const { return (startPtM + startPt2M) / 2; }
+    //! 双指中心点，模型坐标
     Point2d centerM() const { return (pointM + point2M) / 2; }
+    //! 双指起始位置的距离，模型坐标
     float startDistanceM() const { return startPtM.distanceTo(startPt2M); }
+    //! 双指距离，模型坐标
     float distanceM() const { return pointM.distanceTo(point2M); }
 
     //! 返回屏幕毫米长度对应的模型长度，在命令显示函数中使用

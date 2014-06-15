@@ -8,8 +8,8 @@
 #ifdef __ANDROID__
 
 #include <android/log.h>
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,"touchvg",__VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"touchvg",__VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,"vgjni",__VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"vgjni",__VA_ARGS__)
 
 #elif defined(__APPLE__)
 
