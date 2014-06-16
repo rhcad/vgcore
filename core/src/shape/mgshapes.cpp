@@ -514,6 +514,8 @@ int MgShapes::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
                     newsp->release();
                     LOGE("Fail to load shape (id=%d, type=%d)", sid, type);
                 }
+            } else {
+                LOGE("Ignore unknown shape type %d, id=%d", type, sid);
             }
             s->readNode("shape", index++, true);
         }

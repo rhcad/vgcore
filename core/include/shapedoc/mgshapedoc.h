@@ -96,7 +96,10 @@ public:
     float getViewScale() const;
 
     //! 设置页面范围的世界坐标
-    void setPageRectW(const Box2d& rectW, float viewScale);
+    void setPageRectW(const Box2d& rectW, float viewScale, bool resetInitial = false);
+    
+    //! 放缩到文档初始状态
+    bool zoomToInitial(GiTransform* xform);
 
     //! 返回文档是否只读
     bool isReadOnly() const;

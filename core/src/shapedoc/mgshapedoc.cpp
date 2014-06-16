@@ -17,6 +17,7 @@ struct MgShapeDoc::Impl {
     GiContext   context;
     Matrix2d    xf;
     Box2d       rectW;
+    Box2d       rectWInitial;
     float       viewScale;
     volatile long   refcount;
     bool        readOnly;
@@ -153,10 +154,12 @@ float MgShapeDoc::getViewScale() const { return im->viewScale; }
 bool MgShapeDoc::isReadOnly() const { return im->readOnly; }
 void MgShapeDoc::setReadOnly(bool readOnly) { im->readOnly = readOnly; }
 
-void MgShapeDoc::setPageRectW(const Box2d& rectW, float viewScale)
+void MgShapeDoc::setPageRectW(const Box2d& rectW, float viewScale, bool resetInitial)
 {
     im->rectW = rectW;
     im->viewScale = viewScale;
+    if (resetInitial)
+        im->rectWInitial = rectW;
 }
 
 void MgShapeDoc::clear()
@@ -293,7 +296,8 @@ bool MgShapeDoc::save(MgStorage* s, int startIndex) const
 
     if (startIndex == 0) {
         s->writeFloatArray("transform", &im->xf.m11, 6);
-        s->writeFloatArray("pageExtent", &im->rectW.xmin, 4);
+        s->writeFloatArray("pageExtent", im->rectWInitial.isEmpty() ?
+                           &im->rectW.xmin : &im->rectWInitial.xmin, 4);
         s->writeFloat("viewScale", im->viewScale);
         rect = getExtent();
         s->writeFloatArray("extent", &rect.xmin, 4);
@@ -321,8 +325,11 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
 
     if (!addOnly) {
         s->readFloatArray("transform", &im->xf.m11, 6, false);
-        if (s->readFloatArray("pageExtent", &im->rectW.xmin, 4, false) != 4)
-            s->readFloatArray("zoomExtent", &im->rectW.xmin, 4, false);
+        im->rectWInitial.empty();
+        if (s->readFloatArray("pageExtent", &im->rectW.xmin, 4, false) == 4 ||
+            s->readFloatArray("zoomExtent", &im->rectW.xmin, 4, false) == 4) {
+            im->rectWInitial = im->rectW;
+        }
         im->viewScale = s->readFloat("viewScale", im->viewScale);
         s->readFloatArray("extent", &rect.xmin, 4, false);
         s->readInt("count", 0);
@@ -353,7 +360,7 @@ bool MgShapeDoc::load(MgShapeFactory* factory, MgStorage* s, bool addOnly)
 
 bool MgShapeDoc::saveAll(MgStorage* s, const GiTransform* xform)
 {
-    if (xform) {
+    if (xform && im->rectWInitial.isEmpty()) {
         im->rectW = xform->getWndRectW();
         im->viewScale = xform->getViewScale();
     }
@@ -368,8 +375,18 @@ bool MgShapeDoc::loadAll(MgShapeFactory* factory, MgStorage* s, GiTransform* xfo
     bool ret = load(factory, s, false);
     if (ret && xform) {
         xform->setModelTransform(im->xf);
-        xform->zoomTo(im->rectW);
+        xform->zoomTo(im->rectWInitial.isEmpty() ? im->rectW : im->rectWInitial);
     }
     
+    return ret;
+}
+
+bool MgShapeDoc::zoomToInitial(GiTransform* xform)
+{
+    bool ret = xform && !im->rectWInitial.isEmpty();
+    if (ret) {
+        xform->setModelTransform(im->xf);
+        xform->zoomTo(im->rectWInitial);
+    }
     return ret;
 }

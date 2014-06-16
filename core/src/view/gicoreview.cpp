@@ -948,6 +948,15 @@ int GiCoreView::exportSVG(GiView* view, const char* filename) {
     return n;
 }
 
+bool GiCoreView::zoomToInitial()
+{
+    bool ret = impl->doc()->zoomToInitial(impl->xform());
+    if (ret) {
+        impl->regenAll(false);
+    }
+    return ret;
+}
+
 bool GiCoreView::zoomToExtent()
 {
     Box2d rect(impl->doc()->getExtent() * impl->xform()->modelToWorld());

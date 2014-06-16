@@ -112,6 +112,7 @@ struct MgCoreView {
     virtual void freeContent() = 0;                     //!< 释放 getContent() 产生的缓冲资源
     virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
 
+    virtual bool zoomToInitial() = 0;                   //!< 放缩到文档初始状态
     virtual bool zoomToExtent() = 0;                    //!< 放缩显示全部内容到视图区域
     virtual bool zoomToModel(float x, float y, float w, float h) = 0;   //!< 放缩显示指定范围到视图区域
     

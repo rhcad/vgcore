@@ -133,6 +133,7 @@ public:
     const char* getContent(long doc);
     void freeContent();
     bool setContent(const char* content);
+    bool zoomToInitial();
     bool zoomToExtent();
     bool zoomToModel(float x, float y, float w, float h);
     GiContext& getContext(bool forChange);
