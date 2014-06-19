@@ -304,7 +304,7 @@ void GiCoreView::releaseShapesArray(const mgvector<long>& shapes)
     }
 }
 
-bool GiCoreView::submitBackDoc(GiView* view)
+bool GiCoreView::submitBackDoc(GiView* view, bool changed)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
     bool ret = !aview || aview == impl->curview;
@@ -314,7 +314,9 @@ bool GiCoreView::submitBackDoc(GiView* view)
             impl->doc()->saveAll(NULL, aview->xform());
         }
         impl->drawing->submitBackDoc();
-        giAtomicIncrement(&impl->changeCount);
+        if (changed) {
+            giAtomicIncrement(&impl->changeCount);
+        }
     }
     if (aview) {
         aview->submitBackXform();
@@ -916,7 +918,7 @@ bool GiCoreView::saveToFile(long doc, const char* vgfile, bool pretty)
     
     if (fp) {
         fclose(fp);
-        LOGD("saveToFile: %s", vgfile);
+        LOGD("saveToFile: %s, %d shapes", vgfile, MgShapeDoc::fromHandle(doc)->getShapeCount());
     } else {
         LOGE("Fail to open file: %s", vgfile);
     }

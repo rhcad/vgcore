@@ -137,7 +137,7 @@ bool GiCoreView::undo(GiView* view)
         ret = recorder->undo(impl->getShapeFactory(), impl->doc(), &changeCount);
         if (ret) {
             giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
-            submitBackDoc(view);
+            submitBackDoc(view, true);
             submitDynamicShapes(view);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
@@ -160,7 +160,7 @@ bool GiCoreView::redo(GiView* view)
         ret = recorder->redo(impl->getShapeFactory(), impl->doc(), &changeCount);
         if (ret) {
             giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
-            submitBackDoc(view);
+            submitBackDoc(view, true);
             submitDynamicShapes(view);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);

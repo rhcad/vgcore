@@ -54,8 +54,8 @@ public:
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
     
-    bool submitBackDoc(GiView* view);           //!< 提交静态图形到前端，在UI的regen回调中用
-    bool submitDynamicShapes(GiView* view);     //!< 提交动态图形到前端，需要并发保护
+    bool submitBackDoc(GiView* view, bool changed);                 //!< 提交静态图形到前端，在UI的regen回调中用
+    bool submitDynamicShapes(GiView* view);                         //!< 提交动态图形到前端，需要并发保护
     
     float calcPenWidth(GiView* view, float lineWidth);              //!< 计算画笔的像素宽度
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
