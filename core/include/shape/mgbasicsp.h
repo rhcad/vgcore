@@ -97,6 +97,9 @@ public:
 
     //! 返回高度
     float getHeight() const;
+    
+    //! 返回对角线长度
+    float getDiagonalLength() const;
 
     //! 返回倾斜角度
     float getAngle() const;

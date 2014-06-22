@@ -18,6 +18,7 @@ class GcShapeDoc;
 class MgShapeDoc;
 class GiTransform;
 class GiGraphics;
+struct MgStringCallback;
 
 typedef enum {                  //!< 手势状态
     kMgGesturePossible,         //!< 待检查手势有效性
@@ -86,6 +87,9 @@ struct MgView
     
     //! 图形点击的通知，返回false继续显示上下文按钮
     virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    virtual void showMessage(const char* text) = 0;             //!< 显示提示文字
+    //! 得到本地化文字内容(可用封装函数 MgLocalized::getString)
+    virtual void getLocalizedString(const char* name, MgStringCallback* result) = 0;
     
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单

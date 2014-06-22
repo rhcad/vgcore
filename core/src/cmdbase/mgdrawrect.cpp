@@ -47,12 +47,16 @@ bool MgCmdDrawRect::touchEnded(const MgMotion* sender)
     shape->setRect2P(pt1, pt2);
     dynshape()->shape()->update();
 
-    float minDist = sender->displayMmToModel(5.f);
+    float minDist = sender->displayMmToModel(2.f);
 
-    if (shape->getWidth() > minDist && shape->getHeight() > minDist) {
+    if (shape->getWidth() > minDist && shape->getHeight() > minDist
+        && shape->getDiagonalLength() > 2 * minDist) {
         addRectShape(sender);
     } else if (sender->point.distanceTo(sender->startPt) < 2) {
         return _click(sender);
+    } else {
+        shape->clear();
+        m_step = 0;
     }
 
     return MgCommandDraw::touchEnded(sender);

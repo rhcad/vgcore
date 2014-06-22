@@ -213,3 +213,21 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
 
     return MgCommandDraw::touchEnded(sender);
 }
+
+// MgLocalized
+//
+
+#include "mglocal.h"
+#include "mgcoreview.h"
+
+struct MgStringCallback1 : MgStringCallback {
+    std::string result;
+    virtual void onGetString(const char* text) { result = text; }
+};
+
+std::string MgLocalized::getString(MgView* view, const char* name)
+{
+    MgStringCallback1 c;
+    view->getLocalizedString(name, &c);
+    return c.result.empty() ? name : c.result;
+}
