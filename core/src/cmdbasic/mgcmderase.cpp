@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include "mgaction.h"
+#include "mglocal.h"
 
 bool MgCmdErase::cancel(const MgMotion* sender)
 {
@@ -69,6 +70,7 @@ bool MgCmdErase::click(const MgMotion* sender)
     if (shape && sender->view->shapeWillDeleted(shape)) {
         if (sender->view->removeShape(shape)) {
             sender->view->regenAll(true);
+            sender->view->showMessage("@1 shape deleted");
         }
     }
     
@@ -129,6 +131,9 @@ bool MgCmdErase::touchEnded(const MgMotion* sender)
         }
         if (count > 0) {
             sender->view->regenAll(true);
+            char buf[31];
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@%d shapes deleted");
+            sender->view->showMessage(buf);
         }
     }
     

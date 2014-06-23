@@ -231,3 +231,16 @@ std::string MgLocalized::getString(MgView* view, const char* name)
     view->getLocalizedString(name, &c);
     return c.result.empty() ? name : c.result;
 }
+
+#define getString_(view, format) (*format == '@' ? getString(view, format + 1).c_str() : format)
+
+int MgLocalized::formatString(char *buffer, size_t size, MgView* view, const char *format, ...)
+{
+    va_list arglist;
+    va_start(arglist, format);
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+    return vsprintf_s(buffer, size, getString_(view, format), arglist);
+#else
+    return vsprintf(buffer, getString_(view, format), arglist);
+#endif
+}

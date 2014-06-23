@@ -42,6 +42,8 @@ bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 
     if ( ((MgLine*)dynshape()->shape())->length() > sender->displayMmToModel(2.f)) {
         addShape(sender);
+    } else {
+        sender->view->showMessage("@The shape is too small, please re-draw");
     }
     m_step = 0;
 

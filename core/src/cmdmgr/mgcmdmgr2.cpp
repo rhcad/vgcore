@@ -7,6 +7,7 @@
 #include "mgbasicsp.h"
 #include "mgcmdselect.h"
 #include "mglog.h"
+#include "mglocal.h"
 
 MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, 
                                          const char* name, float width, float height)
@@ -89,8 +90,12 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
                 n++;
             }
         }
-        if (n > 0)
+        if (n > 0) {
             sender->view->regenAll(true);
+            char buf[31];
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@%d shapes deleted");
+            sender->view->showMessage(buf);
+        }
     }
 }
 

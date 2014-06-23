@@ -13,6 +13,7 @@
 #include "mgshapetype.h"
 #include "mgcomposite.h"
 #include "cmdsubject.h"
+#include "mglocal.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
 #define ENABLE_DRAG_SELBOX
@@ -1086,6 +1087,13 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
     if (count > 0) {
         sender->view->regenAll(true);
         sender->view->selectionChanged();
+        if (count == 1) {
+            sender->view->showMessage("@1 shape deleted");
+        } else {
+            char buf[31];
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@%d shapes deleted");
+            sender->view->showMessage(buf);
+        }
     }
     
     return count > 0;
@@ -1382,7 +1390,10 @@ bool MgCmdSelect::overturnPolygon(const MgMotion* sender)
     
     if (oldsp) {
         MgShape* newsp = oldsp->cloneShape();
-        Point2d cen(oldsp->shapec()->getExtent().center());
+        Box2d rect(sender->view->xform()->getWndRectM().intersectWith(oldsp->shapec()->getExtent()));
+        if (rect.isEmpty())
+            return false;
+        Point2d cen(rect.center());
         
         newsp->shape()->transform(Matrix2d::mirroring(cen, Vector2d(0, 1)));
         newsp->shape()->update();
