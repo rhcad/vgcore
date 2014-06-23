@@ -70,7 +70,7 @@ bool MgCmdErase::click(const MgMotion* sender)
     if (shape && sender->view->shapeWillDeleted(shape)) {
         if (sender->view->removeShape(shape)) {
             sender->view->regenAll(true);
-            sender->view->showMessage("@1 shape deleted");
+            sender->view->showMessage("@shape1_deleted");
         }
     }
     
@@ -132,7 +132,7 @@ bool MgCmdErase::touchEnded(const MgMotion* sender)
         if (count > 0) {
             sender->view->regenAll(true);
             char buf[31];
-            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@%d shapes deleted");
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted");
             sender->view->showMessage(buf);
         }
     }

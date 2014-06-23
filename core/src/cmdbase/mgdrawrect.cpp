@@ -57,7 +57,7 @@ bool MgCmdDrawRect::touchEnded(const MgMotion* sender)
     } else {
         shape->clear();
         m_step = 0;
-        sender->view->showMessage("@The shape is too small, please re-draw");
+        sender->view->showMessage("@shape_too_small");
     }
 
     return MgCommandDraw::touchEnded(sender);
