@@ -139,6 +139,8 @@ public:
         return getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
+    bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {
+        return getCmdSubject()->onShapeWillChanged(motion(), shape, oldsp); }
     
     void commandChanged() {
         CALL_VIEW(deviceView()->commandChanged());

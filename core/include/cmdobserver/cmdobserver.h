@@ -63,7 +63,8 @@ struct CmdObserver {
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* sp) = 0; //!< 通知是否能对图形变形
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) = 0;    //!< 通知是否能对图形解锁
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* sp) = 0;   //!< 通知是否能对成组图形解散
-    virtual void onShapeMoved(const MgMotion* sender, MgShape* sp, int segment) = 0;   //!< 通知图形已拖动
+    virtual void onShapeMoved(const MgMotion* sender, MgShape* sp, int segment) = 0; //!< 通知图形已拖动
+    virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) = 0; //!< 通知将修改图形
 
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) = 0; //!< 创建自定义的图形
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) = 0; //!< 创建命令
@@ -96,6 +97,7 @@ public:
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual void onShapeMoved(const MgMotion* sender, MgShape* sp, int segment) {}
+    virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) { return true; }
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) { return (MgBaseShape*)0; }
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) { return (MgCommand*)0; }
     virtual int addShapeActions(const MgMotion*,mgvector<int>&,int n, const MgShape*) { return n; }

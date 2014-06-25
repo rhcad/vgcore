@@ -776,6 +776,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             
             bool oldFixedLength = shape->getFlag(kMgFixedLength);
             bool oldFixedSize = shape->getFlag(kMgFixedSize);
+            int segment = -1;
             
             if (!isEditMode(sender->view)) {
                 shape->setFlag(kMgFixedLength, true);
@@ -811,7 +812,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 shape->transform(mat);
             }
             else {                                          // 拖动整个图形
-                int segment = (!m_editMode &&
+                segment = (!m_editMode &&
                     shape->isKindOf(kMgShapeComposite)) ? -1 : m_hit.segment;
 
                 shape->offset(pointM - m_ptStart, segment); // 先从起始点拖到当前点
@@ -833,9 +834,9 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     }
                     shape->offset(minsnap, segment);        // 这些图形都移动相同距离
                 }
-                if (t == 1) {
-                    sender->view->shapeMoved(m_clones[i], segment); // 通知已移动
-                }
+            }
+            if (t == 1) {
+                sender->view->shapeMoved(m_clones[i], segment); // 通知已移动
             }
             shape->update();
             moveIntoLimits(shape, sender);                  // 限制图形在视图范围内
@@ -964,7 +965,8 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
         }
         for (i = 0; i < m_clones.size(); i++) {
             if (addNewShapes) {
-                if (view->shapes()->addShapeDirect(m_clones[i])) {
+                if (view->shapeWillAdded(m_clones[i])
+                    && view->shapes()->addShapeDirect(m_clones[i])) {
                     view->shapeAdded(m_clones[i]);
                     m_selIds.push_back(m_clones[i]->getID());
                     m_id = m_clones[i]->getID();
@@ -975,7 +977,8 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
                 }
             }
             else {
-                if (view->shapes()->updateShape(m_clones[i])) {
+                if (view->shapeWillChanged(m_clones[i], view->shapes()->findShape(m_clones[i]->getID()))
+                    && view->shapes()->updateShape(m_clones[i])) {
                     changed = true;
                 }
                 else {
