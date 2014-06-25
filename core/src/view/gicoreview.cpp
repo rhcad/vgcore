@@ -604,6 +604,14 @@ void GiCoreView::setPenWidthRange(GiView* view, float minw, float maxw)
     }
 }
 
+void GiCoreView::setGestureVelocity(GiView* view, float vx, float vy)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    if (impl->setView(aview)) {
+        impl->motion()->velocity.set(vx, vy);
+    }
+}
+
 bool GiCoreView::onGesture(GiView* view, GiGestureType type,
                            GiGestureState state, float x, float y, bool switchGesture)
 {
@@ -623,6 +631,7 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
 
         if (state <= kGiGestureBegan) {
+            impl->motion()->velocity.set(0, 0);
             impl->motion()->startPt = impl->motion()->point;
             impl->motion()->startPtM = impl->motion()->pointM;
             impl->motion()->lastPt = impl->motion()->point;
@@ -666,6 +675,7 @@ bool GiCoreView::twoFingersMove(GiView* view, GiGestureState state,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
 
         if (state <= kGiGestureBegan) {
+            impl->motion()->velocity.set(0, 0);
             impl->motion()->startPt = impl->motion()->point;
             impl->motion()->startPtM = impl->motion()->pointM;
             impl->motion()->lastPt = impl->motion()->point;

@@ -107,23 +107,24 @@ struct MgView
 class MgMotion
 {
 public:
-    MgView*         view;
-    int             gestureType;
-    MgGestureState  gestureState;
-    bool            pressDrag;
-    bool            switchGesture;
-    Point2d         startPt;
-    Point2d         startPtM;
-    Point2d         lastPt;
-    Point2d         lastPtM;
-    Point2d         point;
-    Point2d         pointM;
-    Point2d         startPt2;
-    Point2d         startPt2M;
-    Point2d         point2;
-    Point2d         point2M;
-    float           d2mgs;
-    float           d2m;
+    MgView*         view;               //!< 视图回调对象
+    int             gestureType;        //!< 当前手势类型, GiGestureType
+    MgGestureState  gestureState;       //!< 当前手势状态
+    bool            pressDrag;          //!< 是否正在长按并拖动：长按手势结束前的状态
+    bool            switchGesture;      //!< 是否处于单指手势和双指手势切换之间
+    Vector2d        velocity;           //!< 移动速度，每秒点数
+    Point2d         startPt;            //!< 按下的位置，显示坐标
+    Point2d         startPtM;           //!< 按下的位置，模型坐标
+    Point2d         lastPt;             //!< 移动中上一次的位置，显示坐标
+    Point2d         lastPtM;            //!< 移动中上一次的位置，模型坐标
+    Point2d         point;              //!< 当前位置，显示坐标
+    Point2d         pointM;             //!< 当前位置，模型坐标
+    Point2d         startPt2;           //!< 双指按下的第二个手指位置，显示坐标
+    Point2d         startPt2M;          //!< 双指按下的第二个手指位置，模型坐标
+    Point2d         point2;             //!< 第二个手指的当前位置，显示坐标
+    Point2d         point2M;            //!< 第二个手指的当前位置，模型坐标
+    float           d2mgs;              //!< for displayMmToModel()
+    float           d2m;                //!< for displayMmToModel()
     
     MgMotion() : view(NULL), gestureType(0), gestureState(kMgGesturePossible)
         , pressDrag(false), switchGesture(false), d2mgs(0), d2m(0) {}

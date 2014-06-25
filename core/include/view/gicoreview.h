@@ -46,10 +46,10 @@ public:
     void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
     void setPenWidthRange(GiView* view, float minw, float maxw);    //!< 设置画笔宽度范围
     
+    void setGestureVelocity(GiView* view, float vx, float vy);      //!< 设置移动速度，每秒点数
     //! 传递单指触摸手势消息
     bool onGesture(GiView* view, GiGestureType type,
             GiGestureState state, float x, float y, bool switchGesture = false);
-
     //! 传递双指移动手势(可放缩旋转)
     bool twoFingersMove(GiView* view, GiGestureState state,
             float x1, float y1, float x2, float y2, bool switchGesture = false);
