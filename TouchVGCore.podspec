@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "TouchVGCore"
-  s.version     = "1.0.33"
+  s.version     = "1.0.37"
   s.summary     = "Cross-platform vector drawing library using C++."
   s.homepage    = "https://github.com/touchvg/TouchVGCore"
   s.screenshots = "https://github.com/touchvg/TouchVGCore/raw/master/doc/images/modules.png"
