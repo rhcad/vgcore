@@ -139,6 +139,8 @@ public:
         return getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
+    bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {
+        return getCmdSubject()->onShapeWillChanged(motion(), shape, oldsp); }
     
     void commandChanged() {
         CALL_VIEW(deviceView()->commandChanged());
@@ -151,6 +153,12 @@ public:
     }
     bool shapeClicked(int sid, int tag, float x, float y) {
         return CALL_VIEW2(deviceView()->shapeClicked(sid, tag, x, y), false);
+    }
+    void showMessage(const char* text) {
+        CALL_VIEW(deviceView()->showMessage(text));
+    }
+    void getLocalizedString(const char* name, MgStringCallback* result) {
+        CALL_VIEW(deviceView()->getLocalizedString(name, result));
     }
     
     bool removeShape(const MgShape* shape) {

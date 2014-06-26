@@ -157,6 +157,14 @@ private:
             (*it)->onShapeMoved(sender, shape, segment);
         }
     }
+    virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            if (!(*it)->onShapeWillChanged(sender, sp, oldsp)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) {
         MgBaseShape* sp = (MgBaseShape*)0;

@@ -13,6 +13,7 @@
 #include "mgshapetype.h"
 #include "mgcomposite.h"
 #include "cmdsubject.h"
+#include "mglocal.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
 #define ENABLE_DRAG_SELBOX
@@ -775,6 +776,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             
             bool oldFixedLength = shape->getFlag(kMgFixedLength);
             bool oldFixedSize = shape->getFlag(kMgFixedSize);
+            int segment = -1;
             
             if (!isEditMode(sender->view)) {
                 shape->setFlag(kMgFixedLength, true);
@@ -810,7 +812,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 shape->transform(mat);
             }
             else {                                          // 拖动整个图形
-                int segment = (!m_editMode &&
+                segment = (!m_editMode &&
                     shape->isKindOf(kMgShapeComposite)) ? -1 : m_hit.segment;
 
                 shape->offset(pointM - m_ptStart, segment); // 先从起始点拖到当前点
@@ -832,9 +834,9 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     }
                     shape->offset(minsnap, segment);        // 这些图形都移动相同距离
                 }
-                if (t == 1) {
-                    sender->view->shapeMoved(m_clones[i], segment); // 通知已移动
-                }
+            }
+            if (t == 1) {
+                sender->view->shapeMoved(m_clones[i], segment); // 通知已移动
             }
             shape->update();
             moveIntoLimits(shape, sender);                  // 限制图形在视图范围内
@@ -963,7 +965,8 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
         }
         for (i = 0; i < m_clones.size(); i++) {
             if (addNewShapes) {
-                if (view->shapes()->addShapeDirect(m_clones[i])) {
+                if (view->shapeWillAdded(m_clones[i])
+                    && view->shapes()->addShapeDirect(m_clones[i])) {
                     view->shapeAdded(m_clones[i]);
                     m_selIds.push_back(m_clones[i]->getID());
                     m_id = m_clones[i]->getID();
@@ -974,7 +977,8 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
                 }
             }
             else {
-                if (view->shapes()->updateShape(m_clones[i])) {
+                if (view->shapeWillChanged(m_clones[i], view->shapes()->findShape(m_clones[i]->getID()))
+                    && view->shapes()->updateShape(m_clones[i])) {
                     changed = true;
                 }
                 else {
@@ -1086,6 +1090,13 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
     if (count > 0) {
         sender->view->regenAll(true);
         sender->view->selectionChanged();
+        if (count == 1) {
+            sender->view->showMessage("@shape1_deleted");
+        } else {
+            char buf[31];
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted");
+            sender->view->showMessage(buf);
+        }
     }
     
     return count > 0;
@@ -1382,7 +1393,10 @@ bool MgCmdSelect::overturnPolygon(const MgMotion* sender)
     
     if (oldsp) {
         MgShape* newsp = oldsp->cloneShape();
-        Point2d cen(oldsp->shapec()->getExtent().center());
+        Box2d rect(sender->view->xform()->getWndRectM().intersectWith(oldsp->shapec()->getExtent()));
+        if (rect.isEmpty())
+            return false;
+        Point2d cen(rect.center());
         
         newsp->shape()->transform(Matrix2d::mirroring(cen, Vector2d(0, 1)));
         newsp->shape()->update();

@@ -96,6 +96,11 @@ float MgBaseRect::getHeight() const
     return _points[1].distanceTo(_points[2]);
 }
 
+float MgBaseRect::getDiagonalLength() const
+{
+    return mgHypot(getWidth(), getHeight());
+}
+
 float MgBaseRect::getAngle() const
 {
     return (_points[1] - _points[0]).angle2();

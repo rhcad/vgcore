@@ -7,6 +7,8 @@
 
 #include "mgvector.h"
 
+struct MgStringCallback;
+
 //! 设备相关的视图回调接口
 /*! 在派生类中使用某种界面框架实现其视图回调函数
     \ingroup CORE_VIEW
@@ -47,6 +49,9 @@ public:
     
     //! 图形点击的通知，返回false继续显示上下文按钮
     virtual bool shapeClicked(int sid, int tag, float x, float y) { return false; }
+    virtual void showMessage(const char* text) {}   //!< 显示提示文字
+    //! 得到本地化文字内容
+    virtual void getLocalizedString(const char* name, MgStringCallback* result) {}
 };
 
 #endif // TOUCHVG_CORE_GIVIEW_H

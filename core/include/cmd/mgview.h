@@ -18,6 +18,7 @@ class GcShapeDoc;
 class MgShapeDoc;
 class GiTransform;
 class GiGraphics;
+struct MgStringCallback;
 
 typedef enum {                  //!< 手势状态
     kMgGesturePossible,         //!< 待检查手势有效性
@@ -83,9 +84,13 @@ struct MgView
     virtual bool shapeCanUnlock(const MgShape* shape) = 0;      //!< 通知是否能对图形解锁
     virtual bool shapeCanUngroup(const MgShape* shape) = 0;     //!< 通知是否能对成组图形解散
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
+    virtual bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) = 0;  //!< 通知将修改图形
     
     //! 图形点击的通知，返回false继续显示上下文按钮
     virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    virtual void showMessage(const char* text) = 0;             //!< 显示提示文字
+    //! 得到本地化文字内容(可用封装函数 MgLocalized::getString)
+    virtual void getLocalizedString(const char* name, MgStringCallback* result) = 0;
     
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
@@ -103,23 +108,24 @@ struct MgView
 class MgMotion
 {
 public:
-    MgView*         view;
-    int             gestureType;
-    MgGestureState  gestureState;
-    bool            pressDrag;
-    bool            switchGesture;
-    Point2d         startPt;
-    Point2d         startPtM;
-    Point2d         lastPt;
-    Point2d         lastPtM;
-    Point2d         point;
-    Point2d         pointM;
-    Point2d         startPt2;
-    Point2d         startPt2M;
-    Point2d         point2;
-    Point2d         point2M;
-    float           d2mgs;
-    float           d2m;
+    MgView*         view;               //!< 视图回调对象
+    int             gestureType;        //!< 当前手势类型, GiGestureType
+    MgGestureState  gestureState;       //!< 当前手势状态
+    bool            pressDrag;          //!< 是否正在长按并拖动：长按手势结束前的状态
+    bool            switchGesture;      //!< 是否处于单指手势和双指手势切换之间
+    Vector2d        velocity;           //!< 移动速度，每秒点数
+    Point2d         startPt;            //!< 按下的位置，显示坐标
+    Point2d         startPtM;           //!< 按下的位置，模型坐标
+    Point2d         lastPt;             //!< 移动中上一次的位置，显示坐标
+    Point2d         lastPtM;            //!< 移动中上一次的位置，模型坐标
+    Point2d         point;              //!< 当前位置，显示坐标
+    Point2d         pointM;             //!< 当前位置，模型坐标
+    Point2d         startPt2;           //!< 双指按下的第二个手指位置，显示坐标
+    Point2d         startPt2M;          //!< 双指按下的第二个手指位置，模型坐标
+    Point2d         point2;             //!< 第二个手指的当前位置，显示坐标
+    Point2d         point2M;            //!< 第二个手指的当前位置，模型坐标
+    float           d2mgs;              //!< for displayMmToModel()
+    float           d2m;                //!< for displayMmToModel()
     
     MgMotion() : view(NULL), gestureType(0), gestureState(kMgGesturePossible)
         , pressDrag(false), switchGesture(false), d2mgs(0), d2m(0) {}

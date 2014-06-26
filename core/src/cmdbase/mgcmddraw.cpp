@@ -213,3 +213,34 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
 
     return MgCommandDraw::touchEnded(sender);
 }
+
+// MgLocalized
+//
+
+#include "mglocal.h"
+#include "mgcoreview.h"
+
+struct MgStringCallback1 : MgStringCallback {
+    std::string result;
+    virtual void onGetString(const char* text) { result = text; }
+};
+
+std::string MgLocalized::getString(MgView* view, const char* name)
+{
+    MgStringCallback1 c;
+    view->getLocalizedString(name, &c);
+    return c.result.empty() ? name : c.result;
+}
+
+#define getString_(view, format) (*format == '@' ? getString(view, format + 1).c_str() : format)
+
+int MgLocalized::formatString(char *buffer, size_t size, MgView* view, const char *format, ...)
+{
+    va_list arglist;
+    va_start(arglist, format);
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+    return vsprintf_s(buffer, size, getString_(view, format), arglist);
+#else
+    return vsprintf(buffer, getString_(view, format), arglist);
+#endif
+}

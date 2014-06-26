@@ -55,6 +55,7 @@ bool MgCmdDrawGrid::touchEnded(const MgMotion* sender)
     else {
         dynshape()->shape()->setHandlePoint(8, dynshape()->shape()->getPoint(3), 0);
         m_step = 2;
+        sender->view->showMessage("@invalid_gridcell");
     }
     
     return MgCommandDraw::touchEnded(sender);
