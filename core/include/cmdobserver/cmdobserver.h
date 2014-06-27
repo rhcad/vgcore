@@ -19,6 +19,8 @@ struct MgCmdManager;
     \see CmdObserverDefault
  */
 struct CmdObserver {
+    virtual ~CmdObserver() {}
+    
     //! 图形文档内容加载后的通知
     virtual void onDocLoaded(const MgMotion* sender) = 0;
 

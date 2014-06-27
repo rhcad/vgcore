@@ -16,6 +16,8 @@ public:
     GcMagnifierView(MgView* mgview, GiView *view, GcGraphView* mainView);
     virtual ~GcMagnifierView();
     
+    GcGraphView* getMainView() const { return _mainView; }
+    
 private:
     GcGraphView*     _mainView;
 };
