@@ -1437,7 +1437,8 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
             
             if (!basesp || shape->getFlag(kMgShapeLocked))
                 continue;
-            shape->copy(*basesp->shapec());                  // 先重置为原始形状
+            shape->copy(*basesp->shapec());                 // 先重置为原始形状
+            shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
             
             float dist0 = sender->startDistanceM();         // 起始触点距离
             float a0 = (sender->startPt2M - sender->startPtM).angle2(); // 起始触点角度

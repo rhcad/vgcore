@@ -286,12 +286,13 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
     int n = 0;
     
     shapes.setSize(1 + impl->getPlayingCount());
-    for (int i = 0; i < shapes.count() - 1; i++) {
+    for (int i = 1; i < shapes.count() - 1; i++) {
         long s = impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
     }
+    shapes.set(n++, impl->acquireFrontShapes(0));   // Show shapes of command at top of playings.
     
     return n;
 }
