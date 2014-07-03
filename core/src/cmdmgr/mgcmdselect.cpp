@@ -773,6 +773,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             if (!basesp || shape->getFlag(kMgShapeLocked))  // 锁定图形不参与变形
                 continue;
             shape->copy(*basesp->shapec());                 // 先重置为原始位置
+            shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
             
             bool oldFixedLength = shape->getFlag(kMgFixedLength);
             bool oldFixedSize = shape->getFlag(kMgFixedSize);
@@ -964,6 +965,12 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             m_id = 0;
         }
         for (i = 0; i < m_clones.size(); i++) {
+            const MgShape* oldsp = view->shapes()->findShape(m_clones[i]->getID());
+            
+            if (oldsp) {
+                m_clones[i]->shape()->setFlag(kMgHideContent,
+                                              oldsp->shapec()->getFlag(kMgHideContent));
+            }
             if (addNewShapes) {
                 if (view->shapeWillAdded(m_clones[i])
                     && view->shapes()->addShapeDirect(m_clones[i])) {
@@ -977,7 +984,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
                 }
             }
             else {
-                if (view->shapeWillChanged(m_clones[i], view->shapes()->findShape(m_clones[i]->getID()))
+                if (oldsp && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     changed = true;
                 }
