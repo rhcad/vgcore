@@ -117,7 +117,7 @@ public:
     bool switchCommand();
     bool doContextAction(int action);
     void clearCachedData();
-    int addShapesForTest();
+    int addShapesForTest(int n = 1000);
     int getShapeCount();
     int getShapeCount(long doc);
     long getChangeCount();

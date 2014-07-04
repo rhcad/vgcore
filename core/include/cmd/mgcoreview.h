@@ -84,7 +84,7 @@ struct MgCoreView {
     virtual bool doContextAction(int action) = 0;   //!< 执行上下文动作
     
     virtual void clearCachedData() = 0;             //!< 释放临时数据内存，未做线程保护
-    virtual int addShapesForTest() = 0;             //!< 添加测试图形
+    virtual int addShapesForTest(int n = 1000) = 0; //!< 添加测试图形
     
     virtual int getShapeCount() = 0;                //!< 返回后端文档的图形总数
     virtual int getShapeCount(long doc) = 0;        //!< 返回前端文档的图形总数

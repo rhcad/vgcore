@@ -757,9 +757,9 @@ void GiCoreView::clearCachedData()
     impl->doc()->clearCachedData();
 }
 
-int GiCoreView::addShapesForTest()
+int GiCoreView::addShapesForTest(int n)
 {
-    int n = RandomParam().addShapes(impl->shapes());
+    n = RandomParam(n).addShapes(impl->shapes());
     impl->regenAll(true);
     LOGD("Add %d shapes for test", n);
     return n;
