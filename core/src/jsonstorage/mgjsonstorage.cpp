@@ -42,6 +42,8 @@ private:
     void writeFloat(const char* name, float value);
     void writeFloatArray(const char* name, const float* values, int count);
     void writeString(const char* name, const char* value);
+    int readIntArray(const char* name, int* values, int count, bool report = true);
+    void writeIntArray(const char* name, const int* values, int count);
     
 private:
     Document _doc;
@@ -487,6 +489,53 @@ void MgJsonStorage::Impl::writeString(const char* name, const char* value)
 {
     Value valueCopied(value, (unsigned)strlen(value), _doc.GetAllocator());
     _stack.back()->AddMember(name, value ? value : "", _doc.GetAllocator());
+}
+
+int MgJsonStorage::Impl::readIntArray(const char* name, int* values, int count, bool report)
+{
+    int ret = 0;
+    Value *node = _stack.empty() ? NULL : _stack.back();
+    
+    report = report && count > 0 && values;
+    if (node && node->HasMember(name)) {
+        const Value &item = node->GetMember(name);
+        
+        if (item.IsArray()) {
+            ret = item.Size();
+            if (values) {
+                int n = ret < count ? ret : count;
+                ret = 0;
+                for (int i = 0; i < n; i++) {
+                    const Value &v = item[i];
+                    
+                    if (v.IsInt()) {
+                        values[ret++] = v.GetInt();
+                    }
+                    else if (report) {
+                        LOGD("Invalid value for readIntArray(%s)", name);
+                    }
+                }
+            }
+        }
+        else if (report) {
+            LOGD("Invalid value for readIntArray(%s)", name);
+        }
+    }
+    if (values && ret < count && report) {
+        setError("readIntArray: lose numbers.");
+    }
+    
+    return ret;
+}
+
+void MgJsonStorage::Impl::writeIntArray(const char* name, const int* values, int count)
+{
+    Value node(kArrayType);
+    
+    for (int i = 0; i < count; i++) {
+        node.PushBack(values[i], _doc.GetAllocator());
+    }
+    _stack.back()->AddMember(name, node, _doc.GetAllocator());
 }
 
 #endif

@@ -979,30 +979,39 @@ bool GiGraphics::drawPath(const GiContext* ctx, const GiPath& path,
     Matrix2d matD(S2D(xf(), modelUnit));
     const Point2d* pts = path.getPoints();
     const char* types = path.getTypes();
-    Point2d a, b, c;
+    Point2d ends, cp1, cp2;
 
     rawBeginPath();
 
     for (int i = 0; i < n; i++) {
         switch (types[i] & ~kGiCloseFigure) {
         case kGiMoveTo:
-            a = pts[i] * matD;
-            rawMoveTo(a.x, a.y);
+            ends = pts[i] * matD;
+            rawMoveTo(ends.x, ends.y);
             break;
 
         case kGiLineTo:
-            a = pts[i] * matD;
-            rawLineTo(a.x, a.y);
+            ends = pts[i] * matD;
+            rawLineTo(ends.x, ends.y);
             break;
 
-        case kGiBeziersTo:
+        case kGiBezierTo:
             if (i + 2 >= n)
                 return false;
-            a = pts[i] * matD;
-            b = pts[i+1] * matD;
-            c = pts[i+2] * matD;
-            rawBezierTo(a.x, a.y, b.x, b.y, c.x, c.y);
+            cp1 = pts[i] * matD;
+            cp2 = pts[i+1] * matD;
+            ends = pts[i+2] * matD;
+            rawBezierTo(cp1.x, cp1.y, cp2.x, cp2.y, ends.x, ends.y);
             i += 2;
+            break;
+
+        case kGiQuadTo:
+            if (i + 1 >= n)
+                return false;
+            cp1 = pts[i] * matD;
+            ends = pts[i+1] * matD;
+            rawQuadTo(cp1.x, cp1.y, ends.x, ends.y);
+            i++;
             break;
 
         default:

@@ -53,6 +53,7 @@ shape_files := $(core_src)/shape/mgcomposite.cpp \
               $(core_src)/shape/mgshape.cpp \
               $(core_src)/shape/mgshapes.cpp \
               $(core_src)/shape/mgsplines.cpp \
+              $(core_src)/shape/mgpathsp.cpp \
               $(core_src)/shape/mgbasicspreg.cpp
 
 doc_files  := $(core_src)/shapedoc/mgshapedoc.cpp \

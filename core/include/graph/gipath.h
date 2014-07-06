@@ -16,7 +16,8 @@ class GiPathImpl;
 typedef enum {
     kGiCloseFigure = 1,
     kGiLineTo = 2,
-    kGiBeziersTo = 4,
+    kGiBezierTo = 4,
+    kGiQuadTo = 8,
     kGiMoveTo = 6,
 } GiPathNode;
 
@@ -48,6 +49,9 @@ public:
     //! 赋值函数
     GiPath& copy(const GiPath& src);
     
+    //! 追加路径
+    GiPath& append(const GiPath& src);
+    
     //! 折线拐角圆角化
     /*!
         \param count 折线顶点数
@@ -62,13 +66,26 @@ public:
     //! 返回节点个数
     int getCount() const;
 
+#ifndef SWIG
     //! 返回节点坐标数组
     const Point2d* getPoints() const;
 
-#ifndef SWIG
     //! 返回节点类型数组，由 GiPathNode 值组成
     const char* getTypes() const;
+    
+    //! 设置节点数据
+    void setPath(int count, const Point2d* points, const char* types);
+    void setPath(int count, const Point2d* points, const int* types);
 #endif
+    
+    //! 返回节点类型，由 GiPathNode 值组成
+    int getNodeType(int index) const;
+    
+    //! 得到节点坐标
+    Point2d getPoint(int index) const;
+    
+    //! 设置节点坐标
+    void setPoint(int index, const Point2d& pt);
 
     //! 清除所有节点
     void clear();
@@ -111,6 +128,14 @@ public:
         \return 是否正确添加
     */
     bool beziersTo(int count, const Point2d* points, bool reverse = false);
+
+    //! 添加绘制二次贝塞尔曲线到新位置的指令节点
+    /*!
+        \param count 曲线控制点的点数，不含起点，必须为2的倍数
+        \param points 曲线控制点的位置的数组，不含起点，元素个数为count
+        \return 是否正确添加
+    */
+    bool quadsTo(int count, const Point2d* points);
 
     //! 添加绘制切线圆弧到新位置的指令节点
     /*! 新圆弧的起点为图元的当前位置，起始切向方向为最末一段直线段的方向。\n

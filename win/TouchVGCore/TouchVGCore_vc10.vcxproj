@@ -70,6 +70,7 @@
     <ClInclude Include="..\..\core\include\shape\mgcomposite.h" />
     <ClInclude Include="..\..\core\include\shape\mggrid.h" />
     <ClInclude Include="..\..\core\include\shape\mgobject.h" />
+    <ClInclude Include="..\..\core\include\shape\mgpathsp.h" />
     <ClInclude Include="..\..\core\include\shape\mgshape.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapes.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapet.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="..\..\core\src\shape\mggrid.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgline.cpp" />
     <ClCompile Include="..\..\core\src\shape\mglines.cpp" />
+    <ClCompile Include="..\..\core\src\shape\mgpathsp.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgrdrect.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgrect.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshape.cpp" />

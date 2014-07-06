@@ -17,6 +17,8 @@
 		0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2C18F29DC300999778 /* girecordcanvas.h */; };
 		0269CE2F18F29DC300999778 /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2D18F29DC300999778 /* girecordshape.h */; };
 		0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0269CE3018F29DD000999778 /* girecordcanvas.cpp */; };
+		02985DB21968146200E89F59 /* mgpathsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 02985DB11968146200E89F59 /* mgpathsp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		02985DB41968148C00E89F59 /* mgpathsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02985DB31968148C00E89F59 /* mgpathsp.cpp */; };
 		029FD69D1956D107004B80FA /* mglocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 029FD69C1956D107004B80FA /* mglocal.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		02ED017C18F13E280060BE0A /* giplaying.h in Headers */ = {isa = PBXBuildFile; fileRef = 02ED017B18F13E280060BE0A /* giplaying.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF196418A2F7DF00B15999 /* fitcurves.cpp */; };
@@ -235,6 +237,8 @@
 		0269CE2D18F29DC300999778 /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
 		0269CE3018F29DD000999778 /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
 		028BD40D18C767F30070EA95 /* touchvg.swig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = touchvg.swig; sourceTree = "<group>"; };
+		02985DB11968146200E89F59 /* mgpathsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgpathsp.h; sourceTree = "<group>"; };
+		02985DB31968148C00E89F59 /* mgpathsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpathsp.cpp; sourceTree = "<group>"; };
 		029FD69C1956D107004B80FA /* mglocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mglocal.h; sourceTree = "<group>"; };
 		02ED017B18F13E280060BE0A /* giplaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = giplaying.h; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
@@ -655,6 +659,7 @@
 		AED37030186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
+				02985DB11968146200E89F59 /* mgpathsp.h */,
 				AED37031186681DB00C0A778 /* mgbasicsp.h */,
 				AED37032186681DB00C0A778 /* mgbasicspreg.h */,
 				AED37033186681DB00C0A778 /* mgcomposite.h */,
@@ -830,6 +835,7 @@
 		AED37086186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
+				02985DB31968148C00E89F59 /* mgpathsp.cpp */,
 				AED37087186681DB00C0A778 /* mgbasicspreg.cpp */,
 				AED37088186681DB00C0A778 /* mgcomposite.cpp */,
 				AED37089186681DB00C0A778 /* mgellipse.cpp */,
@@ -871,6 +877,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02985DB21968146200E89F59 /* mgpathsp.h in Headers */,
 				029FD69D1956D107004B80FA /* mglocal.h in Headers */,
 				02ED017C18F13E280060BE0A /* giplaying.h in Headers */,
 				AE20C4D21866D35000471A19 /* gicoreview.h in Headers */,
@@ -1168,6 +1175,7 @@
 				AED370A71866884700C0A778 /* mgdrawlines.cpp in Sources */,
 				AED370A81866884700C0A778 /* mgdrawparallel.cpp in Sources */,
 				AED370A91866884700C0A778 /* mgdrawpolygon.cpp in Sources */,
+				02985DB41968148C00E89F59 /* mgpathsp.cpp in Sources */,
 				AED370AA1866884700C0A778 /* mgdrawsplines.cpp in Sources */,
 				AED370AB1866884700C0A778 /* mgdrawsquare.cpp in Sources */,
 				AED370AC1866884700C0A778 /* mgdrawtriang.cpp in Sources */,

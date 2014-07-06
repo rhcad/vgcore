@@ -424,6 +424,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\shape\mgpathsp.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\shape\mgrdrect.cpp"
 					>
 				</File>
@@ -795,6 +799,10 @@
 				</File>
 				<File
 					RelativePath="..\..\core\include\shape\mgobject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\shape\mgpathsp.h"
 					>
 				</File>
 				<File

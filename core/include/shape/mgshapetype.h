@@ -37,6 +37,7 @@ typedef enum {
     
     kMgShapeRecord = 30,        //!< 录制, MgRecordShape
     kMgShapeDot = 31,           //!< 点, MgDot
+    kMgShapePath = 32,          //!< 路径, MgPathShape
 } MgShapeType;
 
 #endif // TOUCHVG_SHAPETYPE_H_
