@@ -18,6 +18,8 @@ public:
     const GiPath& pathc() const { return _path; }
     GiPath& path() { return _path; }
     
+    bool importSVGPath(const char* d);
+    
     virtual bool isCurve() const;
     
 protected:

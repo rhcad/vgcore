@@ -434,6 +434,7 @@ int MgJsonStorage::Impl::readString(const char* name, char* value, int count)
 #else
                 strncpy(value, item.GetString(), ret);
 #endif
+                value[ret] = 0;
             }
         }
         else {

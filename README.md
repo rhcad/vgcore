@@ -20,6 +20,12 @@ TouchVGCore contains the following cross-platform modules using C++ for 2D vecto
 
 This is an open source LGPL 2.1 licensed project that is in active development. Contributors and sponsors are welcome.
 
+It uses the following open source projects:
+
+- [simple-svg](http://code.google.com/p/simple-svg) (BSD license): A C++ header file for creating SVG files.
+- [rapidjson](https://github.com/Kanma/rapidjson) (MIT license): A fast JSON parser/generator for C++ with both SAX/DOM style API.
+- [Nano SVG](https://github.com/memononen/nanosvg) (zlib license): Simple stupid single-header-file SVG parser.
+
 ## Build
 
 ### Build for **iOS** platform on Mac OS X.
