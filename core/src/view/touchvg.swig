@@ -31,6 +31,7 @@
 #include <mgbasicsp.h>
 #include <mgcomposite.h>
 #include <mggrid.h>
+#include <mgpathsp.h>
 #include <mgshapetype.h>
 #include <mgstorage.h>
 #include <mgspfactory.h>
@@ -100,6 +101,7 @@
 %include <mgbasicsp.h>
 %include <mgcomposite.h>
 %include <mggrid.h>
+%include <mgpathsp.h>
 %include <mgshapetype.h>
 %include <mgspfactory.h>
 

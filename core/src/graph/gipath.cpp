@@ -242,6 +242,16 @@ bool GiPath::beziersTo(int count, const Point2d* points, bool reverse)
     return ret;
 }
 
+bool GiPath::bezierTo(const Point2d& cp1, const Point2d& cp2, const Point2d& end)
+{
+    m_data->points.push_back(cp1);
+    m_data->points.push_back(cp2);
+    m_data->points.push_back(end);
+    for (int i = 0; i < 3; i++)
+        m_data->types.push_back(kGiBezierTo);
+    return true;
+}
+
 bool GiPath::quadsTo(int count, const Point2d* points)
 {
     bool ret = (m_data->beginIndex >= 0 && count > 0 && points
@@ -254,6 +264,15 @@ bool GiPath::quadsTo(int count, const Point2d* points)
     }
     
     return ret;
+}
+
+bool GiPath::quadTo(const Point2d& cp, const Point2d& end)
+{
+    m_data->points.push_back(cp);
+    m_data->points.push_back(end);
+    m_data->types.push_back(kGiBezierTo);
+    m_data->types.push_back(kGiBezierTo);
+    return true;
 }
 
 bool GiPath::arcTo(const Point2d& point)

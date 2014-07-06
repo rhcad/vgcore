@@ -128,6 +128,9 @@ public:
         \return 是否正确添加
     */
     bool beziersTo(int count, const Point2d* points, bool reverse = false);
+    
+    //! 添加绘制三次贝塞尔曲线到新位置的指令节点
+    bool bezierTo(const Point2d& cp1, const Point2d& cp2, const Point2d& end);
 
     //! 添加绘制二次贝塞尔曲线到新位置的指令节点
     /*!
@@ -136,6 +139,9 @@ public:
         \return 是否正确添加
     */
     bool quadsTo(int count, const Point2d* points);
+    
+    //! 添加绘制二次贝塞尔曲线到新位置的指令节点
+    bool quadTo(const Point2d& cp, const Point2d& end);
 
     //! 添加绘制切线圆弧到新位置的指令节点
     /*! 新圆弧的起点为图元的当前位置，起始切向方向为最末一段直线段的方向。\n
