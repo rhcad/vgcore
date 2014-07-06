@@ -5,6 +5,7 @@
 #include "mgpathsp.h"
 #include "mgshape_.h"
 #include <sstream>
+#include <stdlib.h>
 
 MG_IMPLEMENT_CREATE(MgPathShape)
 
