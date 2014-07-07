@@ -177,6 +177,7 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
 {
     if (!ended) {                       // 开始一个新节点
         char tmpname[32];
+        
         if (index >= 0) {               // 形成实际节点名称
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
             sprintf_s(tmpname, sizeof(tmpname), "%s%d", name, index + 1);
@@ -195,10 +196,15 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
         }
         else {
             Value &parent = *_stack.back();
-            if (!parent.IsObject() || !parent.HasMember(name)) {
+            if (parent.IsArray() && index >= 0 && index < (int)parent.Size()) {
+                _stack.push_back(&parent[index]);
+            }
+            else if (parent.IsObject() && parent.HasMember(name)) {
+                _stack.push_back(&parent[name]);
+            }
+            else {
                 return false;
             }
-            _stack.push_back(&parent[name]);
         }
     }
     else {                              // 当前节点读取完成
@@ -324,6 +330,9 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
         else if (item.IsUint()) {
             ret = item.GetUint();
         }
+        else if (item.IsBool()) {
+            ret = item.GetBool() ? 1 : 0;
+        }
         else if (item.IsString() && parseInt(item.GetString(), defvalue)) {
             ret = defvalue;
         }
@@ -337,21 +346,14 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
 
 bool MgJsonStorage::Impl::readBool(const char* name, bool defvalue)
 {
-    bool ret = defvalue;
-    Value *node = _stack.empty() ? NULL : _stack.back();
-    
-    if (node && node->HasMember(name)) {
-        const Value &item = node->GetMember(name);
-        
-        if (item.IsBool()) {
-            ret = item.GetBool();
-        }
-        else {
-            LOGD("Invalid value for readBool(%s)", name);
-        }
-    }
-    
-    return ret;
+    return readInt(name, defvalue ? 1 : 0);
+}
+
+static inline bool parseFloat(const char* str, float& value)
+{
+    char *endptr;
+    value = strtof(str, &endptr);
+    return !endptr || !*endptr;
 }
 
 float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
@@ -367,6 +369,9 @@ float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
         }
         else if (item.IsInt()) {    // 浮点数串可能没有小数点，需要判断整数
             ret = (float)item.GetInt();
+        }
+        else if (item.IsString() && parseFloat(item.GetString(), defvalue)) {
+            ret = defvalue;
         }
         else {
             LOGD("Invalid value for readFloat(%s)", name);
@@ -399,6 +404,9 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values,
                     }
                     else if (v.IsInt()) {
                         values[ret++] = (float)v.GetInt();
+                    }
+                    else if (v.IsString() && parseFloat(v.GetString(), values[ret])) {
+                        ret++;
                     }
                     else if (report) {
                         LOGD("Invalid value for readFloatArray(%s)", name);
@@ -511,6 +519,9 @@ int MgJsonStorage::Impl::readIntArray(const char* name, int* values, int count, 
                     
                     if (v.IsInt()) {
                         values[ret++] = v.GetInt();
+                    }
+                    else if (v.IsString() && parseInt(v.GetString(), values[ret])) {
+                        ret++;
                     }
                     else if (report) {
                         LOGD("Invalid value for readIntArray(%s)", name);

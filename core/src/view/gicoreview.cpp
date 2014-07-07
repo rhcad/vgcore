@@ -912,10 +912,8 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
     MgJsonStorage s;
     bool ret = loadShapes(s.storageForRead(fp), readOnly);
 
-    if (fp) {
-        fclose(fp);
-        LOGD("loadFromFile: %d, %s", ret, vgfile);
-    }
+    fclose(fp);
+    LOGD("loadFromFile: %d, %s", ret, vgfile);
 
     return ret;
 }
