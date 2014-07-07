@@ -75,6 +75,10 @@ bool MgDot::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) c
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
+void MgDot::_output(GiPath&) const
+{
+}
+
 bool MgDot::_save(MgStorage* s) const
 {
     bool ret = __super::_save(s);
@@ -193,6 +197,12 @@ bool MgLine::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) 
 {
     bool ret = gs.drawLine(&ctx, _points[0], _points[1]);
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgLine::_output(GiPath& path) const
+{
+    path.moveTo(_points[0]);
+    path.lineTo(_points[1]);
 }
 
 bool MgLine::_save(MgStorage* s) const
@@ -347,6 +357,13 @@ bool MgParallel::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segme
 {
     bool ret = gs.drawPolygon(&ctx, 4, _points);
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgParallel::_output(GiPath& path) const
+{
+    path.moveTo(_points[0]);
+    path.linesTo(3, _points + 1);
+    path.closeFigure();
 }
 
 bool MgParallel::_save(MgStorage* s) const

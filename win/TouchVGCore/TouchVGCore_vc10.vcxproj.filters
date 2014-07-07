@@ -577,5 +577,8 @@
     <ClCompile Include="..\..\core\src\shape\mgpathsp.cpp">
       <Filter>Source Files\shape</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\core\src\shape\nanosvg.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

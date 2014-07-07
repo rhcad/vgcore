@@ -171,6 +171,25 @@ struct MgCoreView {
     
     //! 视图坐标转为模型坐标，可传入2或4个分量
     virtual bool displayToModel(mgvector<float>& d) = 0;
+    
+    //! 用SVG路径的d坐标序列创建或设置图形形状，成功返回图形ID(未重新显示)，失败返回0
+    virtual int importSVGPath(long shapes, int sid, const char* d) = 0;
+    
+    //! 输出SVG路径的d坐标序列，返回复制的长度或应分配的长度(不含结束符)
+    virtual int exportSVGPath(long shapes, int sid, char* buf, int size) = 0;
+    
+    //! 输出SVG路径的d坐标序列
+    bool exportSVGPath2(MgStringCallback* c, long shapes, int sid) {
+        int size = exportSVGPath(shapes, sid, (char*)0, 0);
+        if (size > 0) {
+            char* buf = new char[1 + size];
+            exportSVGPath(shapes, sid, buf, size);
+            buf[size] = 0;
+            c->onGetString(buf);
+            delete[] buf;
+        }
+        return size > 0;
+    }
 };
 
 inline bool MgCoreView::saveToFile(const char* vgfile, bool pretty) {

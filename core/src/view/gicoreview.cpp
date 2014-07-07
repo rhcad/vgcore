@@ -11,6 +11,7 @@
 #include "mgbasicspreg.h"
 #include "svgcanvas.h"
 #include "../corever.h"
+#include "mgpathsp.h"
 
 static int _dpi = 96;
 float GiCoreViewImpl::_factor = 1.0f;
@@ -1110,6 +1111,47 @@ int GiCoreView::traverseImageShapes(long doc, MgFindImageCallback* c)
 {
     const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
     return p ? p->getCurrentLayer()->traverseByType(MgImageShape::Type(), traverseImage, c) : 0;
+}
+
+int GiCoreView::importSVGPath(long shapes, int sid, const char* d)
+{
+    MgShapes* splist = MgShapes::fromHandle(shapes);
+    const MgShape* oldsp = splist ? splist->findShape(sid) : NULL;
+    int ret = 0;
+    
+    if (oldsp && oldsp->shapec()->isKindOf(MgPathShape::Type()) && d) {
+        MgShape* newsp = oldsp->cloneShape();
+        if (((MgPathShape*)newsp->shape())->importSVGPath(d)) {
+            splist->updateShape(oldsp, newsp);
+            ret = sid;
+        } else {
+            newsp->release();
+        }
+    } else if (splist) {
+        MgShapeT<MgPathShape> sp;
+        if (sp._shape.importSVGPath(d)) {
+            ret = splist->addShape(sp)->getID();
+        }
+    }
+    
+    return ret;
+}
+
+int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
+{
+    MgShapes* splist = MgShapes::fromHandle(shapes);
+    const MgShape* sp = splist ? splist->findShape(sid) : NULL;
+    int ret = 0;
+    
+    if (sp && sp->shapec()->isKindOf(MgPathShape::Type())) {
+        ret = ((const MgPathShape*)sp->shapec())->exportSVGPath(buf, size);
+    } else if (sp) {
+        GiPath path;
+        sp->shapec()->output(path);
+        ret = MgPathShape::exportSVGPath(path, buf, size);
+    }
+    
+    return ret;
 }
 
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)

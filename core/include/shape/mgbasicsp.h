@@ -25,6 +25,7 @@ public:
     virtual bool isCurve() const { return false; }
     
 protected:
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
     
@@ -64,6 +65,7 @@ public:
 
 protected:
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
     int _getHandleCount() const;
@@ -146,6 +148,7 @@ protected:
     int _getHandleType(int index) const;
     bool _setHandlePoint(int index, const Point2d& pt, float tol);
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
 
@@ -188,6 +191,7 @@ protected:
     bool _setHandlePoint(int index, const Point2d& pt, float tol);
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
 
 protected:
     Point2d     _bzpts[13];
@@ -216,6 +220,7 @@ protected:
     bool _equals(const MgRoundRect& src) const;
     void _clear();
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
 
@@ -240,6 +245,7 @@ protected:
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _hitTestBox(const Box2d& rect) const;
     bool _rotateHandlePoint(int index, const Point2d& pt);
+    void _output(GiPath& path) const;
 };
 
 //! 折线基类
@@ -321,6 +327,7 @@ protected:
     Point2d _getHandlePoint(int index) const;
     int _getHandleType(int index) const;
     bool _isHandleFixed(int index) const;
+    void _output(GiPath& path) const;
 };
 
 //! 二次样条曲线类
@@ -348,6 +355,7 @@ protected:
     void _setPoint(int index, const Point2d& pt);
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
     
@@ -392,6 +400,7 @@ protected:
     bool _offset(const Vector2d& vec, int segment);
     bool _rotateHandlePoint(int index, const Point2d& pt);
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
 
@@ -455,6 +464,7 @@ public:
 protected:
     bool _isClosed() const;
     bool _hitTestBox(const Box2d& rect) const;
+    void _output(GiPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
     int _getHandleCount() const;

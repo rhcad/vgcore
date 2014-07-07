@@ -118,16 +118,21 @@ bool MgEllipse::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segmen
 {
     bool ret = false;
 
-    if (isOrtho())
-    {
+    if (isOrtho()) {
         ret = gs.drawEllipse(&ctx, Box2d(_points[0], _points[2]));
     }
-    else
-    {
+    else {
         ret = gs.drawBeziers(&ctx, 13, _bzpts, true);
     }
 
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgEllipse::_output(GiPath& path) const
+{
+    path.moveTo(_bzpts[0]);
+    path.beziersTo(12, _bzpts + 1);
+    path.closeFigure();
 }
 
 // MgArc
@@ -322,6 +327,21 @@ bool MgArc::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) c
         gs.drawLine(&ctxln, getEndPoint(), getEndPoint() + getEndTangent());
     }
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgArc::_output(GiPath& path) const
+{
+    float r = getRadius();
+    float sweepAngle = getSweepAngle();
+    Point2d points[16];
+    
+    if (r < _MGZERO || fabsf(sweepAngle) < _MGZERO)
+        return;
+    
+    int count = mgcurv::arcToBezier(points, getCenter(), r, r,
+                                    getStartAngle(), sweepAngle);
+    path.moveTo(points[0]);
+    path.beziersTo(count - 1, points + 1);
 }
 
 void MgArc::_update()

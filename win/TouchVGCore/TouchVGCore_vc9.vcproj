@@ -447,6 +447,10 @@
 					RelativePath="..\..\core\src\shape\mgsplines.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\core\src\shape\nanosvg.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="shapedoc"

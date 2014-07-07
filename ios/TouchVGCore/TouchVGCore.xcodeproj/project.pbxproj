@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02063565196A3E99006F1674 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02063564196A3E99006F1674 /* nanosvg.cpp */; };
 		021DA341189F90EF00CFD9DC /* recordshapes.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
 		024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
 		024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF63188A84A6000B0C41 /* svgcanvas.h */; };
@@ -228,6 +229,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		02063564196A3E99006F1674 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
 		024FCF63188A84A6000B0C41 /* svgcanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgcanvas.h; sourceTree = "<group>"; };
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
@@ -835,6 +837,7 @@
 		AED37086186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
+				02063564196A3E99006F1674 /* nanosvg.cpp */,
 				02985DB31968148C00E89F59 /* mgpathsp.cpp */,
 				AED37087186681DB00C0A778 /* mgbasicspreg.cpp */,
 				AED37088186681DB00C0A778 /* mgcomposite.cpp */,
@@ -1174,6 +1177,7 @@
 				AED370A61866884700C0A778 /* mgdrawline.cpp in Sources */,
 				AED370A71866884700C0A778 /* mgdrawlines.cpp in Sources */,
 				AED370A81866884700C0A778 /* mgdrawparallel.cpp in Sources */,
+				02063565196A3E99006F1674 /* nanosvg.cpp in Sources */,
 				AED370A91866884700C0A778 /* mgdrawpolygon.cpp in Sources */,
 				02985DB41968148C00E89F59 /* mgpathsp.cpp in Sources */,
 				AED370AA1866884700C0A778 /* mgdrawsplines.cpp in Sources */,

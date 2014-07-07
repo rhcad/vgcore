@@ -48,6 +48,43 @@ bool MgSplines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segmen
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
+void MgSplines::_output(GiPath& path) const
+{
+    if (_count < 2) {
+    }
+    else if (_count == 2) {
+        path.moveTo(_points[0]);
+        path.lineTo(_points[1]);
+    }
+    else if (_knotvs) {
+        path.moveTo(_points[0]);
+        for (int i = 1; i + 1 < _count; i++) {
+            path.bezierTo(_points[i] + _knotvs[i],
+                          _points[i+1] - _knotvs[i+1], _points[i+1]);
+        }
+        if (isClosed()) {
+            path.closeFigure();
+        }
+    }
+    else {
+        Point2d mid;
+        
+        for (int i = 0; i < (isClosed() ? _count : _count - 2); i++) {
+            if (i == 0) {
+                path.moveTo(isClosed() ? (_points[0] + _points[1]) / 2 : _points[0]);
+            }
+            if (isClosed() || i + 3 < _count)
+                mid = (_points[(i+1) % _count] + _points[(i+2) % _count]) / 2;
+            else
+                mid = _points[i+2];
+            path.quadTo(_points[(i+1) % _count], mid);
+        }
+        if (isClosed()) {
+            path.closeFigure();
+        }
+    }
+}
+
 void MgSplines::_copy(const MgSplines& src)
 {
     __super::_copy(src);    // will clear _knotvs via MgSplines::resize

@@ -44,6 +44,7 @@ public:
     
     virtual void clear() { _clear(); MgBaseShape::_clear(); }
     virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
+    virtual void output(GiPath&) const {}
     virtual bool save(MgStorage* s) const;
     virtual bool load(MgShapeFactory* factory, MgStorage* s);
     

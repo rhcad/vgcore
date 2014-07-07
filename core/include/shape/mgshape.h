@@ -218,6 +218,9 @@ public:
     //! 显示图形（mode：0-正常显示，1-选中显示，2-拖动显示）
     virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     
+    //! 输出路径
+    virtual void output(GiPath& path) const = 0;
+    
     //! 保存图形
     virtual bool save(MgStorage* s) const;
     
@@ -334,6 +337,7 @@ public:                                                         \
     virtual bool isClosed() const;                              \
     virtual bool hitTestBox(const Box2d& rect) const;           \
     virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;  \
+    virtual void output(GiPath& path) const;                    \
     virtual bool save(MgStorage* s) const;                      \
     virtual bool load(MgShapeFactory* factory, MgStorage* s);   \
     virtual int getHandleCount() const;                         \

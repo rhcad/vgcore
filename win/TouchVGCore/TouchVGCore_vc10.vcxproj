@@ -164,6 +164,7 @@
     <ClCompile Include="..\..\core\src\shape\mgshape.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshapes.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgsplines.cpp" />
+    <ClCompile Include="..\..\core\src\shape\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\test\RandomShape.cpp" />
     <ClCompile Include="..\..\core\src\test\testcanvas.cpp" />
     <ClCompile Include="..\..\core\src\view\GcGraphView.cpp" />

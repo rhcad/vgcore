@@ -152,6 +152,8 @@ public:
     bool getBoundingBox(mgvector<float>& box, int shapeId);
     bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId);
     bool displayToModel(mgvector<float>& d);
+    int importSVGPath(long shapes, int sid, const char* d);
+    int exportSVGPath(long shapes, int sid, char* buf, int size);
 #endif // SWIG
 
 private:
