@@ -969,20 +969,28 @@ bool GiCoreView::zoomToInitial()
     return ret;
 }
 
-bool GiCoreView::zoomToExtent()
+bool GiCoreView::zoomToExtent(float margin)
 {
     Box2d rect(impl->doc()->getExtent() * impl->xform()->modelToWorld());
-    bool ret = impl->xform()->zoomTo(rect);
+    RECT_2D to;
+    
+    Box2d(impl->xform()->getWndRect()).deflate(margin).get(to);
+    bool ret = impl->xform()->zoomTo(rect, &to);
+    
     if (ret) {
         impl->regenAll(false);
     }
     return ret;
 }
 
-bool GiCoreView::zoomToModel(float x, float y, float w, float h)
+bool GiCoreView::zoomToModel(float x, float y, float w, float h, float margin)
 {
     Box2d rect(Box2d(x, y, x + w, y + h) * impl->xform()->modelToWorld());
-    bool ret = impl->xform()->zoomTo(rect);
+    RECT_2D to;
+    
+    Box2d(impl->xform()->getWndRect()).deflate(margin).get(to);
+    bool ret = impl->xform()->zoomTo(rect, &to);
+    
     if (ret) {
         impl->regenAll(false);
     }

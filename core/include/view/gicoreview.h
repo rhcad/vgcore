@@ -134,8 +134,8 @@ public:
     void freeContent();
     bool setContent(const char* content);
     bool zoomToInitial();
-    bool zoomToExtent();
-    bool zoomToModel(float x, float y, float w, float h);
+    bool zoomToExtent(float margin = 2);
+    bool zoomToModel(float x, float y, float w, float h, float margin = 2);
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);
