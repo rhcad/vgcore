@@ -14,6 +14,7 @@
 #include "mgcomposite.h"
 #include "cmdsubject.h"
 #include "mglocal.h"
+#include "mglog.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
 #define ENABLE_DRAG_SELBOX
@@ -108,7 +109,7 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage*)
         m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
         m_id = shape->getID();
         sender->view->redraw();
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
         longPress(sender);
     }
     
@@ -137,7 +138,7 @@ bool MgCmdSelect::backStep(const MgMotion* sender)
         m_rotateHandle = 0;
         m_selIds.clear();
         sender->view->redraw();
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
         return true;
     }
     return false;
@@ -165,7 +166,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     }
     if (selection.empty() && !m_selIds.empty()) {   // 意外情况导致m_selIds部分ID无效
         m_selIds.clear();
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
     }
     
     if (!m_showSel || (!m_clones.empty() && !isCloneDrag(sender))) {
@@ -442,7 +443,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
         m_handleIndex = 0;
 
         if (changed) {
-            sender->view->selectionChanged();
+            selectionChanged(sender->view);
         }
         else if (shape && m_selIds.size() == 1 && !shape->shapec()->isKindOf(kMgShapeSplines)) {
             bool issmall = (shape->shapec()->getExtent().width() < sender->displayMmToModel(5.f)
@@ -457,6 +458,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
                 && !shape->shapec()->isKindOf(kMgShapeSplines))) {
             m_handleIndex = hitTestHandles(shape, sender->pointM, sender);
         }
+        LOGD("click: id=%d, segment=%d", m_id, m_hit.segment);
     }
     if (!isEditMode(sender->view) && canRotate(shape, sender)
         && !shape->shapec()->isKindOf(kMgShapeSplines)) {
@@ -537,7 +539,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
             m_selIds.push_back(m_id);
             m_handleIndex = 0;
             m_rotateHandle = 0;
-            sender->view->selectionChanged();
+            selectionChanged(sender->view);
         }
     }
     
@@ -861,8 +863,11 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
         while (const MgShape* shape = it.getNext()) {
             if (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
                 : snap.contains(shape->shapec()->getExtent())) {
-                m_selIds.push_back(shape->getID());
-                m_id = shape->getID();
+                if (!shape->shapec()->getFlag(kMgShapeLocked) ||
+                    !shape->shapec()->getFlag(kMgNoAction)) {
+                    m_selIds.push_back(shape->getID());
+                    m_id = shape->getID();
+                }
             }
         }
         sender->view->redraw();
@@ -908,15 +913,18 @@ bool MgCmdSelect::touchEnded(const MgMotion* sender)
     if (m_boxsel) {
         m_boxsel = false;
         if (!m_selIds.empty())
-            sender->view->selectionChanged();
+            selectionChanged(sender->view);
     }
     if (!m_selIds.empty()) {
         CmdSubject* subject = sender->view->getCmdSubject();
         subject->onSelectTouchEnded(sender, m_id, handleIndexSrc, shapeid, handleIndex,
                                     (int)m_selIds.size(), &m_selIds.front());
     }
+    if (!sender->switchGesture) {
+        longPress(sender);
+    }
     
-    return sender->switchGesture || longPress(sender);
+    return true;
 }
 
 void MgCmdSelect::cloneShapes(MgView* view)
@@ -998,14 +1006,21 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     if (changed) {
         view->regenAll(true);
         if (addNewShapes) {
-            view->selectionChanged();
+            selectionChanged(view);
+            m_boxsel = false;
         }
     } else {
         view->redraw();
     }
-    m_boxsel = false;
     
     return changed || cloned;
+}
+
+void MgCmdSelect::selectionChanged(MgView* view)
+{
+    LOGD("selectionChanged: type=%d, count=%d, id=%d, segment=%d",
+         getSelectType(view), getSelection(view, 0, NULL), m_id, m_hit.segment);
+    view->selectionChanged();
 }
 
 MgSelState MgCmdSelect::getSelectState(MgView* view)
@@ -1065,7 +1080,7 @@ bool MgCmdSelect::selectAll(const MgMotion* sender)
     sender->view->redraw();
 
     if (oldn != m_selIds.size() || !m_selIds.empty()) {
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
     }
     longPress(sender);
     
@@ -1096,7 +1111,7 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
     
     if (count > 0) {
         sender->view->regenAll(true);
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
         if (count == 1) {
             sender->view->showMessage("@shape1_deleted");
         } else {
@@ -1136,7 +1151,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
     
     if (count > 0) {
         sender->view->regenAll(true);
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
         longPress(sender);
     }
     
@@ -1174,7 +1189,7 @@ bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
     
     if (count > 0) {
         sender->view->regenAll(true);
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
         longPress(sender);
     }
     
@@ -1204,7 +1219,7 @@ void MgCmdSelect::resetSelection(const MgMotion* sender)
     m_handleIndex = 0;
     m_rotateHandle = 0;
     if (has) {
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
     }
 }
 
@@ -1217,7 +1232,7 @@ bool MgCmdSelect::addSelection(const MgMotion* sender, int shapeID)
         m_id = shape->getID();
         m_hit.segment = -1;
         sender->view->redraw();
-        sender->view->selectionChanged();
+        selectionChanged(sender->view);
     }
 
     return shape != NULL;

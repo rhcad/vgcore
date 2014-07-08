@@ -25,11 +25,11 @@ public:
         virtual bool save(MgStorage* s) const = 0;
         virtual bool load(MgStorage* s) = 0;
         virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const = 0;
-        virtual Box2d getExtent() const { return Box2d(0, 0, 1, 1); }
+        virtual Box2d getExtentW() const { return Box2d(0, 0, 1, 1); }
     };
     
     int getCount() const { return (int)_items.size(); }
-    void addItem(ICmd* p);
+    void addItem(const Matrix2d& w2m, ICmd* p);
     void setRefID(int sid) { _sid = sid; }
     
     static MgRecordShape* create() { return new MgRecordShape(); }

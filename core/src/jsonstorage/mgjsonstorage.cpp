@@ -442,12 +442,14 @@ int MgJsonStorage::Impl::readString(const char* name, char* value, int count)
 #else
                 strncpy(value, item.GetString(), ret);
 #endif
-                value[ret] = 0;
             }
         }
         else {
             LOGD("Invalid value for readString(%s)", name);
         }
+    }
+    if (value) {
+        value[ret] = 0;
     }
     
     return ret;
