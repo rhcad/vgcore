@@ -1116,7 +1116,7 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
             sender->view->showMessage("@shape1_deleted");
         } else {
             char buf[31];
-            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted");
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted", count);
             sender->view->showMessage(buf);
         }
     }

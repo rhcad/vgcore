@@ -231,10 +231,9 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
     const Point2d* pts = path.getPoints();
     const char* types = path.getTypes();
     char cmd = 0;
+    Point2d curpt;
     
     for (int i = 0; i < n; i++) {
-        const Point2d curpt(path.getEndPoint());
-        
         switch (types[i] & ~kGiCloseFigure) {
             case kGiMoveTo:
                 ss << "M" << pts[i].x << "," << pts[i].y << " ";
@@ -316,6 +315,7 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
             cmd = 'Z';
             ss << "Z ";
         }
+        curpt = path.getPoint(i);
     }
 }
 

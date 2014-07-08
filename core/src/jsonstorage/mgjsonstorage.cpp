@@ -48,6 +48,7 @@ private:
 private:
     Document _doc;
     std::vector<Value*> _stack;
+    std::vector<Value*> _created;
     StringBuffer _strbuf;
     FileStream  *_fs;
     const char* _err;
@@ -155,6 +156,10 @@ void MgJsonStorage::Impl::clear()
         delete _fs;
         _fs = NULL;
     }
+    for (size_t i = 0; i < _created.size(); i++) {
+        delete _created[i];
+    }
+    _created.clear();
 }
 
 FileStream& MgJsonStorage::Impl::createStream(FILE* fp)
@@ -471,8 +476,9 @@ void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 #else
         snprintf(buf, sizeof(buf), "0x%x", value);
 #endif
-        Value valueCopied(buf, (unsigned)strlen(buf), _doc.GetAllocator());
-        _stack.back()->AddMember(name, valueCopied, _doc.GetAllocator());
+        Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
+        _created.push_back(v);
+        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
     }
 }
 
@@ -498,8 +504,13 @@ void MgJsonStorage::Impl::writeFloatArray(const char* name, const float* values,
 
 void MgJsonStorage::Impl::writeString(const char* name, const char* value)
 {
-    Value valueCopied(value, (unsigned)strlen(value), _doc.GetAllocator());
-    _stack.back()->AddMember(name, value ? value : "", _doc.GetAllocator());
+    if (value) {
+        Value* v = new Value(value, (unsigned)strlen(value), _doc.GetAllocator());
+        _created.push_back(v);
+        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+    } else {
+        _stack.back()->AddMember(name, "", _doc.GetAllocator());
+    }
 }
 
 int MgJsonStorage::Impl::readIntArray(const char* name, int* values, int count, bool report)
