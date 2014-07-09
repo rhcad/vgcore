@@ -102,6 +102,8 @@
     <ClInclude Include="..\..\core\include\view\gigesture.h" />
     <ClInclude Include="..\..\core\include\view\gimousehelper.h" />
     <ClInclude Include="..\..\core\include\view\giview.h" />
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_core.h" />
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_unchecked.h" />
     <ClInclude Include="..\..\core\src\view\GcBaseView.h" />
     <ClInclude Include="..\..\core\src\view\GcGraphView.h" />
     <ClInclude Include="..\..\core\src\view\GcMagnifierView.h" />

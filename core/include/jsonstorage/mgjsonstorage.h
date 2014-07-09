@@ -50,6 +50,12 @@ public:
     //! 返回 storageForRead() 中的解析错误，NULL表示没有错误
     const char* getParseError();
     
+    //! UTF-16/32编码的文件转换为UTF-8编码的文件，返回转换与否
+    static bool toUTF8(const char* infile, const char* outfile);
+    
+    //! UTF-8编码的文件转换为UTF-16LE编码的文件，返回转换与否
+    static bool toUTF16(const char* infile, const char* outfile);
+    
 private:
     class Impl;
     Impl* _impl;

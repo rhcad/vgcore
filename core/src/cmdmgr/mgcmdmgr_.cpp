@@ -155,7 +155,7 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
             _drawcmd = _cmdname;
         }
     }
-    else if (strcmp(name, "@erasewnd") == 0) {
+    else if (strcmp(name, "erasewnd") == 0) {
         eraseWnd(sender);
     }
     else if (!name[0]) {

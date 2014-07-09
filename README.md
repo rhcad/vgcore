@@ -25,6 +25,7 @@ It uses the following open source projects:
 - [simple-svg](http://code.google.com/p/simple-svg) (BSD license): A C++ header file for creating SVG files.
 - [rapidjson](https://github.com/Kanma/rapidjson) (MIT license): A fast JSON parser/generator for C++ with both SAX/DOM style API.
 - [Nano SVG](https://github.com/memononen/nanosvg) (zlib license): Simple stupid single-header-file SVG parser.
+- [UTF8-CPP](http://sourceforge.net/projects/utfcpp/): A simple, portable and lightweight library for handling UTF-8 encoded strings.
 
 ## Build
 

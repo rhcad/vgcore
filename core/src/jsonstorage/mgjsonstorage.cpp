@@ -2,6 +2,7 @@
 #include "mgstorage.h"
 #include <vector>
 #include "mglog.h"
+#include "utf8_unchecked.h"
 
 #if !defined(_MSC_VER) || _MSC_VER > 1200
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
@@ -109,6 +110,10 @@ MgStorage* MgJsonStorage::storageForRead(FILE* fp)
 #ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     if (fp) {
+        utf8::uint8_t head[3];
+        fread(head, 1, sizeof(head), fp);
+        if (!utf8::starts_with_bom(head, head + sizeof(head)))
+            fseek(fp, 0, SEEK_SET);
         _impl->document().ParseStream<0>(_impl->createStream(fp));
         if (_impl->getError()) {
             LOGE("parse error: %s", _impl->getError());
@@ -193,10 +198,14 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
         }
         
         if (_stack.empty()) {
-            if (!_doc.IsObject() || !_doc.HasMember(name)) {
-                return false;           // 没有此节点
+            if (name && *name) {
+                if (!_doc.IsObject() || !_doc.HasMember(name)) {
+                    return false;           // 没有此节点
+                }
+                _stack.push_back(&_doc[name]);  // 当前JSON对象压栈
+            } else {
+                _stack.push_back(&_doc);
             }
-            _stack.push_back(&_doc[name]);  // 当前JSON对象压栈
             _err = NULL;
         }
         else {
@@ -351,13 +360,13 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
 
 bool MgJsonStorage::Impl::readBool(const char* name, bool defvalue)
 {
-    return readInt(name, defvalue ? 1 : 0);
+    return !!readInt(name, defvalue ? 1 : 0);
 }
 
 static inline bool parseFloat(const char* str, float& value)
 {
     char *endptr;
-    value = strtof(str, &endptr);
+    value = (float)strtod(str, &endptr);
     return !endptr || !*endptr;
 }
 
@@ -561,6 +570,100 @@ void MgJsonStorage::Impl::writeIntArray(const char* name, const int* values, int
         node.PushBack(values[i], _doc.GetAllocator());
     }
     _stack.back()->AddMember(name, node, _doc.GetAllocator());
+}
+
+using namespace std;
+using namespace utf8;
+using namespace utf8::unchecked;
+
+template <typename chartype>
+static size_t toutf8_(FILE* fpi, FILE* fpo)
+{
+    size_t ret = 0;
+    vector<chartype> buf(1024);
+    
+    fwrite(bom, 1, sizeof(bom), fpo);
+    for (;;) {
+        size_t n = fread(&buf.front(), sizeof(chartype), buf.size(), fpi);
+        if (n == 0 || n > buf.size())
+            break;
+        vector<uint8_t> utf8result;
+        unsigned tpsize = sizeof(chartype);
+        if (tpsize == 2)
+            utf16to8(buf.begin(), buf.begin() + n, back_inserter(utf8result));
+        else
+            utf32to8(buf.begin(), buf.begin() + n, back_inserter(utf8result));
+        ret += fwrite(&utf8result.front(), 1, utf8result.size(), fpo);
+    }
+    
+    return ret;
+}
+
+bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
+{
+    uint8_t head[4] = { 1, 1, 1, 1 };
+    FILE* fp = mgopenfile(infile, "rt");
+    size_t ret = 0;
+    
+    if (fp) {
+        fread(head, 1, sizeof(head), fp);
+        
+        if (starts_with_bom(head, head + sizeof(head), bom32be, sizeof(bom32be))
+            || starts_with_bom(head, head + sizeof(head), bom32le, sizeof(bom32le))) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                fseek(fp, sizeof(bom32be), SEEK_SET);
+                ret = toutf8_<uint32_t>(fp, fpo);
+                fclose(fpo);
+            }
+        }
+        else if (starts_with_bom(head, head + sizeof(head), bom16be, sizeof(bom16be))
+                 || starts_with_bom(head, head + sizeof(head), bom16le, sizeof(bom16le))) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                fseek(fp, sizeof(bom16be), SEEK_SET);
+                ret = toutf8_<uint16_t>(fp, fpo);
+                fclose(fpo);
+            }
+        }
+        
+        fclose(fp);
+    }
+    
+    return ret > 0;
+}
+
+bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
+{
+    uint8_t head[3] = { 0, 0, 0 };
+    FILE* fp = mgopenfile(infile, "rt");
+    size_t ret = 0;
+    
+    if (fp) {
+        fread(head, 1, sizeof(head), fp);
+        
+        if (starts_with_bom(head, head + sizeof(head))) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                vector<uint8_t> buf(1024);
+                
+                fwrite(bom16le, 1, sizeof(bom16le), fpo);
+                for (;;) {
+                    size_t n = fread(&buf.front(), 1, buf.size(), fp);
+                    if (n == 0 || n > buf.size())
+                        break;
+                    vector<uint16_t> utf16result;
+                    utf8to16(buf.begin(), buf.begin() + n, back_inserter(utf16result));
+                    ret += fwrite(&utf16result.front(), 2, utf16result.size(), fpo);
+                }
+                fclose(fpo);
+            }
+        }
+        
+        fclose(fp);
+    }
+    
+    return ret > 0;
 }
 
 #endif

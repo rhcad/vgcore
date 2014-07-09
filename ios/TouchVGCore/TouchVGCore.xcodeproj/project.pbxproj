@@ -14,6 +14,8 @@
 		024FCF78188A8552000B0C41 /* recordshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF66188A84A6000B0C41 /* recordshapes.h */; };
 		024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6B188A84E3000B0C41 /* simple_svg.hpp */; };
 		024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
+		0255AC1C196CCC780081708C /* utf8_unchecked.h in Headers */ = {isa = PBXBuildFile; fileRef = 0255AC1A196CCC780081708C /* utf8_unchecked.h */; };
+		0255AC1D196CCC780081708C /* utf8_core.h in Headers */ = {isa = PBXBuildFile; fileRef = 0255AC1B196CCC780081708C /* utf8_core.h */; };
 		0269CE1718F25DA500999778 /* gicoreviewdata.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE1618F25DA500999778 /* gicoreviewdata.h */; };
 		0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2C18F29DC300999778 /* girecordcanvas.h */; };
 		0269CE2F18F29DC300999778 /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2D18F29DC300999778 /* girecordshape.h */; };
@@ -234,6 +236,8 @@
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
 		024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgcanvas.cpp; sourceTree = "<group>"; };
+		0255AC1A196CCC780081708C /* utf8_unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8_unchecked.h; sourceTree = "<group>"; };
+		0255AC1B196CCC780081708C /* utf8_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8_core.h; sourceTree = "<group>"; };
 		0269CE1618F25DA500999778 /* gicoreviewdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gicoreviewdata.h; sourceTree = "<group>"; };
 		0269CE2C18F29DC300999778 /* girecordcanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordcanvas.h; sourceTree = "<group>"; };
 		0269CE2D18F29DC300999778 /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
@@ -803,6 +807,8 @@
 		AED37075186681DB00C0A778 /* jsonstorage */ = {
 			isa = PBXGroup;
 			children = (
+				0255AC1A196CCC780081708C /* utf8_unchecked.h */,
+				0255AC1B196CCC780081708C /* utf8_core.h */,
 				AED37076186681DB00C0A778 /* mgjsonstorage.cpp */,
 				AED37077186681DB00C0A778 /* rapidjson */,
 			);
@@ -904,6 +910,7 @@
 				AED370F21866899C00C0A778 /* gixform.h in Headers */,
 				AED370F31866899C00C0A778 /* mgjsonstorage.h in Headers */,
 				AED370F41866899C00C0A778 /* mglog.h in Headers */,
+				0255AC1C196CCC780081708C /* utf8_unchecked.h in Headers */,
 				AED370F51866899C00C0A778 /* mgvector.h in Headers */,
 				AED370F61866899C00C0A778 /* mgbasicsp.h in Headers */,
 				AED370F71866899C00C0A778 /* mgbasicspreg.h in Headers */,
@@ -945,6 +952,7 @@
 				024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */,
 				024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */,
 				AE20C4D61866D38200471A19 /* GcBaseView.h in Headers */,
+				0255AC1D196CCC780081708C /* utf8_core.h in Headers */,
 				AE20C4D71866D38200471A19 /* GcGraphView.cpp in Headers */,
 				AE20C4D81866D38200471A19 /* GcGraphView.h in Headers */,
 				AE20C4D91866D38200471A19 /* GcMagnifierView.cpp in Headers */,
