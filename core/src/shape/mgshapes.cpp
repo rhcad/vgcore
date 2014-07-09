@@ -345,7 +345,7 @@ int MgShapes::traverseByType(int type, void (*c)(const MgShape*, void*), void* d
     
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         const MgBaseShape* shape = (*it)->shapec();
-        if (shape->isKindOf(type)) {
+        if (type == 0 || shape->isKindOf(type)) {
             (*c)(*it, d);
             count++;
         } else if (shape->isKindOf(MgComposite::Type())) {

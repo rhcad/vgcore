@@ -3,8 +3,6 @@
 #include <vector>
 #include "mglog.h"
 #include "utf8_unchecked.h"
-
-#if !defined(_MSC_VER) || _MSC_VER > 1200
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include "rapidjson/filestream.h"   // wrapper of C stream for prettywriter as output
@@ -16,7 +14,7 @@ using namespace rapidjson;
 class MgJsonStorage::Impl : public MgStorage
 {
 public:
-    Impl() : _fs(NULL), _err(NULL) {}
+    Impl() : _fs(NULL), _err(NULL), _arrmode(false) {}
     virtual ~Impl() { if (_fs) delete(_fs); }
     
     void clear();
@@ -25,6 +23,8 @@ public:
     const char* getError() { return _err ? _err : _doc.GetParseError(); }
     FileStream& createStream(FILE* fp);
     bool save(FILE* fp, bool pretty);
+    void setArrayMode(bool arr) { _arrmode = arr; }
+    void saveNumberAsString(bool str) { _numAsStr = str; }
     
 private:
     bool readNode(const char* name, int index, bool ended);
@@ -54,32 +54,23 @@ private:
     FileStream  *_fs;
     const char* _err;
     int _nodeCount;
+    bool _arrmode;
+    bool _numAsStr;
 };
-
-#endif
 
 MgJsonStorage::MgJsonStorage() : _impl(NULL)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl = new Impl();
-#endif
 }
 
 MgJsonStorage::~MgJsonStorage()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     delete _impl;
-#endif
 }
 
 const char* MgJsonStorage::stringify(bool pretty)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     return _impl->stringify(pretty);
-#else
-    pretty;
-    return "";
-#endif
 }
 
 bool MgJsonStorage::save(FILE* fp, bool pretty)
@@ -87,9 +78,18 @@ bool MgJsonStorage::save(FILE* fp, bool pretty)
     return fp && !_impl->document().IsNull() && _impl->save(fp, pretty);
 }
 
+void MgJsonStorage::setArrayMode(bool arr)
+{
+    _impl->setArrayMode(arr);
+}
+
+void MgJsonStorage::saveNumberAsString(bool str)
+{
+    _impl->saveNumberAsString(str);
+}
+
 MgStorage* MgJsonStorage::storageForRead(const char* content)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     if (content && *content) {
         _impl->document().Parse<0>(content);
@@ -99,15 +99,10 @@ MgStorage* MgJsonStorage::storageForRead(const char* content)
     }
     
     return _impl;
-#else
-    content;
-    return NULL;
-#endif
 }
 
 MgStorage* MgJsonStorage::storageForRead(FILE* fp)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     if (fp) {
         utf8::uint8_t head[3];
@@ -119,9 +114,7 @@ MgStorage* MgJsonStorage::storageForRead(FILE* fp)
             LOGE("parse error: %s", _impl->getError());
         }
     }
-#else
-    fp;
-#endif
+    
     return _impl;
 }
 
@@ -132,24 +125,14 @@ void MgJsonStorage::clear()
 
 const char* MgJsonStorage::getParseError()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     return _impl->getError();
-#else
-    return "";
-#endif
 }
 
 MgStorage* MgJsonStorage::storageForWrite()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     return _impl;
-#else
-    return NULL;
-#endif
 }
-
-#ifdef RAPIDJSON_DOCUMENT_H_
 
 void MgJsonStorage::Impl::clear()
 {
@@ -247,7 +230,24 @@ bool MgJsonStorage::Impl::writeNode(const char* name, int index, bool ended)
             name = tmpname;
         }
         
+        if (_stack.empty() && (!name || !*name)) {
+            _doc.SetObject();
+            _stack.push_back(&_doc);
+            _err = NULL;
+            return true;
+        }
+        
         Value tmpnode(kObjectType);
+        
+        if (index >= 0 && _arrmode) {
+            Value &parent = *_stack.back();
+            if (!parent.IsArray())
+                parent.SetArray();
+            parent.PushBack(tmpnode, _doc.GetAllocator());
+            _stack.push_back(parent.End() - 1);
+            return true;
+        }
+        
         Value namenode(name, _doc.GetAllocator());  // 节点名是临时串，要复制
         
         if (_stack.empty()) {
@@ -471,12 +471,24 @@ int MgJsonStorage::Impl::readString(const char* name, char* value, int count)
 
 void MgJsonStorage::Impl::writeInt(const char* name, int value)
 {
-    _stack.back()->AddMember(name, value, _doc.GetAllocator());
+    if (_numAsStr) {
+        char buf[20];
+#if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
+        sprintf_s(buf, sizeof(buf), "%d", value);
+#else
+        snprintf(buf, sizeof(buf), "%d", value);
+#endif
+        Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
+        _created.push_back(v);
+        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+    } else {
+        _stack.back()->AddMember(name, value, _doc.GetAllocator());
+    }
 }
 
 void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 {
-    if (value >= 0 && value <= 0xFF) {
+    if (value >= 0 && value <= 0xFF && !_numAsStr) {
         _stack.back()->AddMember(name, (unsigned)value, _doc.GetAllocator());
     } else {
         char buf[20];
@@ -665,5 +677,3 @@ bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
     
     return ret > 0;
 }
-
-#endif

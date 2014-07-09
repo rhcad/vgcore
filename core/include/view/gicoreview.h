@@ -120,6 +120,7 @@ public:
     int addShapesForTest(int n = 1000);
     int getShapeCount();
     int getShapeCount(long doc);
+    int getUnlockedShapeCount();
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();

@@ -777,6 +777,21 @@ int GiCoreView::getShapeCount(long doc)
     return p ? p->getShapeCount() : 0;
 }
 
+static void getUnlockedShapeCount_(const MgShape* sp, void* d)
+{
+    if (!sp->shapec()->getFlag(kMgShapeLocked)) {
+        int* n = (int*)d;
+        *n = *n + 1;
+    }
+}
+
+int GiCoreView::getUnlockedShapeCount()
+{
+    int n = 0;
+    impl->shapes()->traverseByType(0, getUnlockedShapeCount_, &n);
+    return n;
+}
+
 long GiCoreView::getChangeCount()
 {
     return impl->changeCount;
