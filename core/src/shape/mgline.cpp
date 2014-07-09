@@ -7,7 +7,7 @@
 
 MG_IMPLEMENT_CREATE(MgDot)
 
-MgDot::MgDot()
+MgDot::MgDot() : _type(0)
 {
 }
 
@@ -33,12 +33,13 @@ void MgDot::_setPoint(int, const Point2d& pt)
 void MgDot::_copy(const MgDot& src)
 {
     _point = src._point;
+    _type = src._type;
     __super::_copy(src);
 }
 
 bool MgDot::_equals(const MgDot& src) const
 {
-    return _point == src._point && __super::_equals(src);
+    return (_point == src._point && _type == src._type && __super::_equals(src));
 }
 
 void MgDot::_update()
@@ -67,11 +68,18 @@ float MgDot::_hitTest(const Point2d& pt, float, MgHitResult& res) const
 
 bool MgDot::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
 {
-    GiContext ctx2(0, GiColor::Invalid(), GiContext::kNullLine,
-                   ctx.hasFillColor() ? ctx.getFillColor() : ctx.getLineColor());
-    float w = gs.calcPenWidth(ctx.getLineWidth(), false);
+    bool ret = false;
     
-    bool ret = gs.drawCircle(&ctx2, _point, gs.xf().displayToModel(w));
+    if (_type <= 0) {
+        GiContext ctx2(0, GiColor::Invalid(), GiContext::kNullLine,
+                       ctx.hasFillColor() ? ctx.getFillColor() : ctx.getLineColor());
+        float w = gs.calcPenWidth(ctx.getLineWidth(), false);
+        
+        ret = gs.drawCircle(&ctx2, _point, gs.xf().displayToModel(w));
+    } else {
+        ret = gs.drawHandle(_point, _type - 1);
+    }
+    
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
@@ -82,6 +90,7 @@ void MgDot::_output(GiPath&) const
 bool MgDot::_save(MgStorage* s) const
 {
     bool ret = __super::_save(s);
+    s->writeInt("ptype", _type);
     s->writeFloat("x", _point.x);
     s->writeFloat("y", _point.y);
     return ret;
@@ -90,6 +99,7 @@ bool MgDot::_save(MgStorage* s) const
 bool MgDot::_load(MgShapeFactory* factory, MgStorage* s)
 {
     bool ret = __super::_load(factory, s);
+    _type = s->readInt("ptype", _type);
     _point.set(s->readFloat("x", _point.x), s->readFloat("y", _point.y));
     return ret;
 }
