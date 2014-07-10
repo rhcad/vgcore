@@ -203,7 +203,7 @@ public:
                 selbox.xmin, selbox.ymin, selbox.width(), selbox.height()), false);
     }
     
-    void shapeAdded(MgShape* sp) {
+    void shapeAdded(const MgShape* sp) {
         regenAppend(sp->getID());
         getCmdSubject()->onShapeAdded(motion(), sp);
     }
