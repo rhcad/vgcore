@@ -22,6 +22,12 @@ struct mgnear {
 */
 static float nearestOnBezier(const Point2d& pt, const Point2d* pts, Point2d& nearpt);
 
+//! 计算贝塞尔曲线段的绑定框
+static Box2d bezierBox1(const Point2d points[4]);
+
+//! 计算贝塞尔曲线段的绑定框
+static Box2d bezierBox4(const Point2d& p1, const Point2d& p2, const Point2d& p3, const Point2d& p4);
+
 //! 计算贝塞尔曲线的绑定框
 /*!
     \param[out] box 绑定框

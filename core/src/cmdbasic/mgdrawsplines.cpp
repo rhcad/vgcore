@@ -150,8 +150,8 @@ bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
             MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
             float dist = lines->endPoint().distanceTo(dynshape()->shape()->getPoint(m_step - 1));
 
-            if (dist < sender->displayMmToModel(2.f)) {   // 最后两点重合
-                lines->removePoint(m_step--);               // 去掉最末点
+            if (dist < sender->displayMmToModel(2.f)) { // 最后两点重合
+                lines->removePoint(m_step--);           // 去掉最末点
             }
         }
         if (m_step > 1) {
@@ -166,16 +166,15 @@ bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
         line.shape()->setPoint(0, sender->pointM);
         line.shape()->setPoint(1, sender->pointM + vec);
         
-        if (sender->view->shapeWillAdded(&line)) {
-            addShape(sender, &line);
-        }
+        MgShape* newsp = addShape(sender, &line);
         
         if (sender->pointM.distanceTo(sender->startPtM) > vec.length()) {
             line.shape()->setPoint(0, sender->startPtM);
             line.shape()->setPoint(1, sender->startPtM + vec);
-            if (sender->view->shapeWillAdded(&line)) {
-                addShape(sender, &line);
-            }
+            addShape(sender, &line);
+            sender->view->regenAll(true);
+        } else {
+            sender->view->regenAppend(newsp->getID());
         }
     }
     
@@ -219,10 +218,9 @@ bool MgCmdDrawSplines::click(const MgMotion* sender)
         line.shape()->setPoint(0, sender->startPtM);
         line.shape()->setPoint(1, pt);
         
-        if (sender->view->shapeWillAdded(&line)) {
-            addShape(sender, &line);
-        }
+        MgShape* newsp = addShape(sender, &line);
         dynshape()->shape()->clear();
+        sender->view->regenAppend(newsp->getID());
         
         return true;
     }

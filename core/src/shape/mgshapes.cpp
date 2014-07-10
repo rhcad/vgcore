@@ -328,6 +328,18 @@ const MgShape* MgShapes::findShapeByTag(int tag) const
     return NULL;
 }
 
+int MgShapes::getShapeCountByTypeOrTag(int type, int tag) const
+{
+    int n = 0;
+    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
+        if ((type != 0 && type == (*it)->shapec()->getType()) ||
+            (tag != 0 && tag == (*it)->getTag())) {
+            n++;
+        }
+    }
+    return n;
+}
+
 const MgShape* MgShapes::findShapeByType(int type) const
 {
     if (!this || 0 == type)
@@ -339,13 +351,24 @@ const MgShape* MgShapes::findShapeByType(int type) const
     return NULL;
 }
 
+const MgShape* MgShapes::findShapeByTypeAndTag(int type, int tag) const
+{
+    if (!this)
+        return NULL;
+    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
+        if ((*it)->shapec()->getType() == type && (*it)->getTag() == tag)
+            return *it;
+    }
+    return NULL;
+}
+
 int MgShapes::traverseByType(int type, void (*c)(const MgShape*, void*), void* d)
 {
     int count = 0;
     
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         const MgBaseShape* shape = (*it)->shapec();
-        if (shape->isKindOf(type)) {
+        if (type == 0 || shape->isKindOf(type)) {
             (*c)(*it, d);
             count++;
         } else if (shape->isKindOf(MgComposite::Type())) {

@@ -132,7 +132,7 @@ bool MgCmdErase::touchEnded(const MgMotion* sender)
         if (count > 0) {
             sender->view->regenAll(true);
             char buf[31];
-            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted");
+            MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted", count);
             sender->view->showMessage(buf);
         }
     }

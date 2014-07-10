@@ -6,12 +6,9 @@
 #include "mgcurv.h"
 #include "mglnrel.h"
 
-static Box2d computeCubicBox(const Point2d& pt1, const Point2d& pt2, 
-                             const Point2d& pt3, const Point2d& pt4);
-
-static inline Box2d computeCubicBox(const Point2d points[4])
+Box2d mgnear::bezierBox1(const Point2d points[4])
 {
-    return computeCubicBox(points[0], points[1], points[2], points[3]);
+    return bezierBox4(points[0], points[1], points[2], points[3]);
 }
 
 void mgnear::beziersBox(
@@ -20,10 +17,10 @@ void mgnear::beziersBox(
     box.empty();
 
     for (int i = 0; i + 3 < count; i += 3) {
-        box.unionWith(computeCubicBox(points + i));
+        box.unionWith(bezierBox1(points + i));
     }
     if (closed && count > 3) {
-        box.unionWith(computeCubicBox(points[count - 1],
+        box.unionWith(bezierBox4(points[count - 1],
             points[count - 1] * 2 - points[count - 2].asVector(),
             points[0] * 2 - points[1].asVector(), points[0]));
     }
@@ -33,12 +30,12 @@ bool mgnear::beziersIntersectBox(
     const Box2d& box, int count, const Point2d* points, bool closed)
 {
     for (int i = 0; i + 3 < count; i += 3) {
-        if (box.isIntersect(computeCubicBox(points + i))) {
+        if (box.isIntersect(bezierBox1(points + i))) {
             return true;
         }
     }
     if (closed && count > 3) {
-        if (box.isIntersect(computeCubicBox(points[count - 1],
+        if (box.isIntersect(bezierBox4(points[count - 1],
             points[count - 1] * 2 - points[count - 2].asVector(),
             points[0] * 2 - points[1].asVector(), points[0])))
         {
@@ -59,7 +56,7 @@ void mgnear::cubicSplinesBox(
     box.empty();
     for (int i = 0; i + 1 < n2; i++)
     {
-        box.unionWith(computeCubicBox(knots[i], 
+        box.unionWith(bezierBox4(knots[i], 
             knots[i] + knotvs[i] * d,
             knots[(i + 1) % n] - knotvs[(i + 1) % n] * d,
             knots[(i + 1) % n]));
@@ -99,7 +96,7 @@ float mgnear::cubicSplinesHit(
     segment = -1;
     for (int i = 0; i + 1 < n2; i++) {
         mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts, hermite);
-        if (rect.isIntersect(computeCubicBox(pts))) {
+        if (rect.isIntersect(bezierBox1(pts))) {
             dist = mgnear::nearestOnBezier(pt, pts, ptTemp);
             if (dist < distMin) {
                 distMin = dist;
@@ -132,7 +129,7 @@ float mgnear::quadSplinesHit(int n, const Point2d* knots, bool closed,
             pts[2] = knots[i+2];
         
         mgcurv::quadBezierToCubic(pts, pts + 3);
-        if (rect.isIntersect(computeCubicBox(pts + 3))) {
+        if (rect.isIntersect(bezierBox1(pts + 3))) {
             dist = mgnear::nearestOnBezier(pt, pts + 3, ptTemp);
             if (dist < distMin) {
                 distMin = dist;
@@ -399,7 +396,7 @@ void mgnear::moveRectHandle(Box2d& rect, int index,
     }
 }
 
-// computeCubicBaseValue, computeCubicFirstDerivativeRoots, computeCubicBox
+// computeCubicBaseValue, computeCubicFirstDerivativeRoots
 // © 2011 Mike "Pomax" Kamermans of nihongoresources.com
 // http://processingjs.nihongoresources.com/bezierinfo/#bounds
 
@@ -423,8 +420,8 @@ static Point2d computeCubicFirstDerivativeRoots(float a, float b, float c, float
 }
 
 // Compute the bounding box based on the straightened curve, for best fit
-Box2d computeCubicBox(const Point2d& pt1, const Point2d& pt2, 
-                      const Point2d& pt3, const Point2d& pt4)
+Box2d mgnear::bezierBox4(const Point2d& pt1, const Point2d& pt2,
+                         const Point2d& pt3, const Point2d& pt4)
 {
     Box2d bbox(pt1, pt4);
 

@@ -2,8 +2,7 @@
 #include "mgstorage.h"
 #include <vector>
 #include "mglog.h"
-
-#if !defined(_MSC_VER) || _MSC_VER > 1200
+#include "utf8_unchecked.h"
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include "rapidjson/filestream.h"   // wrapper of C stream for prettywriter as output
@@ -15,7 +14,7 @@ using namespace rapidjson;
 class MgJsonStorage::Impl : public MgStorage
 {
 public:
-    Impl() : _fs(NULL), _err(NULL) {}
+    Impl() : _fs(NULL), _err(NULL), _arrmode(false), _numAsStr(false) {}
     virtual ~Impl() { if (_fs) delete(_fs); }
     
     void clear();
@@ -24,6 +23,8 @@ public:
     const char* getError() { return _err ? _err : _doc.GetParseError(); }
     FileStream& createStream(FILE* fp);
     bool save(FILE* fp, bool pretty);
+    void setArrayMode(bool arr) { _arrmode = arr; }
+    void saveNumberAsString(bool str) { _numAsStr = str; }
     
 private:
     bool readNode(const char* name, int index, bool ended);
@@ -42,40 +43,36 @@ private:
     void writeFloat(const char* name, float value);
     void writeFloatArray(const char* name, const float* values, int count);
     void writeString(const char* name, const char* value);
+    int readIntArray(const char* name, int* values, int count, bool report = true);
+    void writeIntArray(const char* name, const int* values, int count);
+    
+    bool hasNum(const char* name) { return strspn(name, "01234567890") > 0; }
     
 private:
     Document _doc;
     std::vector<Value*> _stack;
+    std::vector<Value*> _created;
     StringBuffer _strbuf;
     FileStream  *_fs;
     const char* _err;
     int _nodeCount;
+    bool _arrmode;
+    bool _numAsStr;
 };
-
-#endif
 
 MgJsonStorage::MgJsonStorage() : _impl(NULL)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl = new Impl();
-#endif
 }
 
 MgJsonStorage::~MgJsonStorage()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     delete _impl;
-#endif
 }
 
 const char* MgJsonStorage::stringify(bool pretty)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     return _impl->stringify(pretty);
-#else
-    pretty;
-    return "";
-#endif
 }
 
 bool MgJsonStorage::save(FILE* fp, bool pretty)
@@ -83,9 +80,18 @@ bool MgJsonStorage::save(FILE* fp, bool pretty)
     return fp && !_impl->document().IsNull() && _impl->save(fp, pretty);
 }
 
+void MgJsonStorage::setArrayMode(bool arr)
+{
+    _impl->setArrayMode(arr);
+}
+
+void MgJsonStorage::saveNumberAsString(bool str)
+{
+    _impl->saveNumberAsString(str);
+}
+
 MgStorage* MgJsonStorage::storageForRead(const char* content)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     if (content && *content) {
         _impl->document().Parse<0>(content);
@@ -95,25 +101,22 @@ MgStorage* MgJsonStorage::storageForRead(const char* content)
     }
     
     return _impl;
-#else
-    content;
-    return NULL;
-#endif
 }
 
 MgStorage* MgJsonStorage::storageForRead(FILE* fp)
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     if (fp) {
+        utf8::uint8_t head[3];
+        fread(head, 1, sizeof(head), fp);
+        if (!utf8::starts_with_bom(head, head + sizeof(head)))
+            fseek(fp, 0, SEEK_SET);
         _impl->document().ParseStream<0>(_impl->createStream(fp));
         if (_impl->getError()) {
             LOGE("parse error: %s", _impl->getError());
         }
     }
-#else
-    fp;
-#endif
+    
     return _impl;
 }
 
@@ -124,24 +127,14 @@ void MgJsonStorage::clear()
 
 const char* MgJsonStorage::getParseError()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     return _impl->getError();
-#else
-    return "";
-#endif
 }
 
 MgStorage* MgJsonStorage::storageForWrite()
 {
-#ifdef RAPIDJSON_DOCUMENT_H_
     _impl->clear();
     return _impl;
-#else
-    return NULL;
-#endif
 }
-
-#ifdef RAPIDJSON_DOCUMENT_H_
 
 void MgJsonStorage::Impl::clear()
 {
@@ -153,6 +146,10 @@ void MgJsonStorage::Impl::clear()
         delete _fs;
         _fs = NULL;
     }
+    for (size_t i = 0; i < _created.size(); i++) {
+        delete _created[i];
+    }
+    _created.clear();
 }
 
 FileStream& MgJsonStorage::Impl::createStream(FILE* fp)
@@ -175,6 +172,7 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
 {
     if (!ended) {                       // 开始一个新节点
         char tmpname[32];
+        
         if (index >= 0) {               // 形成实际节点名称
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
             sprintf_s(tmpname, sizeof(tmpname), "%s%d", name, index + 1);
@@ -185,18 +183,27 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
         }
         
         if (_stack.empty()) {
-            if (!_doc.IsObject() || !_doc.HasMember(name)) {
-                return false;           // 没有此节点
+            if (name && *name) {
+                if (!_doc.IsObject() || !_doc.HasMember(name)) {
+                    return false;           // 没有此节点
+                }
+                _stack.push_back(&_doc[name]);  // 当前JSON对象压栈
+            } else {
+                _stack.push_back(&_doc);
             }
-            _stack.push_back(&_doc[name]);  // 当前JSON对象压栈
             _err = NULL;
         }
         else {
             Value &parent = *_stack.back();
-            if (!parent.IsObject() || !parent.HasMember(name)) {
+            if (parent.IsArray() && index >= 0 && index < (int)parent.Size()) {
+                _stack.push_back(&parent[index]);
+            }
+            else if (parent.IsObject() && parent.HasMember(name)) {
+                _stack.push_back(&parent[name]);
+            }
+            else {
                 return false;
             }
-            _stack.push_back(&parent[name]);
         }
     }
     else {                              // 当前节点读取完成
@@ -225,7 +232,24 @@ bool MgJsonStorage::Impl::writeNode(const char* name, int index, bool ended)
             name = tmpname;
         }
         
+        if (_stack.empty() && (!name || !*name)) {
+            _doc.SetObject();
+            _stack.push_back(&_doc);
+            _err = NULL;
+            return true;
+        }
+        
         Value tmpnode(kObjectType);
+        
+        if (index >= 0 && _arrmode) {
+            Value &parent = *_stack.back();
+            if (!parent.IsArray())
+                parent.SetArray();
+            parent.PushBack(tmpnode, _doc.GetAllocator());
+            _stack.push_back(parent.End() - 1);
+            return true;
+        }
+        
         Value namenode(name, _doc.GetAllocator());  // 节点名是临时串，要复制
         
         if (_stack.empty()) {
@@ -322,6 +346,9 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
         else if (item.IsUint()) {
             ret = item.GetUint();
         }
+        else if (item.IsBool()) {
+            ret = item.GetBool() ? 1 : 0;
+        }
         else if (item.IsString() && parseInt(item.GetString(), defvalue)) {
             ret = defvalue;
         }
@@ -335,21 +362,14 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
 
 bool MgJsonStorage::Impl::readBool(const char* name, bool defvalue)
 {
-    bool ret = defvalue;
-    Value *node = _stack.empty() ? NULL : _stack.back();
-    
-    if (node && node->HasMember(name)) {
-        const Value &item = node->GetMember(name);
-        
-        if (item.IsBool()) {
-            ret = item.GetBool();
-        }
-        else {
-            LOGD("Invalid value for readBool(%s)", name);
-        }
-    }
-    
-    return ret;
+    return !!readInt(name, defvalue ? 1 : 0);
+}
+
+static inline bool parseFloat(const char* str, float& value)
+{
+    char *endptr;
+    value = (float)strtod(str, &endptr);
+    return !endptr || !*endptr;
 }
 
 float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
@@ -365,6 +385,9 @@ float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
         }
         else if (item.IsInt()) {    // 浮点数串可能没有小数点，需要判断整数
             ret = (float)item.GetInt();
+        }
+        else if (item.IsString() && parseFloat(item.GetString(), defvalue)) {
+            ret = defvalue;
         }
         else {
             LOGD("Invalid value for readFloat(%s)", name);
@@ -397,6 +420,9 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values,
                     }
                     else if (v.IsInt()) {
                         values[ret++] = (float)v.GetInt();
+                    }
+                    else if (v.IsString() && parseFloat(v.GetString(), values[ret])) {
+                        ret++;
                     }
                     else if (report) {
                         LOGD("Invalid value for readFloatArray(%s)", name);
@@ -438,18 +464,46 @@ int MgJsonStorage::Impl::readString(const char* name, char* value, int count)
             LOGD("Invalid value for readString(%s)", name);
         }
     }
+    if (value) {
+        value[ret] = 0;
+    }
     
     return ret;
 }
 
 void MgJsonStorage::Impl::writeInt(const char* name, int value)
 {
-    _stack.back()->AddMember(name, value, _doc.GetAllocator());
+    if (_numAsStr) {
+        char buf[20];
+#if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
+        sprintf_s(buf, sizeof(buf), "%d", value);
+#else
+        snprintf(buf, sizeof(buf), "%d", value);
+#endif
+        Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
+        _created.push_back(v);
+        
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        }
+    } else {
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            Value* v = new Value(value);
+            _created.push_back(v);
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, value, _doc.GetAllocator());
+        }
+    }
 }
 
 void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 {
-    if (value >= 0 && value <= 0xFF) {
+    if (value >= 0 && value <= 0xFF && !_numAsStr) {
         _stack.back()->AddMember(name, (unsigned)value, _doc.GetAllocator());
     } else {
         char buf[20];
@@ -458,8 +512,15 @@ void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 #else
         snprintf(buf, sizeof(buf), "0x%x", value);
 #endif
-        Value valueCopied(buf, (unsigned)strlen(buf), _doc.GetAllocator());
-        _stack.back()->AddMember(name, valueCopied, _doc.GetAllocator());
+        Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
+        _created.push_back(v);
+        
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        }
     }
 }
 
@@ -470,7 +531,14 @@ void MgJsonStorage::Impl::writeBool(const char* name, bool value)
 
 void MgJsonStorage::Impl::writeFloat(const char* name, float value)
 {
-    _stack.back()->AddMember(name, (double)value, _doc.GetAllocator());
+    if (hasNum(name)) {
+        Value namenode(name, _doc.GetAllocator());
+        Value* v = new Value((double)value);
+        _created.push_back(v);
+        _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+    } else {
+        _stack.back()->AddMember(name, (double)value, _doc.GetAllocator());
+    }
 }
 
 void MgJsonStorage::Impl::writeFloatArray(const char* name, const float* values, int count)
@@ -485,8 +553,162 @@ void MgJsonStorage::Impl::writeFloatArray(const char* name, const float* values,
 
 void MgJsonStorage::Impl::writeString(const char* name, const char* value)
 {
-    Value valueCopied(value, (unsigned)strlen(value), _doc.GetAllocator());
-    _stack.back()->AddMember(name, value ? value : "", _doc.GetAllocator());
+    if (value) {
+        Value* v = new Value(value, (unsigned)strlen(value), _doc.GetAllocator());
+        _created.push_back(v);
+        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+    } else {
+        _stack.back()->AddMember(name, "", _doc.GetAllocator());
+    }
 }
 
-#endif
+int MgJsonStorage::Impl::readIntArray(const char* name, int* values, int count, bool report)
+{
+    int ret = 0;
+    Value *node = _stack.empty() ? NULL : _stack.back();
+    
+    report = report && count > 0 && values;
+    if (node && node->HasMember(name)) {
+        const Value &item = node->GetMember(name);
+        
+        if (item.IsArray()) {
+            ret = item.Size();
+            if (values) {
+                int n = ret < count ? ret : count;
+                ret = 0;
+                for (int i = 0; i < n; i++) {
+                    const Value &v = item[i];
+                    
+                    if (v.IsInt()) {
+                        values[ret++] = v.GetInt();
+                    }
+                    else if (v.IsString() && parseInt(v.GetString(), values[ret])) {
+                        ret++;
+                    }
+                    else if (report) {
+                        LOGD("Invalid value for readIntArray(%s)", name);
+                    }
+                }
+            }
+        }
+        else if (report) {
+            LOGD("Invalid value for readIntArray(%s)", name);
+        }
+    }
+    if (values && ret < count && report) {
+        setError("readIntArray: lose numbers.");
+    }
+    
+    return ret;
+}
+
+void MgJsonStorage::Impl::writeIntArray(const char* name, const int* values, int count)
+{
+    Value node(kArrayType);
+    
+    for (int i = 0; i < count; i++) {
+        node.PushBack(values[i], _doc.GetAllocator());
+    }
+    _stack.back()->AddMember(name, node, _doc.GetAllocator());
+}
+
+using namespace std;
+using namespace utf8;
+using namespace utf8::unchecked;
+
+template <typename chartype>
+static size_t toutf8_(FILE* fpi, FILE* fpo)
+{
+    size_t ret = 0;
+    vector<chartype> buf(1024);
+    
+    fwrite(bom, 1, sizeof(bom), fpo);
+    for (;;) {
+        size_t n = fread(&buf.front(), sizeof(chartype), buf.size(), fpi);
+        if (n == 0 || n > buf.size())
+            break;
+        vector<uint8_t> utf8result;
+        unsigned tpsize = sizeof(chartype);
+        if (tpsize == 2)
+            utf16to8(buf.begin(), buf.begin() + n, back_inserter(utf8result));
+        else
+            utf32to8(buf.begin(), buf.begin() + n, back_inserter(utf8result));
+        ret += fwrite(&utf8result.front(), 1, utf8result.size(), fpo);
+    }
+    
+    return ret;
+}
+
+bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
+{
+    uint8_t head[4] = { 1, 1, 1, 1 };
+    FILE* fp = mgopenfile(infile, "rt");
+    size_t ret = 0;
+    
+    if (fp) {
+        fread(head, 1, sizeof(head), fp);
+        
+        if (starts_with_bom(head, head + sizeof(head), bom32be, sizeof(bom32be))
+            || starts_with_bom(head, head + sizeof(head), bom32le, sizeof(bom32le))) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                fseek(fp, sizeof(bom32be), SEEK_SET);
+                ret = toutf8_<uint32_t>(fp, fpo);
+                fclose(fpo);
+            }
+        }
+        else if (starts_with_bom(head, head + sizeof(head), bom16be, sizeof(bom16be))
+                 || starts_with_bom(head, head + sizeof(head), bom16le, sizeof(bom16le))) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                fseek(fp, sizeof(bom16be), SEEK_SET);
+                ret = toutf8_<uint16_t>(fp, fpo);
+                fclose(fpo);
+            }
+        }
+        
+        fclose(fp);
+    }
+    
+    return ret > 0;
+}
+
+bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
+{
+    uint8_t head[4] = { 1, 1, 1, 1 };
+    FILE* fp = mgopenfile(infile, "rt");
+    size_t ret = 0;
+    
+    if (fp) {
+        fread(head, 1, sizeof(head), fp);
+        
+        bool isutf8 = starts_with_bom(head, head + sizeof(head));
+        
+        if (!isutf8 && !starts_with_bom(head, head + sizeof(head), bom16be, sizeof(bom16be))
+            && !starts_with_bom(head, head + sizeof(head), bom16le, sizeof(bom16le))) {
+            isutf8 = true;
+            fseek(fp, 0, SEEK_SET);
+        }
+        if (isutf8) {
+            FILE* fpo = mgopenfile(outfile, "wt");
+            if (fpo) {
+                vector<uint8_t> buf(1024);
+                
+                fwrite(bom16le, 1, sizeof(bom16le), fpo);
+                for (;;) {
+                    size_t n = fread(&buf.front(), 1, buf.size(), fp);
+                    if (n == 0 || n > buf.size())
+                        break;
+                    vector<uint16_t> utf16result;
+                    utf8to16(buf.begin(), buf.begin() + n, back_inserter(utf16result));
+                    ret += fwrite(&utf16result.front(), 2, utf16result.size(), fpo);
+                }
+                fclose(fpo);
+            }
+        }
+        
+        fclose(fp);
+    }
+    
+    return ret > 0;
+}

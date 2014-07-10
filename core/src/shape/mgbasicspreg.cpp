@@ -6,6 +6,7 @@
 #include "mgshapet.h"
 #include "mgcomposite.h"
 #include "mggrid.h"
+#include "mgpathsp.h"
 
 void MgBasicShapes::registerShapes(MgShapeFactory* factory)
 {
@@ -23,4 +24,5 @@ void MgBasicShapes::registerShapes(MgShapeFactory* factory)
     MgShapeT<MgImageShape>::registerCreator(factory);
     MgShapeT<MgArc>::registerCreator(factory);
     MgShapeT<MgGrid>::registerCreator(factory);
+    MgShapeT<MgPathShape>::registerCreator(factory);
 }

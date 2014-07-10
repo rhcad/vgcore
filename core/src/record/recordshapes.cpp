@@ -117,7 +117,7 @@ bool MgRecordShapes::onResume(long ticks)
     return giAtomicCompareAndSwap(&_im->startTick, _im->startTick + ticks, _im->startTick);
 }
 
-bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
+bool MgRecordShapes::recordStep(long tick, long changeCountOld, long changeCountNew, MgShapeDoc* doc,
                                 MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes)
 {
     _im->beginJsonFile();
@@ -155,8 +155,8 @@ bool MgRecordShapes::recordStep(long tick, long changeCount, MgShapeDoc* doc,
     
     _im->s[0]->writeInt("flags", _im->flags[0]);
     if (_im->flags[0] != DYN) {
-        _im->s[0]->writeInt("changeCount", (int)changeCount);
-        _im->s[1]->writeInt("changeCount", (int)changeCount);
+        _im->s[0]->writeInt("changeCount", (int)changeCountNew);
+        _im->s[1]->writeInt("changeCount", (int)changeCountOld);
     }
     
     bool ret = _im->saveJsonFile();
@@ -422,6 +422,8 @@ void MgRecordShapes::Impl::startRecord()
         s[2] = js[2]->storageForWrite();
         s[2]->writeNode("records", -1, false);
     }
+    fileCount = 1;
+    maxCount = 1;
 }
 
 void MgRecordShapes::Impl::beginJsonFile()

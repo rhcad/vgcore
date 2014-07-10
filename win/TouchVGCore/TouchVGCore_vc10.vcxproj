@@ -70,6 +70,7 @@
     <ClInclude Include="..\..\core\include\shape\mgcomposite.h" />
     <ClInclude Include="..\..\core\include\shape\mggrid.h" />
     <ClInclude Include="..\..\core\include\shape\mgobject.h" />
+    <ClInclude Include="..\..\core\include\shape\mgpathsp.h" />
     <ClInclude Include="..\..\core\include\shape\mgshape.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapes.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapet.h" />
@@ -101,6 +102,8 @@
     <ClInclude Include="..\..\core\include\view\gigesture.h" />
     <ClInclude Include="..\..\core\include\view\gimousehelper.h" />
     <ClInclude Include="..\..\core\include\view\giview.h" />
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_core.h" />
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_unchecked.h" />
     <ClInclude Include="..\..\core\src\view\GcBaseView.h" />
     <ClInclude Include="..\..\core\src\view\GcGraphView.h" />
     <ClInclude Include="..\..\core\src\view\GcMagnifierView.h" />
@@ -157,11 +160,13 @@
     <ClCompile Include="..\..\core\src\shape\mggrid.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgline.cpp" />
     <ClCompile Include="..\..\core\src\shape\mglines.cpp" />
+    <ClCompile Include="..\..\core\src\shape\mgpathsp.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgrdrect.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgrect.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshape.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshapes.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgsplines.cpp" />
+    <ClCompile Include="..\..\core\src\shape\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\test\RandomShape.cpp" />
     <ClCompile Include="..\..\core\src\test\testcanvas.cpp" />
     <ClCompile Include="..\..\core\src\view\GcGraphView.cpp" />

@@ -51,6 +51,10 @@ struct MgStorage
     virtual int readString(const char* name, char* value, int count) = 0;
     //! 添加一个给定字段名称(常量)的浮点数数组
     virtual void writeFloatArray(const char* name, const float* values, int count) = 0;
+    //! 给定字段名称(常量)，取出整数数组. 传入缓冲为空时返回所需个数
+    virtual int readIntArray(const char* name, int* values, int count, bool report = true) = 0;
+    //! 添加一个给定字段名称(常量)的整数数组
+    virtual void writeIntArray(const char* name, const int* values, int count) = 0;
 #endif
 
     //! 给定字段名称(常量)，取出一个整数的值

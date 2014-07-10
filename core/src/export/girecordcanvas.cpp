@@ -104,7 +104,7 @@ struct CmdClearRect : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->clearRect(pt2.x, pt2.y, vec2.x, vec2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawRect : public MgRecordShape::ICmd {
@@ -144,7 +144,7 @@ struct CmdDrawRect : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawRect(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawLine : public MgRecordShape::ICmd {
@@ -178,7 +178,7 @@ struct CmdDrawLine : public MgRecordShape::ICmd {
         Point2d pt4(pt2 * w2d);
         gs.getCanvas()->drawLine(pt3.x, pt3.y, pt4.x, pt4.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt1, pt2); }
+    virtual Box2d getExtentW() const { return Box2d(pt1, pt2); }
 };
 
 struct CmdDrawEllipse : public MgRecordShape::ICmd {
@@ -218,7 +218,7 @@ struct CmdDrawEllipse : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawEllipse(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdBeginPath : public MgRecordShape::ICmd {
@@ -262,7 +262,7 @@ struct CmdMoveTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->moveTo(pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
+    virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdLineTo : public MgRecordShape::ICmd {
@@ -291,7 +291,7 @@ struct CmdLineTo : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->lineTo(pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
+    virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdBezierTo : public MgRecordShape::ICmd {
@@ -331,7 +331,7 @@ struct CmdBezierTo : public MgRecordShape::ICmd {
         Point2d c1t(c1 * w2d), c2t(c2 * w2d), pt2(pt * w2d);
         gs.getCanvas()->bezierTo(c1t.x, c1t.y, c2t.x, c2t.y, pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, c1, c2, pt); }
+    virtual Box2d getExtentW() const { return Box2d(pt, c1, c2, pt); }
 };
 
 struct CmdQuadTo : public MgRecordShape::ICmd {
@@ -366,7 +366,7 @@ struct CmdQuadTo : public MgRecordShape::ICmd {
         Point2d cp2(cp * w2d), pt2(pt * w2d);
         gs.getCanvas()->quadTo(cp2.x, cp2.y, pt2.x, pt2.y);
     }
-    virtual Box2d getExtent() const { return Box2d(cp, pt); }
+    virtual Box2d getExtentW() const { return Box2d(cp, pt); }
 };
 
 struct CmdClosePath : public MgRecordShape::ICmd {
@@ -442,7 +442,7 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->drawHandle(pt2.x, pt2.y, t);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, 1e-3f, 0); }
+    virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
 struct CmdDrawBitmap : public MgRecordShape::ICmd {
@@ -488,7 +488,7 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawBitmap(name.c_str(), pt2.x, pt2.y, vec2.x, vec2.y, angle);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
 struct CmdDrawTextAt : public MgRecordShape::ICmd {
@@ -532,7 +532,7 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align);
     }
-    virtual Box2d getExtent() const { return Box2d(pt, pt + vec); }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
 // MgRecordShape
@@ -646,9 +646,9 @@ bool MgRecordShape::draw(int mode, GiGraphics& gs, const GiContext& ctx, int seg
     return _draw(mode, gs, ctx, segment) || !_items.empty();
 }
 
-void MgRecordShape::addItem(ICmd* p)
+void MgRecordShape::addItem(const Matrix2d& w2m, ICmd* p)
 {
-    _extent.unionWith(p->getExtent());
+    _extent.unionWith(p->getExtentW() * w2m);
     _items.push_back(p);
 }
 
@@ -704,67 +704,67 @@ void GiRecordCanvas::endShape(int, int, float, float)
 
 void GiRecordCanvas::setPen(int argb, float width, int style, float phase, float orgw)
 {
-    _sp->addItem(new CmdSetPen(argb, width, style, phase, orgw));
+    _sp->addItem(_xf->worldToModel(), new CmdSetPen(argb, width, style, phase, orgw));
 }
 
 void GiRecordCanvas::setBrush(int argb, int style)
 {
-    _sp->addItem(new CmdSetBrush(argb, style));
+    _sp->addItem(_xf->worldToModel(), new CmdSetBrush(argb, style));
 }
 
 void GiRecordCanvas::clearRect(float x, float y, float w, float h)
 {
-    _sp->addItem(new CmdClearRect(d2w(), x, y, w, h));
+    _sp->addItem(_xf->worldToModel(), new CmdClearRect(d2w(), x, y, w, h));
 }
 
 void GiRecordCanvas::drawRect(float x, float y, float w, float h, bool stroke, bool fill)
 {
-    _sp->addItem(new CmdDrawRect(d2w(), x, y, w, h, stroke, fill));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawRect(d2w(), x, y, w, h, stroke, fill));
 }
 
 void GiRecordCanvas::drawLine(float x1, float y1, float x2, float y2)
 {
-    _sp->addItem(new CmdDrawLine(d2w(), x1, y1, x2, y2));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawLine(d2w(), x1, y1, x2, y2));
 }
 
 void GiRecordCanvas::drawEllipse(float x, float y, float w, float h, bool stroke, bool fill)
 {
-    _sp->addItem(new CmdDrawEllipse(d2w(), x, y, w, h, stroke, fill));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawEllipse(d2w(), x, y, w, h, stroke, fill));
 }
 
 void GiRecordCanvas::beginPath()
 {
-    _sp->addItem(new CmdBeginPath());
+    _sp->addItem(_xf->worldToModel(), new CmdBeginPath());
 }
 
 void GiRecordCanvas::moveTo(float x, float y)
 {
-    _sp->addItem(new CmdMoveTo(d2w(), x, y));
+    _sp->addItem(_xf->worldToModel(), new CmdMoveTo(d2w(), x, y));
 }
 
 void GiRecordCanvas::lineTo(float x, float y)
 {
-    _sp->addItem(new CmdLineTo(d2w(), x, y));
+    _sp->addItem(_xf->worldToModel(), new CmdLineTo(d2w(), x, y));
 }
 
 void GiRecordCanvas::bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y)
 {
-    _sp->addItem(new CmdBezierTo(d2w(), c1x, c1y, c2x, c2y, x, y));
+    _sp->addItem(_xf->worldToModel(), new CmdBezierTo(d2w(), c1x, c1y, c2x, c2y, x, y));
 }
 
 void GiRecordCanvas::quadTo(float cpx, float cpy, float x, float y)
 {
-    _sp->addItem(new CmdQuadTo(d2w(), cpx, cpy, x, y));
+    _sp->addItem(_xf->worldToModel(), new CmdQuadTo(d2w(), cpx, cpy, x, y));
 }
 
 void GiRecordCanvas::closePath()
 {
-    _sp->addItem(new CmdClosePath());
+    _sp->addItem(_xf->worldToModel(), new CmdClosePath());
 }
 
 void GiRecordCanvas::drawPath(bool stroke, bool fill)
 {
-    _sp->addItem(new CmdDrawPath(stroke, fill));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawPath(stroke, fill));
 }
 
 void GiRecordCanvas::saveClip()
@@ -787,19 +787,19 @@ bool GiRecordCanvas::clipPath()
 
 bool GiRecordCanvas::drawHandle(float x, float y, int type)
 {
-    _sp->addItem(new CmdDrawHandle(d2w(), x, y, type));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawHandle(d2w(), x, y, type));
     return true;
 }
 
 bool GiRecordCanvas::drawBitmap(const char* name, float xc, float yc,
                                 float w, float h, float angle)
 {
-    _sp->addItem(new CmdDrawBitmap(d2w(), name, xc, yc, w, h, angle));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawBitmap(d2w(), name, xc, yc, w, h, angle));
     return true;
 }
 
 float GiRecordCanvas::drawTextAt(const char* text, float x, float y, float h, int align)
 {
-    _sp->addItem(new CmdDrawTextAt(d2w(), text, x, y, h, align));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawTextAt(d2w(), text, x, y, h, align));
     return h;
 }

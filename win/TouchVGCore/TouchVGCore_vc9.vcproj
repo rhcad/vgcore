@@ -351,6 +351,14 @@
 					RelativePath="..\..\core\src\jsonstorage\mgjsonstorage.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\core\src\jsonstorage\utf8_core.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\jsonstorage\utf8_unchecked.h"
+					>
+				</File>
 				<Filter
 					Name="rapidjson"
 					>
@@ -424,6 +432,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\shape\mgpathsp.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\shape\mgrdrect.cpp"
 					>
 				</File>
@@ -441,6 +453,10 @@
 				</File>
 				<File
 					RelativePath="..\..\core\src\shape\mgsplines.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\shape\nanosvg.cpp"
 					>
 				</File>
 			</Filter>
@@ -795,6 +811,10 @@
 				</File>
 				<File
 					RelativePath="..\..\core\include\shape\mgobject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\shape\mgpathsp.h"
 					>
 				</File>
 				<File

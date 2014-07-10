@@ -119,6 +119,9 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     if (strcmp(name, "@draw") == 0) {   // 将 @draw 换成上一次绘图命令名
         name = _drawcmd.empty() ? "splines" : _drawcmd.c_str();
     }
+    else if (strcmp(name, "@last") == 0) {
+        name = getCommandName();
+    }
 
     MgCommand* cmd = findCommand(name);
     if (!cmd) {
@@ -152,15 +155,11 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
             _drawcmd = _cmdname;
         }
     }
-    else {
-        if (strcmp(name, "erasewnd") == 0) {
-            eraseWnd(sender);
-        }
-        else {
-            _cmdname = "select";
-            cmd = findCommand(_cmdname.c_str());
-            cmd->initialize(sender, s);
-        }
+    else if (strcmp(name, "erasewnd") == 0) {
+        eraseWnd(sender);
+    }
+    else if (!name[0]) {
+        _cmdname = "";
     }
     
     if (MgBaseShape::minTol().equalPoint() < 1e-5) {

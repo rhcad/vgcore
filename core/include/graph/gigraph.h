@@ -23,6 +23,7 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleUnlock,        //!< 解锁
     kGiHandleCancel,        //!< 放弃
     kGiHandleAccept,        //!< 完成
+    kGiHandleCustom = 20,   //!< 应用自定义
 };
 
 //! 图形系统类

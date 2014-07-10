@@ -81,6 +81,7 @@ private:
     bool applyCloneShapes(MgView* view, bool apply, bool addNewShapes = false);
     bool canTransform(const MgShape* shape, const MgMotion* sender);
     bool canRotate(const MgShape* shape, const MgMotion* sender);
+    void selectionChanged(MgView* view);
     
 private:
     std::vector<int>        m_selIds;           // 选中的图形的ID

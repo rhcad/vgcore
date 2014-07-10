@@ -383,6 +383,15 @@
     <ClInclude Include="..\..\core\include\export\girecordshape.h">
       <Filter>Header Files\export</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\core\include\shape\mgpathsp.h">
+      <Filter>Header Files\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_core.h">
+      <Filter>Source Files\jsonstorage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core\src\jsonstorage\utf8_unchecked.h">
+      <Filter>Source Files\jsonstorage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\core\src\shape\mgbasicspreg.cpp">
@@ -570,6 +579,12 @@
     </ClCompile>
     <ClCompile Include="..\..\core\src\export\girecordcanvas.cpp">
       <Filter>Source Files\export</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core\src\shape\mgpathsp.cpp">
+      <Filter>Source Files\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core\src\shape\nanosvg.cpp">
+      <Filter>Source Files\shape</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

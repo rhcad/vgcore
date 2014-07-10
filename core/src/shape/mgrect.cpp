@@ -255,6 +255,13 @@ bool MgBaseRect::_load(MgShapeFactory* factory, MgStorage* s)
     return __super::_load(factory, s) && s->readFloatArray("points", &(_points[0].x), 8) == 8;
 }
 
+void MgBaseRect::_output(GiPath& path) const
+{
+    path.moveTo(_points[0]);
+    path.linesTo(3, _points + 1);
+    path.closeFigure();
+}
+
 // MgRect
 //
 
@@ -498,4 +505,13 @@ bool MgDiamond::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segmen
         _getHandlePoint(2), _getHandlePoint(3) };
     bool ret = gs.drawPolygon(&ctx, 4, pts);
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgDiamond::_output(GiPath& path) const
+{
+    path.moveTo(_getHandlePoint(0));
+    path.lineTo(_getHandlePoint(1));
+    path.lineTo(_getHandlePoint(2));
+    path.lineTo(_getHandlePoint(3));
+    path.closeFigure();
 }

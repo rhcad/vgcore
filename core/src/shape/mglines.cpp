@@ -253,6 +253,16 @@ bool MgLines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment)
     return __super::_draw(mode, gs, ctx, segment) || ret;
 }
 
+void MgLines::_output(GiPath& path) const
+{
+    if (_count > 1) {
+        path.moveTo(_points[0]);
+        path.linesTo(_count - 1, _points + 1);
+        if (isClosed())
+            path.closeFigure();
+    }
+}
+
 int MgLines::_getHandleCount() const
 {
     return isClosed() ? 2 * _count : 2 * _count - 1;

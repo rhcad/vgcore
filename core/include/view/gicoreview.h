@@ -69,8 +69,8 @@ public:
                      bool forUndo, long curTick,
                      MgStringCallback* c = (MgStringCallback*)0);   //!< 开始录制图形，自动释放，在主线程用
     void stopRecord(bool forUndo);                                  //!< 停止录制图形
-    bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
-    bool recordShapes(bool forUndo, long tick, long doc,
+    bool recordShapes(bool forUndo, long tick, long changeCount, long doc, long shapes); //!< 录制图形，自动释放
+    bool recordShapes(bool forUndo, long tick, long changeCount, long doc,
                       long shapes, const mgvector<long>* exts,
                       MgStringCallback* c = (MgStringCallback*)0);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护
@@ -117,9 +117,10 @@ public:
     bool switchCommand();
     bool doContextAction(int action);
     void clearCachedData();
-    int addShapesForTest();
+    int addShapesForTest(int n = 1000);
     int getShapeCount();
     int getShapeCount(long doc);
+    int getUnlockedShapeCount();
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();
@@ -134,8 +135,8 @@ public:
     void freeContent();
     bool setContent(const char* content);
     bool zoomToInitial();
-    bool zoomToExtent();
-    bool zoomToModel(float x, float y, float w, float h);
+    bool zoomToExtent(float margin = 2);
+    bool zoomToModel(float x, float y, float w, float h, float margin = 2);
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);
@@ -152,6 +153,8 @@ public:
     bool getBoundingBox(mgvector<float>& box, int shapeId);
     bool getBoundingBox(long doc, long gs, mgvector<float>& box, int shapeId);
     bool displayToModel(mgvector<float>& d);
+    int importSVGPath(long shapes, int sid, const char* d);
+    int exportSVGPath(long shapes, int sid, char* buf, int size);
 #endif // SWIG
 
 private:

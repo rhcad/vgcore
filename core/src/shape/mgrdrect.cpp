@@ -75,17 +75,23 @@ bool MgRoundRect::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segm
 {
     bool ret = false;
 
-    if (isOrtho())
-    {
+    if (isOrtho()) {
         ret = gs.drawRoundRect(&ctx, Box2d(_points[0], _points[2]), _rx, _ry);
     }
-    else
-    {
+    else {
         GiSaveModelTransform xf(&gs.xf(), Matrix2d::rotation(getAngle(), getCenter()));
         ret = gs.drawRoundRect(&ctx, getRect(), _rx, _ry);
     }
 
     return __super::_draw(mode, gs, ctx, segment) || ret;
+}
+
+void MgRoundRect::_output(GiPath& path) const
+{
+    GiPath tmppath;
+    
+    tmppath.genericRoundLines(4, _points, _rx, true);
+    path.append(tmppath);
 }
 
 bool MgRoundRect::_save(MgStorage* s) const

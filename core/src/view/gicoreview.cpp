@@ -11,6 +11,7 @@
 #include "mgbasicspreg.h"
 #include "svgcanvas.h"
 #include "../corever.h"
+#include "mgpathsp.h"
 
 static int _dpi = 96;
 float GiCoreViewImpl::_factor = 1.0f;
@@ -286,12 +287,13 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
     int n = 0;
     
     shapes.setSize(1 + impl->getPlayingCount());
-    for (int i = 0; i < shapes.count() - 1; i++) {
+    for (int i = 1; i < shapes.count() - 1; i++) {
         long s = impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
     }
+    shapes.set(n++, impl->acquireFrontShapes(0));   // Show shapes of command at top of playings.
     
     return n;
 }
@@ -315,7 +317,8 @@ bool GiCoreView::submitBackDoc(GiView* view, bool changed)
         }
         impl->drawing->submitBackDoc();
         if (changed) {
-            giAtomicIncrement(&impl->changeCount);
+            static long n = 0;
+            giAtomicCompareAndSwap(&impl->changeCount, ++n, impl->changeCount);
         }
     }
     if (aview) {
@@ -756,9 +759,9 @@ void GiCoreView::clearCachedData()
     impl->doc()->clearCachedData();
 }
 
-int GiCoreView::addShapesForTest()
+int GiCoreView::addShapesForTest(int n)
 {
-    int n = RandomParam().addShapes(impl->shapes());
+    n = RandomParam(n).addShapes(impl->shapes());
     impl->regenAll(true);
     LOGD("Add %d shapes for test", n);
     return n;
@@ -773,6 +776,21 @@ int GiCoreView::getShapeCount(long doc)
 {
     const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
     return p ? p->getShapeCount() : 0;
+}
+
+static void getUnlockedShapeCount_(const MgShape* sp, void* d)
+{
+    if (!sp->shapec()->getFlag(kMgShapeLocked)) {
+        int* n = (int*)d;
+        *n = *n + 1;
+    }
+}
+
+int GiCoreView::getUnlockedShapeCount()
+{
+    int n = 0;
+    impl->shapes()->traverseByType(0, getUnlockedShapeCount_, &n);
+    return n;
 }
 
 long GiCoreView::getChangeCount()
@@ -910,10 +928,8 @@ bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
     MgJsonStorage s;
     bool ret = loadShapes(s.storageForRead(fp), readOnly);
 
-    if (fp) {
-        fclose(fp);
-        LOGD("loadFromFile: %d, %s", ret, vgfile);
-    }
+    fclose(fp);
+    LOGD("loadFromFile: %d, %s", ret, vgfile);
 
     return ret;
 }
@@ -969,20 +985,28 @@ bool GiCoreView::zoomToInitial()
     return ret;
 }
 
-bool GiCoreView::zoomToExtent()
+bool GiCoreView::zoomToExtent(float margin)
 {
     Box2d rect(impl->doc()->getExtent() * impl->xform()->modelToWorld());
-    bool ret = impl->xform()->zoomTo(rect);
+    RECT_2D to;
+    
+    Box2d(impl->xform()->getWndRect()).deflate(margin).get(to);
+    bool ret = impl->xform()->zoomTo(rect, &to);
+    
     if (ret) {
         impl->regenAll(false);
     }
     return ret;
 }
 
-bool GiCoreView::zoomToModel(float x, float y, float w, float h)
+bool GiCoreView::zoomToModel(float x, float y, float w, float h, float margin)
 {
     Box2d rect(Box2d(x, y, x + w, y + h) * impl->xform()->modelToWorld());
-    bool ret = impl->xform()->zoomTo(rect);
+    RECT_2D to;
+    
+    Box2d(impl->xform()->getWndRect()).deflate(margin).get(to);
+    bool ret = impl->xform()->zoomTo(rect, &to);
+    
     if (ret) {
         impl->regenAll(false);
     }
@@ -1109,6 +1133,47 @@ int GiCoreView::traverseImageShapes(long doc, MgFindImageCallback* c)
 {
     const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
     return p ? p->getCurrentLayer()->traverseByType(MgImageShape::Type(), traverseImage, c) : 0;
+}
+
+int GiCoreView::importSVGPath(long shapes, int sid, const char* d)
+{
+    MgShapes* splist = MgShapes::fromHandle(shapes);
+    const MgShape* oldsp = splist ? splist->findShape(sid) : NULL;
+    int ret = 0;
+    
+    if (oldsp && oldsp->shapec()->isKindOf(MgPathShape::Type()) && d) {
+        MgShape* newsp = oldsp->cloneShape();
+        if (((MgPathShape*)newsp->shape())->importSVGPath(d)) {
+            splist->updateShape(oldsp, newsp);
+            ret = sid;
+        } else {
+            newsp->release();
+        }
+    } else if (splist) {
+        MgShapeT<MgPathShape> sp;
+        if (sp._shape.importSVGPath(d)) {
+            ret = splist->addShape(sp)->getID();
+        }
+    }
+    
+    return ret;
+}
+
+int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
+{
+    MgShapes* splist = MgShapes::fromHandle(shapes);
+    const MgShape* sp = splist ? splist->findShape(sid) : NULL;
+    int ret = 0;
+    
+    if (sp && sp->shapec()->isKindOf(MgPathShape::Type())) {
+        ret = ((const MgPathShape*)sp->shapec())->exportSVGPath(buf, size);
+    } else if (sp) {
+        GiPath path;
+        sp->shapec()->output(path);
+        ret = MgPathShape::exportSVGPath(path, buf, size);
+    }
+    
+    return ret;
 }
 
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)

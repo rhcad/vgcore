@@ -200,6 +200,15 @@ bool MgComposite::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int) con
     return n > 0;
 }
 
+void MgComposite::_output(GiPath& path) const
+{
+    MgShapeIterator it(_shapes);
+    
+    while (const MgShape* sp = it.getNext()) {
+        sp->shapec()->output(path);
+    }
+}
+
 #include "mgshape_.h"
 
 MG_IMPLEMENT_CREATE(MgGroup)

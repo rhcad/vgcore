@@ -84,10 +84,11 @@ struct MgCoreView {
     virtual bool doContextAction(int action) = 0;   //!< 执行上下文动作
     
     virtual void clearCachedData() = 0;             //!< 释放临时数据内存，未做线程保护
-    virtual int addShapesForTest() = 0;             //!< 添加测试图形
+    virtual int addShapesForTest(int n = 1000) = 0; //!< 添加测试图形
     
     virtual int getShapeCount() = 0;                //!< 返回后端文档的图形总数
     virtual int getShapeCount(long doc) = 0;        //!< 返回前端文档的图形总数
+    virtual int getUnlockedShapeCount() = 0;        //!< 返回未锁定的图形的个数
     virtual long getChangeCount() = 0;              //!< 返回静态图形改变次数，可用于检查是否需要保存
     virtual long getDrawCount() const = 0;          //!< 返回已绘制次数，可用于录屏
     virtual int getSelectedShapeCount() = 0;        //!< 返回选中的图形个数
@@ -113,8 +114,8 @@ struct MgCoreView {
     virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
 
     virtual bool zoomToInitial() = 0;                   //!< 放缩到文档初始状态
-    virtual bool zoomToExtent() = 0;                    //!< 放缩显示全部内容到视图区域
-    virtual bool zoomToModel(float x, float y, float w, float h) = 0;   //!< 放缩显示指定范围到视图区域
+    virtual bool zoomToExtent(float margin = 2) = 0;      //!< 放缩显示全部内容到视图区域
+    virtual bool zoomToModel(float x, float y, float w, float h, float margin = 2) = 0; //!< 放缩显示指定范围到视图区域
     
     virtual GiContext& getContext(bool forChange) = 0;  //!< 当前绘图属性，可用 calcPenWidth() 计算线宽
     virtual void setContext(int mask) = 0;              //!< 绘图属性改变后提交更新
@@ -171,6 +172,25 @@ struct MgCoreView {
     
     //! 视图坐标转为模型坐标，可传入2或4个分量
     virtual bool displayToModel(mgvector<float>& d) = 0;
+    
+    //! 用SVG路径的d坐标序列创建或设置图形形状，成功返回图形ID(未重新显示)，失败返回0
+    virtual int importSVGPath(long shapes, int sid, const char* d) = 0;
+    
+    //! 输出SVG路径的d坐标序列，返回复制的长度或应分配的长度(不含结束符)
+    virtual int exportSVGPath(long shapes, int sid, char* buf, int size) = 0;
+    
+    //! 输出SVG路径的d坐标序列
+    bool exportSVGPath2(MgStringCallback* c, long shapes, int sid) {
+        int size = exportSVGPath(shapes, sid, (char*)0, 0);
+        if (size > 0) {
+            char* buf = new char[1 + size];
+            exportSVGPath(shapes, sid, buf, size);
+            buf[size] = 0;
+            c->onGetString(buf);
+            delete[] buf;
+        }
+        return size > 0;
+    }
 };
 
 inline bool MgCoreView::saveToFile(const char* vgfile, bool pretty) {

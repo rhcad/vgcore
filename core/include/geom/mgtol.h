@@ -29,7 +29,7 @@ public:
     }
     
     //! 最小容差
-    /*! 该容差的长度容差值和矢量容差值都为 1e-7f
+    /*! 该容差的长度容差值和矢量容差值都为 _MGZERO
     */
     static const Tol& minTol()
     {
@@ -38,18 +38,18 @@ public:
     }
     
     //! 构造默认容差
-    /*! 默认构造函数构造出的长度容差值为1e-5f，矢量容差值为1e-4f
+    /*! 默认构造函数构造出的长度容差值为_MGZERO*2，矢量容差值为1e-4f
     */
-    Tol() : mTolPoint(1e-5f), mTolVector(1e-4f)
+    Tol() : mTolPoint(_MGZERO*2), mTolVector(1e-4f)
     {
     }
     
     //! 给定容差构造
-    /*! 如果给定容差值小于 1e-7f，将取最小容差值
+    /*! 如果给定容差值小于 _MGZERO，将取最小容差值
         \param tolPoint 长度容差值，正数
         \param tolVector 矢量容差值，正数，一般取小于0.1的数
     */
-    Tol(float tolPoint, float tolVector = 1e-4f) : mTolPoint(1e-5f)
+    Tol(float tolPoint, float tolVector = 1e-4f) : mTolPoint(_MGZERO*2)
     {
         setEqualPoint(tolPoint);
         setEqualVector(tolVector);
@@ -68,25 +68,25 @@ public:
     }
     
     //! 设置长度容差
-    /*! 如果给定容差值小于 1e-7f，将取最小容差值
+    /*! 如果给定容差值小于 _MGZERO，将取最小容差值
         \param tol 长度容差值，正数
     */
     void setEqualPoint(float tol)
     {
-        if (tol < 1e-7f)
-            tol = 1e-7f;
+        if (tol < _MGZERO)
+            tol = _MGZERO;
         if (!mgEquals(mTolPoint, tol))
             mTolPoint = tol;
     }
     
     //! 设置矢量容差
-    /*! 如果给定容差值小于 1e-7f，将取最小容差值
+    /*! 如果给定容差值小于 _MGZERO，将取最小容差值
         \param tol 矢量容差值，正数，一般取小于0.1的数
     */
     void setEqualVector(float tol)
     {
-        if (tol < 1e-7f)
-            tol = 1e-7f;
+        if (tol < _MGZERO)
+            tol = _MGZERO;
         mTolVector = tol;
     }
     

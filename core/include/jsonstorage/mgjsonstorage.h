@@ -50,6 +50,18 @@ public:
     //! 返回 storageForRead() 中的解析错误，NULL表示没有错误
     const char* getParseError();
     
+    //! 设置是否使用数组模式，默认在对象中添加由名称和序号组成的子对象，true表示在数组中添加元素
+    void setArrayMode(bool arr);
+    
+    //! 设置是否在保存数值键值时加上引号
+    void saveNumberAsString(bool str);
+    
+    //! UTF-16/32编码的文件转换为UTF-8编码的文件，返回转换与否
+    static bool toUTF8(const char* infile, const char* outfile);
+    
+    //! UTF-8编码的文件转换为UTF-16LE编码的文件，返回转换与否
+    static bool toUTF16(const char* infile, const char* outfile);
+    
 private:
     class Impl;
     Impl* _impl;
