@@ -23,7 +23,7 @@ public:
     
     long getCurrentTick(long curTick) const;
 #ifndef SWIG
-    bool recordStep(long tick, long changeCount, MgShapeDoc* doc,
+    bool recordStep(long tick, long changeCountOld, long changeCountNew, MgShapeDoc* doc,
                     MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes);
     std::string getFileName(bool back = false, int index = -1) const;
     std::string getPath() const;

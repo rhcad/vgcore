@@ -69,8 +69,8 @@ public:
                      bool forUndo, long curTick,
                      MgStringCallback* c = (MgStringCallback*)0);   //!< 开始录制图形，自动释放，在主线程用
     void stopRecord(bool forUndo);                                  //!< 停止录制图形
-    bool recordShapes(bool forUndo, long tick, long doc, long shapes); //!< 录制图形，自动释放
-    bool recordShapes(bool forUndo, long tick, long doc,
+    bool recordShapes(bool forUndo, long tick, long changeCount, long doc, long shapes); //!< 录制图形，自动释放
+    bool recordShapes(bool forUndo, long tick, long changeCount, long doc,
                       long shapes, const mgvector<long>* exts,
                       MgStringCallback* c = (MgStringCallback*)0);  //!< 录制图形，自动释放
     bool undo(GiView* view);                                        //!< 撤销, 需要并发访问保护

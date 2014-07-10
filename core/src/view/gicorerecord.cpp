@@ -46,12 +46,12 @@ void GiCoreView::stopRecord(bool forUndo)
     }
 }
 
-bool GiCoreView::recordShapes(bool forUndo, long tick, long doc, long shapes)
+bool GiCoreView::recordShapes(bool forUndo, long tick, long changeCount, long doc, long shapes)
 {
-    return recordShapes(forUndo, tick, doc, shapes, NULL);
+    return recordShapes(forUndo, tick, changeCount, doc, shapes, NULL, NULL);
 }
 
-bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
+bool GiCoreView::recordShapes(bool forUndo, long tick, long changeCount, long doc,
                               long shapes, const mgvector<long>* exts, MgStringCallback* c)
 {
     MgRecordShapes* recorder = impl->recorder(forUndo);
@@ -67,7 +67,8 @@ bool GiCoreView::recordShapes(bool forUndo, long tick, long doc,
     }
     
     if (recorder && !recorder->isLoading() && !recorder->isPlaying()) {
-        ret = recorder->recordStep(tick, impl->changeCount, MgShapeDoc::fromHandle(doc),
+        ret = recorder->recordStep(tick, changeCount, impl->changeCount,
+                                   MgShapeDoc::fromHandle(doc),
                                    MgShapes::fromHandle(shapes), arr) ? 2 : 1;
         if (ret > 1 && c) {
             c->onGetString(recorder->getFileName(false, recorder->getFileCount() - 1).c_str());
@@ -136,9 +137,9 @@ bool GiCoreView::undo(GiView* view)
         recorder->setLoading(true);
         ret = recorder->undo(impl->getShapeFactory(), impl->doc(), &changeCount);
         if (ret) {
-            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
             submitBackDoc(view, true);
             submitDynamicShapes(view);
+            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
             impl->hideContextActions();
@@ -159,9 +160,9 @@ bool GiCoreView::redo(GiView* view)
         recorder->setLoading(true);
         ret = recorder->redo(impl->getShapeFactory(), impl->doc(), &changeCount);
         if (ret) {
-            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
             submitBackDoc(view, true);
             submitDynamicShapes(view);
+            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
             impl->hideContextActions();

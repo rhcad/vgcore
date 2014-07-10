@@ -14,7 +14,7 @@ using namespace rapidjson;
 class MgJsonStorage::Impl : public MgStorage
 {
 public:
-    Impl() : _fs(NULL), _err(NULL), _arrmode(false) {}
+    Impl() : _fs(NULL), _err(NULL), _arrmode(false), _numAsStr(false) {}
     virtual ~Impl() { if (_fs) delete(_fs); }
     
     void clear();
@@ -45,6 +45,8 @@ private:
     void writeString(const char* name, const char* value);
     int readIntArray(const char* name, int* values, int count, bool report = true);
     void writeIntArray(const char* name, const int* values, int count);
+    
+    bool hasNum(const char* name) { return strspn(name, "01234567890") > 0; }
     
 private:
     Document _doc;
@@ -480,9 +482,22 @@ void MgJsonStorage::Impl::writeInt(const char* name, int value)
 #endif
         Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
         _created.push_back(v);
-        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        }
     } else {
-        _stack.back()->AddMember(name, value, _doc.GetAllocator());
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            Value* v = new Value(value);
+            _created.push_back(v);
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, value, _doc.GetAllocator());
+        }
     }
 }
 
@@ -499,7 +514,13 @@ void MgJsonStorage::Impl::writeUInt(const char* name, int value)
 #endif
         Value* v = new Value(buf, (unsigned)strlen(buf), _doc.GetAllocator());
         _created.push_back(v);
-        _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        
+        if (hasNum(name)) {
+            Value namenode(name, _doc.GetAllocator());
+            _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+        } else {
+            _stack.back()->AddMember(name, *v, _doc.GetAllocator());
+        }
     }
 }
 
@@ -510,7 +531,14 @@ void MgJsonStorage::Impl::writeBool(const char* name, bool value)
 
 void MgJsonStorage::Impl::writeFloat(const char* name, float value)
 {
-    _stack.back()->AddMember(name, (double)value, _doc.GetAllocator());
+    if (hasNum(name)) {
+        Value namenode(name, _doc.GetAllocator());
+        Value* v = new Value((double)value);
+        _created.push_back(v);
+        _stack.back()->AddMember(namenode, *v, _doc.GetAllocator());
+    } else {
+        _stack.back()->AddMember(name, (double)value, _doc.GetAllocator());
+    }
 }
 
 void MgJsonStorage::Impl::writeFloatArray(const char* name, const float* values, int count)
