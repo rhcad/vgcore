@@ -675,14 +675,21 @@ bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
 
 bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
 {
-    uint8_t head[3] = { 0, 0, 0 };
+    uint8_t head[4] = { 1, 1, 1, 1 };
     FILE* fp = mgopenfile(infile, "rt");
     size_t ret = 0;
     
     if (fp) {
         fread(head, 1, sizeof(head), fp);
         
-        if (starts_with_bom(head, head + sizeof(head))) {
+        bool isutf8 = starts_with_bom(head, head + sizeof(head));
+        
+        if (!isutf8 && !starts_with_bom(head, head + sizeof(head), bom16be, sizeof(bom16be))
+            && !starts_with_bom(head, head + sizeof(head), bom16le, sizeof(bom16le))) {
+            isutf8 = true;
+            fseek(fp, 0, SEEK_SET);
+        }
+        if (isutf8) {
             FILE* fpo = mgopenfile(outfile, "wt");
             if (fpo) {
                 vector<uint8_t> buf(1024);
