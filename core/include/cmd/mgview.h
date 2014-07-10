@@ -76,7 +76,7 @@ struct MgView
     virtual void dynamicChanged() = 0;                          //!< 图形动态拖拉改变的通知
     
     virtual bool shapeWillAdded(MgShape* shape) = 0;            //!< 通知将添加图形
-    virtual void shapeAdded(MgShape* shape) = 0;                //!< 通知已添加图形，由视图重新构建显示
+    virtual void shapeAdded(const MgShape* shape) = 0;          //!< 通知已添加图形，由视图重新构建显示
     virtual bool shapeWillDeleted(const MgShape* shape) = 0;    //!< 通知将删除图形
     virtual bool removeShape(const MgShape* shape) = 0;         //!< 删除图形
     virtual bool shapeCanRotated(const MgShape* shape) = 0;     //!< 通知是否能旋转图形
