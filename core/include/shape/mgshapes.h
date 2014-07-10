@@ -39,11 +39,13 @@ public:
 #endif
 
     int getShapeCount() const;
+    int getShapeCountByTypeOrTag(int type, int tag) const;
     const MgShape* getHeadShape() const;
     const MgShape* getLastShape() const;
     const MgShape* findShape(int sid) const;
     const MgShape* findShapeByTag(int tag) const;
     const MgShape* findShapeByType(int type) const;
+    const MgShape* findShapeByTypeAndTag(int type, int tag) const;
     Box2d getExtent() const;
     
     const MgShape* hitTest(const Box2d& limits, MgHitResult& res
