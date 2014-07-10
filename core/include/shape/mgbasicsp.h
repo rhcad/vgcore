@@ -25,7 +25,7 @@ public:
     //! 返回点图案类型
     int getPointType() const { return _type; }
     
-    //! 设置点图案类型. 0:默认，1-19: GiHandleTypes+1，20~99:应用自定义图片
+    //! 设置点图案类型. 0:默认, 1-19: GiHandleTypes+1, kGiHandleCustom~99:应用自定义图片
     void setPointType(int type) { _type = type; }
     
     virtual bool isCurve() const { return false; }

@@ -77,7 +77,7 @@ bool MgDot::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) c
         
         ret = gs.drawCircle(&ctx2, _point, gs.xf().displayToModel(w));
     } else {
-        ret = gs.drawHandle(_point, _type - 1);
+        ret = gs.drawHandle(_point, _type < kGiHandleCustom ? _type - 1 : _type);
     }
     
     return __super::_draw(mode, gs, ctx, segment) || ret;
