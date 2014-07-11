@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.social_media_url    = "http://weibo.com/rhcad"
 
   s.platform    = :ios, "5.0"
-  s.source      = { :git => "https://github.com/touchvg/vgcore.git", :branch => "develop" }
+  s.source      = { :git => "https://github.com/touchvg/vgcore.git", :branch => "1.0.38" }
   s.source_files        = "core", "core/**/*.{h,cpp,hpp}"
   s.public_header_files = "core/include/**/*.h"
 
