@@ -152,6 +152,7 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
         if (res.dist > dist) {
             res.dist = dist;
             res.segment = i;
+            res.nearpt = nearpt;
         }
     }
     
