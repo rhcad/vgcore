@@ -405,12 +405,12 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res, Filter f
 {
     const MgShape* retshape = NULL;
     
-    res.dist = _FLT_MAX;
+    res.dist = limits.width();
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         const MgBaseShape* shape = (*it)->shapec();
         Box2d extent(shape->getExtent());
         
-        if (!shape->getFlag(kMgShapeLocked)
+        if ((filter || !shape->getFlag(kMgShapeLocked))
             && extent.isIntersect(limits)
             && (!filter || filter(*it))) {
             MgHitResult tmpRes;
