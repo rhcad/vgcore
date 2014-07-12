@@ -87,9 +87,12 @@ void GiSvgCanvas::setPen(int argb, float width, int style, float phase, float)
         int r = (argb>>16) & 0xFF;
         int g = (argb>>8) & 0xFF;
         int b = argb & 0xFF;
+        int linecap = style & kLineCapMask;
 
         delete im->pen;
         im->pen = new Stroke(width, Color(r, g, b, a));
+        
+        style = style & kLineDashMask;
         if (style > 0 && style < 5) {
             std::stringstream dasharray;
             
@@ -100,7 +103,14 @@ void GiSvgCanvas::setPen(int argb, float width, int style, float phase, float)
             im->pen->dasharray = dasharray.str();
             im->pen->dashoffset = phase;
         }
-        im->pen->linecap = (style > 0 && style < 5) ? "butt" : "round";
+        if (linecap & kLineCapButt)
+            im->pen->linecap = "butt";
+        else if (linecap & kLineCapRound)
+            im->pen->linecap = "round";
+        else if (linecap & kLineCapSquare)
+            im->pen->linecap = "square";
+        else
+            im->pen->linecap = (style > 0 && style < 5) ? "butt" : "round";
     }
 }
 
@@ -171,7 +181,9 @@ void GiSvgCanvas::closePath()
 
 void GiSvgCanvas::drawPath(bool stroke, bool fill)
 {
-    *im->doc << Path(im->d.str(), im->getBrush(fill), im->getPen(stroke));
+    if (stroke || fill) {
+        *im->doc << Path(im->d.str(), im->getBrush(fill), im->getPen(stroke));
+    }
 }
 
 void GiSvgCanvas::saveClip()

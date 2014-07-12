@@ -1042,8 +1042,8 @@ bool GiGraphics::setPen(const GiContext* ctx)
             m_impl->ctx.setLineColor(ctx->getLineColor());
             changed = true;
         }
-        if (ctx && ctx->getLineStyle() != m_impl->ctx.getLineStyle()) {
-            m_impl->ctx.setLineStyle(ctx->getLineStyle());
+        if (ctx && ctx->getLineStyleEx() != m_impl->ctx.getLineStyleEx()) {
+            m_impl->ctx.setLineStyle(ctx->getLineStyleEx(), true);
             changed = true;
         }
     }
@@ -1056,7 +1056,7 @@ bool GiGraphics::setPen(const GiContext* ctx)
         orgw = (orgw < -0.1f && ctx->isAutoScale()) ? orgw - 1e4f : orgw;
         m_impl->canvas->setPen(calcPenColor(ctx->getLineColor()).getARGB(),
                                w + ctx->getExtraWidth(),
-                               ctx->getLineStyle(), 0, orgw);
+                               ctx->getLineStyleEx(), 0, orgw);
     }
     
     return !ctx->isNullLine();
@@ -1128,7 +1128,7 @@ bool GiGraphics::rawPolygon(const GiContext* ctx, const Point2d* pxs, int count)
     bool usePen = setPen(ctx);
     bool useBrush = setBrush(ctx);
     
-    if (m_impl->canvas && (usePen || useBrush) && pxs && count > 0) {
+    if (m_impl->canvas && pxs && count > 0) {
         m_impl->canvas->beginPath();
         m_impl->canvas->moveTo(pxs[0].x, pxs[0].y);
         for (int i = 1; i < count && !m_impl->stopping; i++) {
@@ -1146,7 +1146,7 @@ bool GiGraphics::rawRect(const GiContext* ctx, float x, float y, float w, float 
     bool usePen = setPen(ctx);
     bool useBrush = setBrush(ctx);
     
-    if (m_impl->canvas && !m_impl->stopping && (usePen || useBrush)) {
+    if (m_impl->canvas && !m_impl->stopping) {
         m_impl->canvas->drawRect(x, y, w, h, usePen, useBrush);
         return true;
     }
@@ -1158,7 +1158,7 @@ bool GiGraphics::rawEllipse(const GiContext* ctx, float x, float y, float w, flo
     bool usePen = setPen(ctx);
     bool useBrush = setBrush(ctx);
     
-    if (m_impl->canvas && !m_impl->stopping && (usePen || useBrush)) {
+    if (m_impl->canvas && !m_impl->stopping) {
         m_impl->canvas->drawEllipse(x, y, w, h, usePen, useBrush);
         return true;
     }
@@ -1178,7 +1178,7 @@ bool GiGraphics::rawEndPath(const GiContext* ctx, bool fill)
     bool usePen = setPen(ctx);
     bool useBrush = fill && setBrush(ctx);
     
-    if (m_impl->canvas && (usePen || useBrush)) {
+    if (m_impl->canvas) {
         m_impl->canvas->drawPath(usePen, useBrush);
         return true;
     }

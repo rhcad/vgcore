@@ -35,6 +35,8 @@ public:
         kFillAlpha = 0x20,  //!< 设置填充色的透明度分量
         kFillARGB  = 0x30,  //!< 设置填充色的所有分量
         kCopyAll   = 0xFF,  //!< 设置所有属性
+        
+        kLineDashMask   = 0xFFF,
     };
     
     //! 默认构造函数
@@ -133,13 +135,18 @@ public:
     //! 返回线型, kSolidLine..kNullLine
     int getLineStyle() const
     {
-        return m_lineColor.isInvalid() ? kNullLine : m_lineStyle;
+        return m_lineColor.isInvalid() ? kNullLine : (m_lineStyle & kLineDashMask);
+    }
+    
+    int getLineStyleEx() const
+    {
+        return (m_lineColor.isInvalid() ? kNullLine : m_lineStyle) | (m_lineStyle & ~kLineDashMask);
     }
     
     //! 设置线型, kSolidLine..kNullLine
-    void setLineStyle(int style)
+    void setLineStyle(int style, bool all = false)
     {
-        m_lineStyle = style;
+        m_lineStyle = all ? style : style | (m_lineStyle & ~kLineDashMask);
     }
     
     //! 返回线宽
@@ -187,7 +194,7 @@ public:
     //! 返回是否为空线，即不画线
     bool isNullLine() const
     {
-        return m_lineStyle == kNullLine || m_lineColor.isInvalid();
+        return (m_lineStyle & kLineDashMask) == kNullLine || m_lineColor.isInvalid();
     }
     
     //! 设置为空线，即不画线
@@ -195,7 +202,7 @@ public:
     */
     void setNullLine()
     {
-        m_lineStyle = kNullLine;
+        m_lineStyle = kNullLine | (m_lineStyle & ~kLineDashMask);
     }
     
     //! 返回线条颜色

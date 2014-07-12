@@ -107,6 +107,40 @@ struct CmdClearRect : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+struct CmdClipRect : public MgRecordShape::ICmd {
+    Point2d pt; Vector2d vec;
+    CmdClipRect() {}
+    CmdClipRect(const Matrix2d& d2w, float x, float y, float w, float h)
+        : pt(Point2d(x, y) * d2w), vec(Vector2d(w, h) * d2w) {}
+    
+    virtual int type() const { return 18; }
+    virtual void copy(const ICmd& src) {
+        if (src.type() == type()) {
+            const CmdClipRect& p = (const CmdClipRect&)src;
+            pt = p.pt;
+            vec = p.vec;
+        }
+    }
+    virtual bool save(MgStorage* s) const {
+        s->writeFloat("x", pt.x);
+        s->writeFloat("y", pt.y);
+        s->writeFloat("w", vec.x);
+        s->writeFloat("h", vec.y);
+        return true;
+    }
+    virtual bool load(MgStorage* s) {
+        pt.set(s->readFloat("x", pt.x), s->readFloat("y", pt.y));
+        vec.set(s->readFloat("w", vec.x), s->readFloat("h", vec.y));
+        return true;
+    }
+    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+        Point2d pt2(pt * w2d);
+        Vector2d vec2(vec * w2d);
+        gs.getCanvas()->clipRect(pt2.x, pt2.y, vec2.x, vec2.y);
+    }
+    virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
+};
+
 struct CmdDrawRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec; bool stroke; bool fill;
     CmdDrawRect() {}
@@ -413,6 +447,43 @@ struct CmdDrawPath : public MgRecordShape::ICmd {
     }
 };
 
+struct CmdClipPath : public MgRecordShape::ICmd {
+    int t;
+    CmdClipPath(int t = 0) : t(t) {}
+    
+    enum { Clip, Save, Restore };
+    virtual int type() const { return 17; }
+    virtual void copy(const ICmd& src) {
+        if (src.type() == type()) {
+            const CmdClipPath& p = (const CmdClipPath&)src;
+            t = p.t;
+        }
+    }
+    virtual bool save(MgStorage* s) const {
+        s->writeInt("t", t);
+        return true;
+    }
+    virtual bool load(MgStorage* s) {
+        t = s->readInt("t", t);
+        return true;
+    }
+    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+        switch (t) {
+            case Clip:
+                gs.getCanvas()->clipPath();
+                break;
+            case Save:
+                gs.getCanvas()->saveClip();
+                break;
+            case Restore:
+                gs.getCanvas()->restoreClip();
+                break;
+            default:
+                break;
+        }
+    }
+};
+
 struct CmdDrawHandle : public MgRecordShape::ICmd {
     Point2d pt; int t;
     CmdDrawHandle() {}
@@ -557,6 +628,8 @@ MgRecordShape::ICmd* MgRecordShape::createItem(int type) const
         case 14: return new CmdDrawHandle();
         case 15: return new CmdDrawBitmap();
         case 16: return new CmdDrawTextAt();
+        case 17: return new CmdClipPath();
+        case 18: return new CmdClipRect();
     }
     return NULL;
 }
@@ -769,20 +842,24 @@ void GiRecordCanvas::drawPath(bool stroke, bool fill)
 
 void GiRecordCanvas::saveClip()
 {
+    _sp->addItem(_xf->worldToModel(), new CmdClipPath(CmdClipPath::Save));
 }
 
 void GiRecordCanvas::restoreClip()
 {
+    _sp->addItem(_xf->worldToModel(), new CmdClipPath(CmdClipPath::Restore));
 }
 
-bool GiRecordCanvas::clipRect(float, float, float, float)
+bool GiRecordCanvas::clipRect(float x, float y, float w, float h)
 {
-    return false;
+    _sp->addItem(_xf->worldToModel(), new CmdClipRect(d2w(), x, y, w, h));
+    return true;
 }
 
 bool GiRecordCanvas::clipPath()
 {
-    return false;
+    _sp->addItem(_xf->worldToModel(), new CmdClipPath(CmdClipPath::Clip));
+    return true;
 }
 
 bool GiRecordCanvas::drawHandle(float x, float y, int type)
