@@ -4,6 +4,7 @@
 
 #include "mgpathsp.h"
 #include "mgshape_.h"
+#include "vector"
 #include <sstream>
 
 MG_IMPLEMENT_CREATE(MgPathShape)
@@ -93,6 +94,7 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
     Point2d pos, ends, bz[7], nearpt;
     bool err = false;
     const Box2d rect (pt, 2 * tol, 2 * tol);
+    std::vector<Point2d> edges;
     
     res.dist = _FLT_MAX - tol;
     for (int i = 0; i < n && !err; i++) {
@@ -149,10 +151,17 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
                 err = true;
                 break;
         }
+        edges.push_back(ends);
         if (res.dist > dist) {
             res.dist = dist;
             res.segment = i;
+            res.nearpt = nearpt;
         }
+    }
+    if (isClosed() && edges.size() > 2) {
+        MgHitResult tmpres;
+        mgnear::linesHit((int)edges.size(), &edges.front(), true, pt, tol,
+                         tmpres.nearpt, tmpres.segment, &res.inside);
     }
     
     return res.dist;

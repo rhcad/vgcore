@@ -146,6 +146,9 @@ bool GiCoreView::undo(GiView* view)
         }
         recorder->setLoading(false);
     }
+    if (ret) {
+        impl->getCmdSubject()->onDocLoaded(impl->motion());
+    }
     
     return ret;
 }
@@ -168,6 +171,9 @@ bool GiCoreView::redo(GiView* view)
             impl->hideContextActions();
         }
         recorder->setLoading(false);
+    }
+    if (ret) {
+        impl->getCmdSubject()->onDocLoaded(impl->motion());
     }
     
     return ret;

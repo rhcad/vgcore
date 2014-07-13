@@ -17,12 +17,21 @@ class GiCanvas
 public:
     virtual ~GiCanvas() {}
     
+    enum {  //!< for setPen(..style..)
+        kLineDashMask   = 0xFFF,
+        kLineCapDefault = 0,
+        kLineCapMask    = 0x70000,
+        kLineCapButt    = 0x10000,
+        kLineCapRound   = 0x20000,
+        kLineCapSquare  = 0x40000,
+    };
+    
     //! Set attributes of the current pen to stroke edges.
     /*!
         \param argb Stroke color, ignored if equals to zero, alpha = (argb>>24) & 0xFF,
                     red = (argb>>16) & 0xFF, green = (argb>>8) & 0xFF, blue = argb & 0xFF.
         \param width Line width in point unit, ignored if <= 0.
-        \param style Line dash type, ignored if < 0.
+        \param style Line dash type (& kLineDashMask), ignored if < 0.
                     0:solid line, 1:dash line, 2:...., 3:-.-.-, 4:-..-.., 5:null line, >5:customized line.
                     Round end caps for solid line, flat end caps for the four dash types.
         \param phase Dash pattern's offset in point unit.

@@ -173,7 +173,7 @@ bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
             line.shape()->setPoint(1, sender->startPtM + vec);
             addShape(sender, &line);
             sender->view->regenAll(true);
-        } else {
+        } else if (newsp) {
             sender->view->regenAppend(newsp->getID());
         }
     }
@@ -219,8 +219,10 @@ bool MgCmdDrawSplines::click(const MgMotion* sender)
         line.shape()->setPoint(1, pt);
         
         MgShape* newsp = addShape(sender, &line);
-        dynshape()->shape()->clear();
-        sender->view->regenAppend(newsp->getID());
+        if (newsp) {
+            dynshape()->shape()->clear();
+            sender->view->regenAppend(newsp->getID());
+        }
         
         return true;
     }

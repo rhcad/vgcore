@@ -253,9 +253,8 @@ public:
                 regenAll(true);
             }
         }
-        if (apply) {
-            sid = sid ? sid : (int)appendPending;
-            
+        sid = sid ? sid : (int)appendPending;
+        if (apply && sid) {
             CALL_VIEW(deviceView()->regenAppend(sid, playh));
             for (int i = 0; i < _gcdoc->getViewCount(); i++) {
                 if (_gcdoc->getView(i) != curview)
