@@ -170,6 +170,9 @@ bool MgJsonStorage::Impl::setError(const char* err)
 
 bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
 {
+    if (_doc.IsNull()) {
+        return false;
+    }
     if (!ended) {                       // 开始一个新节点
         char tmpname[32];
         

@@ -292,7 +292,8 @@ private:
 
 			++memberCount;
 
-			switch(stream.Take()) {
+            Ch c = stream.Take();
+			switch(c) {
 				case ',': SkipWhitespace(stream); break;
 				case '}': handler.EndObject(memberCount); return;
 				default:  RAPIDJSON_PARSE_ERROR("Must be a comma or '}' after an object member", stream.Tell());
@@ -319,7 +320,8 @@ private:
 			++elementCount;
 			SkipWhitespace(stream);
 
-			switch (stream.Take()) {
+            Ch c = stream.Take();
+			switch (c) {
 				case ',': SkipWhitespace(stream); break;
 				case ']': handler.EndArray(elementCount); return;
 				default:  RAPIDJSON_PARSE_ERROR("Must be a comma or ']' after an array element.", stream.Tell());
