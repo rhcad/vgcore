@@ -1288,6 +1288,10 @@ bool GiCoreViewImpl::gestureToCommand()
         && _motion.gestureType != kGiTwoFingersMove) {
         return true;
     }
+    
+    if (!getCmdSubject()->onPreGesture(&_motion)) {
+        return true;
+    }
 
     switch (_motion.gestureType)
     {
@@ -1320,6 +1324,7 @@ bool GiCoreViewImpl::gestureToCommand()
         break;
     }
 
+    getCmdSubject()->onPostGesture(&_motion);
     if (!ret && !cmd->isDrawingCommand()) {
 #ifndef NO_LOGD
         const char* const typeNames[] = { "?", "pan", "tap", "dbltap", "press", "twoFingersMove" };
