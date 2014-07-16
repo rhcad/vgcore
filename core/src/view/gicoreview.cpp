@@ -599,6 +599,14 @@ void GiCoreView::onSize(GiView* view, int w, int h)
     }
 }
 
+void GiCoreView::setViewScaleRange(GiView* view, float minScale, float maxScale)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    if (aview) {
+        aview->xform()->setViewScaleRange(minScale, maxScale);
+    }
+}
+
 void GiCoreView::setPenWidthRange(GiView* view, float minw, float maxw)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
