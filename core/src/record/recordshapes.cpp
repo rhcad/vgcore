@@ -599,7 +599,6 @@ int MgRecordShapes::applyFile(int& tick, MgShapeFactory *f,
                 for (int i = 0; i + 1 < n; i += 2) {
                     lines->addPoint(Point2d(buf.get(i), buf.get(i + 1)));
                 }
-                lines->update();
                 dyns->addShapeDirect(sp, true);
                 ret |= DYN_CHANGED;
             }

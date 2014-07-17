@@ -13,6 +13,7 @@
 #include "../corever.h"
 #include "mgpathsp.h"
 
+static volatile long _viewCount = 0;    // 总视图数
 static int _dpi = 96;                   // 屏幕分辨率，在 GiCoreView::onSize() 中应用到新视图中
 float GiCoreViewImpl::_factor = 1.0f;   // 屏幕放大系数，Android高清屏可用
 
@@ -177,19 +178,22 @@ GiCoreView::GiCoreView(GiCoreView* mainView) : refcount(1)
     else {
         impl = new GiCoreViewImpl(this);
     }
-    LOGD("GiCoreView %p created, refcount=%ld", this, impl->refcount);
+    LOGD("GiCoreView %p created, refcount=%ld, n=#%ld",
+         this, impl->refcount, giAtomicIncrement(&_viewCount));
 }
 
 GiCoreView::GiCoreView(GiView* view, int type) : refcount(1)
 {
     impl = new GiCoreViewImpl(this, !!view && type > kNoCmdType);
-    LOGD("GiCoreView %p created, type=%d", this, type);
+    LOGD("GiCoreView %p created, type=%d, n=%ld",
+         this, type, giAtomicIncrement(&_viewCount));
     createView_(view, type);
 }
 
 GiCoreView::~GiCoreView()
 {
-    LOGD("GiCoreView %p destroyed, %ld", this, impl->refcount);
+    LOGD("GiCoreView %p destroyed, refcount=%ld, n=%ld",
+         this, impl->refcount, giAtomicDecrement(&_viewCount));
     if (--impl->refcount == 0) {
         delete impl;
     }

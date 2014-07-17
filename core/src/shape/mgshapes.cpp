@@ -192,23 +192,13 @@ MgShape* MgShapes::addShape(const MgShape& src)
 bool MgShapes::addShapeDirect(MgShape* shape, bool force)
 {
     if (shape && (force || !shape->getParent() || shape->getParent() == this)) {
+        shape->shape()->update();
         shape->setParent(this, im->getNewID(0));
         im->shapes.push_back(shape);
         im->id2shape[shape->getID()] = shape;
         return true;
     }
     return false;
-}
-
-MgShape* MgShapes::addShapeByType(MgShapeFactory* factory, int type)
-{
-    MgShape* p = factory->createShape(type);
-    if (p) {
-        p->setParent(this, im->getNewID(0));
-        im->shapes.push_back(p);
-        im->id2shape[p->getID()] = p;
-    }
-    return p;
 }
 
 bool MgShapes::removeShape(int sid)
