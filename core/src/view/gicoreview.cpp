@@ -13,8 +13,8 @@
 #include "../corever.h"
 #include "mgpathsp.h"
 
-static int _dpi = 96;
-float GiCoreViewImpl::_factor = 1.0f;
+static int _dpi = 96;                   // 屏幕分辨率，在 GiCoreView::onSize() 中应用到新视图中
+float GiCoreViewImpl::_factor = 1.0f;   // 屏幕放大系数，Android高清屏可用
 
 // GcBaseView
 //
@@ -29,7 +29,7 @@ GcBaseView::GcBaseView(MgView* mgview, GiView *view)
 // GiCoreViewImpl
 //
 
-GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
+GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     : _cmds(NULL), curview(NULL), refcount(1)
     , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
     , changeCount(0), drawCount(0), stopping(0)
@@ -37,11 +37,11 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     memset(&gsBuf, 0, sizeof(gsBuf));
     memset((void*)&gsUsed, 0, sizeof(gsUsed));
     
-    drawing = GiPlaying::create(NULL, -1);
+    drawing = GiPlaying::create(NULL, GiPlaying::kDrawingTag);
     backDoc = drawing->getBackDoc();
     addPlaying(drawing);
     
-    play.playing = GiPlaying::create(NULL, -2);
+    play.playing = GiPlaying::create(NULL, GiPlaying::kPlayingTag);
     addPlaying(play.playing);
     
     _motion.view = this;
@@ -50,7 +50,7 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     _gcdoc = new GcShapeDoc();
     
     MgBasicShapes::registerShapes(this);
-    if (useView) {
+    if (useCmds) {
         _cmds = MgCmdManagerFactory::create();
         MgBasicCommands::registerCmds(this);
         MgShapeT<MgRecordShape>::registerCreator(this);
@@ -182,7 +182,7 @@ GiCoreView::GiCoreView(GiCoreView* mainView) : refcount(1)
 
 GiCoreView::GiCoreView(GiView* view, int type) : refcount(1)
 {
-    impl = new GiCoreViewImpl(this, !!view);
+    impl = new GiCoreViewImpl(this, !!view && type > kNoCmdType);
     LOGD("GiCoreView %p created, type=%d", this, type);
     createView_(view, type);
 }
@@ -263,7 +263,7 @@ int GiCoreView::acquireFrontDocs(mgvector<long>& docs)
     
     docs.setSize(1 + impl->getPlayingCount());
     for (int i = 0; i < docs.count() - 1; i++) {
-        if (i == 0 && isPlaying())
+        if (i == 0 && isPlaying())      // 播放时隐藏主文档图形
             continue;
         long doc = impl->acquireFrontDoc(i);
         if (doc) {
@@ -288,12 +288,16 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
     
     shapes.setSize(1 + impl->getPlayingCount());
     for (int i = 1; i < shapes.count() - 1; i++) {
+        if (i == 0 && isPlaying())
+            continue;
         long s = impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
     }
-    shapes.set(n++, impl->acquireFrontShapes(0));   // Show shapes of command at top of playings.
+    if (!isPlaying()) {     // Show shapes of the current command at top of playings.
+        shapes.set(n++, impl->acquireFrontShapes(0));
+    }
     
     return n;
 }

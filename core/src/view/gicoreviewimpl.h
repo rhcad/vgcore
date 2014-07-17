@@ -89,7 +89,7 @@ public:
     volatile long   stopping;
     
 public:
-    GiCoreViewImpl(GiCoreView* owner, bool useView = true);
+    GiCoreViewImpl(GiCoreView* owner, bool useCmds = true);
     ~GiCoreViewImpl();
     
     void submitBackXform() { CALL_VIEW(submitBackXform()); }

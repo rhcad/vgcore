@@ -19,7 +19,8 @@ class GiCoreViewImpl;
 class GiCoreView : public MgCoreView
 {
 public:
-    static GiCoreView* createView(GiView* view, int type = 1);      //!< 创建内核视图
+    enum { kNoCmdType = -1, kTestType = 0, kNormalType = 1 };
+    static GiCoreView* createView(GiView* view, int type = kNormalType);    //!< 创建内核视图
     static GiCoreView* createMagnifierView(GiView* newview, GiCoreView* mainView,
                                            GiView* mainDevView);    //!< 创建放大镜视图
     void destoryView(GiView* view);                                 //!< 销毁内核视图
