@@ -326,7 +326,8 @@ bool GiCoreView::submitBackDoc(GiView* view, bool changed)
         impl->drawing->submitBackDoc();
         if (changed) {
             static long n = 0;
-            giAtomicCompareAndSwap(&impl->changeCount, ++n, impl->changeCount);
+            if (!giAtomicCompareAndSwap(&impl->changeCount, ++n, impl->changeCount))
+                LOGE("Fail to set changeCount via giAtomicCompareAndSwap");
         }
     }
     if (aview) {

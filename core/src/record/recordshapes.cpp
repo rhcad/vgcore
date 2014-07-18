@@ -114,7 +114,10 @@ long MgRecordShapes::getCurrentTick(long curTick) const
 
 bool MgRecordShapes::onResume(long ticks)
 {
-    return giAtomicCompareAndSwap(&_im->startTick, _im->startTick + ticks, _im->startTick);
+    bool ret = giAtomicCompareAndSwap(&_im->startTick, _im->startTick + ticks, _im->startTick);
+    if (!ret)
+        LOGE("Fail to set startTick via giAtomicCompareAndSwap");
+    return ret;
 }
 
 bool MgRecordShapes::recordStep(long tick, long changeCountOld, long changeCountNew, MgShapeDoc* doc,

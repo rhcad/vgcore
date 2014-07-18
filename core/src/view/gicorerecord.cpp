@@ -96,7 +96,8 @@ bool GiCoreView::restoreRecord(int type, const char* path, long doc, long change
     impl->setRecorder(type == 0, recorder);
     
     if (type == 0 && changeCount != 0) {
-        giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
+        if (!giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount))
+            LOGE("Fail to set changeCount via giAtomicCompareAndSwap");
     }
     
     return true;
@@ -139,7 +140,8 @@ bool GiCoreView::undo(GiView* view)
         if (ret) {
             submitBackDoc(view, true);
             submitDynamicShapes(view);
-            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
+            if (!giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount))
+                LOGE("Fail to set changeCount via giAtomicCompareAndSwap");
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
             impl->hideContextActions();
@@ -165,7 +167,8 @@ bool GiCoreView::redo(GiView* view)
         if (ret) {
             submitBackDoc(view, true);
             submitDynamicShapes(view);
-            giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount);
+            if (!giAtomicCompareAndSwap(&impl->changeCount, changeCount, impl->changeCount))
+                LOGE("Fail to set changeCount via giAtomicCompareAndSwap");
             recorder->resetDoc(MgShapeDoc::fromHandle(acquireFrontDoc()));
             impl->regenAll(true);
             impl->hideContextActions();
@@ -216,7 +219,10 @@ bool GiCoreView::isPaused() const
 
 bool GiCoreView::onPause(long curTick)
 {
-    return giAtomicCompareAndSwap(&impl->startPauseTick, curTick, 0);
+    bool ret = giAtomicCompareAndSwap(&impl->startPauseTick, curTick, 0);
+    if (!ret)
+        LOGE("Fail to set startPauseTick via giAtomicCompareAndSwap");
+    return ret;
 }
 
 bool GiCoreView::onResume(long curTick)
@@ -235,6 +241,8 @@ bool GiCoreView::onResume(long curTick)
             return false;
         }
         return true;
+    } else if (startPauseTick) {
+        LOGE("Fail to set startPauseTick via giAtomicCompareAndSwap");
     }
     
     return false;
