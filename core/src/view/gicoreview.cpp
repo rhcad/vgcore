@@ -858,7 +858,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
         ret = true;
     }
     impl->regenAll(true);
-    if (impl->curview) {
+    if (impl->curview && impl->cmds()) {
         impl->getCmdSubject()->onDocLoaded(impl->motion());
     }
 
