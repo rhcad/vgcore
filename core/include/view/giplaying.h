@@ -20,7 +20,7 @@ public:
     long toHandle() { long h; *(GiPlaying**)&h = this; return h; }   //!< 得到句柄
     
     enum { kDrawingTag = -1, kPlayingTag = -2 };
-    static GiPlaying* create(MgCoreView* v, int tag);   //!< 创建播放项
+    static GiPlaying* create(MgCoreView* v, int tag, bool doubleSided = true);   //!< 创建播放项
     
     void release(MgCoreView* v);                //!< 销毁播放项
     void clear();                               //!< 清除图形
@@ -41,7 +41,7 @@ public:
     bool isStopping() const;                    //!< 返回是否待停止
     
 private:
-    GiPlaying(int tag);
+    GiPlaying(int tag, bool doubleSided);
     ~GiPlaying();
     
     struct Impl;

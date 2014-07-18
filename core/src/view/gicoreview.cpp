@@ -38,11 +38,11 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     memset(&gsBuf, 0, sizeof(gsBuf));
     memset((void*)&gsUsed, 0, sizeof(gsUsed));
     
-    drawing = GiPlaying::create(NULL, GiPlaying::kDrawingTag);
+    drawing = GiPlaying::create(NULL, GiPlaying::kDrawingTag, useCmds);
     backDoc = drawing->getBackDoc();
     addPlaying(drawing);
     
-    play.playing = GiPlaying::create(NULL, GiPlaying::kPlayingTag);
+    play.playing = GiPlaying::create(NULL, GiPlaying::kPlayingTag, useCmds);
     addPlaying(play.playing);
     
     _motion.view = this;

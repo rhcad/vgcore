@@ -244,20 +244,24 @@ bool GiCoreView::onResume(long curTick)
 //
 
 struct GiPlaying::Impl {
-    MgShapeDoc* frontDoc;
+    MgShapeDoc* frontDoc_;
     MgShapeDoc* backDoc;
-    MgShapes*   front;
+    MgShapes*   front_;
     MgShapes*   back;
     int         tag;
+    bool        doubleSided;
     volatile long stopping;
     
-    Impl(int tag) : frontDoc(NULL), backDoc(NULL), front(NULL), back(NULL)
-        , tag(tag), stopping(0) {}
+    Impl(int tag, bool doubleSided) : frontDoc_(NULL), backDoc(NULL)
+        , front_(NULL), back(NULL), tag(tag), doubleSided(doubleSided), stopping(0) {}
+    
+    MgShapeDoc*& frontDoc() { return doubleSided ? frontDoc_ : backDoc; }
+    MgShapes*& frontShapes() { return doubleSided ? front_ : back; }
 };
 
-GiPlaying* GiPlaying::create(MgCoreView* v, int tag)
+GiPlaying* GiPlaying::create(MgCoreView* v, int tag, bool doubleSided)
 {
-    GiPlaying* p = new GiPlaying(tag);
+    GiPlaying* p = new GiPlaying(tag, doubleSided);
     if (v && tag >= 0) {
         GiCoreViewData::fromHandle(v->viewDataHandle())->addPlaying(p);
     }
@@ -272,7 +276,7 @@ void GiPlaying::release(MgCoreView* v)
     delete this;
 }
 
-GiPlaying::GiPlaying(int tag) : impl(new Impl(tag))
+GiPlaying::GiPlaying(int tag, bool doubleSided) : impl(new Impl(tag, doubleSided))
 {
 }
 
@@ -284,9 +288,9 @@ GiPlaying::~GiPlaying()
 
 void GiPlaying::clear()
 {
-    MgObject::release_pointer(impl->frontDoc);
+    MgObject::release_pointer(impl->frontDoc_);
     MgObject::release_pointer(impl->backDoc);
-    MgObject::release_pointer(impl->front);
+    MgObject::release_pointer(impl->front_);
     MgObject::release_pointer(impl->back);
 }
 
@@ -307,10 +311,10 @@ bool GiPlaying::isStopping() const
 
 long GiPlaying::acquireFrontDoc()
 {
-    if (!this || !impl->frontDoc)
+    if (!this || !impl->frontDoc())
         return 0;
-    impl->frontDoc->addRef();
-    return impl->frontDoc->toHandle();
+    impl->frontDoc()->addRef();
+    return impl->frontDoc()->toHandle();
 }
 
 void GiPlaying::releaseDoc(long doc)
@@ -329,18 +333,20 @@ MgShapeDoc* GiPlaying::getBackDoc()
 
 void GiPlaying::submitBackDoc()
 {
-    MgObject::release_pointer(impl->frontDoc);
-    if (impl->backDoc) {
-        impl->frontDoc = impl->backDoc->shallowCopy();
+    if (impl->doubleSided) {
+        MgObject::release_pointer(impl->frontDoc_);
+        if (impl->backDoc) {
+            impl->frontDoc_ = impl->backDoc->shallowCopy();
+        }
     }
 }
 
 long GiPlaying::acquireFrontShapes()
 {
-    if (!this || !impl->front)
+    if (!this || !impl->frontShapes())
         return 0;
-    impl->front->addRef();
-    return impl->front->toHandle();
+    impl->frontShapes()->addRef();
+    return impl->frontShapes()->toHandle();
 }
 
 void GiPlaying::releaseShapes(long shapes)
@@ -369,7 +375,9 @@ MgShapes* GiPlaying::getBackShapes(bool needClear)
 
 void GiPlaying::submitBackShapes()
 {
-    MgObject::release_pointer(impl->front);
-    impl->front = impl->back;
-    impl->front->addRef();
+    if (impl->doubleSided) {
+        MgObject::release_pointer(impl->front_);
+        impl->front_ = impl->back;
+        impl->front_->addRef();
+    }
 }
