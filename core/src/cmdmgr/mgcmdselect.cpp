@@ -1099,7 +1099,8 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
-            if (shape && sender->view->removeShape(shape)) {
+            if (shape && !shape->shapec()->getFlag(kMgShapeLocked)
+                && sender->view->removeShape(shape)) {
                 count++;
             }
         }
