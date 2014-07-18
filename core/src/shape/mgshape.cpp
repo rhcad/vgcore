@@ -197,10 +197,7 @@ bool MgBaseShape::getFlag(MgShapeBit bit) const
 
 void MgBaseShape::setFlag(MgShapeBit bit, bool on)
 {
-    long value = on ? _flags | (1 << bit) : _flags & ~(1 << bit);
-    if (_flags != value) {
-        giAtomicCompareAndSwap((volatile long *)&_flags, value, _flags);
-    }
+    _flags = on ? _flags | (1 << bit) : _flags & ~(1 << bit);
 }
 
 // MgShape
