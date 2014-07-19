@@ -39,10 +39,7 @@ public:
     float   dy;     //!< 矩阵元素，代表Y方向平移量
 
     //! 单位矩阵
-    static const Matrix2d& kIdentity() {
-        static const Matrix2d mat;
-        return mat;
-    }
+    static const Matrix2d kIdentity() { return Matrix2d(); }
     
     //! 构造为单位矩阵
     Matrix2d();

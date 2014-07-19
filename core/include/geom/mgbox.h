@@ -36,11 +36,7 @@ public:
     float   ymax;   //!< 矩形右上角Y坐标
 
     //! 收缩到原点的空矩形框
-    static const Box2d& kIdentity()
-    {
-        static const Box2d rect;
-        return rect;
-    }
+    static const Box2d kIdentity() { return Box2d(); }
 
     //! 构造收缩到原点的矩形框
     Box2d() : xmin(0), ymin(0), xmax(0), ymax(0)
