@@ -89,7 +89,7 @@ public:
     volatile long   stopping;
     
 public:
-    GiCoreViewImpl(GiCoreView* owner, bool useView = true);
+    GiCoreViewImpl(GiCoreView* owner, bool useCmds = true);
     ~GiCoreViewImpl();
     
     void submitBackXform() { CALL_VIEW(submitBackXform()); }
@@ -126,17 +126,17 @@ public:
     bool isCommand(const char* name) { return name && strcmp(getCommandName(), name) == 0; }
     
     bool shapeWillAdded(MgShape* shape) {
-        return getCmdSubject()->onShapeWillAdded(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeWillAdded(motion(), shape); }
     bool shapeWillDeleted(const MgShape* shape) {
-        return getCmdSubject()->onShapeWillDeleted(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape); }
     bool shapeCanRotated(const MgShape* shape) {
-        return getCmdSubject()->onShapeCanRotated(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeCanRotated(motion(), shape); }
     bool shapeCanTransform(const MgShape* shape) {
-        return getCmdSubject()->onShapeCanTransform(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeCanTransform(motion(), shape); }
     bool shapeCanUnlock(const MgShape* shape) {
-        return getCmdSubject()->onShapeCanUnlock(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
-        return getCmdSubject()->onShapeCanUngroup(motion(), shape); }
+        return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
     bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {

@@ -13,8 +13,9 @@
 #include "../corever.h"
 #include "mgpathsp.h"
 
-static int _dpi = 96;
-float GiCoreViewImpl::_factor = 1.0f;
+static volatile long _viewCount = 0;    // 总视图数
+static int _dpi = 96;                   // 屏幕分辨率，在 GiCoreView::onSize() 中应用到新视图中
+float GiCoreViewImpl::_factor = 1.0f;   // 屏幕放大系数，Android高清屏可用
 
 // GcBaseView
 //
@@ -29,7 +30,7 @@ GcBaseView::GcBaseView(MgView* mgview, GiView *view)
 // GiCoreViewImpl
 //
 
-GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
+GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     : _cmds(NULL), curview(NULL), refcount(1)
     , gestureHandler(0), regenPending(-1), appendPending(-1), redrawPending(-1)
     , changeCount(0), drawCount(0), stopping(0)
@@ -37,11 +38,11 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     memset(&gsBuf, 0, sizeof(gsBuf));
     memset((void*)&gsUsed, 0, sizeof(gsUsed));
     
-    drawing = GiPlaying::create(NULL, -1);
+    drawing = GiPlaying::create(NULL, GiPlaying::kDrawingTag, useCmds);
     backDoc = drawing->getBackDoc();
     addPlaying(drawing);
     
-    play.playing = GiPlaying::create(NULL, -2);
+    play.playing = GiPlaying::create(NULL, GiPlaying::kPlayingTag, useCmds);
     addPlaying(play.playing);
     
     _motion.view = this;
@@ -50,7 +51,7 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useView)
     _gcdoc = new GcShapeDoc();
     
     MgBasicShapes::registerShapes(this);
-    if (useView) {
+    if (useCmds) {
         _cmds = MgCmdManagerFactory::create();
         MgBasicCommands::registerCmds(this);
         MgShapeT<MgRecordShape>::registerCreator(this);
@@ -177,19 +178,22 @@ GiCoreView::GiCoreView(GiCoreView* mainView) : refcount(1)
     else {
         impl = new GiCoreViewImpl(this);
     }
-    LOGD("GiCoreView %p created, refcount=%ld", this, impl->refcount);
+    LOGD("GiCoreView %p created, refcount=%ld, n=#%ld",
+         this, impl->refcount, giAtomicIncrement(&_viewCount));
 }
 
 GiCoreView::GiCoreView(GiView* view, int type) : refcount(1)
 {
-    impl = new GiCoreViewImpl(this, !!view);
-    LOGD("GiCoreView %p created, type=%d", this, type);
+    impl = new GiCoreViewImpl(this, !!view && type > kNoCmdType);
+    LOGD("GiCoreView %p created, type=%d, n=%ld",
+         this, type, giAtomicIncrement(&_viewCount));
     createView_(view, type);
 }
 
 GiCoreView::~GiCoreView()
 {
-    LOGD("GiCoreView %p destroyed, %ld", this, impl->refcount);
+    LOGD("GiCoreView %p destroyed, refcount=%ld, n=%ld",
+         this, impl->refcount, giAtomicDecrement(&_viewCount));
     if (--impl->refcount == 0) {
         delete impl;
     }
@@ -263,7 +267,7 @@ int GiCoreView::acquireFrontDocs(mgvector<long>& docs)
     
     docs.setSize(1 + impl->getPlayingCount());
     for (int i = 0; i < docs.count() - 1; i++) {
-        if (i == 0 && isPlaying())
+        if (i == 0 && isPlaying())      // 播放时隐藏主文档图形
             continue;
         long doc = impl->acquireFrontDoc(i);
         if (doc) {
@@ -288,12 +292,16 @@ int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
     
     shapes.setSize(1 + impl->getPlayingCount());
     for (int i = 1; i < shapes.count() - 1; i++) {
+        if (i == 0 && isPlaying())
+            continue;
         long s = impl->acquireFrontShapes(i);
         if (s) {
             shapes.set(n++, s);
         }
     }
-    shapes.set(n++, impl->acquireFrontShapes(0));   // Show shapes of command at top of playings.
+    if (!isPlaying()) {     // Show shapes of the current command at top of playings.
+        shapes.set(n++, impl->acquireFrontShapes(0));
+    }
     
     return n;
 }
@@ -318,7 +326,8 @@ bool GiCoreView::submitBackDoc(GiView* view, bool changed)
         impl->drawing->submitBackDoc();
         if (changed) {
             static long n = 0;
-            giAtomicCompareAndSwap(&impl->changeCount, ++n, impl->changeCount);
+            if (!giAtomicCompareAndSwap(&impl->changeCount, ++n, impl->changeCount))
+                LOGE("Fail to set changeCount via giAtomicCompareAndSwap");
         }
     }
     if (aview) {
@@ -599,6 +608,14 @@ void GiCoreView::onSize(GiView* view, int w, int h)
     }
 }
 
+void GiCoreView::setViewScaleRange(GiView* view, float minScale, float maxScale)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    if (aview) {
+        aview->xform()->setViewScaleRange(minScale, maxScale);
+    }
+}
+
 void GiCoreView::setPenWidthRange(GiView* view, float minw, float maxw)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
@@ -842,7 +859,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
         ret = true;
     }
     impl->regenAll(true);
-    if (impl->curview) {
+    if (impl->curview && impl->cmds()) {
         impl->getCmdSubject()->onDocLoaded(impl->motion());
     }
 
@@ -1280,6 +1297,10 @@ bool GiCoreViewImpl::gestureToCommand()
         && _motion.gestureType != kGiTwoFingersMove) {
         return true;
     }
+    
+    if (!getCmdSubject()->onPreGesture(&_motion)) {
+        return true;
+    }
 
     switch (_motion.gestureType)
     {
@@ -1312,6 +1333,7 @@ bool GiCoreViewImpl::gestureToCommand()
         break;
     }
 
+    getCmdSubject()->onPostGesture(&_motion);
     if (!ret && !cmd->isDrawingCommand()) {
 #ifndef NO_LOGD
         const char* const typeNames[] = { "?", "pan", "tap", "dbltap", "press", "twoFingersMove" };

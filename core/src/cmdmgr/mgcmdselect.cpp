@@ -15,6 +15,7 @@
 #include "cmdsubject.h"
 #include "mglocal.h"
 #include "mglog.h"
+#include "mgspfactory.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
 #define ENABLE_DRAG_SELBOX
@@ -1098,7 +1099,8 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
-            if (shape && sender->view->removeShape(shape)) {
+            if (shape && !shape->shapec()->getFlag(kMgShapeLocked)
+                && sender->view->removeShape(shape)) {
                 count++;
             }
         }
@@ -1131,8 +1133,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
     if (m_selIds.size() > 1) {
         applyCloneShapes(sender->view, false);
 
-        MgShape* newgroup = sender->view->shapes()->addShapeByType(
-            sender->view->getShapeFactory(), MgGroup::Type());
+        MgShape* newgroup = sender->view->getShapeFactory()->createShape(MgGroup::Type());
         MgGroup* group = (MgGroup*)newgroup->shape();
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
@@ -1140,7 +1141,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
                 count++;
             }
         }
-        group->update();
+        sender->view->shapes()->addShapeDirect(newgroup);
         
         m_id = newgroup->getID();
         m_selIds.clear();

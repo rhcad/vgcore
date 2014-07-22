@@ -20,10 +20,7 @@ public:
     float   y;      //!< Y坐标分量
 
     //! 原点(0,0)
-    static const Point2d& kOrigin() {
-        static const Point2d pnt (0, 0);
-        return pnt;
-    }
+    static const Point2d kOrigin() { return Point2d(); }
     
     //! 构造为原点
     Point2d() : x(0), y(0) {}

@@ -27,9 +27,6 @@ public:
     //! 创建图形列表
     static MgShapes* create(MgObject* owner = NULL, int index = -1);
 
-    //! 添加一个指定类型的新图形
-    MgShape* addShapeByType(MgShapeFactory* factory, int type);
-
 #ifndef SWIG
     const MgShape* getFirstShape(void*& it) const;
     const MgShape* getNextShape(void*& it) const;
@@ -75,7 +72,7 @@ public:
     //! 复制出新图形并添加到图形列表中
     MgShape* addShape(const MgShape& src);
     
-    //! 添加新图形到图形列表中
+    //! 添加新图形到图形列表中，自动更新图形的包络框
     bool addShapeDirect(MgShape* shape, bool force = false);
     
     //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象会被删除!

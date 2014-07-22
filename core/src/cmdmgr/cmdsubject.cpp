@@ -181,6 +181,21 @@ private:
         }
         return cmd;
     }
+    
+    virtual bool onPreGesture(MgMotion* sender) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            if (!(*it)->onPreGesture(sender)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    virtual void onPostGesture(const MgMotion* sender) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onPostGesture(sender);
+        }
+    }
 
 private:
     typedef std::vector<CmdObserver*> Observers;

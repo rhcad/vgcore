@@ -21,7 +21,7 @@ struct MgCmdManager;
 struct CmdObserver {
     virtual ~CmdObserver() {}
     
-    //! 图形文档内容加载后的通知
+    //! 图形文档内容加载后的通知，Undo/Redo也触发此通知
     virtual void onDocLoaded(const MgMotion* sender) = 0;
 
     //! 进入选择命令时的通知
@@ -70,6 +70,9 @@ struct CmdObserver {
 
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) = 0; //!< 创建自定义的图形
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) = 0; //!< 创建命令
+    
+    virtual bool onPreGesture(MgMotion* sender) = 0;                        //!< 向命令分发手势前
+    virtual void onPostGesture(const MgMotion* sender) = 0;                 //!< 向命令分发手势后
 };
 
 //! 命令扩展观察者接口的默认实现
@@ -102,10 +105,12 @@ public:
     virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) { return true; }
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) { return (MgBaseShape*)0; }
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) { return (MgCommand*)0; }
-    virtual int addShapeActions(const MgMotion*,mgvector<int>&,int n, const MgShape*) { return n; }
+    virtual int addShapeActions(const MgMotion* sender,mgvector<int>&,int n, const MgShape*) { return n; }
 #ifndef SWIG
     virtual void onSelectTouchEnded(const MgMotion*,int,int,int,int,int,const int*) {}
 #endif
+    virtual bool onPreGesture(MgMotion* sender) { return true; }
+    virtual void onPostGesture(const MgMotion* sender) {}
 };
 
 #endif // TOUCHVG_CMDOBSERVER_H_

@@ -22,22 +22,13 @@ public:
     float   y;      //!< Y坐标分量
 
     //! 零矢量(0,0)
-    static const Vector2d& kIdentity() {
-        static const Vector2d vec (0, 0);
-        return vec;
-    }
+    static const Vector2d kIdentity() { return Vector2d(0, 0); }
     
     //! X轴单位矢量(1,0)
-    static const Vector2d& kXAxis() {
-        static const Vector2d vec (1, 0);
-        return vec;
-    }
+    static const Vector2d kXAxis() { return Vector2d(1, 0); }
     
     //! Y轴单位矢量(0,1)
-    static const Vector2d& kYAxis() {
-        static const Vector2d vec (0, 1);
-        return vec;
-    }
+    static const Vector2d kYAxis() { return Vector2d(0, 1); }
     
     //! 构造为零矢量
     Vector2d() : x(0), y(0) {}

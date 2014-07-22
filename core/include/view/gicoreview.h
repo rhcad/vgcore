@@ -19,7 +19,8 @@ class GiCoreViewImpl;
 class GiCoreView : public MgCoreView
 {
 public:
-    static GiCoreView* createView(GiView* view, int type = 1);      //!< 创建内核视图
+    enum { kNoCmdType = -1, kTestType = 0, kNormalType = 1 };
+    static GiCoreView* createView(GiView* view, int type = kNormalType);    //!< 创建内核视图
     static GiCoreView* createMagnifierView(GiView* newview, GiCoreView* mainView,
                                            GiView* mainDevView);    //!< 创建放大镜视图
     void destoryView(GiView* view);                                 //!< 销毁内核视图
@@ -44,6 +45,7 @@ public:
     int setBkColor(GiView* view, int argb);                         //!< 设置背景颜色
     static void setScreenDpi(int dpi, float factor = 1.f);          //!< 设置屏幕的点密度和UI放缩系数
     void onSize(GiView* view, int w, int h);                        //!< 设置视图的宽高
+    void setViewScaleRange(GiView* view, float minScale, float maxScale);   //!< 设置显示比例范围
     void setPenWidthRange(GiView* view, float minw, float maxw);    //!< 设置画笔宽度范围
     
     void setGestureVelocity(GiView* view, float vx, float vy);      //!< 设置移动速度，每秒点数
