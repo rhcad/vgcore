@@ -438,7 +438,8 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values,
         }
     }
     if (values && ret < count && report) {
-        setError("readFloatArray: lose numbers.");
+        LOGD("readFloatArray(%s, %d): %d", name, count, ret);
+        setError("readFloatArray: lose numbers");
     }
     
     return ret;
@@ -599,7 +600,8 @@ int MgJsonStorage::Impl::readIntArray(const char* name, int* values, int count, 
         }
     }
     if (values && ret < count && report) {
-        setError("readIntArray: lose numbers.");
+        LOGD("readIntArray(%s, %d): %d", name, count, ret);
+        setError("readIntArray: lose numbers");
     }
     
     return ret;
@@ -658,6 +660,8 @@ bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
                 fseek(fp, sizeof(bom32be), SEEK_SET);
                 ret = toutf8_<uint32_t>(fp, fpo);
                 fclose(fpo);
+            } else {
+                LOGE("Fail to create file: %s", outfile);
             }
         }
         else if (starts_with_bom(head, head + sizeof(head), bom16be, sizeof(bom16be))
@@ -667,10 +671,14 @@ bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
                 fseek(fp, sizeof(bom16be), SEEK_SET);
                 ret = toutf8_<uint16_t>(fp, fpo);
                 fclose(fpo);
+            } else {
+                LOGE("Fail to create file: %s", outfile);
             }
         }
         
         fclose(fp);
+    } else {
+        LOGD("Fail to open file: %s", infile);
     }
     
     return ret > 0;
@@ -707,10 +715,14 @@ bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
                     ret += fwrite(&utf16result.front(), 2, utf16result.size(), fpo);
                 }
                 fclose(fpo);
+            } else {
+                LOGE("Fail to create file: %s", outfile);
             }
         }
         
         fclose(fp);
+    } else {
+        LOGD("Fail to open file: %s", infile);
     }
     
     return ret > 0;

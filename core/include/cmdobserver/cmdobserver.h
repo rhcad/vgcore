@@ -27,13 +27,22 @@ struct CmdObserver {
     //! 进入选择命令时的通知
     virtual void onEnterSelectCommand(const MgMotion* sender) = 0;
 
-    //! 视图销毁前、所有命令卸载后的通知
+    //! 视图销毁前、所有命令卸载后的通知，可重载本函数释放命令观察者
     virtual void onUnloadCommands(MgCmdManager* sender) = 0;
 
     //! 选择命令中的上下文操作是否隐藏的回调通知
     virtual bool selectActionsNeedHided(const MgMotion* sender) = 0;
 
     //! 对选中的图形增加上下文操作的回调通知
+    /*! 重载实现示例: \code
+        actions.set(n++, kMgAction3Views); return n;
+        \endcode
+        \param sender 视图上下文信息
+        \param actions 待增加上下文操作码(MgContextAction 或扩展值)的数组
+        \param n actions 中已有的元素个数
+        \param sp 当前选中的图形
+        \return 增加上下文操作后 actions 中已有的元素个数
+     */
     virtual int addShapeActions(const MgMotion* sender,
         mgvector<int>& actions, int n, const MgShape* sp) = 0;
 
@@ -105,9 +114,11 @@ public:
     virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) { return true; }
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) { return (MgBaseShape*)0; }
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) { return (MgCommand*)0; }
-    virtual int addShapeActions(const MgMotion* sender,mgvector<int>&,int n, const MgShape*) { return n; }
+    virtual int addShapeActions(const MgMotion* sender, mgvector<int>& actions,int n, const MgShape* sp) { return n; }
 #ifndef SWIG
-    virtual void onSelectTouchEnded(const MgMotion*,int,int,int,int,int,const int*) {}
+    virtual void onSelectTouchEnded(const MgMotion* sender, int shapeid,
+                                    int handleIndex, int snapid, int snapHandle,
+                                    int count, const int* ids) {}
 #endif
     virtual bool onPreGesture(MgMotion* sender) { return true; }
     virtual void onPostGesture(const MgMotion* sender) {}
