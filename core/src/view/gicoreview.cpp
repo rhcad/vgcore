@@ -1033,8 +1033,10 @@ bool GiCoreView::zoomToModel(float x, float y, float w, float h, float margin)
 
 bool GiCoreView::zoomPan(float dxPixel, float dyPixel, bool adjust)
 {
-    bool res = impl->xform()->zoomPan(dxPixel, dyPixel);
-    impl->regenAll(false);
+    bool res = impl->xform()->zoomPan(dxPixel, dyPixel, adjust);
+    if (res) {
+        impl->regenAll(false);
+    }
     return res;
 }
 

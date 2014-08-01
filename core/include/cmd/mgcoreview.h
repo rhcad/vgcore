@@ -116,6 +116,7 @@ struct MgCoreView {
     virtual bool zoomToInitial() = 0;                   //!< 放缩到文档初始状态
     virtual bool zoomToExtent(float margin = 2) = 0;    //!< 放缩显示全部内容到视图区域
     virtual bool zoomToModel(float x, float y, float w, float h, float margin = 2) = 0; //!< 放缩显示指定范围到视图区域
+    virtual bool zoomPan(float dxPixel, float dyPixel, bool adjust = true) = 0; //!< 平移显示
     
     virtual GiContext& getContext(bool forChange) = 0;  //!< 当前绘图属性，可用 calcPenWidth() 计算线宽
     virtual void setContext(int mask) = 0;              //!< 绘图属性改变后提交更新
