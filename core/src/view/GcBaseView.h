@@ -23,6 +23,7 @@ public:
     GiView* deviceView() { return _view; }                          //!< 返回回调视图对象
     MgView* cmdView() { return _mgview; }
     bool isZooming() { return _zooming; }
+    bool isZoomEnabled() const { return _zoomEnabled; }
     void setZoomEnabled(bool enabled) { _zoomEnabled = enabled; }
     
     void submitBackXform() { _gsFront.copy(_gsBack); }              //!< 应用后端坐标系对象到前端

@@ -63,7 +63,8 @@ public:
     GiGestureType getGestureType();                                 //!< 得到当前手势类型
     GiGestureState getGestureState();                               //!< 得到当前手势状态
     static int getVersion();                                        //!< 得到内核版本号
-    void setZoomEnabled(GiView* view, bool enabled);                //!< 是否允许放缩显示
+    bool isZoomEnabled(GiView* view);                               //!< 是否允许放缩显示
+    void setZoomEnabled(GiView* view, bool enabled);                //!< 设置是否允许放缩显示
     
     int exportSVG(long doc, long gs, const char* filename);         //!< 导出图形到SVG文件
     int exportSVG(GiView* view, const char* filename);              //!< 导出图形到SVG文件，主线程中用

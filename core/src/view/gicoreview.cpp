@@ -1040,11 +1040,18 @@ bool GiCoreView::zoomPan(float dxPixel, float dyPixel, bool adjust)
     return res;
 }
 
+bool GiCoreView::isZoomEnabled(GiView* view)
+{
+    GcBaseView* aview = impl->_gcdoc->findView(view);
+    return aview && aview->isZoomEnabled();
+}
+
 void GiCoreView::setZoomEnabled(GiView* view, bool enabled)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
-    if (aview)
+    if (aview) {
         aview->setZoomEnabled(enabled);
+    }
 }
 
 float GiCoreView::calcPenWidth(GiView* view, float lineWidth)
