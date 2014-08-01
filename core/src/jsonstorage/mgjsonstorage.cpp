@@ -677,8 +677,6 @@ bool MgJsonStorage::toUTF8(const char* infile, const char* outfile)
         }
         
         fclose(fp);
-    } else {
-        LOGD("Fail to open file: %s", infile);
     }
     
     return ret > 0;
@@ -721,8 +719,6 @@ bool MgJsonStorage::toUTF16(const char* infile, const char* outfile)
         }
         
         fclose(fp);
-    } else {
-        LOGD("Fail to open file: %s", infile);
     }
     
     return ret > 0;

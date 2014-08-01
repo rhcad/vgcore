@@ -139,6 +139,7 @@ public:
     bool zoomToInitial();
     bool zoomToExtent(float margin = 2);
     bool zoomToModel(float x, float y, float w, float h, float margin = 2);
+    bool zoomPan(float dxPixel, float dyPixel, bool adjust=true);
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);

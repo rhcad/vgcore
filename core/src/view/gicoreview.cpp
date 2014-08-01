@@ -1031,6 +1031,15 @@ bool GiCoreView::zoomToModel(float x, float y, float w, float h, float margin)
     return ret;
 }
 
+bool GiCoreView::zoomPan(float dxPixel, float dyPixel, bool adjust)
+{
+    bool res = impl->xform()->zoomPan(dxPixel, dyPixel, adjust);
+    if (res) {
+        impl->regenAll(false);
+    }
+    return res;
+}
+
 void GiCoreView::setZoomEnabled(GiView* view, bool enabled)
 {
     GcBaseView* aview = impl->_gcdoc->findView(view);
