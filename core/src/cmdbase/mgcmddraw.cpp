@@ -222,7 +222,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
 
 struct MgStringCallback1 : MgStringCallback {
     std::string result;
-    virtual void onGetString(const char* text) { result = text; }
+    virtual void onGetString(const char* text) { if (text) result = text; }
 };
 
 std::string MgLocalized::getString(MgView* view, const char* name)
@@ -232,15 +232,19 @@ std::string MgLocalized::getString(MgView* view, const char* name)
     return c.result.empty() ? name : c.result;
 }
 
-#define getString_(view, format) (*format == '@' ? getString(view, format + 1).c_str() : format)
-
 int MgLocalized::formatString(char *buffer, size_t size, MgView* view, const char *format, ...)
 {
+    std::string str;
     va_list arglist;
+
     va_start(arglist, format);
+    if (*format == '@') {
+        str = getString(view, format + 1);
+        format = str.c_str();
+    }
 #if defined(_MSC_VER) && _MSC_VER >= 1400
-    return vsprintf_s(buffer, size, getString_(view, format), arglist);
+    return vsprintf_s(buffer, size, format, arglist);
 #else
-    return vsprintf(buffer, getString_(view, format), arglist);
+    return vsprintf(buffer, format, arglist);
 #endif
 }

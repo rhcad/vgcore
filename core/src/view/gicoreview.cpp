@@ -12,6 +12,7 @@
 #include "svgcanvas.h"
 #include "../corever.h"
 #include "mgpathsp.h"
+#include "mglocal.h"
 
 static volatile long _viewCount = 0;    // 总视图数
 static int _dpi = 96;                   // 屏幕分辨率，在 GiCoreView::onSize() 中应用到新视图中
@@ -65,6 +66,17 @@ GiCoreViewImpl::~GiCoreViewImpl()
     }
     MgObject::release_pointer(_cmds);
     delete _gcdoc;
+}
+
+void GiCoreViewImpl::showMessage(const char* text)
+{
+    std::string str;
+
+    if (*text == '@') {
+        str = MgLocalized::getString(this, text + 1);
+        text = str.c_str();
+    }
+    CALL_VIEW(deviceView()->showMessage(text));
 }
 
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
