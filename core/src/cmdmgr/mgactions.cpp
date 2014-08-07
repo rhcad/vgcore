@@ -40,7 +40,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
                 actions[n++] = kMgActionGroup;
             }
         case kMgSelOneShape:
-            if (!locked) {
+            if (!locked && shape) {
                 actions[n++] = kMgActionDelete;
             }
             if (shape && !shape->shapec()->getFlag(kMgNoClone)) {
@@ -51,7 +51,9 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
                     || shape->shapec()->isKindOf(kMgShapeLine))) {
                 actions[n++] = fixedLength ? kMgActionFreeLength : kMgActionFixedLength;
             }
-            actions[n++] = locked ? kMgActionUnlocked : kMgActionLocked;
+            if (shape) {
+                actions[n++] = locked ? kMgActionUnlocked : kMgActionLocked;
+            }
             if (selState == kMgSelOneShape && !locked) {
                 actions[n++] = kMgActionEditVertex;
             }

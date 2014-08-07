@@ -1387,11 +1387,18 @@ bool MgCmdSelect::isEditMode(MgView* view)
 
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
 {
-    MgObject* owner = sender->view->shapes()->getOwner();
+    const MgObject* owner = sender->view->shapes()->getOwner();
 
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         editMode = false;
         sender->view->setCurrentShapes(NULL);
+
+        MgShape *newsp = ((MgComposite*)owner)->getOwnerShape()->cloneShape();
+        newsp->shape()->update();
+        newsp->getParent()->updateShape(newsp);
+        m_id = newsp->getID();
+        m_selIds.clear();
+        m_selIds.push_back(m_id);
     }
     else {
         const MgShape* sp = sender->view->shapes()->findShape(m_id);
