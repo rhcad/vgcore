@@ -2,13 +2,13 @@
 // Copyright (c) 2014, Zhang Yungui
 // License: LGPL, https://github.com/touchvg/vgcore
 //
-// void parsePath(const char* s, GiPath& path);
+// void parsePath(const char* s, MgPath& path);
 //
 // parsePath() is based on nanosvg.h (https://github.com/memononen/nanosvg)
 // NanoSVG is a simple stupid single-header-file SVG parse.
 // Copyright (c) 2013-14 Mikko Mononen memon@inside.org
 
-#include "gipath.h"
+#include "mgpath.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -137,7 +137,7 @@ static void nsvg__xformVec(float* dx, float* dy, float x, float y, float* t)
 	*dy = x*t[1] + y*t[3];
 }
 
-static void nsvg__pathArcTo(GiPath& path, const float* args, bool rel)
+static void nsvg__pathArcTo(MgPath& path, const float* args, bool rel)
 {
 	// Ported from canvg (https://code.google.com/p/canvg/)
 	float rx, ry, rotx;
@@ -256,7 +256,7 @@ static void nsvg__pathArcTo(GiPath& path, const float* args, bool rel)
 	curpt.y = y2;
 }
 
-void parsePath(const char* s, GiPath& path)
+void parsePath(const char* s, MgPath& path)
 {
     char item[64];
     char cmd = 0;

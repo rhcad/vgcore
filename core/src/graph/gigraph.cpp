@@ -969,7 +969,7 @@ bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count, const Point2d*
     return rawEndPath(ctx, closed);
 }
 
-bool GiGraphics::drawPath(const GiContext* ctx, const GiPath& path, 
+bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, 
                           bool fill, bool modelUnit)
 {
     int n = path.getCount();
@@ -984,18 +984,18 @@ bool GiGraphics::drawPath(const GiContext* ctx, const GiPath& path,
     rawBeginPath();
 
     for (int i = 0; i < n; i++) {
-        switch (types[i] & ~kGiCloseFigure) {
-        case kGiMoveTo:
+        switch (types[i] & ~kMgCloseFigure) {
+        case kMgMoveTo:
             ends = pts[i] * matD;
             rawMoveTo(ends.x, ends.y);
             break;
 
-        case kGiLineTo:
+        case kMgLineTo:
             ends = pts[i] * matD;
             rawLineTo(ends.x, ends.y);
             break;
 
-        case kGiBezierTo:
+        case kMgBezierTo:
             if (i + 2 >= n)
                 return false;
             cp1 = pts[i] * matD;
@@ -1005,7 +1005,7 @@ bool GiGraphics::drawPath(const GiContext* ctx, const GiPath& path,
             i += 2;
             break;
 
-        case kGiQuadTo:
+        case kMgQuadTo:
             if (i + 1 >= n)
                 return false;
             cp1 = pts[i] * matD;
@@ -1017,7 +1017,7 @@ bool GiGraphics::drawPath(const GiContext* ctx, const GiPath& path,
         default:
             return false;
         }
-        if (types[i] & kGiCloseFigure)
+        if (types[i] & kMgCloseFigure)
             rawClosePath();
     }
 

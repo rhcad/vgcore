@@ -42,6 +42,7 @@
     <ClInclude Include="..\..\core\include\export\girecordcanvas.h" />
     <ClInclude Include="..\..\core\include\export\girecordshape.h" />
     <ClInclude Include="..\..\core\include\export\svgcanvas.h" />
+    <ClInclude Include="..\..\core\include\geom\mgpath.h" />
     <ClInclude Include="..\..\core\include\geom\mgbase.h" />
     <ClInclude Include="..\..\core\include\geom\mgbox.h" />
     <ClInclude Include="..\..\core\include\geom\mgcurv.h" />
@@ -56,8 +57,24 @@
     <ClInclude Include="..\..\core\include\graph\gicontxt.h" />
     <ClInclude Include="..\..\core\include\graph\gigraph.h" />
     <ClInclude Include="..\..\core\include\graph\gilock.h" />
-    <ClInclude Include="..\..\core\include\graph\gipath.h" />
     <ClInclude Include="..\..\core\include\graph\gixform.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgarc.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgbasesp.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgcshapes.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgdiamond.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgdot.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgellipse.h" />
+    <ClInclude Include="..\..\core\include\gshape\mggrid.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgline.h" />
+    <ClInclude Include="..\..\core\include\gshape\mglines.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgobject.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgparallel.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgpathsp.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgrdrect.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgrect.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgshapetype.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgshape_.h" />
+    <ClInclude Include="..\..\core\include\gshape\mgsplines.h" />
     <ClInclude Include="..\..\core\include\jsonstorage\mgjsonstorage.h" />
     <ClInclude Include="..\..\core\include\mglog.h" />
     <ClInclude Include="..\..\core\include\mgvector.h" />
@@ -65,17 +82,12 @@
     <ClInclude Include="..\..\core\include\shapedoc\mglayer.h" />
     <ClInclude Include="..\..\core\include\shapedoc\mgshapedoc.h" />
     <ClInclude Include="..\..\core\include\shapedoc\spfactoryimpl.h" />
-    <ClInclude Include="..\..\core\include\shape\mgbasicsp.h" />
     <ClInclude Include="..\..\core\include\shape\mgbasicspreg.h" />
     <ClInclude Include="..\..\core\include\shape\mgcomposite.h" />
-    <ClInclude Include="..\..\core\include\shape\mggrid.h" />
-    <ClInclude Include="..\..\core\include\shape\mgobject.h" />
-    <ClInclude Include="..\..\core\include\shape\mgpathsp.h" />
+    <ClInclude Include="..\..\core\include\shape\mgimagesp.h" />
     <ClInclude Include="..\..\core\include\shape\mgshape.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapes.h" />
     <ClInclude Include="..\..\core\include\shape\mgshapet.h" />
-    <ClInclude Include="..\..\core\include\shape\mgshapetype.h" />
-    <ClInclude Include="..\..\core\include\shape\mgshape_.h" />
     <ClInclude Include="..\..\core\include\shape\mgspfactory.h" />
     <ClInclude Include="..\..\core\include\storage\mgstorage.h" />
     <ClInclude Include="..\..\core\include\test\RandomShape.h" />
@@ -137,6 +149,7 @@
     <ClCompile Include="..\..\core\src\export\girecordcanvas.cpp" />
     <ClCompile Include="..\..\core\src\export\svgcanvas.cpp" />
     <ClCompile Include="..\..\core\src\geom\fitcurves.cpp" />
+    <ClCompile Include="..\..\core\src\geom\mgpath.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgbase.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgbox.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgcurv.cpp" />
@@ -147,8 +160,22 @@
     <ClCompile Include="..\..\core\src\geom\mgpnt.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgvec.cpp" />
     <ClCompile Include="..\..\core\src\graph\gigraph.cpp" />
-    <ClCompile Include="..\..\core\src\graph\gipath.cpp" />
     <ClCompile Include="..\..\core\src\graph\gixform.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgarc.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgbasesp.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgcshapes.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgdiamond.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgdot.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgellipse.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mggrid.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgline.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mglines.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgparallel.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgpathsp.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgrdrect.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgrect.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgsplines.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\jsonstorage\mgjsonstorage.cpp" />
     <ClCompile Include="..\..\core\src\record\recordshapes.cpp" />
     <ClCompile Include="..\..\core\src\shapedoc\mglayer.cpp" />
@@ -156,17 +183,9 @@
     <ClCompile Include="..\..\core\src\shapedoc\spfactoryimpl.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgbasicspreg.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgcomposite.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgellipse.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mggrid.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgline.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mglines.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgpathsp.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgrdrect.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgrect.cpp" />
+    <ClCompile Include="..\..\core\src\shape\mgimagesp.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshape.cpp" />
     <ClCompile Include="..\..\core\src\shape\mgshapes.cpp" />
-    <ClCompile Include="..\..\core\src\shape\mgsplines.cpp" />
-    <ClCompile Include="..\..\core\src\shape\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\test\RandomShape.cpp" />
     <ClCompile Include="..\..\core\src\test\testcanvas.cpp" />
     <ClCompile Include="..\..\core\src\view\GcGraphView.cpp" />
@@ -223,7 +242,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\gshape;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -240,7 +259,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\gshape;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record"
+				AdditionalIncludeDirectories="..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\gshape;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -106,7 +106,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record"
+				AdditionalIncludeDirectories="..\..\core\include;..\..\core\include\canvas;..\..\core\include\test;..\..\core\include\geom;..\..\core\include\graph;..\..\core\include\gshape;..\..\core\include\shape;..\..\core\include\storage;..\..\core\include\shapedoc;..\..\core\include\jsonstorage;..\..\core\include\cmd;..\..\core\include\cmdobserver;..\..\core\include\cmdbase;..\..\core\include\cmdbasic;..\..\core\include\cmdmgr;..\..\core\include\view;..\..\core\include\export;..\..\core\include\record"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -280,6 +280,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\geom\mgpath.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\geom\mgbase.cpp"
 					>
 				</File>
@@ -329,10 +333,6 @@
 				</File>
 				<File
 					RelativePath="..\..\core\src\graph\gigraph_.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\graph\gipath.cpp"
 					>
 				</File>
 				<File
@@ -416,31 +416,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\src\shape\mgellipse.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mggrid.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mgline.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mglines.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mgpathsp.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mgrdrect.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mgrect.cpp"
+					RelativePath="..\..\core\src\shape\mgimagesp.cpp"
 					>
 				</File>
 				<File
@@ -449,14 +425,6 @@
 				</File>
 				<File
 					RelativePath="..\..\core\src\shape\mgshapes.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\mgsplines.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\shape\nanosvg.cpp"
 					>
 				</File>
 			</Filter>
@@ -557,6 +525,70 @@
 				>
 				<File
 					RelativePath="..\..\core\src\record\recordshapes.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="gshape"
+				>
+				<File
+					RelativePath="..\..\core\src\gshape\mgarc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgbasesp.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgcshapes.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgdiamond.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgdot.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgellipse.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mggrid.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgline.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mglines.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgparallel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgpathsp.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgrdrect.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgrect.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\mgsplines.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\gshape\nanosvg.cpp"
 					>
 				</File>
 			</Filter>
@@ -714,6 +746,10 @@
 				Name="geom"
 				>
 				<File
+					RelativePath="..\..\core\include\geom\mgpath.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\include\geom\mgbase.h"
 					>
 				</File>
@@ -774,10 +810,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\include\graph\gipath.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\core\include\graph\gixform.h"
 					>
 				</File>
@@ -794,10 +826,6 @@
 				Name="shape"
 				>
 				<File
-					RelativePath="..\..\core\include\shape\mgbasicsp.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\core\include\shape\mgbasicspreg.h"
 					>
 				</File>
@@ -806,23 +834,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\include\shape\mggrid.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\include\shape\mgobject.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\include\shape\mgpathsp.h"
+					RelativePath="..\..\core\include\shape\mgimagesp.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\core\include\shape\mgshape.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\include\shape\mgshape_.h"
 					>
 				</File>
 				<File
@@ -831,10 +847,6 @@
 				</File>
 				<File
 					RelativePath="..\..\core\include\shape\mgshapet.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\include\shape\mgshapetype.h"
 					>
 				</File>
 				<File
@@ -919,6 +931,78 @@
 				>
 				<File
 					RelativePath="..\..\core\include\record\recordshapes.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="gshape"
+				>
+				<File
+					RelativePath="..\..\core\include\gshape\mgarc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgbasesp.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgcshapes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgdiamond.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgdot.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgellipse.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mggrid.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgline.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mglines.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgobject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgparallel.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgpathsp.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgrdrect.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgrect.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgshape_.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgshapetype.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\gshape\mgsplines.h"
 					>
 				</File>
 			</Filter>

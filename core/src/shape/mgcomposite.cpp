@@ -200,7 +200,7 @@ bool MgComposite::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int) con
     return n > 0;
 }
 
-void MgComposite::_output(GiPath& path) const
+void MgComposite::_output(MgPath& path) const
 {
     MgShapeIterator it(_shapes);
     

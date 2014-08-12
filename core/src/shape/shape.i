@@ -10,10 +10,10 @@
 
 #include <gigraph.h>
 #include <gicanvas.h>
-#include <gipath.h>
+#include <mgpath.h>
 
 #include <mgshapes.h>
-#include <mgbasicsp.h>
+#include <mgbasesp.h>
 #include <mgcomposite.h>
 #include <mggrid.h>
 #include <mgshapetype.h>
@@ -39,14 +39,15 @@
 %include <gicolor.h>
 %include <gicontxt.h>
 %include <gixform.h>
-%include <gipath.h>
+%include <mgpath.h>
 %include <gigraph.h>
 
 %include <mgobject.h>
 %include <mgshape.h>
 %include <mgspfactory.h>
 %include <mgshapes.h>
-%include <mgbasicsp.h>
+%include <mgbasesp.h>
+%include <mgrect.h>
 %include <mgcomposite.h>
 %include <mggrid.h>
 %include <mgshapetype.h>

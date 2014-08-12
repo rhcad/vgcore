@@ -710,13 +710,13 @@ bool MgRecordShape::load(MgShapeFactory* factory, MgStorage* s)
     return _load(factory, s);
 }
 
-bool MgRecordShape::draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
+bool MgRecordShape::draw(int, GiGraphics& gs, const GiContext& ctx, int) const
 {
     const Matrix2d& w2d = gs.xf().worldToDisplay();
     for (ITEMS::const_iterator it = _items.begin(); it != _items.end(); ++it) {
         (*it)->draw(gs, w2d);
     }
-    return _draw(mode, gs, ctx, segment) || !_items.empty();
+    return !_items.empty();
 }
 
 void MgRecordShape::addItem(const Matrix2d& w2m, ICmd* p)

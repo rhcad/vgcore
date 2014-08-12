@@ -8,7 +8,7 @@
 
 #include "gixform.h"
 #include "gicontxt.h"
-#include "gipath.h"
+#include "mgpath.h"
 
 #ifndef SWIG
 class GiGraphicsImpl;
@@ -335,7 +335,7 @@ public:
                          bool closed = false, bool modelUnit = true);
 
     //! 显示路径对象
-    bool drawPath(const GiContext* ctx, const GiPath& path, bool fill, bool modelUnit = true);
+    bool drawPath(const GiContext* ctx, const MgPath& path, bool fill, bool modelUnit = true);
     
     //! 在给定中心位置显示特殊符号
     /*!

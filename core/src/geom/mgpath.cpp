@@ -1,8 +1,8 @@
-﻿// gipath.cpp: 实现路径类 GiPath
+﻿// mgpath.cpp: 实现路径类 MgPath
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "gipath.h"
+#include "mgpath.h"
 #include "mgcurv.h"
 #include <vector>
 
@@ -12,24 +12,24 @@ template<class T> inline static int getSize(T& arr)
     return static_cast<int>(arr.size());
 }
 
-//! GiPath的内部数据类
-class GiPathImpl
+//! MgPath的内部数据类
+class MgPathImpl
 {
 public:
     std::vector<Point2d>    points;         //!< 每个节点的坐标
-    std::vector<char>       types;          //!< 每个节点的类型, kGiLineTo 等
+    std::vector<char>       types;          //!< 每个节点的类型, kMgLineTo 等
     int                     beginIndex;     //!< 新图形的起始节点(即MOVETO节点)的序号
 };
 
-GiPath::GiPath()
+MgPath::MgPath()
 {
-    m_data = new GiPathImpl();
+    m_data = new MgPathImpl();
     m_data->beginIndex = -1;
 }
 
-GiPath::GiPath(const GiPath& src)
+MgPath::MgPath(const MgPath& src)
 {
-    m_data = new GiPathImpl();
+    m_data = new MgPathImpl();
 
     unsigned count = (unsigned)src.m_data->points.size();
     m_data->points.reserve(count);
@@ -41,9 +41,9 @@ GiPath::GiPath(const GiPath& src)
     m_data->beginIndex = src.m_data->beginIndex;
 }
 
-GiPath::GiPath(int count, const Point2d* points, const char* types)
+MgPath::MgPath(int count, const Point2d* points, const char* types)
 {
-    m_data = new GiPathImpl();
+    m_data = new MgPathImpl();
     m_data->beginIndex = -1;
 
     if (count > 0 && points && types) {
@@ -56,12 +56,12 @@ GiPath::GiPath(int count, const Point2d* points, const char* types)
     }
 }
 
-GiPath::~GiPath()
+MgPath::~MgPath()
 {
     delete m_data;
 }
 
-GiPath& GiPath::copy(const GiPath& src)
+MgPath& MgPath::copy(const MgPath& src)
 {
     if (this != &src) {
         clear();
@@ -77,13 +77,13 @@ GiPath& GiPath::copy(const GiPath& src)
     return *this;
 }
 
-GiPath& GiPath::append(const GiPath& src)
+MgPath& MgPath::append(const MgPath& src)
 {
     if (this != &src && src.getCount() > 1 && getCount() > 1) {
         size_t i = 0;
         
-        if (src.getNodeType(0) == kGiMoveTo
-            && !(m_data->types.back() & kGiCloseFigure)
+        if (src.getNodeType(0) == kMgMoveTo
+            && !(m_data->types.back() & kMgCloseFigure)
             && getEndPoint() == src.getPoint(0)) {
             i++;    // skip moveto
         }
@@ -95,7 +95,7 @@ GiPath& GiPath::append(const GiPath& src)
     return *this;
 }
 
-void GiPath::setPath(int count, const Point2d* points, const char* types)
+void MgPath::setPath(int count, const Point2d* points, const char* types)
 {
     if (getCount() != count) {
         clear();
@@ -115,7 +115,7 @@ void GiPath::setPath(int count, const Point2d* points, const char* types)
     }
 }
 
-void GiPath::setPath(int count, const Point2d* points, const int* types)
+void MgPath::setPath(int count, const Point2d* points, const int* types)
 {
     if (getCount() != count) {
         clear();
@@ -135,99 +135,99 @@ void GiPath::setPath(int count, const Point2d* points, const int* types)
     }
 }
 
-int GiPath::getCount() const
+int MgPath::getCount() const
 {
     return getSize(m_data->points);
 }
 
-Point2d GiPath::getStartPoint() const
+Point2d MgPath::getStartPoint() const
 {
     return m_data->points.empty() ? Point2d() : m_data->points.front();
 }
 
-Vector2d GiPath::getStartTangent() const
+Vector2d MgPath::getStartTangent() const
 {
     return (m_data->points.size() < 2 ? Vector2d() :
             m_data->points[1] - m_data->points.front());
 }
 
-Point2d GiPath::getEndPoint() const
+Point2d MgPath::getEndPoint() const
 {
     return m_data->points.empty() ? Point2d() : m_data->points.back();
 }
 
-Vector2d GiPath::getEndTangent() const
+Vector2d MgPath::getEndTangent() const
 {
     return (m_data->points.size() < 2 ? Vector2d() :
             m_data->points.back() - m_data->points[m_data->points.size() - 2]);
 }
 
-const Point2d* GiPath::getPoints() const
+const Point2d* MgPath::getPoints() const
 {
     return m_data->points.empty() ? (Point2d*)0 : &m_data->points.front();
 }
 
-const char* GiPath::getTypes() const
+const char* MgPath::getTypes() const
 {
     return m_data->types.empty() ? (char*)0 : &m_data->types.front();
 }
 
-int GiPath::getNodeType(int index) const
+int MgPath::getNodeType(int index) const
 {
     return index >= 0 && index < getCount() ? (int)m_data->types[index] : 0;
 }
 
-Point2d GiPath::getPoint(int index) const
+Point2d MgPath::getPoint(int index) const
 {
     return index >= 0 && index < getCount() ? m_data->points[index] : Point2d();
 }
 
-void GiPath::setPoint(int index, const Point2d& pt)
+void MgPath::setPoint(int index, const Point2d& pt)
 {
     if (index >= 0 && index < getCount())
         m_data->points[index] = pt;
 }
 
-void GiPath::clear()
+void MgPath::clear()
 {
     m_data->points.clear();
     m_data->types.clear();
     m_data->beginIndex = -1;
 }
 
-void GiPath::transform(const Matrix2d& mat)
+void MgPath::transform(const Matrix2d& mat)
 {
     for (unsigned i = 0; i < m_data->points.size(); i++) {
         m_data->points[i] *= mat;
     }
 }
 
-void GiPath::startFigure()
+void MgPath::startFigure()
 {
     m_data->beginIndex = -1;
 }
 
-bool GiPath::moveTo(const Point2d& point, bool rel)
+bool MgPath::moveTo(const Point2d& point, bool rel)
 {
     m_data->points.push_back(rel ? point + getEndPoint() : point);
-    m_data->types.push_back(kGiMoveTo);
+    m_data->types.push_back(kMgMoveTo);
     m_data->beginIndex = getSize(m_data->points) - 1;
 
     return true;
 }
 
-bool GiPath::lineTo(const Point2d& point, bool rel)
+bool MgPath::lineTo(const Point2d& point, bool rel)
 {
     bool ret = (m_data->beginIndex >= 0);
     if (ret) {
         m_data->points.push_back(rel ? point + getEndPoint() : point);
-        m_data->types.push_back(kGiLineTo);
+        m_data->types.push_back(kMgLineTo);
     }
 
     return ret;
 }
 
-bool GiPath::horzTo(float x, bool rel)
+bool MgPath::horzTo(float x, bool rel)
 {
     Point2d pt(getEndPoint());
     bool ret = (m_data->beginIndex >= 0);
@@ -235,13 +235,13 @@ bool GiPath::horzTo(float x, bool rel)
     if (ret) {
         pt.x = rel ? pt.x + x : x;
         m_data->points.push_back(pt);
-        m_data->types.push_back(kGiLineTo);
+        m_data->types.push_back(kMgLineTo);
     }
     
     return ret;
 }
 
-bool GiPath::vertTo(float y, bool rel)
+bool MgPath::vertTo(float y, bool rel)
 {
     Point2d pt(getEndPoint());
     bool ret = (m_data->beginIndex >= 0);
@@ -249,13 +249,13 @@ bool GiPath::vertTo(float y, bool rel)
     if (ret) {
         pt.y = rel ? pt.y + y : y;
         m_data->points.push_back(pt);
-        m_data->types.push_back(kGiLineTo);
+        m_data->types.push_back(kMgLineTo);
     }
     
     return ret;
 }
 
-bool GiPath::linesTo(int count, const Point2d* points, bool rel)
+bool MgPath::linesTo(int count, const Point2d* points, bool rel)
 {
     bool ret = (m_data->beginIndex >= 0 && count > 0 && points);
     Point2d lastpt(getEndPoint());
@@ -263,14 +263,14 @@ bool GiPath::linesTo(int count, const Point2d* points, bool rel)
     if (ret) {
         for (int i = 0; i < count; i++) {
             m_data->points.push_back(rel ? points[i] + lastpt : points[i]);
-            m_data->types.push_back(kGiLineTo);
+            m_data->types.push_back(kMgLineTo);
         }
     }
 
     return ret;
 }
 
-bool GiPath::beziersTo(int count, const Point2d* points, bool reverse, bool rel)
+bool MgPath::beziersTo(int count, const Point2d* points, bool reverse, bool rel)
 {
     bool ret = (m_data->beginIndex >= 0 && count > 0 && points
         && (count % 3) == 0);
@@ -279,20 +279,20 @@ bool GiPath::beziersTo(int count, const Point2d* points, bool reverse, bool rel)
     if (ret && reverse) {
         for (int i = count - 1; i >= 0; i--) {
             m_data->points.push_back(rel ? points[i] + lastpt : points[i]);
-            m_data->types.push_back(kGiBezierTo);
+            m_data->types.push_back(kMgBezierTo);
         }
     }
     else if (ret) {
         for (int i = 0; i < count; i++) {
             m_data->points.push_back(rel ? points[i] + lastpt : points[i]);
-            m_data->types.push_back(kGiBezierTo);
+            m_data->types.push_back(kMgBezierTo);
         }
     }
 
     return ret;
 }
 
-bool GiPath::bezierTo(const Point2d& cp1, const Point2d& cp2, const Point2d& end, bool rel)
+bool MgPath::bezierTo(const Point2d& cp1, const Point2d& cp2, const Point2d& end, bool rel)
 {
     Point2d lastpt(getEndPoint());
     
@@ -300,12 +300,12 @@ bool GiPath::bezierTo(const Point2d& cp1, const Point2d& cp2, const Point2d& end
     m_data->points.push_back(rel ? cp2 + lastpt : cp2);
     m_data->points.push_back(rel ? end + lastpt : end);
     for (int i = 0; i < 3; i++)
-        m_data->types.push_back(kGiBezierTo);
+        m_data->types.push_back(kMgBezierTo);
     
     return true;
 }
 
-bool GiPath::smoothBezierTo(const Point2d& cp2, const Point2d& end, bool rel)
+bool MgPath::smoothBezierTo(const Point2d& cp2, const Point2d& end, bool rel)
 {
     Point2d lastpt(getEndPoint());
     Point2d cp1(m_data->points.size() > 1 ? 2 * lastpt -
@@ -315,12 +315,12 @@ bool GiPath::smoothBezierTo(const Point2d& cp2, const Point2d& end, bool rel)
     m_data->points.push_back(rel ? cp2 + lastpt : cp2);
     m_data->points.push_back(rel ? end + lastpt : end);
     for (int i = 0; i < 3; i++)
-        m_data->types.push_back(kGiBezierTo);
+        m_data->types.push_back(kMgBezierTo);
     
     return true;
 }
 
-bool GiPath::quadsTo(int count, const Point2d* points, bool rel)
+bool MgPath::quadsTo(int count, const Point2d* points, bool rel)
 {
     bool ret = (m_data->beginIndex >= 0 && count > 0 && points
                 && (count % 2) == 0);
@@ -329,25 +329,25 @@ bool GiPath::quadsTo(int count, const Point2d* points, bool rel)
     if (ret) {
         for (int i = 0; i < count; i++) {
             m_data->points.push_back(rel ? points[i] + lastpt : points[i]);
-            m_data->types.push_back(kGiQuadTo);
+            m_data->types.push_back(kMgQuadTo);
         }
     }
     
     return ret;
 }
 
-bool GiPath::quadTo(const Point2d& cp, const Point2d& end, bool rel)
+bool MgPath::quadTo(const Point2d& cp, const Point2d& end, bool rel)
 {
     Point2d lastpt(getEndPoint());
     
     m_data->points.push_back(rel ? cp + lastpt : cp);
     m_data->points.push_back(rel ? end + lastpt : end);
-    m_data->types.push_back(kGiQuadTo);
-    m_data->types.push_back(kGiQuadTo);
+    m_data->types.push_back(kMgQuadTo);
+    m_data->types.push_back(kMgQuadTo);
     return true;
 }
 
-bool GiPath::smoothQuadTo(const Point2d& end, bool rel)
+bool MgPath::smoothQuadTo(const Point2d& end, bool rel)
 {
     Point2d lastpt(getEndPoint());
     Point2d cp(m_data->points.size() > 1 ? 2 * lastpt -
@@ -355,12 +355,12 @@ bool GiPath::smoothQuadTo(const Point2d& end, bool rel)
     
     m_data->points.push_back(cp);
     m_data->points.push_back(rel ? end + lastpt : end);
-    m_data->types.push_back(kGiQuadTo);
-    m_data->types.push_back(kGiQuadTo);
+    m_data->types.push_back(kMgQuadTo);
+    m_data->types.push_back(kMgQuadTo);
     return true;
 }
 
-bool GiPath::arcTo(const Point2d& point, bool rel)
+bool MgPath::arcTo(const Point2d& point, bool rel)
 {
     bool ret = false;
 
@@ -382,7 +382,7 @@ bool GiPath::arcTo(const Point2d& point, bool rel)
                 ret = true;
                 for (int i = 0; i < n; i++) {
                     m_data->points.push_back(pts[i]);
-                    m_data->types.push_back(kGiBezierTo);
+                    m_data->types.push_back(kMgBezierTo);
                 }
             }
         }
@@ -391,7 +391,7 @@ bool GiPath::arcTo(const Point2d& point, bool rel)
     return ret;
 }
 
-bool GiPath::arcTo(const Point2d& point, const Point2d& end, bool rel)
+bool MgPath::arcTo(const Point2d& point, const Point2d& end, bool rel)
 {
     bool ret = false;
     Point2d lastpt(getEndPoint());
@@ -414,7 +414,7 @@ bool GiPath::arcTo(const Point2d& point, const Point2d& end, bool rel)
                 ret = true;
                 for (int i = 0; i < n; i++) {
                     m_data->points.push_back(pts[i]);
-                    m_data->types.push_back(kGiBezierTo);
+                    m_data->types.push_back(kMgBezierTo);
                 }
             }
         }
@@ -423,7 +423,7 @@ bool GiPath::arcTo(const Point2d& point, const Point2d& end, bool rel)
     return ret;
 }
 
-bool GiPath::closeFigure()
+bool MgPath::closeFigure()
 {
     bool ret = false;
 
@@ -432,8 +432,8 @@ bool GiPath::closeFigure()
         && m_data->points.size() == m_data->types.size())
     {
         char type = m_data->types[m_data->points.size() - 1];
-        if (type == kGiLineTo || type == kGiBezierTo || type == kGiQuadTo) {
-            m_data->types[m_data->points.size() - 1] |= kGiCloseFigure;
+        if (type == kMgLineTo || type == kMgBezierTo || type == kMgQuadTo) {
+            m_data->types[m_data->points.size() - 1] |= kMgCloseFigure;
             m_data->beginIndex = -1;
             ret = true;
         }
@@ -477,7 +477,7 @@ static int AngleToBezier(Point2d* pts, float radius)
     return count;
 }
 
-bool GiPath::genericRoundLines(int count, const Point2d* points, 
+bool MgPath::genericRoundLines(int count, const Point2d* points, 
                                float radius, bool closed)
 {
     clear();

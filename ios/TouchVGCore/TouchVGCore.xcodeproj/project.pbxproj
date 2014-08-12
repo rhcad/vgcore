@@ -7,8 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02063565196A3E99006F1674 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02063564196A3E99006F1674 /* nanosvg.cpp */; };
 		021DA341189F90EF00CFD9DC /* recordshapes.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
+		0224FF2C19989AAC00895C27 /* mgarc.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF1B19989AAC00895C27 /* mgarc.h */; };
+		0224FF2D19989AAC00895C27 /* mgcshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF1C19989AAC00895C27 /* mgcshapes.h */; };
+		0224FF2E19989AAC00895C27 /* mgdiamond.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF1D19989AAC00895C27 /* mgdiamond.h */; };
+		0224FF2F19989AAC00895C27 /* mgdot.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF1E19989AAC00895C27 /* mgdot.h */; };
+		0224FF3019989AAC00895C27 /* mgellipse.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF1F19989AAC00895C27 /* mgellipse.h */; };
+		0224FF3119989AAC00895C27 /* mggrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2019989AAC00895C27 /* mggrid.h */; };
+		0224FF3219989AAC00895C27 /* mgline.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2119989AAC00895C27 /* mgline.h */; };
+		0224FF3319989AAC00895C27 /* mglines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2219989AAC00895C27 /* mglines.h */; };
+		0224FF3419989AAC00895C27 /* mgobject.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2319989AAC00895C27 /* mgobject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0224FF3519989AAC00895C27 /* mgparallel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2419989AAC00895C27 /* mgparallel.h */; };
+		0224FF3619989AAC00895C27 /* mgpathsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2519989AAC00895C27 /* mgpathsp.h */; };
+		0224FF3719989AAC00895C27 /* mgrdrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2619989AAC00895C27 /* mgrdrect.h */; };
+		0224FF3819989AAC00895C27 /* mgrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2719989AAC00895C27 /* mgrect.h */; };
+		0224FF3919989AAC00895C27 /* mgshape_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2819989AAC00895C27 /* mgshape_.h */; };
+		0224FF3B19989AAC00895C27 /* mgshapetype.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2A19989AAC00895C27 /* mgshapetype.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0224FF3C19989AAC00895C27 /* mgsplines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF2B19989AAC00895C27 /* mgsplines.h */; };
+		0224FF4C19989BDB00895C27 /* mgarc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF3D19989BDB00895C27 /* mgarc.cpp */; };
+		0224FF4D19989BDB00895C27 /* mgcshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF3E19989BDB00895C27 /* mgcshapes.cpp */; };
+		0224FF4E19989BDB00895C27 /* mgdiamond.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF3F19989BDB00895C27 /* mgdiamond.cpp */; };
+		0224FF4F19989BDB00895C27 /* mgdot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4019989BDB00895C27 /* mgdot.cpp */; };
+		0224FF5019989BDB00895C27 /* mgellipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4119989BDB00895C27 /* mgellipse.cpp */; };
+		0224FF5119989BDB00895C27 /* mggrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4219989BDB00895C27 /* mggrid.cpp */; };
+		0224FF5219989BDB00895C27 /* mgline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4319989BDB00895C27 /* mgline.cpp */; };
+		0224FF5319989BDB00895C27 /* mglines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4419989BDB00895C27 /* mglines.cpp */; };
+		0224FF5419989BDB00895C27 /* mgparallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4519989BDB00895C27 /* mgparallel.cpp */; };
+		0224FF5519989BDB00895C27 /* mgpathsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4619989BDB00895C27 /* mgpathsp.cpp */; };
+		0224FF5619989BDB00895C27 /* mgrdrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4719989BDB00895C27 /* mgrdrect.cpp */; };
+		0224FF5719989BDB00895C27 /* mgrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4819989BDB00895C27 /* mgrect.cpp */; };
+		0224FF5919989BDB00895C27 /* mgsplines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4A19989BDB00895C27 /* mgsplines.cpp */; };
+		0224FF5A19989BDB00895C27 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4B19989BDB00895C27 /* nanosvg.cpp */; };
+		0224FF5E19989D1900895C27 /* mgimagesp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF5D19989D1900895C27 /* mgimagesp.h */; };
+		0224FF6019989E1B00895C27 /* mgimagesp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF5F19989E1B00895C27 /* mgimagesp.cpp */; };
+		0224FF621998B11C00895C27 /* mgbasesp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF611998B11C00895C27 /* mgbasesp.h */; };
+		0224FF641998B13F00895C27 /* mgbasesp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF631998B13F00895C27 /* mgbasesp.cpp */; };
 		024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
 		024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF63188A84A6000B0C41 /* svgcanvas.h */; };
 		024FCF78188A8552000B0C41 /* recordshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF66188A84A6000B0C41 /* recordshapes.h */; };
@@ -20,9 +53,10 @@
 		0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2C18F29DC300999778 /* girecordcanvas.h */; };
 		0269CE2F18F29DC300999778 /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2D18F29DC300999778 /* girecordshape.h */; };
 		0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0269CE3018F29DD000999778 /* girecordcanvas.cpp */; };
-		02985DB21968146200E89F59 /* mgpathsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 02985DB11968146200E89F59 /* mgpathsp.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		02985DB41968148C00E89F59 /* mgpathsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02985DB31968148C00E89F59 /* mgpathsp.cpp */; };
-		029FD69D1956D107004B80FA /* mglocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 029FD69C1956D107004B80FA /* mglocal.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		029FD69D1956D107004B80FA /* mglocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 029FD69C1956D107004B80FA /* mglocal.h */; };
+		02C3322F1999F46800C5F226 /* mgcomposite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C3322E1999F46800C5F226 /* mgcomposite.cpp */; };
+		02C332311999F48400C5F226 /* mgcomposite.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C332301999F48400C5F226 /* mgcomposite.h */; };
+		02C3324E199A10DF00C5F226 /* mgpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C3324D199A10DF00C5F226 /* mgpath.cpp */; };
 		02ED017C18F13E280060BE0A /* giplaying.h in Headers */ = {isa = PBXBuildFile; fileRef = 02ED017B18F13E280060BE0A /* giplaying.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF196418A2F7DF00B15999 /* fitcurves.cpp */; };
 		AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
@@ -78,20 +112,11 @@
 		AED370BA1866887500C0A778 /* mgnearbz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3706D186681DB00C0A778 /* mgnearbz.cpp */; };
 		AED370BB1866887500C0A778 /* mgvec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3706E186681DB00C0A778 /* mgvec.cpp */; };
 		AED370BC1866888300C0A778 /* gigraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37070186681DB00C0A778 /* gigraph.cpp */; };
-		AED370BD1866888300C0A778 /* gipath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37072186681DB00C0A778 /* gipath.cpp */; };
 		AED370BE1866888300C0A778 /* gixform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37074186681DB00C0A778 /* gixform.cpp */; };
 		AED370BF1866889300C0A778 /* mgjsonstorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37076186681DB00C0A778 /* mgjsonstorage.cpp */; };
 		AED370C0186688A600C0A778 /* mgbasicspreg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37087186681DB00C0A778 /* mgbasicspreg.cpp */; };
-		AED370C1186688A600C0A778 /* mgcomposite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37088186681DB00C0A778 /* mgcomposite.cpp */; };
-		AED370C2186688A600C0A778 /* mgellipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37089186681DB00C0A778 /* mgellipse.cpp */; };
-		AED370C3186688A600C0A778 /* mggrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708A186681DB00C0A778 /* mggrid.cpp */; };
-		AED370C4186688A600C0A778 /* mgline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708B186681DB00C0A778 /* mgline.cpp */; };
-		AED370C5186688A600C0A778 /* mglines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708C186681DB00C0A778 /* mglines.cpp */; };
-		AED370C6186688A600C0A778 /* mgrdrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708D186681DB00C0A778 /* mgrdrect.cpp */; };
-		AED370C7186688A600C0A778 /* mgrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708E186681DB00C0A778 /* mgrect.cpp */; };
 		AED370C8186688A600C0A778 /* mgshape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED3708F186681DB00C0A778 /* mgshape.cpp */; };
 		AED370C9186688A600C0A778 /* mgshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37090186681DB00C0A778 /* mgshapes.cpp */; };
-		AED370CA186688A600C0A778 /* mgsplines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37091186681DB00C0A778 /* mgsplines.cpp */; };
 		AED370CB186688B100C0A778 /* mglayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37093186681DB00C0A778 /* mglayer.cpp */; };
 		AED370CD186688B100C0A778 /* mgshapedoc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37095186681DB00C0A778 /* mgshapedoc.cpp */; };
 		AED370CE186688B100C0A778 /* spfactoryimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37096186681DB00C0A778 /* spfactoryimpl.cpp */; };
@@ -126,21 +151,14 @@
 		AED370EE1866899C00C0A778 /* gicontxt.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37027186681DB00C0A778 /* gicontxt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370EF1866899C00C0A778 /* gigraph.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37028186681DB00C0A778 /* gigraph.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F01866899C00C0A778 /* gilock.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37029186681DB00C0A778 /* gilock.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370F11866899C00C0A778 /* gipath.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3702A186681DB00C0A778 /* gipath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F21866899C00C0A778 /* gixform.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3702B186681DB00C0A778 /* gixform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F31866899C00C0A778 /* mgjsonstorage.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3702D186681DB00C0A778 /* mgjsonstorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F41866899C00C0A778 /* mglog.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3702E186681DB00C0A778 /* mglog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F51866899C00C0A778 /* mgvector.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3702F186681DB00C0A778 /* mgvector.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370F61866899C00C0A778 /* mgbasicsp.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37031186681DB00C0A778 /* mgbasicsp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370F71866899C00C0A778 /* mgbasicspreg.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37032186681DB00C0A778 /* mgbasicspreg.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370F81866899C00C0A778 /* mgcomposite.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37033186681DB00C0A778 /* mgcomposite.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370F91866899C00C0A778 /* mggrid.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37034186681DB00C0A778 /* mggrid.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370FA1866899C00C0A778 /* mgobject.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37035186681DB00C0A778 /* mgobject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370FB1866899C00C0A778 /* mgshape.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37036186681DB00C0A778 /* mgshape.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370FC1866899C00C0A778 /* mgshape_.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37037186681DB00C0A778 /* mgshape_.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370FD1866899C00C0A778 /* mgshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37038186681DB00C0A778 /* mgshapes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED370FE1866899C00C0A778 /* mgshapet.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37039186681DB00C0A778 /* mgshapet.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AED370FF1866899C00C0A778 /* mgshapetype.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3703A186681DB00C0A778 /* mgshapetype.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED371001866899C00C0A778 /* mgspfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3703B186681DB00C0A778 /* mgspfactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED371011866899C00C0A778 /* mglayer.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3703D186681DB00C0A778 /* mglayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AED371021866899C00C0A778 /* mgshapedoc.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3703E186681DB00C0A778 /* mgshapedoc.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -198,7 +216,6 @@
 		AED37138186689DC00C0A778 /* mgvec.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3706E186681DB00C0A778 /* mgvec.cpp */; };
 		AED37139186689DC00C0A778 /* gigraph.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37070186681DB00C0A778 /* gigraph.cpp */; };
 		AED3713A186689DC00C0A778 /* gigraph_.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37071186681DB00C0A778 /* gigraph_.h */; };
-		AED3713B186689DC00C0A778 /* gipath.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37072186681DB00C0A778 /* gipath.cpp */; };
 		AED3713C186689DC00C0A778 /* giplclip.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37073186681DB00C0A778 /* giplclip.h */; };
 		AED3713D186689DC00C0A778 /* gixform.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37074186681DB00C0A778 /* gixform.cpp */; };
 		AED3713E186689DC00C0A778 /* mgjsonstorage.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37076186681DB00C0A778 /* mgjsonstorage.cpp */; };
@@ -213,16 +230,8 @@
 		AED37147186689DC00C0A778 /* stringbuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37084186681DB00C0A778 /* stringbuffer.h */; };
 		AED37148186689DC00C0A778 /* writer.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37085186681DB00C0A778 /* writer.h */; };
 		AED37149186689DC00C0A778 /* mgbasicspreg.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37087186681DB00C0A778 /* mgbasicspreg.cpp */; };
-		AED3714A186689DC00C0A778 /* mgcomposite.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37088186681DB00C0A778 /* mgcomposite.cpp */; };
-		AED3714B186689DC00C0A778 /* mgellipse.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37089186681DB00C0A778 /* mgellipse.cpp */; };
-		AED3714C186689DC00C0A778 /* mggrid.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708A186681DB00C0A778 /* mggrid.cpp */; };
-		AED3714D186689DC00C0A778 /* mgline.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708B186681DB00C0A778 /* mgline.cpp */; };
-		AED3714E186689DC00C0A778 /* mglines.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708C186681DB00C0A778 /* mglines.cpp */; };
-		AED3714F186689DC00C0A778 /* mgrdrect.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708D186681DB00C0A778 /* mgrdrect.cpp */; };
-		AED37150186689DC00C0A778 /* mgrect.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708E186681DB00C0A778 /* mgrect.cpp */; };
 		AED37151186689DC00C0A778 /* mgshape.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED3708F186681DB00C0A778 /* mgshape.cpp */; };
 		AED37152186689DC00C0A778 /* mgshapes.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37090186681DB00C0A778 /* mgshapes.cpp */; };
-		AED37153186689DC00C0A778 /* mgsplines.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37091186681DB00C0A778 /* mgsplines.cpp */; };
 		AED37154186689DC00C0A778 /* mglayer.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37093186681DB00C0A778 /* mglayer.cpp */; };
 		AED37156186689DC00C0A778 /* mgshapedoc.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37095186681DB00C0A778 /* mgshapedoc.cpp */; };
 		AED37157186689DC00C0A778 /* spfactoryimpl.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37096186681DB00C0A778 /* spfactoryimpl.cpp */; };
@@ -231,7 +240,40 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		02063564196A3E99006F1674 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
+		0224FF1B19989AAC00895C27 /* mgarc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgarc.h; sourceTree = "<group>"; };
+		0224FF1C19989AAC00895C27 /* mgcshapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgcshapes.h; sourceTree = "<group>"; };
+		0224FF1D19989AAC00895C27 /* mgdiamond.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgdiamond.h; sourceTree = "<group>"; };
+		0224FF1E19989AAC00895C27 /* mgdot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgdot.h; sourceTree = "<group>"; };
+		0224FF1F19989AAC00895C27 /* mgellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgellipse.h; sourceTree = "<group>"; };
+		0224FF2019989AAC00895C27 /* mggrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mggrid.h; sourceTree = "<group>"; };
+		0224FF2119989AAC00895C27 /* mgline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgline.h; sourceTree = "<group>"; };
+		0224FF2219989AAC00895C27 /* mglines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mglines.h; sourceTree = "<group>"; };
+		0224FF2319989AAC00895C27 /* mgobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgobject.h; sourceTree = "<group>"; };
+		0224FF2419989AAC00895C27 /* mgparallel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgparallel.h; sourceTree = "<group>"; };
+		0224FF2519989AAC00895C27 /* mgpathsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgpathsp.h; sourceTree = "<group>"; };
+		0224FF2619989AAC00895C27 /* mgrdrect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgrdrect.h; sourceTree = "<group>"; };
+		0224FF2719989AAC00895C27 /* mgrect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgrect.h; sourceTree = "<group>"; };
+		0224FF2819989AAC00895C27 /* mgshape_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgshape_.h; sourceTree = "<group>"; };
+		0224FF2A19989AAC00895C27 /* mgshapetype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgshapetype.h; sourceTree = "<group>"; };
+		0224FF2B19989AAC00895C27 /* mgsplines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgsplines.h; sourceTree = "<group>"; };
+		0224FF3D19989BDB00895C27 /* mgarc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgarc.cpp; sourceTree = "<group>"; };
+		0224FF3E19989BDB00895C27 /* mgcshapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgcshapes.cpp; sourceTree = "<group>"; };
+		0224FF3F19989BDB00895C27 /* mgdiamond.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgdiamond.cpp; sourceTree = "<group>"; };
+		0224FF4019989BDB00895C27 /* mgdot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgdot.cpp; sourceTree = "<group>"; };
+		0224FF4119989BDB00895C27 /* mgellipse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgellipse.cpp; sourceTree = "<group>"; };
+		0224FF4219989BDB00895C27 /* mggrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mggrid.cpp; sourceTree = "<group>"; };
+		0224FF4319989BDB00895C27 /* mgline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgline.cpp; sourceTree = "<group>"; };
+		0224FF4419989BDB00895C27 /* mglines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mglines.cpp; sourceTree = "<group>"; };
+		0224FF4519989BDB00895C27 /* mgparallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgparallel.cpp; sourceTree = "<group>"; };
+		0224FF4619989BDB00895C27 /* mgpathsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpathsp.cpp; sourceTree = "<group>"; };
+		0224FF4719989BDB00895C27 /* mgrdrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrdrect.cpp; sourceTree = "<group>"; };
+		0224FF4819989BDB00895C27 /* mgrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrect.cpp; sourceTree = "<group>"; };
+		0224FF4A19989BDB00895C27 /* mgsplines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgsplines.cpp; sourceTree = "<group>"; };
+		0224FF4B19989BDB00895C27 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
+		0224FF5D19989D1900895C27 /* mgimagesp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgimagesp.h; sourceTree = "<group>"; };
+		0224FF5F19989E1B00895C27 /* mgimagesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgimagesp.cpp; sourceTree = "<group>"; };
+		0224FF611998B11C00895C27 /* mgbasesp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgbasesp.h; sourceTree = "<group>"; };
+		0224FF631998B13F00895C27 /* mgbasesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgbasesp.cpp; sourceTree = "<group>"; };
 		024FCF63188A84A6000B0C41 /* svgcanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgcanvas.h; sourceTree = "<group>"; };
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
@@ -243,9 +285,11 @@
 		0269CE2D18F29DC300999778 /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
 		0269CE3018F29DD000999778 /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
 		028BD40D18C767F30070EA95 /* touchvg.swig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = touchvg.swig; sourceTree = "<group>"; };
-		02985DB11968146200E89F59 /* mgpathsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgpathsp.h; sourceTree = "<group>"; };
-		02985DB31968148C00E89F59 /* mgpathsp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpathsp.cpp; sourceTree = "<group>"; };
 		029FD69C1956D107004B80FA /* mglocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mglocal.h; sourceTree = "<group>"; };
+		02C3322E1999F46800C5F226 /* mgcomposite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgcomposite.cpp; sourceTree = "<group>"; };
+		02C332301999F48400C5F226 /* mgcomposite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgcomposite.h; sourceTree = "<group>"; };
+		02C3324C199A10C500C5F226 /* mgpath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgpath.h; sourceTree = "<group>"; };
+		02C3324D199A10DF00C5F226 /* mgpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpath.cpp; sourceTree = "<group>"; };
 		02ED017B18F13E280060BE0A /* giplaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = giplaying.h; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
 		AE20C4BB1866C5C600471A19 /* mgpnt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpnt.cpp; sourceTree = "<group>"; };
@@ -308,21 +352,14 @@
 		AED37027186681DB00C0A778 /* gicontxt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicontxt.h; sourceTree = "<group>"; };
 		AED37028186681DB00C0A778 /* gigraph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gigraph.h; sourceTree = "<group>"; };
 		AED37029186681DB00C0A778 /* gilock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gilock.h; sourceTree = "<group>"; };
-		AED3702A186681DB00C0A778 /* gipath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gipath.h; sourceTree = "<group>"; };
 		AED3702B186681DB00C0A778 /* gixform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gixform.h; sourceTree = "<group>"; };
 		AED3702D186681DB00C0A778 /* mgjsonstorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgjsonstorage.h; sourceTree = "<group>"; };
 		AED3702E186681DB00C0A778 /* mglog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mglog.h; sourceTree = "<group>"; };
 		AED3702F186681DB00C0A778 /* mgvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgvector.h; sourceTree = "<group>"; };
-		AED37031186681DB00C0A778 /* mgbasicsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgbasicsp.h; sourceTree = "<group>"; };
 		AED37032186681DB00C0A778 /* mgbasicspreg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgbasicspreg.h; sourceTree = "<group>"; };
-		AED37033186681DB00C0A778 /* mgcomposite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgcomposite.h; sourceTree = "<group>"; };
-		AED37034186681DB00C0A778 /* mggrid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mggrid.h; sourceTree = "<group>"; };
-		AED37035186681DB00C0A778 /* mgobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgobject.h; sourceTree = "<group>"; };
 		AED37036186681DB00C0A778 /* mgshape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshape.h; sourceTree = "<group>"; };
-		AED37037186681DB00C0A778 /* mgshape_.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshape_.h; sourceTree = "<group>"; };
 		AED37038186681DB00C0A778 /* mgshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshapes.h; sourceTree = "<group>"; };
 		AED37039186681DB00C0A778 /* mgshapet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshapet.h; sourceTree = "<group>"; };
-		AED3703A186681DB00C0A778 /* mgshapetype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshapetype.h; sourceTree = "<group>"; };
 		AED3703B186681DB00C0A778 /* mgspfactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgspfactory.h; sourceTree = "<group>"; };
 		AED3703D186681DB00C0A778 /* mglayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mglayer.h; sourceTree = "<group>"; };
 		AED3703E186681DB00C0A778 /* mgshapedoc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgshapedoc.h; sourceTree = "<group>"; };
@@ -367,7 +404,6 @@
 		AED3706E186681DB00C0A778 /* mgvec.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgvec.cpp; sourceTree = "<group>"; };
 		AED37070186681DB00C0A778 /* gigraph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gigraph.cpp; sourceTree = "<group>"; };
 		AED37071186681DB00C0A778 /* gigraph_.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gigraph_.h; sourceTree = "<group>"; };
-		AED37072186681DB00C0A778 /* gipath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gipath.cpp; sourceTree = "<group>"; };
 		AED37073186681DB00C0A778 /* giplclip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = giplclip.h; sourceTree = "<group>"; };
 		AED37074186681DB00C0A778 /* gixform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gixform.cpp; sourceTree = "<group>"; };
 		AED37076186681DB00C0A778 /* mgjsonstorage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgjsonstorage.cpp; sourceTree = "<group>"; };
@@ -382,16 +418,8 @@
 		AED37084186681DB00C0A778 /* stringbuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stringbuffer.h; sourceTree = "<group>"; };
 		AED37085186681DB00C0A778 /* writer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
 		AED37087186681DB00C0A778 /* mgbasicspreg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgbasicspreg.cpp; sourceTree = "<group>"; };
-		AED37088186681DB00C0A778 /* mgcomposite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgcomposite.cpp; sourceTree = "<group>"; };
-		AED37089186681DB00C0A778 /* mgellipse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgellipse.cpp; sourceTree = "<group>"; };
-		AED3708A186681DB00C0A778 /* mggrid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mggrid.cpp; sourceTree = "<group>"; };
-		AED3708B186681DB00C0A778 /* mgline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgline.cpp; sourceTree = "<group>"; };
-		AED3708C186681DB00C0A778 /* mglines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mglines.cpp; sourceTree = "<group>"; };
-		AED3708D186681DB00C0A778 /* mgrdrect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgrdrect.cpp; sourceTree = "<group>"; };
-		AED3708E186681DB00C0A778 /* mgrect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgrect.cpp; sourceTree = "<group>"; };
 		AED3708F186681DB00C0A778 /* mgshape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgshape.cpp; sourceTree = "<group>"; };
 		AED37090186681DB00C0A778 /* mgshapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgshapes.cpp; sourceTree = "<group>"; };
-		AED37091186681DB00C0A778 /* mgsplines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgsplines.cpp; sourceTree = "<group>"; };
 		AED37093186681DB00C0A778 /* mglayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mglayer.cpp; sourceTree = "<group>"; };
 		AED37095186681DB00C0A778 /* mgshapedoc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgshapedoc.cpp; sourceTree = "<group>"; };
 		AED37096186681DB00C0A778 /* spfactoryimpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = spfactoryimpl.cpp; sourceTree = "<group>"; };
@@ -444,6 +472,52 @@
 				AE57CE7D188D06760080E97D /* recordshapes.cpp */,
 			);
 			path = record;
+			sourceTree = "<group>";
+		};
+		026DF69119986DC100B66B83 /* gshape */ = {
+			isa = PBXGroup;
+			children = (
+				0224FF1B19989AAC00895C27 /* mgarc.h */,
+				0224FF1D19989AAC00895C27 /* mgdiamond.h */,
+				0224FF1E19989AAC00895C27 /* mgdot.h */,
+				0224FF1F19989AAC00895C27 /* mgellipse.h */,
+				0224FF2019989AAC00895C27 /* mggrid.h */,
+				0224FF2119989AAC00895C27 /* mgline.h */,
+				0224FF2219989AAC00895C27 /* mglines.h */,
+				0224FF2419989AAC00895C27 /* mgparallel.h */,
+				0224FF2519989AAC00895C27 /* mgpathsp.h */,
+				0224FF2619989AAC00895C27 /* mgrdrect.h */,
+				0224FF2719989AAC00895C27 /* mgrect.h */,
+				0224FF2B19989AAC00895C27 /* mgsplines.h */,
+				0224FF2A19989AAC00895C27 /* mgshapetype.h */,
+				0224FF2819989AAC00895C27 /* mgshape_.h */,
+				0224FF2319989AAC00895C27 /* mgobject.h */,
+				0224FF611998B11C00895C27 /* mgbasesp.h */,
+				0224FF1C19989AAC00895C27 /* mgcshapes.h */,
+			);
+			path = gshape;
+			sourceTree = "<group>";
+		};
+		026DF69219986DE300B66B83 /* gshape */ = {
+			isa = PBXGroup;
+			children = (
+				0224FF3E19989BDB00895C27 /* mgcshapes.cpp */,
+				0224FF631998B13F00895C27 /* mgbasesp.cpp */,
+				0224FF3D19989BDB00895C27 /* mgarc.cpp */,
+				0224FF3F19989BDB00895C27 /* mgdiamond.cpp */,
+				0224FF4019989BDB00895C27 /* mgdot.cpp */,
+				0224FF4119989BDB00895C27 /* mgellipse.cpp */,
+				0224FF4219989BDB00895C27 /* mggrid.cpp */,
+				0224FF4319989BDB00895C27 /* mgline.cpp */,
+				0224FF4419989BDB00895C27 /* mglines.cpp */,
+				0224FF4519989BDB00895C27 /* mgparallel.cpp */,
+				0224FF4619989BDB00895C27 /* mgpathsp.cpp */,
+				0224FF4719989BDB00895C27 /* mgrdrect.cpp */,
+				0224FF4819989BDB00895C27 /* mgrect.cpp */,
+				0224FF4A19989BDB00895C27 /* mgsplines.cpp */,
+				0224FF4B19989BDB00895C27 /* nanosvg.cpp */,
+			);
+			path = gshape;
 			sourceTree = "<group>";
 		};
 		AE20C4BE1866D28B00471A19 /* view */ = {
@@ -542,6 +616,7 @@
 				AED37019186681DB00C0A778 /* geom */,
 				AED37025186681DB00C0A778 /* graph */,
 				AED3702C186681DB00C0A778 /* jsonstorage */,
+				026DF69119986DC100B66B83 /* gshape */,
 				AED37030186681DB00C0A778 /* shape */,
 				AED3703C186681DB00C0A778 /* shapedoc */,
 				AED37040186681DB00C0A778 /* storage */,
@@ -627,6 +702,7 @@
 		AED37019186681DB00C0A778 /* geom */ = {
 			isa = PBXGroup;
 			children = (
+				02C3324C199A10C500C5F226 /* mgpath.h */,
 				AED3701A186681DB00C0A778 /* mgbase.h */,
 				AED3701C186681DB00C0A778 /* mgbox.h */,
 				AED3701D186681DB00C0A778 /* mgcurv.h */,
@@ -648,7 +724,6 @@
 				AED37027186681DB00C0A778 /* gicontxt.h */,
 				AED37028186681DB00C0A778 /* gigraph.h */,
 				AED37029186681DB00C0A778 /* gilock.h */,
-				AED3702A186681DB00C0A778 /* gipath.h */,
 				AED3702B186681DB00C0A778 /* gixform.h */,
 			);
 			path = graph;
@@ -665,17 +740,12 @@
 		AED37030186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
-				02985DB11968146200E89F59 /* mgpathsp.h */,
-				AED37031186681DB00C0A778 /* mgbasicsp.h */,
+				02C332301999F48400C5F226 /* mgcomposite.h */,
+				0224FF5D19989D1900895C27 /* mgimagesp.h */,
 				AED37032186681DB00C0A778 /* mgbasicspreg.h */,
-				AED37033186681DB00C0A778 /* mgcomposite.h */,
-				AED37034186681DB00C0A778 /* mggrid.h */,
-				AED37035186681DB00C0A778 /* mgobject.h */,
 				AED37036186681DB00C0A778 /* mgshape.h */,
-				AED37037186681DB00C0A778 /* mgshape_.h */,
 				AED37038186681DB00C0A778 /* mgshapes.h */,
 				AED37039186681DB00C0A778 /* mgshapet.h */,
-				AED3703A186681DB00C0A778 /* mgshapetype.h */,
 				AED3703B186681DB00C0A778 /* mgspfactory.h */,
 			);
 			path = shape;
@@ -717,6 +787,7 @@
 				AED37064186681DB00C0A778 /* geom */,
 				AED3706F186681DB00C0A778 /* graph */,
 				AED37075186681DB00C0A778 /* jsonstorage */,
+				026DF69219986DE300B66B83 /* gshape */,
 				AED37086186681DB00C0A778 /* shape */,
 				AED37092186681DB00C0A778 /* shapedoc */,
 				AED37097186681DB00C0A778 /* test */,
@@ -777,6 +848,7 @@
 		AED37064186681DB00C0A778 /* geom */ = {
 			isa = PBXGroup;
 			children = (
+				02C3324D199A10DF00C5F226 /* mgpath.cpp */,
 				02FF196418A2F7DF00B15999 /* fitcurves.cpp */,
 				AE20C4BB1866C5C600471A19 /* mgpnt.cpp */,
 				AED37065186681DB00C0A778 /* mgbase.cpp */,
@@ -797,7 +869,6 @@
 			children = (
 				AED37070186681DB00C0A778 /* gigraph.cpp */,
 				AED37071186681DB00C0A778 /* gigraph_.h */,
-				AED37072186681DB00C0A778 /* gipath.cpp */,
 				AED37073186681DB00C0A778 /* giplclip.h */,
 				AED37074186681DB00C0A778 /* gixform.cpp */,
 			);
@@ -843,19 +914,11 @@
 		AED37086186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
-				02063564196A3E99006F1674 /* nanosvg.cpp */,
-				02985DB31968148C00E89F59 /* mgpathsp.cpp */,
+				02C3322E1999F46800C5F226 /* mgcomposite.cpp */,
 				AED37087186681DB00C0A778 /* mgbasicspreg.cpp */,
-				AED37088186681DB00C0A778 /* mgcomposite.cpp */,
-				AED37089186681DB00C0A778 /* mgellipse.cpp */,
-				AED3708A186681DB00C0A778 /* mggrid.cpp */,
-				AED3708B186681DB00C0A778 /* mgline.cpp */,
-				AED3708C186681DB00C0A778 /* mglines.cpp */,
-				AED3708D186681DB00C0A778 /* mgrdrect.cpp */,
-				AED3708E186681DB00C0A778 /* mgrect.cpp */,
+				0224FF5F19989E1B00895C27 /* mgimagesp.cpp */,
 				AED3708F186681DB00C0A778 /* mgshape.cpp */,
 				AED37090186681DB00C0A778 /* mgshapes.cpp */,
-				AED37091186681DB00C0A778 /* mgsplines.cpp */,
 			);
 			path = shape;
 			sourceTree = "<group>";
@@ -886,8 +949,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02985DB21968146200E89F59 /* mgpathsp.h in Headers */,
-				029FD69D1956D107004B80FA /* mglocal.h in Headers */,
+				0224FF3419989AAC00895C27 /* mgobject.h in Headers */,
+				0224FF3B19989AAC00895C27 /* mgshapetype.h in Headers */,
 				02ED017C18F13E280060BE0A /* giplaying.h in Headers */,
 				AE20C4D21866D35000471A19 /* gicoreview.h in Headers */,
 				AE20C4D31866D35000471A19 /* gigesture.h in Headers */,
@@ -906,23 +969,16 @@
 				AED370EE1866899C00C0A778 /* gicontxt.h in Headers */,
 				AED370EF1866899C00C0A778 /* gigraph.h in Headers */,
 				AED370F01866899C00C0A778 /* gilock.h in Headers */,
-				AED370F11866899C00C0A778 /* gipath.h in Headers */,
 				AED370F21866899C00C0A778 /* gixform.h in Headers */,
 				AED370F31866899C00C0A778 /* mgjsonstorage.h in Headers */,
 				AED370F41866899C00C0A778 /* mglog.h in Headers */,
 				0255AC1C196CCC780081708C /* utf8_unchecked.h in Headers */,
 				AED370F51866899C00C0A778 /* mgvector.h in Headers */,
-				AED370F61866899C00C0A778 /* mgbasicsp.h in Headers */,
 				AED370F71866899C00C0A778 /* mgbasicspreg.h in Headers */,
-				AED370F81866899C00C0A778 /* mgcomposite.h in Headers */,
-				AED370F91866899C00C0A778 /* mggrid.h in Headers */,
 				0269CE1718F25DA500999778 /* gicoreviewdata.h in Headers */,
-				AED370FA1866899C00C0A778 /* mgobject.h in Headers */,
 				AED370FB1866899C00C0A778 /* mgshape.h in Headers */,
-				AED370FC1866899C00C0A778 /* mgshape_.h in Headers */,
 				AED370FD1866899C00C0A778 /* mgshapes.h in Headers */,
 				AED370FE1866899C00C0A778 /* mgshapet.h in Headers */,
-				AED370FF1866899C00C0A778 /* mgshapetype.h in Headers */,
 				AED371001866899C00C0A778 /* mgspfactory.h in Headers */,
 				AED371011866899C00C0A778 /* mglayer.h in Headers */,
 				AED371021866899C00C0A778 /* mgshapedoc.h in Headers */,
@@ -936,7 +992,6 @@
 				AED370D41866897B00C0A778 /* mgcoreview.h in Headers */,
 				AED370D61866897B00C0A778 /* mgselect.h in Headers */,
 				AED370D81866897B00C0A778 /* mgsnap.h in Headers */,
-				0269CE2F18F29DC300999778 /* girecordshape.h in Headers */,
 				AED370D91866897B00C0A778 /* mgview.h in Headers */,
 				AED370DA1866897B00C0A778 /* mgcmddraw.h in Headers */,
 				AED370DB1866897B00C0A778 /* mgdrawarc.h in Headers */,
@@ -944,11 +999,42 @@
 				AED370DD1866897B00C0A778 /* cmdbasic.h in Headers */,
 				AED370DE1866897B00C0A778 /* mgcmdmgr.h in Headers */,
 				AED370DF1866897B00C0A778 /* mgcmdmgrfactory.h in Headers */,
+				029FD69D1956D107004B80FA /* mglocal.h in Headers */,
+				0224FF3719989AAC00895C27 /* mgrdrect.h in Headers */,
+				0224FF3819989AAC00895C27 /* mgrect.h in Headers */,
+				024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */,
+				024FCF78188A8552000B0C41 /* recordshapes.h in Headers */,
+				0269CE2F18F29DC300999778 /* girecordshape.h in Headers */,
+				0224FF2E19989AAC00895C27 /* mgdiamond.h in Headers */,
+				0224FF2C19989AAC00895C27 /* mgarc.h in Headers */,
+				0224FF3019989AAC00895C27 /* mgellipse.h in Headers */,
+				0224FF3619989AAC00895C27 /* mgpathsp.h in Headers */,
+				0224FF3519989AAC00895C27 /* mgparallel.h in Headers */,
+				0224FF3319989AAC00895C27 /* mglines.h in Headers */,
+				0224FF3C19989AAC00895C27 /* mgsplines.h in Headers */,
+				0224FF621998B11C00895C27 /* mgbasesp.h in Headers */,
+				0224FF3219989AAC00895C27 /* mgline.h in Headers */,
+				AED37107186689DC00C0A778 /* mgdrawcircle.h in Headers */,
+				AED37108186689DC00C0A778 /* mgdrawdiamond.h in Headers */,
+				AED37109186689DC00C0A778 /* mgdrawellipse.h in Headers */,
+				0224FF3919989AAC00895C27 /* mgshape_.h in Headers */,
+				AED3710A186689DC00C0A778 /* mgdrawfreelines.h in Headers */,
+				AED3710B186689DC00C0A778 /* mgdrawgrid.h in Headers */,
+				0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */,
+				AED3710C186689DC00C0A778 /* mgdrawline.h in Headers */,
+				0224FF2F19989AAC00895C27 /* mgdot.h in Headers */,
+				AED3710D186689DC00C0A778 /* mgdrawlines.h in Headers */,
+				AED3710E186689DC00C0A778 /* mgdrawparallel.h in Headers */,
+				AED3710F186689DC00C0A778 /* mgdrawpolygon.h in Headers */,
+				AED37110186689DC00C0A778 /* mgdrawquadrangle.h in Headers */,
+				AED37111186689DC00C0A778 /* mgdrawsplines.h in Headers */,
+				AED37112186689DC00C0A778 /* mgdrawsquare.h in Headers */,
+				0224FF3119989AAC00895C27 /* mggrid.h in Headers */,
+				AED37113186689DC00C0A778 /* mgdrawtriang.h in Headers */,
+				0224FF2D19989AAC00895C27 /* mgcshapes.h in Headers */,
 				AED370E01866897B00C0A778 /* cmdobserver.h in Headers */,
 				AED370E11866897B00C0A778 /* cmdsubject.h in Headers */,
 				021DA341189F90EF00CFD9DC /* recordshapes.cpp in Headers */,
-				024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */,
-				024FCF78188A8552000B0C41 /* recordshapes.h in Headers */,
 				024FCF79188A8552000B0C41 /* simple_svg.hpp in Headers */,
 				024FCF7A188A8552000B0C41 /* svgcanvas.cpp in Headers */,
 				AE20C4D61866D38200471A19 /* GcBaseView.h in Headers */,
@@ -961,20 +1047,6 @@
 				AE20C4DC1866D38200471A19 /* GcShapeDoc.h in Headers */,
 				AE20C4DD1866D38200471A19 /* gicoreview.cpp in Headers */,
 				AE20C4BD1866C5F000471A19 /* mgpnt.cpp in Headers */,
-				AED37107186689DC00C0A778 /* mgdrawcircle.h in Headers */,
-				AED37108186689DC00C0A778 /* mgdrawdiamond.h in Headers */,
-				AED37109186689DC00C0A778 /* mgdrawellipse.h in Headers */,
-				AED3710A186689DC00C0A778 /* mgdrawfreelines.h in Headers */,
-				AED3710B186689DC00C0A778 /* mgdrawgrid.h in Headers */,
-				0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */,
-				AED3710C186689DC00C0A778 /* mgdrawline.h in Headers */,
-				AED3710D186689DC00C0A778 /* mgdrawlines.h in Headers */,
-				AED3710E186689DC00C0A778 /* mgdrawparallel.h in Headers */,
-				AED3710F186689DC00C0A778 /* mgdrawpolygon.h in Headers */,
-				AED37110186689DC00C0A778 /* mgdrawquadrangle.h in Headers */,
-				AED37111186689DC00C0A778 /* mgdrawsplines.h in Headers */,
-				AED37112186689DC00C0A778 /* mgdrawsquare.h in Headers */,
-				AED37113186689DC00C0A778 /* mgdrawtriang.h in Headers */,
 				AED37114186689DC00C0A778 /* mgcmddraw.cpp in Headers */,
 				AED37115186689DC00C0A778 /* mgdrawarc.cpp in Headers */,
 				AED37116186689DC00C0A778 /* mgdrawrect.cpp in Headers */,
@@ -992,6 +1064,7 @@
 				AED37123186689DC00C0A778 /* mgdrawpolygon.cpp in Headers */,
 				AED37124186689DC00C0A778 /* mgdrawsplines.cpp in Headers */,
 				AED37125186689DC00C0A778 /* mgdrawsquare.cpp in Headers */,
+				0224FF5E19989D1900895C27 /* mgimagesp.h in Headers */,
 				AED37126186689DC00C0A778 /* mgdrawtriang.cpp in Headers */,
 				AED37127186689DC00C0A778 /* cmdsubject.cpp in Headers */,
 				AED37128186689DC00C0A778 /* mgactions.cpp in Headers */,
@@ -999,6 +1072,7 @@
 				AE3A247618C71A1900873314 /* gicoreviewimpl.h in Headers */,
 				AED3712A186689DC00C0A778 /* mgcmdmgr_.cpp in Headers */,
 				AED3712B186689DC00C0A778 /* mgcmdmgr_.h in Headers */,
+				02C332311999F48400C5F226 /* mgcomposite.h in Headers */,
 				AED3712C186689DC00C0A778 /* mgcmdselect.cpp in Headers */,
 				AED3712D186689DC00C0A778 /* mgcmdselect.h in Headers */,
 				AED3712E186689DC00C0A778 /* mgsnapimpl.cpp in Headers */,
@@ -1013,7 +1087,6 @@
 				AED37138186689DC00C0A778 /* mgvec.cpp in Headers */,
 				AED37139186689DC00C0A778 /* gigraph.cpp in Headers */,
 				AED3713A186689DC00C0A778 /* gigraph_.h in Headers */,
-				AED3713B186689DC00C0A778 /* gipath.cpp in Headers */,
 				AED3713C186689DC00C0A778 /* giplclip.h in Headers */,
 				AED3713D186689DC00C0A778 /* gixform.cpp in Headers */,
 				AED3713E186689DC00C0A778 /* mgjsonstorage.cpp in Headers */,
@@ -1029,16 +1102,8 @@
 				AED37147186689DC00C0A778 /* stringbuffer.h in Headers */,
 				AED37148186689DC00C0A778 /* writer.h in Headers */,
 				AED37149186689DC00C0A778 /* mgbasicspreg.cpp in Headers */,
-				AED3714A186689DC00C0A778 /* mgcomposite.cpp in Headers */,
-				AED3714B186689DC00C0A778 /* mgellipse.cpp in Headers */,
-				AED3714C186689DC00C0A778 /* mggrid.cpp in Headers */,
-				AED3714D186689DC00C0A778 /* mgline.cpp in Headers */,
-				AED3714E186689DC00C0A778 /* mglines.cpp in Headers */,
-				AED3714F186689DC00C0A778 /* mgrdrect.cpp in Headers */,
-				AED37150186689DC00C0A778 /* mgrect.cpp in Headers */,
 				AED37151186689DC00C0A778 /* mgshape.cpp in Headers */,
 				AED37152186689DC00C0A778 /* mgshapes.cpp in Headers */,
-				AED37153186689DC00C0A778 /* mgsplines.cpp in Headers */,
 				AED37154186689DC00C0A778 /* mglayer.cpp in Headers */,
 				AED37156186689DC00C0A778 /* mgshapedoc.cpp in Headers */,
 				AED37157186689DC00C0A778 /* spfactoryimpl.cpp in Headers */,
@@ -1134,42 +1199,49 @@
 				AE57CE7E188D06760080E97D /* recordshapes.cpp in Sources */,
 				024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */,
 				AE20C4CD1866D33600471A19 /* GcGraphView.cpp in Sources */,
+				0224FF5619989BDB00895C27 /* mgrdrect.cpp in Sources */,
 				AE20C4CE1866D33600471A19 /* GcMagnifierView.cpp in Sources */,
+				0224FF641998B13F00895C27 /* mgbasesp.cpp in Sources */,
+				0224FF4C19989BDB00895C27 /* mgarc.cpp in Sources */,
 				AE20C4CF1866D33600471A19 /* GcShapeDoc.cpp in Sources */,
+				0224FF5719989BDB00895C27 /* mgrect.cpp in Sources */,
 				AE3A247418C7197400873314 /* gicorerecord.cpp in Sources */,
 				02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */,
 				AE20C4D01866D33600471A19 /* gicoreview.cpp in Sources */,
 				AED370CF186688BD00C0A778 /* RandomShape.cpp in Sources */,
+				0224FF4E19989BDB00895C27 /* mgdiamond.cpp in Sources */,
 				AED370D0186688BD00C0A778 /* testcanvas.cpp in Sources */,
 				AED370CB186688B100C0A778 /* mglayer.cpp in Sources */,
 				AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */,
+				0224FF5519989BDB00895C27 /* mgpathsp.cpp in Sources */,
+				0224FF5A19989BDB00895C27 /* nanosvg.cpp in Sources */,
+				0224FF5319989BDB00895C27 /* mglines.cpp in Sources */,
 				AED370CD186688B100C0A778 /* mgshapedoc.cpp in Sources */,
+				0224FF5119989BDB00895C27 /* mggrid.cpp in Sources */,
 				AED370CE186688B100C0A778 /* spfactoryimpl.cpp in Sources */,
+				0224FF5019989BDB00895C27 /* mgellipse.cpp in Sources */,
 				AED370C0186688A600C0A778 /* mgbasicspreg.cpp in Sources */,
-				AED370C1186688A600C0A778 /* mgcomposite.cpp in Sources */,
-				AED370C2186688A600C0A778 /* mgellipse.cpp in Sources */,
-				AED370C3186688A600C0A778 /* mggrid.cpp in Sources */,
-				AED370C4186688A600C0A778 /* mgline.cpp in Sources */,
-				AED370C5186688A600C0A778 /* mglines.cpp in Sources */,
-				AED370C6186688A600C0A778 /* mgrdrect.cpp in Sources */,
-				AED370C7186688A600C0A778 /* mgrect.cpp in Sources */,
+				0224FF5919989BDB00895C27 /* mgsplines.cpp in Sources */,
 				AED370C8186688A600C0A778 /* mgshape.cpp in Sources */,
 				AED370C9186688A600C0A778 /* mgshapes.cpp in Sources */,
-				AED370CA186688A600C0A778 /* mgsplines.cpp in Sources */,
+				0224FF6019989E1B00895C27 /* mgimagesp.cpp in Sources */,
+				02C3322F1999F46800C5F226 /* mgcomposite.cpp in Sources */,
 				AED370BF1866889300C0A778 /* mgjsonstorage.cpp in Sources */,
 				AED370BC1866888300C0A778 /* gigraph.cpp in Sources */,
-				AED370BD1866888300C0A778 /* gipath.cpp in Sources */,
 				AED370BE1866888300C0A778 /* gixform.cpp in Sources */,
 				AED370B31866887500C0A778 /* mgbase.cpp in Sources */,
 				AED370B51866887500C0A778 /* mgbox.cpp in Sources */,
 				AED370B61866887500C0A778 /* mgcurv.cpp in Sources */,
+				02C3324E199A10DF00C5F226 /* mgpath.cpp in Sources */,
 				AED370B71866887500C0A778 /* mglnrel.cpp in Sources */,
 				AED370B81866887500C0A778 /* mgmat.cpp in Sources */,
 				AED370B91866887500C0A778 /* mgnear.cpp in Sources */,
+				0224FF5419989BDB00895C27 /* mgparallel.cpp in Sources */,
 				AED370BA1866887500C0A778 /* mgnearbz.cpp in Sources */,
 				AED370BB1866887500C0A778 /* mgvec.cpp in Sources */,
 				AED370AD1866885E00C0A778 /* cmdsubject.cpp in Sources */,
 				AED370AE1866885E00C0A778 /* mgactions.cpp in Sources */,
+				0224FF4D19989BDB00895C27 /* mgcshapes.cpp in Sources */,
 				AED370AF1866885E00C0A778 /* mgcmdmgr2.cpp in Sources */,
 				0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */,
 				AED370B01866885E00C0A778 /* mgcmdmgr_.cpp in Sources */,
@@ -1179,15 +1251,15 @@
 				AED3709F1866884700C0A778 /* mgcmderase.cpp in Sources */,
 				AED370A11866884700C0A778 /* mgdrawcircle.cpp in Sources */,
 				AED370A21866884700C0A778 /* mgdrawdiamond.cpp in Sources */,
+				0224FF5219989BDB00895C27 /* mgline.cpp in Sources */,
 				AED370A31866884700C0A778 /* mgdrawellipse.cpp in Sources */,
 				AED370A41866884700C0A778 /* mgdrawfreelines.cpp in Sources */,
 				AED370A51866884700C0A778 /* mgdrawgrid.cpp in Sources */,
 				AED370A61866884700C0A778 /* mgdrawline.cpp in Sources */,
+				0224FF4F19989BDB00895C27 /* mgdot.cpp in Sources */,
 				AED370A71866884700C0A778 /* mgdrawlines.cpp in Sources */,
 				AED370A81866884700C0A778 /* mgdrawparallel.cpp in Sources */,
-				02063565196A3E99006F1674 /* nanosvg.cpp in Sources */,
 				AED370A91866884700C0A778 /* mgdrawpolygon.cpp in Sources */,
-				02985DB41968148C00E89F59 /* mgpathsp.cpp in Sources */,
 				AED370AA1866884700C0A778 /* mgdrawsplines.cpp in Sources */,
 				AED370AB1866884700C0A778 /* mgdrawsquare.cpp in Sources */,
 				AED370AC1866884700C0A778 /* mgdrawtriang.cpp in Sources */,

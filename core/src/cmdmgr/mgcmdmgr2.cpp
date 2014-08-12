@@ -4,7 +4,7 @@
 
 #include "mgcmdmgr_.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgimagesp.h"
 #include "mgcmdselect.h"
 #include "mglog.h"
 #include "mglocal.h"

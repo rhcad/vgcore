@@ -1,5 +1,5 @@
-﻿//! \file gipath.h
-//! \brief 定义矢量路径类 GiPath
+﻿//! \file mgpath.h
+//! \brief 定义矢量路径类 MgPath
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
@@ -8,49 +8,49 @@
 
 #include "mgpnt.h"
 
-class GiPathImpl;
+class MgPathImpl;
 
 //! 矢量路径节点类型
-/*! \see GiPath
+/*! \see MgPath
 */
 typedef enum {
-    kGiCloseFigure = 1,
-    kGiLineTo = 2,
-    kGiBezierTo = 4,
-    kGiQuadTo = 8,
-    kGiMoveTo = 6,
-} GiPathNode;
+    kMgCloseFigure = 1,
+    kMgLineTo = 2,
+    kMgBezierTo = 4,
+    kMgQuadTo = 8,
+    kMgMoveTo = 6,
+} MgPathNode;
 
 //! 矢量路径类
 /*!
     \ingroup GRAPH_INTERFACE
-    \see GiGraphics, GiPathNode
+    \see GiGraphics, MgPathNode
 */
-class GiPath
+class MgPath
 {
 public:
     //! 默认构造函数
-    GiPath();
+    MgPath();
 
     //! 拷贝构造函数
-    GiPath(const GiPath& src);
+    MgPath(const MgPath& src);
 
     //! 构造函数，指定节点数据
     /*!
         \param count 节点个数
         \param points 节点坐标数组，元素个数为count
-        \param types 节点类型数组，元素个数为count，由 GiPathNode 值组成
+        \param types 节点类型数组，元素个数为count，由 MgPathNode 值组成
     */
-    GiPath(int count, const Point2d* points, const char* types);
+    MgPath(int count, const Point2d* points, const char* types);
 
     //! 析构函数
-    virtual ~GiPath();
+    virtual ~MgPath();
 
     //! 赋值函数
-    GiPath& copy(const GiPath& src);
+    MgPath& copy(const MgPath& src);
     
     //! 追加路径
-    GiPath& append(const GiPath& src);
+    MgPath& append(const MgPath& src);
     
     //! 折线拐角圆角化
     /*!
@@ -82,7 +82,7 @@ public:
     //! 返回节点坐标数组
     const Point2d* getPoints() const;
 
-    //! 返回节点类型数组，由 GiPathNode 值组成
+    //! 返回节点类型数组，由 MgPathNode 值组成
     const char* getTypes() const;
     
     //! 设置节点数据
@@ -90,7 +90,7 @@ public:
     void setPath(int count, const Point2d* points, const int* types);
 #endif
     
-    //! 返回节点类型，由 GiPathNode 值组成
+    //! 返回节点类型，由 MgPathNode 值组成
     int getNodeType(int index) const;
     
     //! 得到节点坐标
@@ -197,7 +197,7 @@ public:
     bool closeFigure();
 
 private:
-    GiPathImpl*   m_data;
+    MgPathImpl*   m_data;
 };
 
 #endif // TOUCHVG_PATH_H_

@@ -6,12 +6,12 @@
 #include "gicoreviewimpl.h"
 #include "RandomShape.h"
 #include "mgselect.h"
-#include "mgbasicsp.h"
 #include "girecordcanvas.h"
 #include "mgbasicspreg.h"
 #include "svgcanvas.h"
 #include "../corever.h"
 #include "mgpathsp.h"
+#include "mgimagesp.h"
 #include "mglocal.h"
 
 static volatile long _viewCount = 0;    // 总视图数
@@ -1214,7 +1214,7 @@ int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
     if (sp && sp->shapec()->isKindOf(MgPathShape::Type())) {
         ret = ((const MgPathShape*)sp->shapec())->exportSVGPath(buf, size);
     } else if (sp) {
-        GiPath path;
+        MgPath path;
         sp->shapec()->output(path);
         ret = MgPathShape::exportSVGPath(path, buf, size);
     }

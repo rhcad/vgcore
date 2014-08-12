@@ -6,7 +6,8 @@ TouchVGCore contains the following cross-platform modules using C++ for 2D vecto
 
 - geom: Math and geometry module.
 - graph: 2D Graphics interface module using geom module.
-- shape: 2D Shape module using geom and graph modules.
+- gshape: 2D Shape module using geom module.
+- shape: 2D Shape module using geom, graph and gshape modules.
 - shapedoc: Shape document module using above modules.
 - jsonstorage: A storage adapter using [rapidjson](https://github.com/Kanma/rapidjson)(a fast JSON parser/generator).
 - cmdbase: Base classes for deriving more drawing commands.
@@ -16,7 +17,9 @@ TouchVGCore contains the following cross-platform modules using C++ for 2D vecto
 - export: SVG exportor module.
 - record: Undo/redo and shape record module.
 
-![modules](/doc/images/modules.png)
+**VGShape** contains only geom and gshape modules used for other rendering.
+
+![modules](http://touchvg.github.io/images/core.svg)
 
 This is an open source LGPL 2.1 licensed project that is in active development. Contributors and sponsors are welcome.
 
@@ -48,10 +51,10 @@ Alternatively, you can add the project to your workspace and build as one of the
 
 - Cd the 'android' folder of this project and type `./build.sh` to build with ndk-build.
   - MSYS is recommend on Windows.
-  - The library `libTouchVGCore.a` will be outputed to `android/TouchVGCore/obj/local/armeabi`.
+  - The library `libTouchVGCore.a` will be outputed to `android/output/armeabi`.
   - Type `./build.sh -B` to rebuild the native libraries.
 
-- Type `./build.sh APP_ABI=x86` to build for the x86 Emulator. The library will be outputed to `android/TouchVGCore/obj/local/x86`.
+- Type `./build.sh APP_ABI=x86` to build for the x86 Emulator. The library will be outputed to `android/output/x86`.
 
 ### Build for **Windows** platform with Visual Studio.
 

@@ -56,6 +56,9 @@ struct MgStorage
     //! 添加一个给定字段名称(常量)的整数数组
     virtual void writeIntArray(const char* name, const int* values, int count) = 0;
 #endif
+    int readFloatArray(const char* name) { return readFloatArray(name, (float*)0, 0, false); }
+    int readIntArray(const char* name) { return readIntArray(name, (int*)0, 0, false); }
+    int readString(const char* name) { return readString(name, (char*)0, 0); }
 
     //! 给定字段名称(常量)，取出一个整数的值
     virtual int readInt(const char* name, int defvalue) { return name ? defvalue : defvalue; }

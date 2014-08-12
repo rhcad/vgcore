@@ -4,7 +4,7 @@
 
 #include "mgdrawrect.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgrect.h"
 
 bool MgCmdDrawRect::initialize(const MgMotion* sender, MgStorage*)
 {

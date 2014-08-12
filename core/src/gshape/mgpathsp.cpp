@@ -6,6 +6,7 @@
 #include "mgshape_.h"
 #include "vector"
 #include <sstream>
+#include <string.h>
 
 MG_IMPLEMENT_CREATE(MgPathShape)
 
@@ -74,13 +75,13 @@ void MgPathShape::_clear()
 
 bool MgPathShape::_isClosed() const
 {
-    return !!(_path.getNodeType(_path.getCount() - 1) & kGiCloseFigure);
+    return !!(_path.getNodeType(_path.getCount() - 1) & kMgCloseFigure);
 }
 
 bool MgPathShape::isCurve() const
 {
     for (int i = 0; i < _path.getCount(); i++) {
-        if (_path.getNodeType(i) & (kGiBezierTo | kGiQuadTo))
+        if (_path.getNodeType(i) & (kMgBezierTo | kMgQuadTo))
             return true;
     }
     return false;
@@ -101,19 +102,19 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
         float dist = _FLT_MAX;
         pos = ends;
         
-        switch (types[i] & ~kGiCloseFigure) {
-            case kGiMoveTo:
+        switch (types[i] & ~kMgCloseFigure) {
+            case kMgMoveTo:
                 ends = pts[i];
                 break;
                 
-            case kGiLineTo:
+            case kMgLineTo:
                 ends = pts[i];
                 if (rect.isIntersect(Box2d(pos, ends))) {
                     dist = mglnrel::ptToLine(pos, ends, pt, nearpt);
                 }
                 break;
                 
-            case kGiBezierTo:
+            case kMgBezierTo:
                 if (i + 2 >= n) {
                     err = true;
                     break;
@@ -130,7 +131,7 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
                 i += 2;
                 break;
                 
-            case kGiQuadTo:
+            case kMgQuadTo:
                 if (i + 1 >= n) {
                     err = true;
                     break;
@@ -181,17 +182,17 @@ bool MgPathShape::_hitTestBox(const Box2d& rect) const
     for (int i = 0; i < n && !ret; i++) {
         pos = ends;
         
-        switch (types[i] & ~kGiCloseFigure) {
-            case kGiMoveTo:
+        switch (types[i] & ~kMgCloseFigure) {
+            case kMgMoveTo:
                 ends = pts[i];
                 break;
                 
-            case kGiLineTo:
+            case kMgLineTo:
                 ends = pts[i];
                 ret = rect.isIntersect(Box2d(pos, ends));
                 break;
                 
-            case kGiBezierTo:
+            case kMgBezierTo:
                 if (i + 2 >= n) {
                     ret |= 2;
                     break;
@@ -205,7 +206,7 @@ bool MgPathShape::_hitTestBox(const Box2d& rect) const
                 i += 2;
                 break;
                 
-            case kGiQuadTo:
+            case kMgQuadTo:
                 if (i + 1 >= n) {
                     ret |= 2;
                     break;
@@ -228,13 +229,7 @@ bool MgPathShape::_hitTestBox(const Box2d& rect) const
     return ret == 1;
 }
 
-bool MgPathShape::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
-{
-    bool ret = gs.drawPath(&ctx, _path, mode == 0);
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-static void exportPath(std::stringstream& ss, const GiPath& path)
+static void exportPath(std::stringstream& ss, const MgPath& path)
 {
     int n = path.getCount();
     const Point2d* pts = path.getPoints();
@@ -243,13 +238,13 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
     Point2d curpt;
     
     for (int i = 0; i < n; i++) {
-        switch (types[i] & ~kGiCloseFigure) {
-            case kGiMoveTo:
+        switch (types[i] & ~kMgCloseFigure) {
+            case kMgMoveTo:
                 ss << "M" << pts[i].x << "," << pts[i].y << " ";
                 cmd = 'L';
                 break;
                 
-            case kGiLineTo:
+            case kMgLineTo:
                 if (mgEquals(curpt.x, pts[i].x)) {
                     if (cmd != 'V') {
                         cmd = 'V';
@@ -273,7 +268,7 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
                 }
                 break;
                 
-            case kGiBezierTo:
+            case kMgBezierTo:
                 if (i + 2 >= n) {
                     break;
                 }
@@ -296,7 +291,7 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
                 i += 2;
                 break;
                 
-            case kGiQuadTo:
+            case kMgQuadTo:
                 if (i + 1 >= n) {
                     break;
                 }
@@ -320,7 +315,7 @@ static void exportPath(std::stringstream& ss, const GiPath& path)
             default:
                 break;
         }
-        if (types[i] & kGiCloseFigure) {
+        if (types[i] & kMgCloseFigure) {
             cmd = 'Z';
             ss << "Z ";
         }
@@ -344,7 +339,7 @@ int MgPathShape::exportSVGPath(char* buf, int size) const
     return exportSVGPath(_path, buf, size);
 }
 
-int MgPathShape::exportSVGPath(const GiPath& path, char* buf, int size)
+int MgPathShape::exportSVGPath(const MgPath& path, char* buf, int size)
 {
     std::stringstream ss;
     
@@ -363,7 +358,7 @@ int MgPathShape::exportSVGPath(const GiPath& path, char* buf, int size)
     return size;
 }
 
-extern void parsePath(const char* s, GiPath& path);
+extern void parsePath(const char* s, MgPath& path);
 
 bool MgPathShape::_load(MgShapeFactory* factory, MgStorage* s)
 {

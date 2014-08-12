@@ -35,9 +35,9 @@
         { return _hitTest(pt, tol, res); }                      \
     bool Cls::hitTestBox(const Box2d& rect) const               \
         { return _hitTestBox(rect); }                           \
-    bool Cls::draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const  \
+    bool Cls::draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const \
         { return _draw(mode, gs, ctx, segment); }               \
-    void Cls::output(GiPath& path) const { _output(path); }     \
+    void Cls::output(MgPath& path) const { _output(path); }     \
     bool Cls::save(MgStorage* s) const { return _save(s); }     \
     bool Cls::load(MgShapeFactory* factory, MgStorage* s) {     \
         return _load(factory, s); }                             \

@@ -2,7 +2,7 @@
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "mgbasicsp.h"
+#include "mgrdrect.h"
 #include "mgshape_.h"
 
 MG_IMPLEMENT_CREATE(MgRoundRect)
@@ -71,24 +71,9 @@ float MgRoundRect::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
     return dist;
 }
 
-bool MgRoundRect::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
+void MgRoundRect::_output(MgPath& path) const
 {
-    bool ret = false;
-
-    if (isOrtho()) {
-        ret = gs.drawRoundRect(&ctx, Box2d(_points[0], _points[2]), _rx, _ry);
-    }
-    else {
-        GiSaveModelTransform xf(&gs.xf(), Matrix2d::rotation(getAngle(), getCenter()));
-        ret = gs.drawRoundRect(&ctx, getRect(), _rx, _ry);
-    }
-
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-void MgRoundRect::_output(GiPath& path) const
-{
-    GiPath tmppath;
+    MgPath tmppath;
     
     tmppath.genericRoundLines(4, _points, _rx, true);
     path.append(tmppath);

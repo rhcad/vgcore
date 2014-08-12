@@ -4,7 +4,7 @@
 
 #include "mgdrawdiamond.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgdiamond.h"
 
 bool MgCmdDrawDiamond::initialize(const MgMotion* sender, MgStorage*)
 {

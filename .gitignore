@@ -26,3 +26,4 @@ gdb.setup
 gdbserver
 *.db
 ios/output
+android/output

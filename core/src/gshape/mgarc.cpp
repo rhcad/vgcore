@@ -1,142 +1,9 @@
-﻿// mgellipse.cpp
+﻿// mgarc.cpp
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "mgbasicsp.h"
+#include "mgarc.h"
 #include "mgshape_.h"
-#include "mglog.h"
-
-MG_IMPLEMENT_CREATE(MgEllipse)
-
-MgEllipse::MgEllipse()
-{
-}
-
-MgEllipse::~MgEllipse()
-{
-}
-
-float MgEllipse::getRadiusX() const
-{
-    return getWidth() / 2;
-}
-
-float MgEllipse::getRadiusY() const
-{
-    return getHeight() / 2;
-}
-
-void MgEllipse::setRadius(float rx, float ry)
-{
-    rx = fabsf(rx);
-    ry = fabsf(ry);
-    if (ry < _MGZERO)
-        ry = rx;
-
-    Box2d rect(getCenter(), rx * 2, ry * 2);
-    setRectWithAngle(rect.leftTop(), rect.rightBottom(), getAngle(), getCenter());
-}
-
-void MgEllipse::_update()
-{
-    mgcurv::ellipseToBezier(_bzpts, getCenter(), getWidth() / 2, getHeight() / 2);
-
-    Matrix2d mat(Matrix2d::rotation(getAngle(), getCenter()));
-    for (int i = 0; i < 13; i++)
-        _bzpts[i] *= mat;
-
-    mgnear::beziersBox(_extent, 13, _bzpts, true);
-    __super::_update();
-}
-
-void MgEllipse::_transform(const Matrix2d& mat)
-{
-    __super::_transform(mat);
-    _update();
-}
-
-int MgEllipse::_getHandleCount() const
-{
-    return getFlag(kMgSquare) ? 5 : 9;
-}
-
-Point2d MgEllipse::_getHandlePoint(int index) const
-{
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
-    return (index < _getHandleCount() - 1
-            ? MgBaseRect::_getHandlePoint(index2) : getCenter());
-}
-
-int MgEllipse::_getHandleType(int index) const
-{
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
-    return (index < _getHandleCount() - 1
-            ? MgBaseRect::_getHandleType(index2) : kMgHandleCenter);
-}
-
-bool MgEllipse::_setHandlePoint(int index, const Point2d& pt, float tol)
-{
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
-    return (index < _getHandleCount() - 1
-            ? MgBaseRect::_setHandlePoint(index2, pt, tol)
-            : offset(pt - getCenter(), -1));
-}
-
-float MgEllipse::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
-{
-    float distMin = _FLT_MAX;
-    const Box2d rect (pt, 2 * tol, 2 * tol);
-    Point2d ptTemp;
-
-    for (int i = 0; i < 4; i++)
-    {
-        if (rect.isIntersect(Box2d(4, _bzpts + 3 * i)))
-        {
-            mgnear::nearestOnBezier(pt, _bzpts + 3 * i, ptTemp);
-            float dist = pt.distanceTo(ptTemp);
-            if (dist <= tol && dist < distMin)
-            {
-                distMin = dist;
-                res.nearpt = ptTemp;
-                res.segment = i;
-            }
-        }
-    }
-
-    return distMin;
-}
-
-bool MgEllipse::_hitTestBox(const Box2d& rect) const
-{
-    if (!getExtent().isIntersect(rect))
-        return false;
-    
-    return mgnear::beziersIntersectBox(rect, 13, _bzpts, true);
-}
-
-bool MgEllipse::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
-{
-    bool ret = false;
-
-    if (isOrtho()) {
-        ret = gs.drawEllipse(&ctx, Box2d(_points[0], _points[2]));
-    }
-    else {
-        ret = gs.drawBeziers(&ctx, 13, _bzpts, true);
-    }
-
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-void MgEllipse::_output(GiPath& path) const
-{
-    path.moveTo(_bzpts[0]);
-    path.beziersTo(12, _bzpts + 1);
-    path.closeFigure();
-}
-
-// MgArc
-//
 
 MG_IMPLEMENT_CREATE(MgArc)
 
@@ -316,20 +183,7 @@ bool MgArc::setTanStartEnd(const Vector2d& startTan, const Point2d& start, const
         && setCenterRadius(center, radius, startAngle, sweepAngle);
 }
 
-bool MgArc::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
-{
-    bool ret = gs.drawArc(&ctx, getCenter(), getRadius(), 0, getStartAngle(), getSweepAngle());
-    if (mode > 0) {
-        GiContext ctxln(0, GiColor(0, 126, 0, 64), GiContext::kDashDot);
-        gs.drawLine(&ctxln, getCenter(), getStartPoint());
-        gs.drawLine(&ctxln, getCenter(), getEndPoint());
-        gs.drawLine(&ctxln, getStartPoint(), getStartPoint() + getStartTangent());
-        gs.drawLine(&ctxln, getEndPoint(), getEndPoint() + getEndTangent());
-    }
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-void MgArc::_output(GiPath& path) const
+void MgArc::_output(MgPath& path) const
 {
     float r = getRadius();
     float sweepAngle = getSweepAngle();

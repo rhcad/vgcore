@@ -5,7 +5,7 @@
 #include "recordshapes.h"
 #include "mgshapedoc.h"
 #include "mglayer.h"
-#include "mgbasicsp.h"
+#include "mglines.h"
 #include "mgjsonstorage.h"
 #include "mgstorage.h"
 #include "mgvector.h"

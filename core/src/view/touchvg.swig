@@ -1,4 +1,4 @@
-// Copyright (c) 2013, Zhang Yungui, https://github.com/rhcad/touchvg
+// Copyright (c) 2013-2014, Zhang Yungui, https://github.com/touchvg/vgcore
 
 #ifdef SWIGJAVA
 %javaconst(1);
@@ -22,19 +22,30 @@
 
 #include <gigraph.h>
 #include <gicanvas.h>
-#include <gipath.h>
+#include <mgpath.h>
 
 #include <mgstorage.h>
 #include <mgvector.h>
 
-#include <mgshapes.h>
-#include <mgbasicsp.h>
-#include <mgcomposite.h>
-#include <mggrid.h>
-#include <mgpathsp.h>
+#include <mgcshapes.h>
 #include <mgshapetype.h>
-#include <mgstorage.h>
+#include <mgarc.h>
+#include <mgdiamond.h>
+#include <mgdot.h>
+#include <mgellipse.h>
+#include <mggrid.h>
+#include <mgline.h>
+#include <mglines.h>
+#include <mgparallel.h>
+#include <mgpathsp.h>
+#include <mgrdrect.h>
+#include <mgrect.h>
+#include <mgsplines.h>
+
+#include <mgshapes.h>
+#include <mgcomposite.h>
 #include <mgspfactory.h>
+#include <mgimagesp.h>
 
 #include <mgsnap.h>
 #include <mgselect.h>
@@ -76,7 +87,7 @@
 %include <gicolor.h>
 %include <gicontxt.h>
 %include <gixform.h>
-%include <gipath.h>
+%include <mgpath.h>
 %include <gigraph.h>
 
 %include <mgvector.h>
@@ -94,16 +105,29 @@
 %feature("director") MgBaseRect;
 %feature("director") MgBaseLines;
 %feature("director") MgComposite;
+
 %include <mgobject.h>
+%include <mgbasesp.h>
+%include <mgrect.h>
+%include <mglines.h>
+%include <mgcshapes.h>
+%include <mgshapetype.h>
+%include <mgarc.h>
+%include <mgdiamond.h>
+%include <mgdot.h>
+%include <mgellipse.h>
+%include <mggrid.h>
+%include <mgline.h>
+%include <mgparallel.h>
+%include <mgpathsp.h>
+%include <mgrdrect.h>
+%include <mgsplines.h>
+
 %include <mgshape.h>
 %include <mgspfactory.h>
 %include <mgshapes.h>
-%include <mgbasicsp.h>
 %include <mgcomposite.h>
-%include <mggrid.h>
-%include <mgpathsp.h>
-%include <mgshapetype.h>
-%include <mgspfactory.h>
+%include <mgimagesp.h>
 
 %include <mgaction.h>
 %include <mgsnap.h>

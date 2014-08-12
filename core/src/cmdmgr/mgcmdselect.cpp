@@ -4,7 +4,6 @@
 
 #include "mgcmdselect.h"
 #include "mgcmdmgr.h"
-#include "mgbasicsp.h"
 #include <string.h>
 #include <algorithm>
 #include <functional>
@@ -12,6 +11,7 @@
 #include "mgaction.h"
 #include "mgshapetype.h"
 #include "mgcomposite.h"
+#include "mglines.h"
 #include "cmdsubject.h"
 #include "mglocal.h"
 #include "mglog.h"

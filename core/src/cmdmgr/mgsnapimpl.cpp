@@ -4,6 +4,7 @@
 
 #include "mgcmdmgr_.h"
 #include "mggrid.h"
+#include "mgsplines.h"
 
 class SnapItem {
 public:

@@ -3,7 +3,7 @@
 
 #include "mgdrawparallel.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgparallel.h"
 
 bool MgCmdParallel::initialize(const MgMotion* sender, MgStorage*)
 {

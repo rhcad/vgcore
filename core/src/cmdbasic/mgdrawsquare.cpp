@@ -4,7 +4,7 @@
 
 #include "mgdrawsquare.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgrect.h"
 
 bool MgCmdDrawSquare::initialize(const MgMotion* sender, MgStorage*)
 {

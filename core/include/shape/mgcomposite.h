@@ -55,7 +55,7 @@ protected:
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _offset(const Vector2d& vec, int segment);
     bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
-    void _output(GiPath& path) const;
+    void _output(MgPath& path) const;
 
 protected:
     MgShape*    _owner;
@@ -74,6 +74,7 @@ public:
 
 protected:
     bool _offset(const Vector2d& vec, int segment);
+    bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
 };

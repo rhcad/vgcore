@@ -2,13 +2,12 @@
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "mgbasicsp.h"
+#include "mgsplines.h"
 #include "mgshape_.h"
-#include "mglog.h"
 
 MG_IMPLEMENT_CREATE(MgSplines)
 
-MgSplines::MgSplines() : _knotvs(NULL)
+MgSplines::MgSplines() : _knotvs((Vector2d*)0)
 {
 }
 
@@ -40,15 +39,7 @@ bool MgSplines::_hitTestBox(const Box2d& rect) const
     return true;
 }
 
-bool MgSplines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
-{
-    bool ret = (_count == 2 ? gs.drawLine(&ctx, _points[0], _points[1])
-                : (_knotvs ? gs.drawBeziers(&ctx, _count, _points, _knotvs, isClosed())
-                   : gs.drawQuadSplines(&ctx, _count, _points, isClosed())));
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-void MgSplines::_output(GiPath& path) const
+void MgSplines::_output(MgPath& path) const
 {
     if (_count < 2) {
     }
@@ -135,7 +126,7 @@ void MgSplines::clearVectors()
 {
     if (_knotvs) {
         delete[] _knotvs;
-        _knotvs = NULL;
+        _knotvs = (Vector2d*)0;
     }
 }
 
@@ -151,11 +142,10 @@ bool MgSplines::_save(MgStorage* s) const
 bool MgSplines::_load(MgShapeFactory* factory, MgStorage* s)
 {
     bool ret = __super::_load(factory, s);
-    if (ret && _count > 0 && s->readFloatArray("vec", NULL, 0) > 0) {
+    if (ret && _count > 0 && s->readFloatArray("vec") > 0) {
         _knotvs = new Vector2d[_count];
         if (s->readFloatArray("vec", (float*)_knotvs, _count * 2) != _count * 2) {
-            delete[] _knotvs;
-            _knotvs = NULL;
+            ret = false;
         }
     }
     return ret;
@@ -207,7 +197,6 @@ int MgSplines::smoothForPoints(int count, const Point2d* points, const Matrix2d&
     
     _count = mgcurv::fitCurve(knotCount, knots, knotvs, count, ptx, tol);
     _maxCount = knotCount;
-    LOGD("smoothForPoints: %d -> %d", count, _count);
     
     for (i = 0; i < _count; i++) {
         knots[i] *= d2m;

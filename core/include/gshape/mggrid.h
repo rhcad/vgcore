@@ -6,7 +6,7 @@
 #ifndef TOUCHVG_GRIDSHAPE_H_
 #define TOUCHVG_GRIDSHAPE_H_
 
-#include "mgbasicsp.h"
+#include "mgrect.h"
 
 //! 网格图形类
 /*! \ingroup CORE_SHAPE
@@ -16,6 +16,7 @@ class MgGrid : public MgBaseRect
     MG_INHERIT_CREATE(MgGrid, MgBaseRect, 20)
 public:
     virtual int snap(Point2d& pnt, Point2d& dist) const;
+    const Vector2d& getCellSize() const { return m_cell; }
     bool isValid(float tol) const;
 
 protected:

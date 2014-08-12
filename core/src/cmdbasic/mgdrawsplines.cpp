@@ -4,7 +4,8 @@
 
 #include "mgdrawsplines.h"
 #include "mgshapet.h"
-#include "mgbasicsp.h"
+#include "mgsplines.h"
+#include "mgline.h"
 
 MgCmdDrawSplines::MgCmdDrawSplines(const char* name, bool freehand)
     : MgCommandDraw(name), m_freehand(freehand)

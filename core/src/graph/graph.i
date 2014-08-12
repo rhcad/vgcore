@@ -10,7 +10,7 @@
 
 #include <gigraph.h>
 #include <gicanvas.h>
-#include <gipath.h>
+#include <mgpath.h>
 %}
 
 %include <mgdef.h>
@@ -31,5 +31,5 @@
 %include <gicolor.h>
 %include <gicontxt.h>
 %include <gixform.h>
-%include <gipath.h>
+%include <mgpath.h>
 %include <gigraph.h>

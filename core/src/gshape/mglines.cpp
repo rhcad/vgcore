@@ -2,14 +2,13 @@
 // Copyright (c) 2004-2013, Zhang Yungui
 // License: LGPL, https://github.com/rhcad/touchvg
 
-#include "mgbasicsp.h"
+#include "mglines.h"
 #include "mgshape_.h"
 
 // MgBaseLines
 //
 
-MgBaseLines::MgBaseLines()
-    : _points(NULL), _maxCount(0), _count(0)
+MgBaseLines::MgBaseLines() : _points((Point2d*)0), _maxCount(0), _count(0)
 {
 }
 
@@ -243,17 +242,7 @@ MgLines::~MgLines()
 {
 }
 
-bool MgLines::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
-{
-    bool ret = false;
-    if (isClosed())
-        ret = gs.drawPolygon(&ctx, _count, _points);
-    else
-        ret = gs.drawLines(&ctx, _count, _points);
-    return __super::_draw(mode, gs, ctx, segment) || ret;
-}
-
-void MgLines::_output(GiPath& path) const
+void MgLines::_output(MgPath& path) const
 {
     if (_count > 1) {
         path.moveTo(_points[0]);

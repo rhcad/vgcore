@@ -9,6 +9,7 @@ shape_incs := $(core_inc) \
               $(core_inc)/geom \
               $(core_inc)/graph \
               $(core_inc)/jsonstorage \
+              $(core_inc)/gshape \
               $(core_inc)/shape \
               $(core_inc)/storage \
               $(core_inc)/shapedoc \
@@ -35,26 +36,34 @@ geom_files := $(core_src)/geom/mgbase.cpp \
               $(core_src)/geom/mgnearbz.cpp \
               $(core_src)/geom/fitcurves.cpp \
               $(core_src)/geom/mgvec.cpp \
-              $(core_src)/geom/mgpnt.cpp
+              $(core_src)/geom/mgpnt.cpp \
+              $(core_src)/geom/mgpath.cpp
 
 graph_files := $(core_src)/graph/gigraph.cpp \
-              $(core_src)/graph/gipath.cpp \
               $(core_src)/graph/gixform.cpp
 
 json_files := $(core_src)/jsonstorage/mgjsonstorage.cpp
 
+gshape_files := $(core_src)/gshape/mgarc.cpp \
+              $(core_src)/gshape/mgbasesp.cpp \
+              $(core_src)/gshape/mgcshapes.cpp \
+              $(core_src)/gshape/mgdiamond.cpp \
+              $(core_src)/gshape/mgdot.cpp \
+              $(core_src)/gshape/mgellipse.cpp \
+              $(core_src)/gshape/mggrid.cpp \
+              $(core_src)/gshape/mgline.cpp \
+              $(core_src)/gshape/mglines.cpp \
+              $(core_src)/gshape/mgparallel.cpp \
+              $(core_src)/gshape/mgpathsp.cpp \
+              $(core_src)/gshape/mgrdrect.cpp \
+              $(core_src)/gshape/mgrect.cpp \
+              $(core_src)/gshape/mgsplines.cpp \
+              $(core_src)/gshape/nanosvg.cpp
+
 shape_files := $(core_src)/shape/mgcomposite.cpp \
-              $(core_src)/shape/mgellipse.cpp \
-              $(core_src)/shape/mggrid.cpp \
-              $(core_src)/shape/mgline.cpp \
-              $(core_src)/shape/mglines.cpp \
-              $(core_src)/shape/mgrdrect.cpp \
-              $(core_src)/shape/mgrect.cpp \
+              $(core_src)/shape/mgimagesp.cpp \
               $(core_src)/shape/mgshape.cpp \
               $(core_src)/shape/mgshapes.cpp \
-              $(core_src)/shape/mgsplines.cpp \
-              $(core_src)/shape/mgpathsp.cpp \
-              $(core_src)/shape/nanosvg.cpp \
               $(core_src)/shape/mgbasicspreg.cpp
 
 doc_files  := $(core_src)/shapedoc/mgshapedoc.cpp \
@@ -109,7 +118,7 @@ LOCAL_CFLAGS += -fno-strict-aliasing
 endif
 
 LOCAL_C_INCLUDES := $(shape_incs) $(cmd_incs) $(view_incs)
-LOCAL_SRC_FILES  := $(geom_files) $(graph_files) $(shape_files) \
+LOCAL_SRC_FILES  := $(geom_files) $(graph_files) $(gshape_files) $(shape_files) \
                     $(json_files) $(test_files) $(doc_files) \
                     $(base_files) $(basic_files) $(mgr_files) \
                     $(view_files)
