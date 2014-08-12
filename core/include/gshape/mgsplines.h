@@ -15,17 +15,17 @@ class MgSplines : public MgBaseLines
 {
     MG_INHERIT_CREATE(MgSplines, MgBaseLines, 16)
 public:
-    virtual bool isCurve() const { return true; }
-    virtual bool resize(int count);
-    virtual bool addPoint(const Point2d& pt);
-    virtual bool insertPoint(int segment, const Point2d& pt);
-    virtual bool removePoint(int index);
     
     bool smooth(const Matrix2d& m2d, float tol);
     int smoothForPoints(int count, const Point2d* points, const Matrix2d& m2d, float tol);
     void clearVectors();
 #ifndef SWIG
     const Vector2d* getVectors() const { return _knotvs; }
+    virtual bool isCurve() const { return true; }
+    virtual bool resize(int count);
+    virtual bool addPoint(const Point2d& pt);
+    virtual bool insertPoint(int segment, const Point2d& pt);
+    virtual bool removePoint(int index);
 #endif
 
 protected:

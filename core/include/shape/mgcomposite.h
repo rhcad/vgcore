@@ -30,8 +30,10 @@ public:
     //! 返回是否可以单独移动一个子图形，在 offset() 中调用
     virtual bool canOffsetShapeAlone(MgShape* shape) { return !!shape; }
     
+#ifndef SWIG
     virtual bool isCurve() const { return true; }
     virtual void setOwner(MgShape* owner);
+#endif
 
 protected:
     MgComposite();
