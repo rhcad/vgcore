@@ -7,7 +7,6 @@
 #define TOUCHVG_MGBASESHAPE_H_
 
 #include "mgobject.h"
-#include "mgbox.h"
 #include "mgmat.h"
 #include "mgpath.h"
 

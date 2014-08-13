@@ -4,7 +4,7 @@
 
 #include "mgcmdmgr_.h"
 #include "mgselect.h"
-#include "mgshapetype.h"
+#include "mgbasicsps.h"
 #include "mglog.h"
 #include "cmdsubject.h"
 

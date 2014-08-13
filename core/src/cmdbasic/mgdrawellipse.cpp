@@ -4,7 +4,7 @@
 
 #include "mgdrawellipse.h"
 #include "mgshapet.h"
-#include "mgellipse.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawEllipse::initialize(const MgMotion* sender, MgStorage*)
 {

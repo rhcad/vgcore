@@ -37,7 +37,6 @@
 		0224FF5619989BDB00895C27 /* mgrdrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4719989BDB00895C27 /* mgrdrect.cpp */; };
 		0224FF5719989BDB00895C27 /* mgrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4819989BDB00895C27 /* mgrect.cpp */; };
 		0224FF5919989BDB00895C27 /* mgsplines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4A19989BDB00895C27 /* mgsplines.cpp */; };
-		0224FF5A19989BDB00895C27 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF4B19989BDB00895C27 /* nanosvg.cpp */; };
 		0224FF5E19989D1900895C27 /* mgimagesp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF5D19989D1900895C27 /* mgimagesp.h */; };
 		0224FF6019989E1B00895C27 /* mgimagesp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF5F19989E1B00895C27 /* mgimagesp.cpp */; };
 		0224FF621998B11C00895C27 /* mgbasesp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF611998B11C00895C27 /* mgbasesp.h */; };
@@ -53,6 +52,7 @@
 		0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2C18F29DC300999778 /* girecordcanvas.h */; };
 		0269CE2F18F29DC300999778 /* girecordshape.h in Headers */ = {isa = PBXBuildFile; fileRef = 0269CE2D18F29DC300999778 /* girecordshape.h */; };
 		0269CE3118F29DD000999778 /* girecordcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0269CE3018F29DD000999778 /* girecordcanvas.cpp */; };
+		026C374A199B36FB00F29369 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 026C3749199B36FB00F29369 /* nanosvg.cpp */; };
 		029FD69D1956D107004B80FA /* mglocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 029FD69C1956D107004B80FA /* mglocal.h */; };
 		02C3322F1999F46800C5F226 /* mgcomposite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C3322E1999F46800C5F226 /* mgcomposite.cpp */; };
 		02C332311999F48400C5F226 /* mgcomposite.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C332301999F48400C5F226 /* mgcomposite.h */; };
@@ -269,7 +269,6 @@
 		0224FF4719989BDB00895C27 /* mgrdrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrdrect.cpp; sourceTree = "<group>"; };
 		0224FF4819989BDB00895C27 /* mgrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrect.cpp; sourceTree = "<group>"; };
 		0224FF4A19989BDB00895C27 /* mgsplines.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgsplines.cpp; sourceTree = "<group>"; };
-		0224FF4B19989BDB00895C27 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
 		0224FF5D19989D1900895C27 /* mgimagesp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgimagesp.h; sourceTree = "<group>"; };
 		0224FF5F19989E1B00895C27 /* mgimagesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgimagesp.cpp; sourceTree = "<group>"; };
 		0224FF611998B11C00895C27 /* mgbasesp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgbasesp.h; sourceTree = "<group>"; };
@@ -284,6 +283,8 @@
 		0269CE2C18F29DC300999778 /* girecordcanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordcanvas.h; sourceTree = "<group>"; };
 		0269CE2D18F29DC300999778 /* girecordshape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = girecordshape.h; sourceTree = "<group>"; };
 		0269CE3018F29DD000999778 /* girecordcanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = girecordcanvas.cpp; sourceTree = "<group>"; };
+		026C3749199B36FB00F29369 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
+		026C374D199B3E3100F29369 /* mgbasicsps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgbasicsps.h; sourceTree = "<group>"; };
 		028BD40D18C767F30070EA95 /* touchvg.swig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = touchvg.swig; sourceTree = "<group>"; };
 		029FD69C1956D107004B80FA /* mglocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mglocal.h; sourceTree = "<group>"; };
 		02C3322E1999F46800C5F226 /* mgcomposite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgcomposite.cpp; sourceTree = "<group>"; };
@@ -515,7 +516,6 @@
 				0224FF4719989BDB00895C27 /* mgrdrect.cpp */,
 				0224FF4819989BDB00895C27 /* mgrect.cpp */,
 				0224FF4A19989BDB00895C27 /* mgsplines.cpp */,
-				0224FF4B19989BDB00895C27 /* nanosvg.cpp */,
 			);
 			path = gshape;
 			sourceTree = "<group>";
@@ -740,6 +740,7 @@
 		AED37030186681DB00C0A778 /* shape */ = {
 			isa = PBXGroup;
 			children = (
+				026C374D199B3E3100F29369 /* mgbasicsps.h */,
 				02C332301999F48400C5F226 /* mgcomposite.h */,
 				0224FF5D19989D1900895C27 /* mgimagesp.h */,
 				AED37032186681DB00C0A778 /* mgbasicspreg.h */,
@@ -848,6 +849,7 @@
 		AED37064186681DB00C0A778 /* geom */ = {
 			isa = PBXGroup;
 			children = (
+				026C3749199B36FB00F29369 /* nanosvg.cpp */,
 				02C3324D199A10DF00C5F226 /* mgpath.cpp */,
 				02FF196418A2F7DF00B15999 /* fitcurves.cpp */,
 				AE20C4BB1866C5C600471A19 /* mgpnt.cpp */,
@@ -1214,7 +1216,6 @@
 				AED370CB186688B100C0A778 /* mglayer.cpp in Sources */,
 				AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */,
 				0224FF5519989BDB00895C27 /* mgpathsp.cpp in Sources */,
-				0224FF5A19989BDB00895C27 /* nanosvg.cpp in Sources */,
 				0224FF5319989BDB00895C27 /* mglines.cpp in Sources */,
 				AED370CD186688B100C0A778 /* mgshapedoc.cpp in Sources */,
 				0224FF5119989BDB00895C27 /* mggrid.cpp in Sources */,
@@ -1264,6 +1265,7 @@
 				AED370AB1866884700C0A778 /* mgdrawsquare.cpp in Sources */,
 				AED370AC1866884700C0A778 /* mgdrawtriang.cpp in Sources */,
 				AED3709A1866883700C0A778 /* mgcmddraw.cpp in Sources */,
+				026C374A199B36FB00F29369 /* nanosvg.cpp in Sources */,
 				AED3709B1866883700C0A778 /* mgdrawarc.cpp in Sources */,
 				AED3709C1866883700C0A778 /* mgdrawrect.cpp in Sources */,
 			);

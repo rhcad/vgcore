@@ -21,7 +21,6 @@
 		0224FEC8199884B500895C27 /* mgpathsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEBD199884B500895C27 /* mgpathsp.cpp */; };
 		0224FEC9199884B500895C27 /* mgrdrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEBE199884B500895C27 /* mgrdrect.cpp */; };
 		0224FECA199884B500895C27 /* mgrect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEBF199884B500895C27 /* mgrect.cpp */; };
-		0224FECC199884B500895C27 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEC1199884B500895C27 /* nanosvg.cpp */; };
 		0224FEE419988F6D00895C27 /* mgdiamond.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEE319988F6D00895C27 /* mgdiamond.cpp */; };
 		0224FEE6199892D100895C27 /* mgdot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEE5199892D100895C27 /* mgdot.cpp */; };
 		0224FEE81998935900895C27 /* mgparallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FEE71998935900895C27 /* mgparallel.cpp */; };
@@ -38,6 +37,7 @@
 		0224FF181998984300895C27 /* mgrdrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0C1998984300895C27 /* mgrdrect.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0224FF191998984300895C27 /* mgrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0D1998984300895C27 /* mgrect.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0224FF1A1998984300895C27 /* mgsplines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0E1998984300895C27 /* mgsplines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		026C374C199B371D00F29369 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 026C374B199B371D00F29369 /* nanosvg.cpp */; };
 		026DF6941998793000B66B83 /* mgpath.h in Headers */ = {isa = PBXBuildFile; fileRef = 026DF6931998793000B66B83 /* mgpath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		026DF6961998793700B66B83 /* mgpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 026DF6951998793700B66B83 /* mgpath.cpp */; };
 		02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF196418A2F7DF00B15999 /* fitcurves.cpp */; };
@@ -89,7 +89,6 @@
 		0224FEBE199884B500895C27 /* mgrdrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrdrect.cpp; sourceTree = "<group>"; };
 		0224FEBF199884B500895C27 /* mgrect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgrect.cpp; sourceTree = "<group>"; };
 		0224FEC0199884B500895C27 /* mgbasesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgbasesp.cpp; sourceTree = "<group>"; };
-		0224FEC1199884B500895C27 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
 		0224FEE319988F6D00895C27 /* mgdiamond.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgdiamond.cpp; sourceTree = "<group>"; };
 		0224FEE5199892D100895C27 /* mgdot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgdot.cpp; sourceTree = "<group>"; };
 		0224FEE71998935900895C27 /* mgparallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgparallel.cpp; sourceTree = "<group>"; };
@@ -107,6 +106,7 @@
 		0224FF0D1998984300895C27 /* mgrect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgrect.h; sourceTree = "<group>"; };
 		0224FF0E1998984300895C27 /* mgsplines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgsplines.h; sourceTree = "<group>"; };
 		0224FF651998B69600895C27 /* gshape.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = gshape.i; sourceTree = "<group>"; };
+		026C374B199B371D00F29369 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
 		026DF6931998793000B66B83 /* mgpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgpath.h; sourceTree = "<group>"; };
 		026DF6951998793700B66B83 /* mgpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpath.cpp; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
@@ -188,7 +188,6 @@
 				0224FEBE199884B500895C27 /* mgrdrect.cpp */,
 				0224FEBF199884B500895C27 /* mgrect.cpp */,
 				0224FEC0199884B500895C27 /* mgbasesp.cpp */,
-				0224FEC1199884B500895C27 /* nanosvg.cpp */,
 			);
 			path = gshape;
 			sourceTree = "<group>";
@@ -293,6 +292,7 @@
 		AED37064186681DB00C0A778 /* geom */ = {
 			isa = PBXGroup;
 			children = (
+				026C374B199B371D00F29369 /* nanosvg.cpp */,
 				026DF6951998793700B66B83 /* mgpath.cpp */,
 				02FF196418A2F7DF00B15999 /* fitcurves.cpp */,
 				AE20C4BB1866C5C600471A19 /* mgpnt.cpp */,
@@ -445,7 +445,6 @@
 				0224FEC4199884B500895C27 /* mgsplines.cpp in Sources */,
 				0224FEC2199884B500895C27 /* mgcshapes.cpp in Sources */,
 				0224FEC9199884B500895C27 /* mgrdrect.cpp in Sources */,
-				0224FECC199884B500895C27 /* nanosvg.cpp in Sources */,
 				0224FEE6199892D100895C27 /* mgdot.cpp in Sources */,
 				02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */,
 				AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */,
@@ -454,6 +453,7 @@
 				026DF6961998793700B66B83 /* mgpath.cpp in Sources */,
 				AED370B31866887500C0A778 /* mgbase.cpp in Sources */,
 				0224FEEA1998944200895C27 /* mgarc.cpp in Sources */,
+				026C374C199B371D00F29369 /* nanosvg.cpp in Sources */,
 				AED370B51866887500C0A778 /* mgbox.cpp in Sources */,
 				AED370B61866887500C0A778 /* mgcurv.cpp in Sources */,
 				AED370B71866887500C0A778 /* mglnrel.cpp in Sources */,

@@ -4,7 +4,7 @@
 
 #include "mgdrawpolygon.h"
 #include "mgshapet.h"
-#include "mglines.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawPolygon::initialize(const MgMotion* sender, MgStorage*)
 {

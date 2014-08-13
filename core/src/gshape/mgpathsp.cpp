@@ -358,8 +358,6 @@ int MgPathShape::exportSVGPath(const MgPath& path, char* buf, int size)
     return size;
 }
 
-extern void parsePath(const char* s, MgPath& path);
-
 bool MgPathShape::_load(MgShapeFactory* factory, MgStorage* s)
 {
     bool ret = __super::_load(factory, s);
@@ -382,6 +380,5 @@ bool MgPathShape::_load(MgShapeFactory* factory, MgStorage* s)
 bool MgPathShape::importSVGPath(const char* d)
 {
     _path.clear();
-    parsePath(d, _path);
-    return true;
+    return _path.addSVGPath(d).getCount() > 0;
 }

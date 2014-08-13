@@ -9,9 +9,8 @@
 #include <functional>
 #include "mgsnap.h"
 #include "mgaction.h"
-#include "mgshapetype.h"
 #include "mgcomposite.h"
-#include "mglines.h"
+#include "mgbasicsps.h"
 #include "cmdsubject.h"
 #include "mglocal.h"
 #include "mglog.h"

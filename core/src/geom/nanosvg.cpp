@@ -1,10 +1,8 @@
-// nanosvg.cpp: Implement parsePath(s, path)
+// nanosvg.cpp: Implement MgPath::addSVGPath(s).
 // Copyright (c) 2014, Zhang Yungui
 // License: LGPL, https://github.com/touchvg/vgcore
 //
-// void parsePath(const char* s, MgPath& path);
-//
-// parsePath() is based on nanosvg.h (https://github.com/memononen/nanosvg)
+// addSVGPath is based on nanosvg.h (https://github.com/memononen/nanosvg)
 // NanoSVG is a simple stupid single-header-file SVG parse.
 // Copyright (c) 2013-14 Mikko Mononen memon@inside.org
 
@@ -256,7 +254,7 @@ static void nsvg__pathArcTo(MgPath& path, const float* args, bool rel)
 	curpt.y = y2;
 }
 
-void parsePath(const char* s, MgPath& path)
+MgPath& MgPath::addSVGPath(const char* s)
 {
     char item[64];
     char cmd = 0;
@@ -272,7 +270,7 @@ void parsePath(const char* s, MgPath& path)
             rargs = nsvg__getArgsPerElement(cmd);
             nargs = 0;
             if (cmd == 'Z' || cmd == 'z') {
-                path.closeFigure();
+                closeFigure();
             }
         } else {
             if (nargs < 10)
@@ -281,7 +279,7 @@ void parsePath(const char* s, MgPath& path)
                 switch (cmd) {
                     case 'm':
                     case 'M':
-                        path.moveTo(Point2d(args[0], args[1]), cmd == 'm');
+                        moveTo(Point2d(args[0], args[1]), cmd == 'm');
                         // Moveto can be followed by multiple coordinate pairs,
                         // which should be treated as linetos.
                         cmd = (cmd == 'm') ? 'l' : 'L';
@@ -289,39 +287,39 @@ void parsePath(const char* s, MgPath& path)
                         break;
                     case 'l':
                     case 'L':
-                        path.lineTo(Point2d(args[0], args[1]), cmd == 'l');
+                        lineTo(Point2d(args[0], args[1]), cmd == 'l');
                         break;
                     case 'H':
                     case 'h':
-                        path.horzTo(args[0], cmd == 'h');
+                        horzTo(args[0], cmd == 'h');
                         break;
                     case 'V':
                     case 'v':
-                        path.vertTo(args[0], cmd == 'v');
+                        vertTo(args[0], cmd == 'v');
                         break;
                     case 'C':
                     case 'c':
-                        path.bezierTo(Point2d(args[0], args[1]),
-                                      Point2d(args[2], args[3]),
-                                      Point2d(args[4], args[5]), cmd == 'c');
+                        bezierTo(Point2d(args[0], args[1]),
+                                 Point2d(args[2], args[3]),
+                                 Point2d(args[4], args[5]), cmd == 'c');
                         break;
                     case 'S':
                     case 's':
-                        path.smoothBezierTo(Point2d(args[0], args[1]),
-                                            Point2d(args[2], args[3]), cmd == 's');
+                        smoothBezierTo(Point2d(args[0], args[1]),
+                                       Point2d(args[2], args[3]), cmd == 's');
                         break;
                     case 'Q':
                     case 'q':
-                        path.quadTo(Point2d(args[0], args[1]),
-                                    Point2d(args[2], args[3]), cmd == 'q');
+                        quadTo(Point2d(args[0], args[1]),
+                               Point2d(args[2], args[3]), cmd == 'q');
                         break;
                     case 'T':
                     case 't':
-                        path.smoothQuadTo(Point2d(args[0], args[1]), cmd == 't');
+                        smoothQuadTo(Point2d(args[0], args[1]), cmd == 't');
                         break;
                     case 'A':
                     case 'a':
-                        nsvg__pathArcTo(path, args, cmd == 'a' ? 1 : 0);
+                        nsvg__pathArcTo(*this, args, cmd == 'a' ? 1 : 0);
                         break;
                     default:
                         break;
@@ -330,4 +328,6 @@ void parsePath(const char* s, MgPath& path)
             }
         }
     }
+    
+    return *this;
 }

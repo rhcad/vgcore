@@ -3,7 +3,7 @@
 
 #include "mgdrawtriang.h"
 #include "mgshapet.h"
-#include "mglines.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawTriangle::initialize(const MgMotion* sender, MgStorage*)
 {

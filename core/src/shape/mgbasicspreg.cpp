@@ -4,21 +4,9 @@
 
 #include "mgbasicspreg.h"
 #include "mgshapet.h"
-#include "mgshapetype.h"
 #include "mgcomposite.h"
 #include "mgimagesp.h"
-#include "mgarc.h"
-#include "mgdiamond.h"
-#include "mgdot.h"
-#include "mgellipse.h"
-#include "mggrid.h"
-#include "mgline.h"
-#include "mglines.h"
-#include "mgparallel.h"
-#include "mgpathsp.h"
-#include "mgrdrect.h"
-#include "mgrect.h"
-#include "mgsplines.h"
+#include "mgbasicsps.h"
 
 void MgBasicShapes::registerShapes(MgShapeFactory* factory)
 {

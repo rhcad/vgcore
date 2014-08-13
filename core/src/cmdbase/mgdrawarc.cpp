@@ -3,7 +3,7 @@
 
 #include "mgdrawarc.h"
 #include "mgshapet.h"
-#include "mgarc.h"
+#include "mgbasicsps.h"
 
 // MgCmdArc3P
 //

@@ -4,7 +4,7 @@
 
 #include "mgdrawgrid.h"
 #include "mgshapet.h"
-#include "mggrid.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage*)
 {

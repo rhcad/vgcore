@@ -3,8 +3,7 @@
 
 #include "mgdrawline.h"
 #include "mgshapet.h"
-#include "mgline.h"
-#include "mgdot.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage*)
 {

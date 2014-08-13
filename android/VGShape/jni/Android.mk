@@ -21,7 +21,8 @@ geom_files := $(core_src)/geom/mgbase.cpp \
               $(core_src)/geom/fitcurves.cpp \
               $(core_src)/geom/mgvec.cpp \
               $(core_src)/geom/mgpnt.cpp \
-              $(core_src)/geom/mgpath.cpp
+              $(core_src)/geom/mgpath.cpp \
+              $(core_src)/geom/nanosvg.cpp
 
 gshape_files := $(core_src)/gshape/mgarc.cpp \
               $(core_src)/gshape/mgbasesp.cpp \
@@ -36,8 +37,7 @@ gshape_files := $(core_src)/gshape/mgarc.cpp \
               $(core_src)/gshape/mgpathsp.cpp \
               $(core_src)/gshape/mgrdrect.cpp \
               $(core_src)/gshape/mgrect.cpp \
-              $(core_src)/gshape/mgsplines.cpp \
-              $(core_src)/gshape/nanosvg.cpp
+              $(core_src)/gshape/mgsplines.cpp
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := libVGShape

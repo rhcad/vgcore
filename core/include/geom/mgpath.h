@@ -52,6 +52,9 @@ public:
     //! 追加路径
     MgPath& append(const MgPath& src);
     
+    //! 从SVG的路径d串解析
+    MgPath& addSVGPath(const char* s);
+    
     //! 折线拐角圆角化
     /*!
         \param count 折线顶点数

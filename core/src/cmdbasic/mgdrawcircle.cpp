@@ -4,7 +4,7 @@
 
 #include "mgdrawcircle.h"
 #include "mgshapet.h"
-#include "mgellipse.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage*)
 {

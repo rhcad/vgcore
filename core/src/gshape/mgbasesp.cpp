@@ -3,7 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgbasesp.h"
-#include "mgstorage.h"
+#include "mgshape_.h"
 
 MgBaseShape::MgBaseShape() : _flags(0), _changeCount(0) {
 }

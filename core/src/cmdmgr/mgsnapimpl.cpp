@@ -3,8 +3,7 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgcmdmgr_.h"
-#include "mggrid.h"
-#include "mgsplines.h"
+#include "mgbasicsps.h"
 
 class SnapItem {
 public:

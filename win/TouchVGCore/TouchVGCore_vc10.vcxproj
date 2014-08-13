@@ -83,6 +83,7 @@
     <ClInclude Include="..\..\core\include\shapedoc\mgshapedoc.h" />
     <ClInclude Include="..\..\core\include\shapedoc\spfactoryimpl.h" />
     <ClInclude Include="..\..\core\include\shape\mgbasicspreg.h" />
+    <ClInclude Include="..\..\core\include\shape\mgbasicsps.h" />
     <ClInclude Include="..\..\core\include\shape\mgcomposite.h" />
     <ClInclude Include="..\..\core\include\shape\mgimagesp.h" />
     <ClInclude Include="..\..\core\include\shape\mgshape.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="..\..\core\src\geom\mgnearbz.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgpnt.cpp" />
     <ClCompile Include="..\..\core\src\geom\mgvec.cpp" />
+    <ClCompile Include="..\..\core\src\geom\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\graph\gigraph.cpp" />
     <ClCompile Include="..\..\core\src\graph\gixform.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgarc.cpp" />
@@ -175,7 +177,6 @@
     <ClCompile Include="..\..\core\src\gshape\mgrdrect.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgrect.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgsplines.cpp" />
-    <ClCompile Include="..\..\core\src\gshape\nanosvg.cpp" />
     <ClCompile Include="..\..\core\src\jsonstorage\mgjsonstorage.cpp" />
     <ClCompile Include="..\..\core\src\record\recordshapes.cpp" />
     <ClCompile Include="..\..\core\src\shapedoc\mglayer.cpp" />

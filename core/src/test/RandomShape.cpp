@@ -1,10 +1,6 @@
 #include "RandomShape.h"
 #include "mgshapet.h"
-#include "mgarc.h"
-#include "mgellipse.h"
-#include "mgline.h"
-#include "mgrect.h"
-#include "mgsplines.h"
+#include "mgbasicsps.h"
 #include <stdlib.h>
 #include <time.h>
 

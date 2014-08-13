@@ -4,7 +4,7 @@
 
 #include "mgdrawlines.h"
 #include "mgshapet.h"
-#include "mglines.h"
+#include "mgbasicsps.h"
 
 bool MgCmdDrawLines::initialize(const MgMotion* sender, MgStorage*)
 {

@@ -280,10 +280,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\src\geom\mgpath.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\core\src\geom\mgbase.cpp"
 					>
 				</File>
@@ -316,11 +312,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\geom\mgpath.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\geom\mgpnt.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\core\src\geom\mgvec.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\src\geom\nanosvg.cpp"
 					>
 				</File>
 			</Filter>
@@ -587,10 +591,6 @@
 					RelativePath="..\..\core\src\gshape\mgsplines.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\core\src\gshape\nanosvg.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -746,10 +746,6 @@
 				Name="geom"
 				>
 				<File
-					RelativePath="..\..\core\include\geom\mgpath.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\core\include\geom\mgbase.h"
 					>
 				</File>
@@ -775,6 +771,10 @@
 				</File>
 				<File
 					RelativePath="..\..\core\include\geom\mgnear.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\geom\mgpath.h"
 					>
 				</File>
 				<File
@@ -827,6 +827,10 @@
 				>
 				<File
 					RelativePath="..\..\core\include\shape\mgbasicspreg.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\core\include\shape\mgbasicsps.h"
 					>
 				</File>
 				<File
