@@ -147,7 +147,7 @@ public:
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
     int addImageShape(const char* name, float xc, float yc, float w, float h, int tag);
-    bool getImageSize(mgvector<float>& info, long doc, long gs, int shapeId);
+    bool getImageSize(mgvector<float>& info, int sid);
     bool hasImageShape(long doc);
     int findShapeByImageID(long doc, const char* name);
     int findShapeByTag(long doc, int tag);
