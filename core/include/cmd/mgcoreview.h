@@ -147,6 +147,9 @@ struct MgCoreView {
     //! 返回是否有容纳图像的图形对象
     virtual bool hasImageShape(long doc) = 0;
     
+    //! 获取图像(MgImageShape)的原始图像宽高、显示宽高、角度(orgw, orgh, w, h, angle)
+    virtual bool getImageSize(mgvector<float>& info, long doc, long gs, int sid) = 0;
+    
     //! 查找指定名称的图像对应的图形对象ID
     virtual int findShapeByImageID(long doc, const char* name) = 0;
     

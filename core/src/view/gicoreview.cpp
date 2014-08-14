@@ -1145,6 +1145,28 @@ int GiCoreView::addImageShape(const char* name, float xc, float yc, float w, flo
     return shape ? shape->getID() : 0;
 }
 
+bool GiCoreView::getImageSize(mgvector<float>& info, long hdoc, long hgs, int sid)
+{
+    const MgShapeDoc* doc = MgShapeDoc::fromHandle(hdoc);
+    const GiGraphics* gs = GiGraphics::fromHandle(hgs);
+    const MgShape* shape = doc ? doc->findShape(sid) : NULL;
+    bool ret = (info.count() >= 5 && gs && shape
+                && shape->shapec()->isKindOf(MgImageShape::Type()));
+    
+    if (ret) {
+        const MgImageShape *image = (const MgImageShape*)shape->shapec();
+        Box2d rect(image->getRect() * gs->xf().modelToDisplay());
+        Vector2d v;
+        
+        v.setAngleLength(image->getAngle(), 1);
+        info.set(0, image->getImageSize().x, image->getImageSize().y);
+        info.set(2, rect.width(), rect.height());
+        info.set(4, (v * gs->xf().modelToDisplay()).angle2());
+    }
+    
+    return ret;
+}
+
 bool GiCoreView::hasImageShape(long doc)
 {
     const MgShapeDoc* p = MgShapeDoc::fromHandle(doc);
