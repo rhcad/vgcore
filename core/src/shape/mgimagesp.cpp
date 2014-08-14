@@ -87,6 +87,8 @@ void MgImageShape::_clear()
 bool MgImageShape::_save(MgStorage* s) const
 {
     s->writeString("name", _name);
+    s->writeFloat("imageWidth", _size.x);
+    s->writeFloat("imageHeight", _size.y);
     return __super::_save(s);
 }
 
@@ -95,6 +97,12 @@ bool MgImageShape::_load(MgShapeFactory* factory, MgStorage* s)
     int len = sizeof(_name) - 1;
     len = s->readString("name", _name, len);
     _name[len] = 0;
+    
+    _size.set(s->readFloat("imageWidth", 0), s->readFloat("imageHeight", 0));
+    if (_size.x < 1 || _size.y < 1) {
+        s->setError("Invalid image size");
+        return false;
+    }
     
     return __super::_load(factory, s);
 }

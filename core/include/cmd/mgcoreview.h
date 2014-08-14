@@ -135,8 +135,8 @@ struct MgCoreView {
     //! 添加一个容纳图像的矩形图形
     /*!
         \param name 图像的标识名称，例如可用无路径的文件名
-        \param width 图像矩形的宽度，正数，单位为点
-        \param height 图像矩形的高度，正数，单位为点
+        \param width 图像的原始宽度，正数，单位为点
+        \param height 图像的原始高度，正数，单位为点
         \return 新图形的ID，0表示失败
      */
     virtual int addImageShape(const char* name, float width, float height) = 0;

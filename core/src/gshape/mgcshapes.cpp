@@ -16,6 +16,31 @@
 #include "mgrdrect.h"
 #include "mgrect.h"
 #include "mgsplines.h"
+#include <map>
+
+struct MgCoreShapeFactory::Impl
+{
+    std::map<int, MgBaseShape* (*)()> creators;
+};
+
+
+MgCoreShapeFactory::MgCoreShapeFactory() : impl(new Impl())
+{
+}
+
+MgCoreShapeFactory::~MgCoreShapeFactory()
+{
+    delete impl;
+}
+
+void MgCoreShapeFactory::registerShape(int type, MgBaseShape* (*creator)())
+{
+    if (creator) {
+        impl->creators[type] = creator;
+    } else {
+        impl->creators.erase(type);
+    }
+}
 
 MgBaseShape* MgCoreShapeFactory::createShape(int type)
 {
@@ -45,6 +70,9 @@ MgBaseShape* MgCoreShapeFactory::createShape(int type)
         case kMgShapePath:
             return MgPathShape::create();
         default:
-            return (MgBaseShape*)0;
+            break;
     }
+    
+    std::map<int, MgBaseShape* (*)()>::const_iterator it = impl->creators.find(type);
+    return it != impl->creators.end() ? (it->second)() : (MgBaseShape*)0;
 }

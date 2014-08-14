@@ -12,8 +12,7 @@
 MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, 
                                          const char* name, float width, float height)
 {
-    Box2d rect(sender->view->xform()->getWndRectW());
-    rect *= sender->view->xform()->worldToDisplay();
+    Box2d rect(sender->view->xform()->getWndRect());
     return addImageShape(sender, name, rect.center().x, rect.center().y, width, height, 0);
 }
 
@@ -39,6 +38,7 @@ MgShape* MgCmdManagerImpl::addImageShape(const MgMotion* sender, const char* nam
     shape._context.setFillColor(GiColor::White());    // avoid can't hitted inside
     shape._shape.setName(name);
     shape._shape.setRect2P(rect.leftTop(), rect.rightBottom());
+    shape._shape.setImageSize(Vector2d(w, h));
     shape.setTag(tag);
     
     if (sender->view->shapeWillAdded(&shape)) {

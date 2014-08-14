@@ -21,6 +21,9 @@ public:
 #endif
     void setName(const char* name);
     
+    Vector2d getImageSize() const { return _size; }
+    void setImageSize(Vector2d size) { _size = size; }
+    
     static const MgShape* findShapeByImageID(const MgShapes* shapes, const char* name);
     
 protected:
@@ -35,6 +38,7 @@ private:
     
 protected:
     char    _name[64];
+    Vector2d _size;
 };
 
 #endif // TOUCHVG_IMAGE_SHAPE_H_
