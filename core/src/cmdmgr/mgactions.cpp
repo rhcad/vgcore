@@ -27,7 +27,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
     bool isOpenLines = (shape && selState == kMgSelOneShape
                         && shape->shapec()->isKindOf(kMgShapeLines)
                         && !shape->shapec()->isClosed());
-    bool locked = shape && shape->shapec()->getFlag(kMgShapeLocked);
+    bool locked = shape && shape->shapec()->getFlag(kMgLocked);
     bool fixedLength = shape && shape->shapec()->getFlag(kMgFixedLength);
     
     switch (selState) {
@@ -62,7 +62,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             }
             if (selState == kMgSelOneShape && shape
                 && !shape->shapec()->getFlag(kMgRotateDisnable)
-                && !shape->shapec()->getFlag(kMgShapeLocked)
+                && !shape->shapec()->getFlag(kMgLocked)
                 && (shape->shapec()->isKindOf(kMgShapeParallel)
                     || shape->shapec()->isKindOf(kMgShapeBaseLines)
                     || shape->shapec()->isKindOf(kMgShapeComposite)) ) {
@@ -72,7 +72,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             
         case kMgSelVertexes:
             if ((isslines || isOpenLines)
-                && shape && !shape->shapec()->getFlag(kMgShapeLocked)) {
+                && shape && !shape->shapec()->getFlag(kMgLocked)) {
                 //actions[n++] = closed ? kMgActionOpened : kMgActionClosed;
                 actions[n++] = kMgActionAddVertex;
             }
@@ -85,7 +85,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             
         case kMgSelVertex:
             if ((isslines || isOpenLines)
-                && shape && !shape->shapec()->getFlag(kMgShapeLocked)) {
+                && shape && !shape->shapec()->getFlag(kMgLocked)) {
                 //actions[n++] = closed ? kMgActionOpened : kMgActionClosed;
                 actions[n++] = kMgActionDelVertex;
             }

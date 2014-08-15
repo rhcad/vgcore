@@ -40,7 +40,7 @@ void MgGrid::setFlag(MgShapeBit bit, bool on)
 
 int MgGrid::_getHandleCount() const
 {
-    return (getFlag(kMgFixedLength) || getFlag(kMgShapeLocked)) ? 8 : 9;
+    return (getFlag(kMgFixedLength) || getFlag(kMgLocked)) ? 8 : 9;
 }
 
 Point2d MgGrid::_getHandlePoint(int index) const

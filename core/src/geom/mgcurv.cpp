@@ -27,6 +27,23 @@ void mgcurv::fitBezier(const Point2d* pts, float t, Point2d& fitpt)
         + 3 * t2 * v * pts[2].y + t2 * t * pts[3].y;
 }
 
+/*
+ http://www.planetclegg.com/projects/WarpingTextToSplines.html
+ A = P3 - 3 * P2 + 3 * P1 - P0
+ B = 3 * P2 - 6 * P1 + 3 * P0
+ C = 3 * P1 - 3 * P0
+ D = P0
+ tangent: 3At^2 + 2Bt + C
+ */
+void mgcurv::bezierTanget(const Point2d* pts, float t, Point2d& outpt)
+{
+    Point2d A = pts[3] + (-3) * pts[2] + 3 * pts[1] + (-1) * pts[0];
+    Point2d B = 3 * pts[2] + (-6) * pts[1] + 3 * pts[0];
+    Point2d C = 3 * pts[1] + (-3) * pts[0];
+    
+    outpt = A * (3 * t * t) + B * (2 * t) + C;
+}
+
 void mgcurv::bezier4P(
     const Point2d& pt1, const Point2d& pt2, const Point2d& pt3, 
     const Point2d& pt4, Point2d& ctrpt1, Point2d& ctrpt2)

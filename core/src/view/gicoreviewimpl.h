@@ -163,7 +163,7 @@ public:
         hideContextActions();
         bool ret = (shape && shape->getParent()
                     && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgShapeLocked));
+                    && !shape->shapec()->getFlag(kMgLocked));
         if (ret) {
             int sid = shape->getID();
             getCmdSubject()->onShapeDeleted(motion(), shape);

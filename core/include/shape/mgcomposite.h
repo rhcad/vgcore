@@ -32,7 +32,7 @@ public:
     
 #ifndef SWIG
     virtual bool isCurve() const { return true; }
-    virtual void setOwner(MgShape* owner);
+    virtual void setOwner(MgObject* owner);
 #endif
 
 protected:

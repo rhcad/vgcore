@@ -22,6 +22,15 @@ struct mgcurv {
 */
 static void fitBezier(const Point2d* pts, float t, Point2d& fitpt);
 
+//! 计算三次贝塞尔曲线段的切线点
+/*!
+    \param[in] pts 4个点的数组，为贝塞尔曲线段的控制点
+    \param[in] t 要计算的参数点的参数，范围为[0, 1]
+    \param[out] outpt 参数点处的切线终点
+    \see fitBezier
+*/
+static void bezierTanget(const Point2d* pts, float t, Point2d& outpt);
+    
 //! 计算三次贝塞尔曲线段的参数点
 /*!
     \param[in] pts 4个点的数组，为贝塞尔曲线段的控制点

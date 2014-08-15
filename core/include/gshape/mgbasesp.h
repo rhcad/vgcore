@@ -17,7 +17,6 @@
 
 struct MgStorage;
 struct MgShapeFactory;
-class MgShape;
 class GiGraphics;
 class GiContext;
 
@@ -28,7 +27,7 @@ typedef enum {
     kMgFixedLength,     //!< 边长固定
     kMgFixedSize,       //!< 大小固定，只能旋转和移动
     kMgRotateDisnable,  //!< 不能旋转
-    kMgShapeLocked,     //!< 锁定形状
+    kMgLocked,          //!< 锁定形状
     kMgNoSnap,          //!< 禁止捕捉
     kMgNoAction,        //!< 禁止上下文按钮
     kMgNoClone,         //!< 禁止克隆
@@ -193,7 +192,7 @@ public:
     void setExtent(const Box2d& rect) { _extent = rect; }
 
     //! 设置拥有者图形对象
-    virtual void setOwner(MgShape* owner) {}
+    virtual void setOwner(MgObject* owner) {}
     
 protected:
     Box2d   _extent;

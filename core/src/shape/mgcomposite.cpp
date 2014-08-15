@@ -19,9 +19,11 @@ bool MgComposite::_isKindOf(int type) const
     return type == Type() || MgBaseShape::_isKindOf(type);
 }
 
-void MgComposite::setOwner(MgShape* owner)
+void MgComposite::setOwner(MgObject* owner)
 {
-    _owner = owner;
+    if (!owner || owner->isKindOf(MgShape::Type())) {
+        _owner = (MgShape*)owner;
+    }
 }
 
 int MgComposite::_getPointCount() const
