@@ -213,6 +213,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
     GiTransform* xf = sender->view->xform();
     Box2d wndbox(xf->getWndRectM());
     MgShapeIterator it(sender->view->shapes());
+    bool needSnapNear = !!sender->view->getOptionInt("snap", "snapNear", 1);
     
     while (const MgShape* sp = it.getNext()) {
         if (skipShape(ignoreids, sp)) {
@@ -225,7 +226,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
         }
         if (extent.isIntersect(wndbox)
             && !snapHandle(sender, orignPt, shape, ignoreHandle, sp, arr[0], matchpt)) {
-            if (extent.isIntersect(snapbox)) {
+            if (needSnapNear && extent.isIntersect(snapbox)) {
                 snapNear(sender, orignPt, shape, ignoreHandle, sp, arr[0], matchpt);
             }
         }

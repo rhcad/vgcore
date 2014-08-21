@@ -102,6 +102,7 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage*)
     m_showSel = true;
     m_selIds.clear();
     
+    m_canRotateHandle = !!sender->view->getOptionInt(getName(), "canRotateHandle", 1);
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
     const MgShape* shape = getShape(sender->view->getNewShapeID(), sender);
@@ -460,7 +461,9 @@ bool MgCmdSelect::click(const MgMotion* sender)
         }
         LOGD("click: id=%d, segment=%d", m_id, m_hit.segment);
     }
-    if (!isEditMode(sender->view) && canRotate(shape, sender)
+    if (m_canRotateHandle
+        && !isEditMode(sender->view)
+        && canRotate(shape, sender)
         && !shape->shapec()->isKindOf(kMgShapeSplines)) {
         m_rotateHandle = m_handleIndex;
     }

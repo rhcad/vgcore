@@ -84,6 +84,10 @@ public:
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
     
+    typedef std::map<std::string, std::string> OPT_KEY_VALUE;
+    typedef std::map<std::string, OPT_KEY_VALUE> OPT_GROUP;
+    OPT_GROUP       options;
+    
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
     volatile long   stopping;
@@ -273,6 +277,12 @@ public:
     
     bool gestureToCommand();
     void submitDynamicShapes(GcBaseView* v);
+
+    int getOptionInt(const char* group, const char* name, int defValue);
+    float getOptionFloat(const char* group, const char* name, float defValue);
+    void setOptionInt(const char* group, const char* name, int value);
+    void setOptionFloat(const char* group, const char* name, float value);
+    OPT_GROUP& getOptions() { return options; }
     
 private:
     void registerShape(int type, MgShape* (*creator)()) {

@@ -100,6 +100,11 @@ struct MgView
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0; //!< 注册命令
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
 #endif
+    
+    virtual int getOptionInt(const char* group, const char* name, int defValue) = 0;        //!< 整形选项值
+    virtual float getOptionFloat(const char* group, const char* name, float defValue) = 0;  //!< 浮点型选项值
+    virtual void setOptionInt(const char* group, const char* name, int value) = 0;          //!< 设置选项值
+    virtual void setOptionFloat(const char* group, const char* name, float value) = 0;      //!< 设置选项值
 };
 
 //! 触摸动作参数

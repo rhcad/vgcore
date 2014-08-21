@@ -122,7 +122,8 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
     Box2d box(selbox.isEmpty() ? Box2d(sender->pointM, 0, 0) : selbox);
     box *= sender->view->xform()->modelToDisplay();
     
-    return sender->view->showContextActions(selState, actions, box, shape);
+    return (sender->view->showContextActions(selState, actions, box, shape)
+            && sender->view->isContextActionsVisible());
 }
 
 bool MgCmdManagerImpl::doAction(const MgMotion* sender, int action)

@@ -158,6 +158,7 @@
 
 %feature("director") MgFindImageCallback;
 %feature("director") MgStringCallback;
+%feature("director") MgOptionCallback;
 %include "mgcoreview.h"
 %include "gigesture.h"
 %include "gicoreview.h"

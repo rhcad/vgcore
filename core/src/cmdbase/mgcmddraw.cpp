@@ -44,6 +44,7 @@ bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
     m_step = 0;
     m_shape->shape()->clear();
     m_shape->setContext(*sender->view->context());
+    m_oneShapeEnd = !!sender->view->getOptionInt(getName(), "oneShape", 0);
     
     return true;
 }
@@ -67,6 +68,9 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
     }
     if (m_shape && sender->view->context()) {
         m_shape->setContext(*sender->view->context());
+    }
+    if (m_oneShapeEnd) {
+        sender->view->toSelectCommand();
     }
     
     return newsp;

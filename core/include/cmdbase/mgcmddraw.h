@@ -59,6 +59,7 @@ protected:
     int         m_step;
 private:
     MgShape*    m_shape;
+    bool        m_oneShapeEnd;
 };
 
 #endif // TOUCHVG_CMD_DRAW_H_
