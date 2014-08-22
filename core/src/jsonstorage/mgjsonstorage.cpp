@@ -176,7 +176,7 @@ bool MgJsonStorage::Impl::readNode(const char* name, int index, bool ended)
     if (!ended) {                       // 开始一个新节点
         char tmpname[32];
         
-        if (index >= 0) {               // 形成实际节点名称
+        if (name && index >= 0) {       // 形成实际节点名称
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
             sprintf_s(tmpname, sizeof(tmpname), "%s%d", name, index + 1);
 #else

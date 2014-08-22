@@ -273,7 +273,8 @@ private:
 		}
 
 		for (SizeType memberCount = 0;;) {
-			if (stream.Peek() != '"') {
+            Ch c = stream.Peek();
+			if (c != '\"' && c != '\'') {
 				RAPIDJSON_PARSE_ERROR("Name of an object member must be a string", stream.Tell());
 				break;
 			}
@@ -292,7 +293,7 @@ private:
 
 			++memberCount;
 
-            Ch c = stream.Take();
+            c = stream.Take();
 			switch(c) {
 				case ',': SkipWhitespace(stream); break;
 				case '}': handler.EndObject(memberCount); return;
@@ -398,7 +399,8 @@ private:
 #undef Z16
 
 		Stream s = stream;	// Use a local copy for optimization
-		RAPIDJSON_ASSERT(s.Peek() == '\"');
+        Ch c = s.Peek();
+		RAPIDJSON_ASSERT(c == '\"' || c == '\'');
 		s.Take();	// Skip '\"'
 		Ch *head;
 		SizeType len;
@@ -456,7 +458,7 @@ private:
 					return;
 				}
 			}
-			else if (c == '"') {	// Closing double quote
+			else if (c == '\"' || c == '\'') {	// Closing double quote
 				if (parseFlags & kParseInsituFlag) {
 					size_t length = s.PutEnd(head);
 					RAPIDJSON_ASSERT(length <= 0xFFFFFFFF);
@@ -661,7 +663,8 @@ private:
 			case 'n': ParseNull  <parseFlags>(stream, handler); break;
 			case 't': ParseTrue  <parseFlags>(stream, handler); break;
 			case 'f': ParseFalse <parseFlags>(stream, handler); break;
-			case '"': ParseString<parseFlags>(stream, handler); break;
+			case '\"':
+            case '\'': ParseString<parseFlags>(stream, handler); break;
 			case '{': ParseObject<parseFlags>(stream, handler); break;
 			case '[': ParseArray <parseFlags>(stream, handler); break;
 			default : ParseNumber<parseFlags>(stream, handler);
