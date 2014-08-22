@@ -399,8 +399,7 @@ private:
 #undef Z16
 
 		Stream s = stream;	// Use a local copy for optimization
-        Ch c = s.Peek();
-		RAPIDJSON_ASSERT(c == '\"' || c == '\'');
+		RAPIDJSON_ASSERT(s.Peek() == '\"' || s.Peek() == '\'');
 		s.Take();	// Skip '\"'
 		Ch *head;
 		SizeType len;
