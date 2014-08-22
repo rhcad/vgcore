@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawRect::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawRect::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgRect::Type(), sender);
+    return _initialize(MgRect::Type(), sender, s);
 }
 
 bool MgCmdDrawRect::backStep(const MgMotion* sender)

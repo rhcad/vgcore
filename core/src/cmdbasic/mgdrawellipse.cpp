@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawEllipse::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawEllipse::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgEllipse::Type(), sender);
+    return _initialize(MgEllipse::Type(), sender, s);
 }
 
 bool MgCmdDrawEllipse::draw(const MgMotion* sender, GiGraphics* gs)

@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawLines::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawLines::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgLines::Type(), sender);
+    return _initialize(MgLines::Type(), sender, s);
 }
 
 bool MgCmdDrawLines::backStep(const MgMotion* sender)

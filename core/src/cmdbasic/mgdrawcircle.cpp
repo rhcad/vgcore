@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgEllipse::Type(), sender);
+    bool ret = _initialize(MgEllipse::Type(), sender, s);
     
     MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
     rect->setSquare(true);

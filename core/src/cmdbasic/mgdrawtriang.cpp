@@ -5,9 +5,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawTriangle::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawTriangle::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgLines::Type(), sender);
+    return _initialize(MgLines::Type(), sender, s);
 }
 
 bool MgCmdDrawTriangle::touchBegan(const MgMotion* sender)

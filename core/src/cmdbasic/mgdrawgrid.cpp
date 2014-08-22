@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgGrid::Type(), sender);
+    return _initialize(MgGrid::Type(), sender, s);
 }
 
 bool MgCmdDrawGrid::draw(const MgMotion* sender, GiGraphics* gs)

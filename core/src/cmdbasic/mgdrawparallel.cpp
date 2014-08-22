@@ -5,7 +5,7 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdParallel::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdParallel::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgParallel::Type(), sender);
+    return _initialize(MgParallel::Type(), sender, s);
 }
