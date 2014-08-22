@@ -122,7 +122,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orignPt,
     Point2d nearpt, ptd;
     float dist;
     float minDist = arr0.dist;
-    float tolNear = sender->displayMmToModel(0.7f);
+    float tolNear = sender->displayMmToModel("snap", "snapNearTol", 1);
     int d = matchpt ? shape->shapec()->getHandleCount() : 0;
     
     for (; d >= 0; d--) {
@@ -248,10 +248,12 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orign
     }
     _ptSnap = orignPt;   // 默认结果为当前触点位置
     
+    float xytol = sender->displayMmToModel("snap", "snapPointTol", 3.f);
+    float xtol = sender->displayMmToModel("snap", "snapXTol", 1.f);
     SnapItem arr[3] = {         // 设置捕捉容差和捕捉初值
-        SnapItem(_ptSnap, _ptSnap, displayMmToModel(3.f, sender)),  // XY点捕捉
-        SnapItem(_ptSnap, _ptSnap, displayMmToModel(1.f, sender)),  // X分量捕捉，竖直线
-        SnapItem(_ptSnap, _ptSnap, displayMmToModel(1.f, sender)),  // Y分量捕捉，水平线
+        SnapItem(_ptSnap, _ptSnap, xytol),                          // XY点捕捉
+        SnapItem(_ptSnap, _ptSnap, xtol),                           // X分量捕捉，竖直线
+        SnapItem(_ptSnap, _ptSnap, xtol),                           // Y分量捕捉，水平线
     };
     
     if (shape && shape->getID() == 0 && hotHandle > 0               // 绘图命令中的临时图形

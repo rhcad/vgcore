@@ -336,7 +336,7 @@ bool MgCmdSelect::isSelected(const MgShape* shape)
 
 const MgShape* MgCmdSelect::hitTestAll(const MgMotion* sender, MgHitResult& res)
 {
-    Box2d limits(sender->pointM, sender->displayMmToModel(8.f), 0);
+    Box2d limits(sender->pointM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
     return sender->view->shapes()->hitTest(limits, res);
 }
 
@@ -348,7 +348,7 @@ const MgShape* MgCmdSelect::getSelectedShape(const MgMotion* sender)
 
 bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
 {
-    Box2d limits(sender->startPtM, sender->displayMmToModel(10.f), 0);
+    Box2d limits(sender->startPtM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
     float d = _FLT_MAX;
     
     if (shape) {
@@ -1204,7 +1204,7 @@ bool MgCmdSelect::cloneSelection(const MgMotion* sender)
     cloneShapes(sender->view);
     
     if (!m_clones.empty()) {
-        float dist = sender->displayMmToModel(10);
+        float dist = sender->displayMmToModel("select", "cloneOffset", 10.f);
         for (size_t i = 0; i < m_clones.size(); i++) {
             m_clones[i]->shape()->offset(Vector2d(dist, -dist), -1);
         }

@@ -108,7 +108,7 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
-    Box2d limits(sender->pointM, sender->displayMmToModel(10.f), 0);
+    Box2d limits(sender->pointM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
     
