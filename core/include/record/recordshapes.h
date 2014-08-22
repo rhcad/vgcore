@@ -25,7 +25,7 @@ public:
 #ifndef SWIG
     bool recordStep(long tick, long changeCountOld, long changeCountNew, MgShapeDoc* doc,
                     MgShapes* dynShapes, const std::vector<MgShapes*>& extShapes);
-    std::string getFileName(bool back = false, int index = -1) const;
+    std::string getFileName(bool back, int index) const;
     std::string getPath() const;
 #endif
     bool isLoading() const;

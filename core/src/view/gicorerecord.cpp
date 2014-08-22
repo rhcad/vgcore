@@ -28,12 +28,12 @@ bool GiCoreView::startRecord(const char* path, long doc, bool forUndo,
         return true;
     }
     
-    if (!saveToFile(doc, p->getFileName().c_str(), VG_PRETTY)) {
+    if (!saveToFile(doc, p->getFileName(false, 0).c_str(), VG_PRETTY)) {
         return false;
     }
     
     if (c) {
-        c->onGetString(p->getFileName().c_str());
+        c->onGetString(p->getFileName(false, 0).c_str());
     }
     return true;
 }
