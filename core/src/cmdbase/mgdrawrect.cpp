@@ -8,7 +8,7 @@
 
 bool MgCmdDrawRect::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgRect>::create, sender);
+    return _initialize(MgRect::Type(), sender);
 }
 
 bool MgCmdDrawRect::backStep(const MgMotion* sender)

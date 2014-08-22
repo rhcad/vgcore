@@ -7,5 +7,5 @@
 
 bool MgCmdParallel::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgParallel>::create, sender);
+    return _initialize(MgParallel::Type(), sender);
 }

@@ -7,7 +7,7 @@
 
 bool MgCmdDrawTriangle::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgLines>::create, sender);
+    return _initialize(MgLines::Type(), sender);
 }
 
 bool MgCmdDrawTriangle::touchBegan(const MgMotion* sender)

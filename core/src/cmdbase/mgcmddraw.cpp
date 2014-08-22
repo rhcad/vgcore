@@ -32,10 +32,10 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
     return false;
 }
 
-bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
+bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender)
 {
     if (!m_shape) {
-        m_shape = creator ? creator() : sender->view->getShapeFactory()->createShape(getShapeType());
+        m_shape = sender->view->getShapeFactory()->createShape(shapeType);
         if (!m_shape || !m_shape->shape())
             return false;
         m_shape->setParent(sender->view->shapes(), 0);

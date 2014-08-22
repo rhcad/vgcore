@@ -8,7 +8,7 @@
 
 bool MgCmdDrawFreeLines::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgLines>::create, sender);
+    return _initialize(MgLines::Type(), sender);
 }
 
 bool MgCmdDrawFreeLines::backStep(const MgMotion* sender)

@@ -7,7 +7,7 @@
 
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgLine>::create, sender);
+    return _initialize(MgLine::Type(), sender);
 }
 
 bool MgCmdDrawLine::backStep(const MgMotion* sender)
@@ -55,7 +55,7 @@ bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 
 bool MgCmdDrawDot::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgDot>::create, sender);
+    return _initialize(MgDot::Type(), sender);
 }
 
 bool MgCmdDrawDot::click(const MgMotion* sender)

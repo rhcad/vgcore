@@ -8,7 +8,7 @@
 
 bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgGrid>::create, sender);
+    return _initialize(MgGrid::Type(), sender);
 }
 
 bool MgCmdDrawGrid::draw(const MgMotion* sender, GiGraphics* gs)

@@ -8,7 +8,7 @@
 
 bool MgCmdDrawEllipse::initialize(const MgMotion* sender, MgStorage*)
 {
-    return _initialize(MgShapeT<MgEllipse>::create, sender);
+    return _initialize(MgEllipse::Type(), sender);
 }
 
 bool MgCmdDrawEllipse::draw(const MgMotion* sender, GiGraphics* gs)

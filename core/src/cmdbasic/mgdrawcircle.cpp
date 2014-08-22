@@ -8,7 +8,7 @@
 
 bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage*)
 {
-    bool ret = _initialize(MgShapeT<MgEllipse>::create, sender);
+    bool ret = _initialize(MgEllipse::Type(), sender);
     
     MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
     rect->setSquare(true);
