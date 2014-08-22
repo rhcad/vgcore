@@ -9,6 +9,7 @@
 #include <string.h>
 #include "mglog.h"
 #include "mgspfactory.h"
+#include "mgstorage.h"
 
 MgCommandDraw::MgCommandDraw(const char* name)
     : MgCommand(name), m_step(0), m_shape(NULL)
@@ -45,6 +46,20 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
     m_shape->shape()->clear();
     m_shape->setContext(*sender->view->context());
     m_oneShapeEnd = !!sender->view->getOptionInt(getName(), "oneShape", 0);
+    
+    int n = s ? s->readFloatArray("points", NULL, 0) : 0;
+    if (n > 1) {
+        MgMotion tmpmotion(*sender);
+        Point2d buf[20];
+        
+        n = s->readFloatArray("points", &buf[0].x, mgMin(n, 100*2)) / 2;
+        for (int i = 0; i < n; i++) {
+            tmpmotion.pointM = buf[i];
+            touchBegan(&tmpmotion);
+            tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
+            touchEnded(&tmpmotion);
+        }
+    }
     
     return true;
 }

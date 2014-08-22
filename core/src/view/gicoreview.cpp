@@ -791,10 +791,16 @@ const char* GiCoreView::getCommand() const
 
 bool GiCoreView::setCommand(const char* name, const char* params)
 {
-    DrawLocker locker(impl);
-    MgJsonStorage js;
-    MgStorage* s = js.storageForRead(params);
-    return impl->curview && impl->_cmds->setCommand(impl->motion(), name, s);
+    if (impl->curview && impl->_cmds) {
+        DrawLocker locker(impl);
+        MgJsonStorage js;
+        MgStorage* s = js.storageForRead(params);
+        
+        impl->motion()->d2m = impl->_cmds->displayMmToModel(1, impl->motion());
+        s->readNode(NULL, -1, false);
+        return impl->_cmds->setCommand(impl->motion(), name, s);
+    }
+    return false;
 }
 
 bool GiCoreView::switchCommand()
