@@ -9,6 +9,7 @@
 #include <string.h>
 #include "mglog.h"
 #include "mgspfactory.h"
+#include "mgstorage.h"
 
 MgCommandDraw::MgCommandDraw(const char* name)
     : MgCommand(name), m_step(0), m_shape(NULL)
@@ -32,10 +33,10 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
     return false;
 }
 
-bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
+bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage* s)
 {
     if (!m_shape) {
-        m_shape = creator ? creator() : sender->view->getShapeFactory()->createShape(getShapeType());
+        m_shape = sender->view->getShapeFactory()->createShape(shapeType);
         if (!m_shape || !m_shape->shape())
             return false;
         m_shape->setParent(sender->view->shapes(), 0);
@@ -44,6 +45,21 @@ bool MgCommandDraw::_initialize(MgShape* (*creator)(), const MgMotion* sender)
     m_step = 0;
     m_shape->shape()->clear();
     m_shape->setContext(*sender->view->context());
+    m_oneShapeEnd = !!sender->view->getOptionInt(getName(), "oneShape", 0);
+    
+    int n = s ? s->readFloatArray("points", NULL, 0) : 0;
+    if (n > 1) {
+        MgMotion tmpmotion(*sender);
+        Point2d buf[20];
+        
+        n = s->readFloatArray("points", &buf[0].x, mgMin(n, 100*2)) / 2;
+        for (int i = 0; i < n; i++) {
+            tmpmotion.pointM = buf[i];
+            touchBegan(&tmpmotion);
+            tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
+            touchEnded(&tmpmotion);
+        }
+    }
     
     return true;
 }
@@ -67,6 +83,9 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
     }
     if (m_shape && sender->view->context()) {
         m_shape->setContext(*sender->view->context());
+    }
+    if (m_oneShapeEnd) {
+        sender->view->toSelectCommand();
     }
     
     return newsp;
@@ -104,7 +123,7 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
-    Box2d limits(sender->pointM, sender->displayMmToModel(10.f), 0);
+    Box2d limits(sender->pointM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
     

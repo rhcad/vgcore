@@ -328,7 +328,7 @@ bool MgJsonStorage::Impl::save(FILE* fp, bool pretty)
     return true;
 }
 
-static inline bool parseInt(const char* str, int& value)
+bool MgJsonStorage::parseInt(const char* str, int& value)
 {
     char *endptr;
     value = (int)strtoul(str, &endptr, 0);
@@ -352,7 +352,7 @@ int MgJsonStorage::Impl::readInt(const char* name, int defvalue)
         else if (item.IsBool()) {
             ret = item.GetBool() ? 1 : 0;
         }
-        else if (item.IsString() && parseInt(item.GetString(), defvalue)) {
+        else if (item.IsString() && MgJsonStorage::parseInt(item.GetString(), defvalue)) {
             ret = defvalue;
         }
         else {
@@ -368,7 +368,7 @@ bool MgJsonStorage::Impl::readBool(const char* name, bool defvalue)
     return !!readInt(name, defvalue ? 1 : 0);
 }
 
-static inline bool parseFloat(const char* str, float& value)
+bool MgJsonStorage::parseFloat(const char* str, float& value)
 {
     char *endptr;
     value = (float)strtod(str, &endptr);
@@ -389,7 +389,7 @@ float MgJsonStorage::Impl::readFloat(const char* name, float defvalue)
         else if (item.IsInt()) {    // 浮点数串可能没有小数点，需要判断整数
             ret = (float)item.GetInt();
         }
-        else if (item.IsString() && parseFloat(item.GetString(), defvalue)) {
+        else if (item.IsString() && MgJsonStorage::parseFloat(item.GetString(), defvalue)) {
             ret = defvalue;
         }
         else {
@@ -424,7 +424,7 @@ int MgJsonStorage::Impl::readFloatArray(const char* name, float* values,
                     else if (v.IsInt()) {
                         values[ret++] = (float)v.GetInt();
                     }
-                    else if (v.IsString() && parseFloat(v.GetString(), values[ret])) {
+                    else if (v.IsString() && MgJsonStorage::parseFloat(v.GetString(), values[ret])) {
                         ret++;
                     }
                     else if (report) {

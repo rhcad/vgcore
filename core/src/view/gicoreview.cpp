@@ -13,6 +13,7 @@
 #include "../corever.h"
 #include "mgimagesp.h"
 #include "mglocal.h"
+#include <sstream>
 
 static volatile long _viewCount = 0;    // 总视图数
 static int _dpi = 96;                   // 屏幕分辨率，在 GiCoreView::onSize() 中应用到新视图中
@@ -645,6 +646,25 @@ void GiCoreView::setGestureVelocity(GiView* view, float vx, float vy)
     }
 }
 
+static void movePointInView(Point2d& pt, const Box2d& rect)
+{
+    if (!rect.contains(pt)) {
+        if (pt.x < rect.xmin) {
+            pt.x = rect.xmin;
+        }
+        else if (pt.x > rect.xmax) {
+            pt.x = rect.xmax;
+        }
+        
+        if (pt.y < rect.ymin) {
+            pt.y = rect.ymin;
+        }
+        else if (pt.y > rect.ymax) {
+            pt.y = rect.ymax;
+        }
+    }
+}
+
 bool GiCoreView::onGesture(GiView* view, GiGestureType type,
                            GiGestureState state, float x, float y, bool switchGesture)
 {
@@ -657,11 +677,16 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->gestureState = (MgGestureState)state;
         impl->motion()->pressDrag = (type == kGiGesturePress && state < kGiGestureEnded);
         impl->motion()->switchGesture = switchGesture;
+        impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
+        
         impl->motion()->point.set(x, y);
+        float margin = impl->motion()->displayMmToModel(2);
+        movePointInView(impl->motion()->point,
+                        aview->xform()->getWndRect().deflate(margin));
+        
         impl->motion()->pointM = impl->motion()->point * aview->xform()->displayToModel();
         impl->motion()->point2 = impl->motion()->point;
         impl->motion()->point2M = impl->motion()->pointM;
-        impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
 
         if (state <= kGiGestureBegan) {
             impl->motion()->velocity.set(0, 0);
@@ -766,10 +791,16 @@ const char* GiCoreView::getCommand() const
 
 bool GiCoreView::setCommand(const char* name, const char* params)
 {
-    DrawLocker locker(impl);
-    MgJsonStorage js;
-    MgStorage* s = js.storageForRead(params);
-    return impl->curview && impl->_cmds->setCommand(impl->motion(), name, s);
+    if (impl->curview && impl->_cmds) {
+        DrawLocker locker(impl);
+        MgJsonStorage js;
+        MgStorage* s = js.storageForRead(params);
+        
+        impl->motion()->d2m = impl->_cmds->displayMmToModel(1, impl->motion());
+        s->readNode(NULL, -1, false);
+        return impl->_cmds->setCommand(impl->motion(), name, s);
+    }
+    return false;
 }
 
 bool GiCoreView::switchCommand()
@@ -1391,5 +1422,81 @@ bool GiCoreViewImpl::gestureToCommand()
              typeNames[_motion.gestureType], stateNames[_motion.gestureState], cmd->getName());
 #endif
     }
+    return ret;
+}
+
+int GiCoreViewImpl::getOptionInt(const char* group, const char* name, int defValue)
+{
+    int ret = defValue;
+    OPT_GROUP::const_iterator it = options.find(group);
+    
+    if (it != options.end()) {
+        OPT_KEY_VALUE::const_iterator kv = it->second.find(name);
+        
+        if (kv != it->second.end()
+            && MgJsonStorage::parseInt(kv->second.c_str(), defValue)) {
+            ret = defValue;
+        }
+    }
+    
+    return ret;
+}
+
+float GiCoreViewImpl::getOptionFloat(const char* group, const char* name, float defValue)
+{
+    int ret = defValue;
+    OPT_GROUP::const_iterator it = options.find(group);
+    
+    if (it != options.end()) {
+        OPT_KEY_VALUE::const_iterator kv = it->second.find(name);
+        
+        if (kv != it->second.end()
+            && MgJsonStorage::parseFloat(kv->second.c_str(), defValue)) {
+            ret = defValue;
+        }
+    }
+    
+    return ret;
+}
+
+void GiCoreViewImpl::setOptionInt(const char* group, const char* name, int value)
+{
+    std::stringstream ss;
+    ss << value;
+    options[group][name] = ss.str();
+}
+
+void GiCoreViewImpl::setOptionFloat(const char* group, const char* name, float value)
+{
+    std::stringstream ss;
+    ss << value;
+    options[group][name] = ss.str();
+}
+
+void GiCoreView::setOption(const char* group, const char* name, const char* text)
+{
+    if (!group) {
+        impl->getOptions().clear();
+    } else if (!name) {
+        impl->getOptions()[group].clear();
+    } else if (text) {
+        impl->getOptions()[group][name] = text;
+    } else {
+        impl->getOptions()[group].erase(name);
+    }
+}
+
+int GiCoreView::traverseOptions(MgOptionCallback* c)
+{
+    int ret = 0;
+    GiCoreViewImpl::OPT_GROUP::const_iterator it = impl->getOptions().begin();
+    
+    for (; it != impl->getOptions().end(); ++it) {
+        for (GiCoreViewImpl::OPT_KEY_VALUE::const_iterator kv = it->second.begin();
+             kv != it->second.end(); ++kv, ++ret) {
+            c->onGetOption(it->first.c_str(), kv->first.c_str(), kv->second.c_str());
+        }
+    }
+    
     return ret;
 }

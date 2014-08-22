@@ -5,9 +5,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgShapeT<MgLine>::create, sender);
+    return _initialize(MgLine::Type(), sender, s);
 }
 
 bool MgCmdDrawLine::backStep(const MgMotion* sender)
@@ -53,9 +53,9 @@ bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 // MgCmdDrawDot
 //
 
-bool MgCmdDrawDot::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawDot::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgShapeT<MgDot>::create, sender);
+    return _initialize(MgDot::Type(), sender, s);
 }
 
 bool MgCmdDrawDot::click(const MgMotion* sender)

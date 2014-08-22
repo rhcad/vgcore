@@ -8,9 +8,9 @@
 // MgCmdArc3P
 //
 
-bool MgCmdArc3P::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdArc3P::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgShapeT<MgArc>::create, sender);
+    return _initialize(MgArc::Type(), sender, s);
 }
 
 void MgCmdArc3P::drawArcHandle(const MgMotion*, GiGraphics* gs)

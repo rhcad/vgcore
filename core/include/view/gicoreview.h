@@ -12,6 +12,15 @@
 class GiCanvas;
 class GiCoreViewImpl;
 
+//! 获取配置项的回调接口
+/*! \ingroup CORE_VIEW
+    \interface MgOptionCallback
+ */
+struct MgOptionCallback {
+    virtual ~MgOptionCallback() {}
+    virtual void onGetOption(const char* group, const char* name, const char* text) = 0;
+};
+
 //! 内核视图分发器类
 /*! 本对象拥有图形文档对象，负责显示和手势动作的分发。
     \ingroup CORE_VIEW
@@ -82,6 +91,9 @@ public:
     bool onResume(long curTick);                                    //!< 继续
     bool restoreRecord(int type, const char* path, long doc, long changeCount,
                        int index, int count, int tick, long curTick);   //!< 恢复录制
+    
+    int traverseOptions(MgOptionCallback* c);                       //!< 遍历选项
+    void setOption(const char* group, const char* name, const char* text); //!< 设置或清除选项值
     
 // MgCoreView
 #ifndef SWIG

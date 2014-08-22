@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawSquare::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawSquare::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgShapeT<MgRect>::create, sender);
+    bool ret = _initialize(MgRect::Type(), sender, s);
     
     MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
     rect->setSquare(true);

@@ -26,7 +26,7 @@ public:
     virtual int getShapeType() { return m_shape ? m_shape->shapec()->getType() : 0; }
     
 protected:
-    bool _initialize(MgShape* (*creator)(), const MgMotion* sender);
+    bool _initialize(int shapeType, const MgMotion* sender, MgStorage* s);
     bool _click(const MgMotion* sender);
     virtual int getMaxStep() { return 3; }
     virtual void setStepPoint(int step, const Point2d& pt);
@@ -35,7 +35,8 @@ private:
     virtual bool isDrawingCommand() { return true; }
     
 public:
-    virtual bool initialize(const MgMotion* sender, MgStorage*) { return _initialize(NULL, sender); }
+    virtual bool initialize(const MgMotion* sender, MgStorage* s) {
+        return _initialize(getShapeType(), sender, s); }
     virtual bool backStep(const MgMotion* sender);
     virtual bool cancel(const MgMotion* sender);
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
@@ -59,6 +60,7 @@ protected:
     int         m_step;
 private:
     MgShape*    m_shape;
+    bool        m_oneShapeEnd;
 };
 
 #endif // TOUCHVG_CMD_DRAW_H_

@@ -6,9 +6,9 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawPolygon::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawPolygon::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgShapeT<MgLines>::create, sender);
+    bool ret = _initialize(MgLines::Type(), sender, s);
     if (ret) {
         ((MgBaseLines*)dynshape()->shape())->setClosed(true);
     }

@@ -6,7 +6,7 @@
 #include "mgshapet.h"
 #include "mgbasicsps.h"
 
-bool MgCmdDrawDiamond::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawDiamond::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgShapeT<MgDiamond>::create, sender);
+    return _initialize(MgDiamond::Type(), sender, s);
 }

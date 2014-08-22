@@ -62,6 +62,11 @@ public:
     //! UTF-8编码的文件转换为UTF-16LE编码的文件，返回转换与否
     static bool toUTF16(const char* infile, const char* outfile);
     
+#ifndef SWIG
+    static bool parseInt(const char* str, int& value);
+    static bool parseFloat(const char* str, float& value);
+#endif
+
 private:
     class Impl;
     Impl* _impl;

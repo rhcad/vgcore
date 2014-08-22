@@ -11,9 +11,9 @@ MgCmdDrawSplines::MgCmdDrawSplines(const char* name, bool freehand)
 {
 }
 
-bool MgCmdDrawSplines::initialize(const MgMotion* sender, MgStorage*)
+bool MgCmdDrawSplines::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgShapeT<MgSplines>::create, sender);
+    return _initialize(MgSplines::Type(), sender, s);
 }
 
 bool MgCmdDrawSplines::backStep(const MgMotion* sender)
