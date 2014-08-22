@@ -336,7 +336,7 @@ bool MgCmdSelect::isSelected(const MgShape* shape)
 
 const MgShape* MgCmdSelect::hitTestAll(const MgMotion* sender, MgHitResult& res)
 {
-    Box2d limits(sender->pointM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
+    Box2d limits(sender->displayMmToModelBox("select", "hitTestTol", 10.f));
     return sender->view->shapes()->hitTest(limits, res);
 }
 

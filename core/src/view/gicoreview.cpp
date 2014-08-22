@@ -1475,11 +1475,11 @@ void GiCoreViewImpl::setOptionFloat(const char* group, const char* name, float v
 
 void GiCoreView::setOption(const char* group, const char* name, const char* text)
 {
-    if (!group) {
+    if (!group || !*group) {
         impl->getOptions().clear();
-    } else if (!name) {
+    } else if (!name || !*name) {
         impl->getOptions()[group].clear();
-    } else if (text) {
+    } else if (text && *text) {
         impl->getOptions()[group][name] = text;
     } else {
         impl->getOptions()[group].erase(name);

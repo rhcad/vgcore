@@ -158,6 +158,14 @@ public:
     float displayMmToModel(const char* group, const char* name, float mm) const {
         return d2m * view->getOptionFloat(group, name, mm);
     }
+    //! 返回屏幕毫米宽度的正方形区域
+    Box2d displayMmToModelBox(float mm) const {
+        return Box2d(pointM, displayMmToModel(mm), 0);
+    }
+    //! 返回屏幕毫米宽度的正方形区域，优先取配置值
+    Box2d displayMmToModelBox(const char* group, const char* name, float mm) const {
+        return Box2d(pointM, displayMmToModel(group, name, mm), 0);
+    }
 };
 
 #ifndef SWIG

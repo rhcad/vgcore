@@ -53,7 +53,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
         Point2d buf[20];
         
         n = s->readFloatArray("points", &buf[0].x, mgMin(n, 100*2)) / 2;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i += 2) {
             tmpmotion.pointM = buf[i];
             touchBegan(&tmpmotion);
             tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
@@ -123,7 +123,7 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
-    Box2d limits(sender->pointM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
+    Box2d limits(sender->displayMmToModelBox("select", "hitTestTol", 10.f));
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
     

@@ -402,13 +402,18 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res, Filter f
         
         if ((filter || !shape->getFlag(kMgLocked))
             && extent.isIntersect(limits)
-            && (!filter || filter(*it))) {
+            && (!filter || filter(*it)))
+        {
             MgHitResult tmpRes;
             float  tol = (!(*it)->hasFillColor() ? limits.width() / 2
                           : mgMax(extent.width(), extent.height()));
             float  dist = shape->hitTest(limits.center(), tol, tmpRes);
             
-            if (res.dist > dist - _MGZERO) {     // 让末尾图形优先选中
+            tmpRes.contained = limits.contains(extent);
+            if (res.contained == tmpRes.contained
+                ? res.dist > dist - _MGZERO         // 让末尾图形优先选中
+                : tmpRes.contained)                 // 在捕捉盒子内的小图形优先
+            {
                 res = tmpRes;
                 res.dist = dist;
                 retshape = *it;

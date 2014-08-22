@@ -47,8 +47,9 @@ struct MgHitResult {
     Point2d nearpt; //!< 图形上的最近点
     int segment;    //!< 最近点所在部分的序号，其含义由派生图形类决定
     bool inside;    //!< 是否在闭合图形内部
+    bool contained; //!< 是否包含在捕捉盒子中
     float dist;     //!< 给定的外部点到最近点的距离，仅在图形列表的hitTest中有效
-    MgHitResult() : segment(-1), inside(false), dist(_FLT_MAX) {}
+    MgHitResult() : segment(-1), inside(false), contained(false), dist(_FLT_MAX) {}
 };
 
 //! 矢量图形基类
