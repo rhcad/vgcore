@@ -2,7 +2,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawtriang.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawTriangle::initialize(const MgMotion* sender, MgStorage* s)

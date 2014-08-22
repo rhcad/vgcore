@@ -3,7 +3,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawgrid.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage* s)

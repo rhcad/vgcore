@@ -2,7 +2,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawarc.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 // MgCmdArc3P

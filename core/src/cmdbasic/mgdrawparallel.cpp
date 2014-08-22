@@ -2,7 +2,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawparallel.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdParallel::initialize(const MgMotion* sender, MgStorage* s)

@@ -3,7 +3,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawsquare.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawSquare::initialize(const MgMotion* sender, MgStorage* s)

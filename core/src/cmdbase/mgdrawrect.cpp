@@ -3,7 +3,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawrect.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawRect::initialize(const MgMotion* sender, MgStorage* s)

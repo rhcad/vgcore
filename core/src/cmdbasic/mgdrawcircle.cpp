@@ -3,7 +3,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawcircle.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage* s)

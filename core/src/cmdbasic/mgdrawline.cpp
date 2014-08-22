@@ -2,7 +2,6 @@
 // License: LGPL, https://github.com/rhcad/touchvg
 
 #include "mgdrawline.h"
-#include "mgshapet.h"
 #include "mgbasicsps.h"
 
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
