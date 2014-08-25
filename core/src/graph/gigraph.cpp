@@ -864,7 +864,7 @@ bool GiGraphics::drawHermiteSplines(const GiContext* ctx, int count, const Point
     Matrix2d matD(S2D(xf(), modelUnit));
     Matrix2d mat2(matD / 3.f);
 
-    pxpoints.resize(1 + (count - 1) * 3);
+    pxpoints.resize(1 + (closed ? count : count - 1) * 3);
     Point2d *pxs = &pxpoints.front();
 
     pt = knots[0] * matD;                       // 第一个Bezier段的起点
