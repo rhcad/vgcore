@@ -305,7 +305,7 @@ void TestCanvas::testHandle(GiCanvas* canvas, int n)
     
     for (int i = 0; i < n; i++) {
         canvas->drawLine(0, y, 650, y);
-        canvas->drawHandle(40, y, 0, i);
+        canvas->drawHandle(40, y, i, 0);
         float h = 10 + (float)i * 20;
         canvas->drawBitmap(NULL, 200, y, h, h, 0);
         canvas->drawBitmap(NULL, 400, y, 57, 57,

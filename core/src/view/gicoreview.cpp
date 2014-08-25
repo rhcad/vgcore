@@ -1444,7 +1444,7 @@ int GiCoreViewImpl::getOptionInt(const char* group, const char* name, int defVal
 
 float GiCoreViewImpl::getOptionFloat(const char* group, const char* name, float defValue)
 {
-    int ret = defValue;
+    float ret = defValue;
     OPT_GROUP::const_iterator it = options.find(group);
     
     if (it != options.end()) {

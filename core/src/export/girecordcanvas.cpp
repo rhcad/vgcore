@@ -515,7 +515,7 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
     }
     virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
-        gs.getCanvas()->drawHandle(pt2.x, pt2.y, angle, t);
+        gs.getCanvas()->drawHandle(pt2.x, pt2.y, t, angle);
     }
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
