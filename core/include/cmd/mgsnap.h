@@ -18,10 +18,12 @@ typedef enum {
     kMgSnapSameY,       //!< Y方向参考点
     kMgSnapGridX,       //!< X方向网格线
     kMgSnapGridY,       //!< Y方向网格线
+    kMgSnapGrid,        //!< 网格点
     kMgSnapPoint,       //!< 顶点
     kMgSnapCenter,      //!< 圆心
     kMgSnapMidPoint,    //!< 中点
-    kMgSnapGrid,        //!< 网格点
+    kMgSnapOutPoint,    //!< 线外点
+    kMgSnapReserved,
     kMgSnapIntersect,   //!< 交点
     kMgSnapPerp,        //!< 垂足
     kMgSnapNearPt,      //!< 线上最近点
@@ -38,7 +40,7 @@ struct MgSnap {
     //! 显示捕捉提示线
     virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs) = 0;
     
-    //! 返回捕捉到的特征点类型, >=kMgSnapPoint
+    //! 返回捕捉到的特征点类型, >=kMgSnapGrid
     virtual int getSnappedType() = 0;
     
     //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标
