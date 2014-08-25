@@ -485,33 +485,37 @@ struct CmdClipPath : public MgRecordShape::ICmd {
 };
 
 struct CmdDrawHandle : public MgRecordShape::ICmd {
-    Point2d pt; int t;
+    Point2d pt; int t; float angle;
     CmdDrawHandle() {}
-    CmdDrawHandle(const Matrix2d& d2w, float x, float y, int t) : pt(Point2d(x, y) * d2w), t(t) {}
+    CmdDrawHandle(const Matrix2d& d2w, float x, float y, int t, float a)
+        : pt(Point2d(x, y) * d2w), t(t), angle(a) {}
     
     virtual int type() const { return 14; }
     virtual void copy(const ICmd& src) {
         if (src.type() == type()) {
             const CmdDrawHandle& p = (const CmdDrawHandle&)src;
             pt = p.pt;
+            angle = p.angle;
             t = p.t;
         }
     }
     virtual bool save(MgStorage* s) const {
         s->writeFloat("x", pt.x);
         s->writeFloat("y", pt.y);
+        s->writeFloat("angle", angle);
         s->writeInt("t", t);
         return true;
     }
     virtual bool load(MgStorage* s) {
         pt.x = s->readFloat("x", pt.x);
         pt.y = s->readFloat("y", pt.y);
+        angle = s->readFloat("angle", angle);
         t = s->readInt("t", t);
         return true;
     }
     virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
-        gs.getCanvas()->drawHandle(pt2.x, pt2.y, t);
+        gs.getCanvas()->drawHandle(pt2.x, pt2.y, angle, t);
     }
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
@@ -862,9 +866,9 @@ bool GiRecordCanvas::clipPath()
     return true;
 }
 
-bool GiRecordCanvas::drawHandle(float x, float y, int type)
+bool GiRecordCanvas::drawHandle(float x, float y, int type, float angle)
 {
-    _sp->addItem(_xf->worldToModel(), new CmdDrawHandle(d2w(), x, y, type));
+    _sp->addItem(_xf->worldToModel(), new CmdDrawHandle(d2w(), x, y, type, angle));
     return true;
 }
 

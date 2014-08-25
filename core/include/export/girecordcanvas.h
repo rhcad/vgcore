@@ -43,7 +43,7 @@ private:
     virtual void restoreClip();
     virtual bool clipRect(float x, float y, float w, float h);
     virtual bool clipPath();
-    virtual bool drawHandle(float x, float y, int type);
+    virtual bool drawHandle(float x, float y, int type, float angle);
     virtual bool drawBitmap(const char* name, float xc, float yc,
                             float w, float h, float angle);
     virtual float drawTextAt(const char* text, float x, float y, float h, int align);

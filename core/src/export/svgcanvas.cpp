@@ -204,7 +204,7 @@ bool GiSvgCanvas::clipPath()
     return false;
 }
 
-bool GiSvgCanvas::drawHandle(float, float, int)
+bool GiSvgCanvas::drawHandle(float, float, int, float)
 {
     return false;
 }

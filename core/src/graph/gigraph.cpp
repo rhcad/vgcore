@@ -1244,11 +1244,11 @@ bool GiGraphics::rawImage(const char* name, float xc, float yc,
     return false;
 }
 
-bool GiGraphics::drawHandle(const Point2d& pnt, int type, bool modelUnit)
+bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool modelUnit)
 {
     if (m_impl->canvas && type >= 0 && !m_impl->stopping) {
         Point2d ptd(pnt * S2D(xf(), modelUnit));
-        return m_impl->canvas->drawHandle(ptd.x, ptd.y, type);
+        return m_impl->canvas->drawHandle(ptd.x, ptd.y, type, angle);
     }
     return false;
 }
