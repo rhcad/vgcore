@@ -15,6 +15,7 @@
 #include "mglocal.h"
 #include "mglog.h"
 #include "mgspfactory.h"
+#include "mgstorage.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
 #define ENABLE_DRAG_SELBOX
@@ -102,10 +103,17 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
     m_showSel = true;
     m_selIds.clear();
     
+    if (s) {
+        m_id = s->readInt("id", m_id);
+        m_handleIndex = s->readInt("handleIndex", m_handleIndex);
+        m_rotateHandle = s->readInt("rotateHandle", m_rotateHandle);
+        m_editMode = !!s->readInt("editMode", m_editMode);
+    }
+    
     m_canRotateHandle = !!sender->view->getOptionInt(getName(), "canRotateHandle", 1);
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
-    const MgShape* shape = getShape(sender->view->getNewShapeID(), sender);
+    const MgShape* shape = getShape(m_id ? m_id : sender->view->getNewShapeID(), sender);
     if (shape) {
         m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
         m_id = shape->getID();
