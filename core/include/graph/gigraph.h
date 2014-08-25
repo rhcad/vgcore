@@ -341,10 +341,11 @@ public:
     /*!
         \param pnt 符号中心位置
         \param type 符号类型, GiHandleTypes 枚举值
+        \param angle 符号绕其中心点的旋转角度，弧度
         \param modelUnit 指定的坐标尺寸是模型坐标(true)还是世界坐标(false)
         \return 是否显示成功
      */
-    bool drawHandle(const Point2d& pnt, int type, bool modelUnit = true);
+    bool drawHandle(const Point2d& pnt, int type, float angle = 0, bool modelUnit = true);
 
     //! 在显示适配类的 beginPaint() 中调用
     bool beginPaint(GiCanvas* canvas, const RECT_2D& clipBox = RECT_2D());

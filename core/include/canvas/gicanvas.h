@@ -105,7 +105,7 @@ public:
     virtual bool clipPath() = 0;
     
     //! Draw a symbol (GiHandleTypes) whose center will at (x, y).
-    virtual bool drawHandle(float x, float y, int type) = 0;
+    virtual bool drawHandle(float x, float y, int type, float angle) = 0;
     
     //! Draw a image whose center will at (xc, yc).
     /*!
