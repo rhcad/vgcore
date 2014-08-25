@@ -306,7 +306,9 @@ int MgCmdManagerImpl::getSnappedType()
 {
     if (_snapType[0] >= kMgSnapPoint)
         return _snapType[0];
-    return (_snapType[0] == kMgSnapGridX && _snapType[1] == kMgSnapGridY) ? kMgSnapPoint : 0;
+    if (_snapType[0] == kMgSnapGridX && _snapType[1] == kMgSnapGridY)
+        return kMgSnapGrid;
+    return 0;
 }
 
 int MgCmdManagerImpl::getSnappedPoint(Point2d& fromPt, Point2d& toPt)
@@ -338,10 +340,10 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
     bool ret = false;
     
     if (sender->dragging() || !sender->view->useFinger()) {
-        if (_snapType[0] >= kMgSnapPoint) {
-            bool isnear = (_snapType[0] >= kMgSnapNearPt);
+        if (_snapType[0] >= kMgSnapGrid) {
+            bool small = (_snapType[0] >= kMgSnapNearPt || _snapType[0] == kMgSnapGrid);
             GiContext ctx(-2, GiColor(0, 255, 0, 200), GiContext::kDashLine, GiColor(0, 255, 0, 64));
-            ret = gs->drawCircle(&ctx, _ptSnap, displayMmToModel(isnear ? 3.f : 6.f, gs));
+            ret = gs->drawCircle(&ctx, _ptSnap, displayMmToModel(small ? 3.f : 6.f, gs));
             gs->drawHandle(_ptSnap, kGiHandleVertex);
         }
         else {

@@ -196,6 +196,12 @@ private:
             (*it)->onPostGesture(sender);
         }
     }
+    
+    virtual void onPointSnapped(const MgMotion* sender, const MgShape* sp) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onPointSnapped(sender, sp);
+        }
+    }
 
 private:
     typedef std::vector<CmdObserver*> Observers;

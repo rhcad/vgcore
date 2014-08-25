@@ -82,6 +82,7 @@ struct CmdObserver {
     
     virtual bool onPreGesture(MgMotion* sender) = 0;                        //!< 向命令分发手势前
     virtual void onPostGesture(const MgMotion* sender) = 0;                 //!< 向命令分发手势后
+    virtual void onPointSnapped(const MgMotion* sender, const MgShape* sp) = 0; //!< 捕捉到特征点
 };
 
 //! 命令扩展观察者接口的默认实现
@@ -122,6 +123,7 @@ public:
 #endif
     virtual bool onPreGesture(MgMotion* sender) { return true; }
     virtual void onPostGesture(const MgMotion* sender) {}
+    virtual void onPointSnapped(const MgMotion* sender, const MgShape* sp) {}
 };
 
 #endif // TOUCHVG_CMDOBSERVER_H_

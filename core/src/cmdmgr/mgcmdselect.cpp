@@ -404,8 +404,14 @@ Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
         ignoreids[i] = m_clones[i]->getID();
     
     MgSnap* snap = sender->cmds()->getSnap();
-    return snap->snapPoint(sender, sender->pointM, shape, m_handleIndex - 1, 
-                           m_rotateHandle - 1, (const int*)&ignoreids.front());
+    Point2d pt(snap->snapPoint(sender, sender->pointM, shape, m_handleIndex - 1,
+                               m_rotateHandle - 1, (const int*)&ignoreids.front()));
+    
+    if (!sender->dragging() && snap->getSnappedType() >= kMgSnapPoint) {
+        sender->view->getCmdSubject()->onPointSnapped(sender, shape);
+    }
+    
+    return pt;
 }
 
 bool MgCmdSelect::click(const MgMotion* sender)
@@ -803,7 +809,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     Point2d fromPt, toPt;
                     snapPoint(sender, m_clones[i]);
                     
-                    if (sender->cmds()->getSnap()->getSnappedPoint(fromPt, toPt) > 0) {
+                    if (sender->cmds()->getSnap()->getSnappedPoint(fromPt, toPt) >= kMgSnapGrid) {
                         angle = (fromPt - center).angleTo2(toPt - center);
                         shape->transform(Matrix2d::rotation(angle, center));
                     }
