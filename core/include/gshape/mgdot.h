@@ -26,6 +26,7 @@ public:
 #endif
 
 protected:
+    bool _isClosed() const { return false; }
     void _output(MgPath& path) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
