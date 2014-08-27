@@ -118,7 +118,7 @@ static bool snapHandle(const MgMotion*, const Point2d& orignPt,
     return handleFound;
 }
 
-static bool snapPerp(const MgMotion* sender, const Point2d& orignPt,
+static bool snapPerp(const MgMotion* sender, const Point2d& orignPt, const Tol& tol,
                      const MgShape* shape, const MgShape* sp, SnapItem& arr0)
 {
     int ret = -1;
@@ -136,7 +136,7 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orignPt,
             Point2d pt2(s->getHandlePoint((i + 1) % n));
             float d2 = mglnrel::ptToBeeline2(pt1, pt2, orignPt, perp2);
             
-            if (mglnrel::isColinear(pt1, pt2, start)) {     // 起点在线上
+            if (mglnrel::isColinear2(pt1, pt2, start, tol)) {   // 起点在线上
                 float dist = perp2.distanceTo(start) * 2;
                 if (d2 > 2 * arr0.maxdist && arr0.dist > dist) {
                     arr0.dist = dist;
@@ -274,6 +274,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
     bool needSnapNear = !!sender->view->getOptionInt("snap", "snapNear", 1);
     bool needSnapPerp = !!sender->view->getOptionInt("snap", "snapPerp", 0);
     float tolNear = sender->displayMmToModel("snap", "snapNearTol", 1);
+    Tol tolPerp(sender->displayMmToModel(1));
     
     while (const MgShape* sp = it.getNext()) {
         if (skipShape(ignoreids, sp)) {
@@ -290,7 +291,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
         if (extent.isIntersect(wndbox)) {
             bool b1 = (needSnapHandle && snapHandle(sender, orignPt, shape, ignoreHandle,
                                                     sp, arr[0], matchpt));
-            bool b2 = (needSnapPerp && snapPerp(sender, orignPt, shape, sp, arr[0]));
+            bool b2 = (needSnapPerp && snapPerp(sender, orignPt, tolPerp, shape, sp, arr[0]));
             
             if (!b1 && !b2 && needSnapNear && extent.isIntersect(snapbox)) {
                 snapNear(sender, orignPt, shape, ignoreHandle, tolNear, sp, arr[0], matchpt);
@@ -421,7 +422,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
                     Point2d pt2(sp->shapec()->getHandlePoint((_snapHandle + 1) % n));
                     
                     ctx.setLineWidth(0, false);
-                    gs->drawLine(&ctx, pt1 + 3.f * (pt1 - pt2), pt2 + 3.f * (pt2 - pt1));
+                    gs->drawBeeline(&ctx, pt1, pt2);
                     ctx.setLineStyle(GiContext::kSolidLine);
                     if (pt1 != pt)
                         gs->drawCircle(&ctx, pt1, displayMmToModel(1.5f, gs));

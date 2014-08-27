@@ -36,6 +36,18 @@ public:
     //! 设置终点，未调 update()
     void setEndPoint(const Point2d& pt)  { _points[1] = pt; }
     
+    //! 设置是否为射线
+    void setRayline(bool ray) { _subtype = ray ? 1 : 0; }
+    
+    //! 设置是否为无穷直线
+    void setBeeline(bool bee) { _subtype = bee ? 2 : 0; }
+    
+    //! 返回是否为射线
+    bool isRayline() const { return _subtype == 1; }
+    
+    //! 返回是否为无穷直线
+    bool isBeeline() const { return _subtype == 2; }
+    
 #ifndef SWIG
     virtual bool isCurve() const { return false; }
     virtual const Point2d* getPoints() const { return _points; }
@@ -54,6 +66,7 @@ protected:
     
 private:
     Point2d     _points[2];
+    int         _subtype;       // 0：线段，1：射线，2：无穷直线
 };
 
 #endif // TOUCHVG_LINE_SHAPE_H_

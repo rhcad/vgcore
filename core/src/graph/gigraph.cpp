@@ -285,9 +285,8 @@ static inline const Box2d& DRAW_MAXR(const GiGraphicsImpl* p, bool modelUnit)
     return modelUnit ? p->rectDrawMaxM : p->rectDrawMaxW;
 }
 
-bool GiGraphics::drawLine(const GiContext* ctx, 
-                          const Point2d& startPt, const Point2d& endPt, 
-                          bool modelUnit)
+bool GiGraphics::drawLine(const GiContext* ctx, const Point2d& startPt,
+                          const Point2d& endPt, bool modelUnit)
 {
     if (!DRAW_RECT(m_impl, modelUnit).isIntersect(Box2d(startPt, endPt)))
         return false;
@@ -297,6 +296,32 @@ bool GiGraphics::drawLine(const GiContext* ctx,
     if (!mglnrel::clipLine(pts[0], pts[1], m_impl->rectDraw))
         return false;
 
+    return rawLine(ctx, pts[0].x, pts[0].y, pts[1].x, pts[1].y);
+}
+
+bool GiGraphics::drawRayline(const GiContext* ctx, const Point2d& startPt,
+                             const Point2d& endPt, bool modelUnit)
+{
+    Vector2d vec((endPt - startPt) * 100.f);
+    Point2d pts[2] = { startPt * S2D(xf(), modelUnit),
+        (endPt + vec) * S2D(xf(), modelUnit) };
+    
+    if (!mglnrel::clipLine(pts[0], pts[1], m_impl->rectDraw))
+        return false;
+    
+    return rawLine(ctx, pts[0].x, pts[0].y, pts[1].x, pts[1].y);
+}
+
+bool GiGraphics::drawBeeline(const GiContext* ctx, const Point2d& startPt,
+                             const Point2d& endPt, bool modelUnit)
+{
+    Vector2d vec((endPt - startPt) * 100.f);
+    Point2d pts[2] = { (startPt - vec) * S2D(xf(), modelUnit),
+        (endPt + vec) * S2D(xf(), modelUnit) };
+    
+    if (!mglnrel::clipLine(pts[0], pts[1], m_impl->rectDraw))
+        return false;
+    
     return rawLine(ctx, pts[0].x, pts[0].y, pts[1].x, pts[1].y);
 }
 

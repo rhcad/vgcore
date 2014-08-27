@@ -97,7 +97,9 @@ static bool drawDot(const MgDot& sp, int, GiGraphics& gs, const GiContext& ctx, 
 
 static bool drawLine(const MgLine& sp, int, GiGraphics& gs, const GiContext& ctx, int)
 {
-    return gs.drawLine(&ctx, sp.getPoint(0), sp.getPoint(1));
+    return (sp.isRayline() ? gs.drawRayline(&ctx, sp.getPoint(0), sp.getPoint(1))
+            : sp.isBeeline() ? gs.drawBeeline(&ctx, sp.getPoint(0), sp.getPoint(1))
+            : gs.drawLine(&ctx, sp.getPoint(0), sp.getPoint(1)));
 }
 
 static bool drawParallel(const MgParallel& sp, int, GiGraphics& gs, const GiContext& ctx, int)

@@ -146,6 +146,14 @@ public:
     */
     bool drawLine(const GiContext* ctx, const Point2d& startPt,
                   const Point2d& endPt, bool modelUnit = true);
+    
+    //! 绘制射线，模型坐标或世界坐标
+    bool drawRayline(const GiContext* ctx, const Point2d& startPt,
+                     const Point2d& endPt, bool modelUnit = true);
+    
+    //! 绘制无穷直线，模型坐标或世界坐标
+    bool drawBeeline(const GiContext* ctx, const Point2d& startPt,
+                     const Point2d& endPt, bool modelUnit = true);
 
     //! 绘制折线，模型坐标或世界坐标
     /*!

@@ -56,26 +56,26 @@ void MgEllipse::_transform(const Matrix2d& mat)
 
 int MgEllipse::_getHandleCount() const
 {
-    return getFlag(kMgSquare) ? 5 : 9;
+    return isCircle() ? 5 : 9;
 }
 
 Point2d MgEllipse::_getHandlePoint(int index) const
 {
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
+    int index2 = isCircle() ? index + 4 : index;
     return (index < _getHandleCount() - 1
             ? MgBaseRect::_getHandlePoint(index2) : getCenter());
 }
 
 int MgEllipse::_getHandleType(int index) const
 {
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
+    int index2 = isCircle() ? index + 4 : index;
     return (index < _getHandleCount() - 1
             ? MgBaseRect::_getHandleType(index2) : kMgHandleCenter);
 }
 
 bool MgEllipse::_setHandlePoint(int index, const Point2d& pt, float tol)
 {
-    int index2 = getFlag(kMgSquare) ? index + 4 : index;
+    int index2 = isCircle() ? index + 4 : index;
     return (index < _getHandleCount() - 1
             ? MgBaseRect::_setHandlePoint(index2, pt, tol)
             : offset(pt - getCenter(), -1));
