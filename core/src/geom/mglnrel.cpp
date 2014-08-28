@@ -64,6 +64,12 @@ bool mglnrel::isBetweenLine(const Point2d& a, const Point2d& b, const Point2d& p
         return  (a.y <= pt.y && pt.y <= b.y) || (a.y >= pt.y && pt.y >= b.y);
 }
 
+bool mglnrel::isProjectBetweenLine(const Point2d& a, const Point2d& b, const Point2d& pt)
+{
+    float proj = (pt - a).projectScaleToVector(b - a);
+    return proj >= 0 && proj <= 1;
+}
+
 bool mglnrel::isBetweenLine2(
     const Point2d& a, const Point2d& b, const Point2d& pt, const Tol& tol)
 {

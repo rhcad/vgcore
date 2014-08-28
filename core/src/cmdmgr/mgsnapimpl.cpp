@@ -119,7 +119,7 @@ static bool snapHandle(const MgMotion*, const Point2d& orignPt,
 }
 
 static bool snapPerp(const MgMotion* sender, const Point2d& orignPt, const Tol& tol,
-                     const MgShape* shape, const MgShape* sp, SnapItem& arr0)
+                     const MgShape* shape, const MgShape* sp, SnapItem& arr0, bool perpOut)
 {
     int ret = -1;
     
@@ -138,7 +138,8 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orignPt, const Tol& 
             
             if (mglnrel::isColinear2(pt1, pt2, start, tol)) {   // 起点在线上
                 float dist = perp2.distanceTo(start) * 2;
-                if (d2 > 2 * arr0.maxdist && arr0.dist > dist) {
+                if (d2 > 2 * arr0.maxdist && arr0.dist > dist
+                    && (perpOut || mglnrel::isProjectBetweenLine(pt1, pt2, perp2))) {
                     arr0.dist = dist;
                     arr0.base = start;
                     arr0.pt = start + orignPt - perp2.asVector();
@@ -151,7 +152,8 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orignPt, const Tol& 
             } else if (d2 < arr0.maxdist) {                 // 终点在线附近
                 mglnrel::ptToBeeline2(pt1, pt2, start, perp1);
                 float dist = perp1.distanceTo(orignPt);
-                if (arr0.type == kMgSnapNearPt || arr0.dist > dist) {
+                if ((arr0.type == kMgSnapNearPt || arr0.dist > dist)
+                    && (perpOut || mglnrel::isProjectBetweenLine(pt1, pt2, perp1))) {
                     arr0.dist = dist;
                     arr0.base = perp1;
                     arr0.pt = perp1;
@@ -176,7 +178,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orignPt,
         return;
     }
     
-    Point2d nearpt, ptd;
+    Point2d ptd;
     MgHitResult res;
     float dist;
     float minDist = arr0.dist;
@@ -202,7 +204,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orignPt,
             arr0.handleIndex = res.segment;
             arr0.handleIndexSrc = d - 1;
             if (d > 0) {    // 因为对当前图形先从startM移到pointM，然后再从pointM移到matchpt
-                *matchpt = orignPt + (nearpt - ptd);
+                *matchpt = orignPt + (res.nearpt - ptd);
             }
         }
     }
@@ -272,10 +274,14 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
     MgShapeIterator it(sender->view->shapes());
     bool needSnapHandle = !!sender->view->getOptionInt("snap", "snapHandle", 1);
     bool needSnapNear = !!sender->view->getOptionInt("snap", "snapNear", 1);
-    bool needSnapPerp = !!sender->view->getOptionInt("snap", "snapPerp", 0);
+    bool needSnapPerp = !!sender->view->getOptionInt("snap", "snapPerp", 1);
+    bool perpOut = !!sender->view->getOptionInt("snap", "perpOut", 0);
     float tolNear = sender->displayMmToModel("snap", "snapNearTol", 1);
     Tol tolPerp(sender->displayMmToModel(1));
     
+    if (shape) {
+        wndbox.unionWith(shape->shapec()->getExtent().inflate(arr[0].dist));
+    }
     while (const MgShape* sp = it.getNext()) {
         if (skipShape(ignoreids, sp)) {
             continue;
@@ -291,9 +297,9 @@ static void snapPoints(const MgMotion* sender, const Point2d& orignPt,
         if (extent.isIntersect(wndbox)) {
             bool b1 = (needSnapHandle && snapHandle(sender, orignPt, shape, ignoreHandle,
                                                     sp, arr[0], matchpt));
-            bool b2 = (needSnapPerp && snapPerp(sender, orignPt, tolPerp, shape, sp, arr[0]));
+            bool b2 = (needSnapPerp && snapPerp(sender, orignPt, tolPerp, shape, sp, arr[0], perpOut));
             
-            if (!b1 && !b2 && needSnapNear && extent.isIntersect(snapbox)) {
+            if (!b1 && !b2 && needSnapNear && extent.isIntersect(wndbox)) {
                 snapNear(sender, orignPt, shape, ignoreHandle, tolNear, sp, arr[0], matchpt);
             }
         }
