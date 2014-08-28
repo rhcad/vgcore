@@ -391,7 +391,8 @@ Box2d MgShapes::getExtent() const
     return extent;
 }
 
-const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res, Filter filter) const
+const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
+                                 Filter filter, void* data) const
 {
     const MgShape* retshape = NULL;
     
@@ -402,7 +403,7 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res, Filter f
         
         if ((filter || !shape->getFlag(kMgLocked))
             && extent.isIntersect(limits)
-            && (!filter || filter(*it)))
+            && (!filter || filter(*it, data)))
         {
             MgHitResult tmpRes;
             float  tol = (!(*it)->hasFillColor() ? limits.width() / 2

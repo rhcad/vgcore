@@ -31,7 +31,7 @@ public:
     const MgShape* getFirstShape(void*& it) const;
     const MgShape* getNextShape(void*& it) const;
     void freeIterator(void*& it) const;
-    typedef bool (*Filter)(const MgShape*);
+    typedef bool (*Filter)(const MgShape* sp, void* data);
     int traverseByType(int type, void (*c)(const MgShape*, void*), void* d);
 #endif
 
@@ -47,7 +47,7 @@ public:
     
     const MgShape* hitTest(const Box2d& limits, MgHitResult& res
 #ifndef SWIG
-        , Filter filter = NULL) const;
+        , Filter filter = NULL, void* data = NULL) const;
 #else
         ) const;
 #endif
