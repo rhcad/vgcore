@@ -145,6 +145,8 @@ public:
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
     bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {
         return getCmdSubject()->onShapeWillChanged(motion(), shape, oldsp); }
+    void shapeChanged(MgShape* shape) {
+        getCmdSubject()->onShapeChanged(motion(), shape); }
     
     void commandChanged() {
         CALL_VIEW(deviceView()->commandChanged());

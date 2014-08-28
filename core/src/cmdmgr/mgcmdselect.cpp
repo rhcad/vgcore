@@ -1011,6 +1011,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             else {
                 if (oldsp && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
+                    view->shapeChanged(m_clones[i]);
                     changed = true;
                 }
                 else {
