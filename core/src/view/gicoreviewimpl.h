@@ -206,8 +206,8 @@ public:
     }
     
     void shapeAdded(const MgShape* sp) {
-        regenAppend(sp->getID());
         getCmdSubject()->onShapeAdded(motion(), sp);
+        regenAppend(sp->getID());
     }
     
     void redraw(bool changed = true) {
