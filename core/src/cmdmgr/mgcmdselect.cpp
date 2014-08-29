@@ -789,7 +789,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             MgBaseShape* shape = m_clones[i]->shape();
             const MgShape* basesp = getShape(m_selIds[i], sender); // 对应的原始图形
             
-            if (!basesp || shape->getFlag(kMgLocked))  // 锁定图形不参与变形
+            if (!canTransform(basesp, sender))
                 continue;
             shape->copy(*basesp->shapec());                 // 先重置为原始位置
             shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
@@ -1474,7 +1474,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
             MgBaseShape* shape = m_clones[i]->shape();
             const MgShape* basesp = getShape(m_selIds[i], sender);
             
-            if (!basesp || shape->getFlag(kMgLocked))
+            if (!canTransform(basesp, sender))
                 continue;
             shape->copy(*basesp->shapec());                 // 先重置为原始形状
             shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
