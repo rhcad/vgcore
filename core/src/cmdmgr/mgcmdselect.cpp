@@ -1517,6 +1517,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
                 shape->offset(snapvec, -1);             // 再从当前点拖到捕捉点
             }
             shape->update();
+            sender->view->shapeMoved(m_clones[i], -1);  // 通知已移动
         }
         sender->view->redraw();
         sender->view->dynamicChanged();

@@ -170,8 +170,8 @@ float mglnrel::ptToLine(
     float dist = mglnrel::ptToBeeline2(a, b, pt, nearpt);
     if (!mglnrel::isBetweenLine3(a, b, nearpt, &ptTemp))
     {
+        dist = pt.distanceTo(ptTemp);
         nearpt = ptTemp;
-        dist = pt.distanceTo(nearpt);
     }
     return dist;
 }
