@@ -408,6 +408,19 @@ void MgCmdManagerImpl::clearSnap(const MgMotion* sender)
     }
 }
 
+static GiHandleTypes snapTypeToHandleType(int snapType)
+{
+    switch (snapType) {
+        case kMgSnapPoint: return kGiHandleNode;
+        case kMgSnapCenter: return kGiHandleCenter;
+        case kMgSnapMidPoint: return kGiHandleMidPoint;
+        case kMgSnapQuadrant: return kGiHandleQuadrant;
+        case kMgSnapIntersect: return kGiHandleIntersect;
+        case kMgSnapNearPt: return kGiHandleNear;
+        default: return kGiHandleVertex;
+    }
+}
+
 bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
 {
     bool ret = false;
@@ -419,7 +432,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
             GiContext ctx(-2, GiColor(0, 255, 0, 200), GiContext::kDashLine, GiColor(0, 255, 0, 64));
             
             ret = gs->drawCircle(&ctx, pt, displayMmToModel(small ? 3.f : 6.f, gs));
-            gs->drawHandle(pt, kGiHandleVertex);
+            gs->drawHandle(pt, snapTypeToHandleType(_snapType[0]));
             if (_snapType[0] == kMgSnapPerp && _snapHandle >= 0) {
                 const MgShape* sp = sender->view->shapes()->findShape(_snapShapeId);
                 int n = sp ? sp->shapec()->getPointCount() : 0;

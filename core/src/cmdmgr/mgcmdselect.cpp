@@ -286,7 +286,16 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 continue;
             }
             pnt = shape->shapec()->getHandlePoint(i);
-            if (!sender->dragging() && !gs->drawHandle(pnt, kGiHandleVertex))
+            
+            GiHandleTypes imageType;
+            switch (shape->shapec()->getHandleType(i)) {
+                case kMgHandleVertext: imageType = kGiHandleNode; break;
+                case kMgHandleCenter: imageType = kGiHandleCenter; break;
+                case kMgHandleMidPoint: imageType = kGiHandleMidPoint; break;
+                case kMgHandleQuadrant: imageType = kGiHandleQuadrant; break;
+                default: imageType = kGiHandleVertex; break;
+            }
+            if (!sender->dragging() && !gs->drawHandle(pnt, imageType))
                 gs->drawCircle(&ctxhd, pnt, radius);
         }
         

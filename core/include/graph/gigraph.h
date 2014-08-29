@@ -23,6 +23,12 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleUnlock,        //!< 解锁
     kGiHandleCancel,        //!< 放弃
     kGiHandleAccept,        //!< 完成
+    kGiHandleNode,          //!< 顶点
+    kGiHandleCenter,        //!< 圆心
+    kGiHandleMidPoint,      //!< 中点
+    kGiHandleQuadrant,      //!< 象限点
+    kGiHandleIntersect,     //!< 交点
+    kGiHandleNear,          //!< 最近点
     kGiHandleCustom = 20,   //!< 应用自定义
 };
 
