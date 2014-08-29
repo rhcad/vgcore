@@ -203,14 +203,11 @@ float mgnear::linesHit(
         return distMin;
     }
     
-    for (int i = 0; i + 1 < n2; i++)
-    {
+    for (int i = 0; i + 1 < n2; i++) {
         const Point2d& pt2 = points[(i + 1) % n];
-        if (closed || rect.isIntersect(Box2d(points[i], pt2)))
-        {
+        if (closed || rect.isIntersect(Box2d(points[i], pt2))) {
             dist = mglnrel::ptToLine(points[i], pt2, pt, ptTemp);
-            if (distMin > 1e10f || (dist <= tol && dist < distMin))
-            {
+            if (distMin > 1e10f || (dist <= tol && dist < distMin)) {
                 distMin = dist;
                 nearpt = ptTemp;
                 if (dist <= tol)
@@ -246,8 +243,7 @@ static void _RoundRectHit(
     mgcurv::ellipseToBezier(ptsBezier, rect.center(), rx, ry);
     
     pts[3] = ptsBezier[0];
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         pts[0] = pts[3];
         pts[1] = ptsBezier[3 * i];
         pts[2] = ptsBezier[3 * i + 1];
@@ -264,12 +260,10 @@ static void _RoundRectHit(
         for (int j = 0; j < 4; j++)
             pts[j] += vec;
         
-        if (rectTol.isIntersect(Box2d(4, pts)))
-        {
+        if (rectTol.isIntersect(Box2d(4, pts))) {
             mgnear::nearestOnBezier(pt, pts, ptTemp);
             float dist = pt.distanceTo(ptTemp);
-            if (dist <= tol && dist < distMin)
-            {
+            if (dist <= tol && dist < distMin) {
                 distMin = dist;
                 nearpt = ptTemp;
                 segment = (5 - i) % 4;
@@ -312,14 +306,11 @@ float mgnear::roundRectHit(
     pts[6] = RoundRectTan(3, 0, rect, ry);
     pts[7] = RoundRectTan(0, 3, rect, ry);
     
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         Box2d rcLine (pts[2 * i], pts[2 * i + 1]);
-        if (rcLine.isEmpty() || rectTol.isIntersect(rcLine))
-        {
+        if (rcLine.isEmpty() || rectTol.isIntersect(rcLine)) {
             dist = mglnrel::ptToLine(pts[2 * i], pts[2 * i + 1], pt, ptTemp);
-            if (dist <= tol && dist < distMin)
-            {
+            if (dist <= tol && dist < distMin) {
                 distMin = dist;
                 nearpt = ptTemp;
                 segment = 4 + i;
@@ -327,8 +318,7 @@ float mgnear::roundRectHit(
         }
     }
     
-    if (rx > _MGZERO && ry > _MGZERO)
-    {
+    if (rx > _MGZERO && ry > _MGZERO) {
         _RoundRectHit(rect, rx, ry, pt, tol, 
             rectTol, pts, distMin, nearpt, segment);
     }
@@ -361,8 +351,7 @@ void mgnear::moveRectHandle(Box2d& rect, int index,
         mgnear::getRectHandle(rect, index / 4 * 4 + i, pts[i]);
     pts[index % 4] = pt;
 
-    if (index >= 0 && index < 4)
-    {
+    if (index >= 0 && index < 4) {
         Point2d pt1(pt);
         
         if (lockCornerScale && !rect.isEmpty()) {
@@ -378,20 +367,17 @@ void mgnear::moveRectHandle(Box2d& rect, int index,
             pt1.x = pt2.x + w * (pt2.x > pt.x ? -1.f : 1.f);
             pt1.y = pt2.y + h * (pt2.y > pt.y ? -1.f : 1.f);
         }
-        if (index % 2 == 0)
-        {
+        if (index % 2 == 0) {
             pts[(index + 1) % 4].y = pt1.y;
             pts[(index + 3) % 4].x = pt1.x;
         }
-        else
-        {
+        else {
             pts[(index + 1) % 4].x = pt1.x;
             pts[(index + 3) % 4].y = pt1.y;
         }
         rect.set(4, pts);
     }
-    else if (index >= 4 && index < 8)
-    {
+    else if (index >= 4 && index < 8) {
         rect.set(pts[3].x, pts[2].y, pts[1].x, pts[0].y);
     }
 }

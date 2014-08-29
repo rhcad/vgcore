@@ -265,10 +265,10 @@ static int ptInArea(
 /*!
     \param[in] count 顶点个数
     \param[in] vertexs 顶点数组
-    \param[out] pACW 多边形是否为逆时针方向，为NULL则忽略该参数
+    \param[out] acw 多边形是否为逆时针方向，为NULL则忽略该参数
     \return 是否为凸多边形
 */
-static bool isConvex(int count, const Point2d* vertexs, bool* pACW = (bool*)0);
+static bool isConvex(int count, const Point2d* vertexs, bool* acw = (bool*)0);
 #endif
 };
 

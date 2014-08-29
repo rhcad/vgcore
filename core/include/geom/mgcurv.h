@@ -282,37 +282,6 @@ static void cubicSplineToBezier(int n, const Point2d* knots, const Vector2d* kno
     \return 实际转换的贝塞尔曲线控制点的个数
 */
 static int bsplinesToBeziers(Point2d points[/*1+n*3*/], int n, const Point2d* ctlpts, bool closed);
-
-#ifndef SWIG
-//! 计算张力样条曲线的型值点参数和弦长
-/*!
-    \param[in,out] n 型值点的点数，如果有重合点则输出实际点数
-    \param[in,out] knots 型值点坐标数组，元素个数为n，有重合点则会删除点坐标
-    \param[in] sgm 控制参数，>0，一般取1.5
-    \param[in] tol 长度容差值，用于判断重合点
-    \param[out] sigma 规范化张力系数，= 控制参数 / 平均弦长
-    \param[out] hp 弦长数组，元素个数为n-1或n，由外界分配内存
-    \param[out] knotvs 型值点的f"(x_i)/sigma^2，元素个数为n，由外界分配内存
-    \return 是否计算成功
-    \see fitClampedSpline
-*/
-static bool clampedSplines(int& n, Point2d* knots, float sgm, float tol,
-                           float& sigma, float* hp, Vector2d* knotvs);
-
-//! 在张力样条曲线的一条弦上插值得到拟和点坐标
-/*!
-    \param[in] knots 型值点坐标数组
-    \param[in] i 分段曲线序号，在0到(型值点的点数-1)之间
-    \param[in] t 分段曲线函数参数，在0到hp[i]之间
-    \param[in] sigma 规范化张力系数
-    \param[in] hp 弦长数组
-    \param[in] knotvs 型值点的f"(x_i)/sigma^2数组
-    \param[out] fitpt 拟和点坐标，第i段曲线上参数t对应的曲线坐标
-    \see clampedSplines
-*/
-static void fitClampedSpline(const Point2d* knots, int i, float t, float sigma,
-                             const float* hp, const Vector2d* knotvs, Point2d& fitpt);
-#endif
 };
 
 #endif // TOUCHVG_FITCURVE_H_
