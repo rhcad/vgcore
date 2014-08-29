@@ -69,8 +69,8 @@ Point2d MgEllipse::_getHandlePoint(int index) const
 int MgEllipse::_getHandleType(int index) const
 {
     int index2 = isCircle() ? index + 4 : index;
-    return (index < _getHandleCount() - 1
-            ? MgBaseRect::_getHandleType(index2) : kMgHandleCenter);
+    return (index == _getHandleCount() - 1 ? kMgHandleCenter :
+            index2 >= 4 && index2 < 8 ? kMgHandleQuadrant : kMgHandleVertext);
 }
 
 bool MgEllipse::_setHandlePoint(int index, const Point2d& pt, float tol)

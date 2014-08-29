@@ -39,6 +39,7 @@ typedef enum {
     kMgHandleVertext,   //!< 顶点
     kMgHandleCenter,    //!< 圆心
     kMgHandleMidPoint,  //!< 中点
+    kMgHandleQuadrant,  //!< 象限点
     kMgHandleOutside,   //!< 线外点
 } MgHandleType;
 
