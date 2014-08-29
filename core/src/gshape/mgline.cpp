@@ -7,7 +7,7 @@
 
 MG_IMPLEMENT_CREATE(MgLine)
 
-MgLine::MgLine()
+MgLine::MgLine() : _subtype(0)
 {
 }
 
@@ -59,6 +59,7 @@ void MgLine::_copy(const MgLine& src)
 {
     _points[0] = src._points[0];
     _points[1] = src._points[1];
+    _subtype = src._subtype;
     __super::_copy(src);
 }
 
@@ -66,12 +67,15 @@ bool MgLine::_equals(const MgLine& src) const
 {
     return (_points[0] == src._points[0]
             && _points[1] == src._points[1]
+            && _subtype == src._subtype
             && __super::_equals(src));
 }
 
 void MgLine::_update()
 {
-    _extent.set(_points[0], _points[1]);
+    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    _extent.set(isBeeline() ? _points[0] - vec : _points[0],
+                _subtype ? _points[1] + vec : _points[1]);
     __super::_update();
 }
 
@@ -90,14 +94,26 @@ void MgLine::_clear()
 
 float MgLine::_hitTest(const Point2d& pt, float, MgHitResult& res) const
 {
-    return mglnrel::ptToLine(_points[0], _points[1], pt, res.nearpt);
+    if (isRayline()) {
+        float d = mglnrel::ptToBeeline2(_points[0], _points[1], pt, res.nearpt);
+        float v = (res.nearpt - _points[0]).projectScaleToVector(_points[1] - _points[0]);
+        if (v < 0) {
+            res.nearpt = _points[0];
+            d = pt.distanceTo(_points[0]);
+        }
+        return d;
+    }
+    return (isBeeline() ? mglnrel::ptToBeeline2(_points[0], _points[1], pt, res.nearpt)
+            : mglnrel::ptToLine(_points[0], _points[1], pt, res.nearpt));
 }
 
 bool MgLine::_hitTestBox(const Box2d& rect) const
 {
     if (!__super::_hitTestBox(rect))
         return false;
-    Point2d pts[2] = { _points[0], _points[1] };
+    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    Point2d pts[2] = { isBeeline() ? _points[0] - vec : _points[0],
+        _subtype ? _points[1] + vec : _points[1] };
     return mglnrel::clipLine(pts[0], pts[1], rect);
 }
 
@@ -111,11 +127,13 @@ bool MgLine::_save(MgStorage* s) const
 {
     bool ret = __super::_save(s);
     s->writeFloatArray("points", &(_points[0].x), 4);
+    s->writeInt("subtype", _subtype);
     return ret;
 }
 
 bool MgLine::_load(MgShapeFactory* factory, MgStorage* s)
 {
     bool ret = __super::_load(factory, s);
+    _subtype = s->readInt("subtype", _subtype);
     return s->readFloatArray("points", &(_points[0].x), 4) == 4 && ret;
 }

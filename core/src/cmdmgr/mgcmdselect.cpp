@@ -286,7 +286,16 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 continue;
             }
             pnt = shape->shapec()->getHandlePoint(i);
-            if (!sender->dragging() && !gs->drawHandle(pnt, kGiHandleVertex))
+            
+            GiHandleTypes imageType;
+            switch (shape->shapec()->getHandleType(i)) {
+                case kMgHandleVertext: imageType = kGiHandleNode; break;
+                case kMgHandleCenter: imageType = kGiHandleCenter; break;
+                case kMgHandleMidPoint: imageType = kGiHandleMidPoint; break;
+                case kMgHandleQuadrant: imageType = kGiHandleQuadrant; break;
+                default: imageType = kGiHandleVertex; break;
+            }
+            if (!sender->dragging() && !gs->drawHandle(pnt, imageType))
                 gs->drawCircle(&ctxhd, pnt, radius);
         }
         
@@ -789,7 +798,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             MgBaseShape* shape = m_clones[i]->shape();
             const MgShape* basesp = getShape(m_selIds[i], sender); // 对应的原始图形
             
-            if (!basesp || shape->getFlag(kMgLocked))  // 锁定图形不参与变形
+            if (!canTransform(basesp, sender))
                 continue;
             shape->copy(*basesp->shapec());                 // 先重置为原始位置
             shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
@@ -1011,6 +1020,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             else {
                 if (oldsp && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
+                    view->shapeChanged(m_clones[i]);
                     changed = true;
                 }
                 else {
@@ -1474,7 +1484,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
             MgBaseShape* shape = m_clones[i]->shape();
             const MgShape* basesp = getShape(m_selIds[i], sender);
             
-            if (!basesp || shape->getFlag(kMgLocked))
+            if (!canTransform(basesp, sender))
                 continue;
             shape->copy(*basesp->shapec());                 // 先重置为原始形状
             shape->setFlag(kMgHideContent, false);          // 显示隐藏的图片
@@ -1516,6 +1526,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
                 shape->offset(snapvec, -1);             // 再从当前点拖到捕捉点
             }
             shape->update();
+            sender->view->shapeMoved(m_clones[i], -1);  // 通知已移动
         }
         sender->view->redraw();
         sender->view->dynamicChanged();

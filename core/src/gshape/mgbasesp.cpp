@@ -143,7 +143,6 @@ bool MgBaseShape::_rotateHandlePoint(int index, const Point2d& pt)
 bool MgBaseShape::_setHandlePoint(int index, const Point2d& pt, float)
 {
     setPoint(index, pt);
-    update();
     return true;
 }
 

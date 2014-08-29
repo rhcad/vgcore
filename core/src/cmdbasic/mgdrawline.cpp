@@ -3,10 +3,23 @@
 
 #include "mgdrawline.h"
 #include "mgbasicsps.h"
+#include "mgstorage.h"
 
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgLine::Type(), sender, s);
+    bool ret = _initialize(MgLine::Type(), sender, s);
+    MgLine *line = (MgLine*)dynshape()->shape();
+    
+    line->setRayline(false);
+    if (s) {
+        if (s->readBool("rayline", false)) {
+            line->setRayline(true);
+        }
+        if (s->readBool("beeline", false)) {
+            line->setBeeline(true);
+        }
+    }
+    return ret;
 }
 
 bool MgCmdDrawLine::backStep(const MgMotion* sender)

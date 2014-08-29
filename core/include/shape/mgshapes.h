@@ -31,7 +31,7 @@ public:
     const MgShape* getFirstShape(void*& it) const;
     const MgShape* getNextShape(void*& it) const;
     void freeIterator(void*& it) const;
-    typedef bool (*Filter)(const MgShape*);
+    typedef bool (*Filter)(const MgShape* sp, void* data);
     int traverseByType(int type, void (*c)(const MgShape*, void*), void* d);
 #endif
 
@@ -47,7 +47,7 @@ public:
     
     const MgShape* hitTest(const Box2d& limits, MgHitResult& res
 #ifndef SWIG
-        , Filter filter = NULL) const;
+        , Filter filter = NULL, void* data = NULL) const;
 #else
         ) const;
 #endif
@@ -73,15 +73,15 @@ public:
     MgShape* addShape(const MgShape& src);
     
     //! 添加新图形到图形列表中，自动更新图形的包络框
-    bool addShapeDirect(MgShape* shape, bool force = false);
+    bool addShapeDirect(MgShape* shape, bool force = true);
     
     //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象会被删除!
-    bool updateShape(MgShape* shape, bool force = false);
+    bool updateShape(MgShape* shape, bool force = true);
     
 #ifndef SWIG
-    //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象(oldsp)会被删除并指向新的图形对象
-    static bool updateShape(const MgShape*& oldsp, MgShape* newsp) {
-        bool ret = oldsp->getParent()->updateShape(newsp, true);
+    //! 更新为新的图形，该图形从原来图形克隆得到. 原图形对象(oldsp)会被释放并指向新的图形对象
+    bool updateShape(const MgShape*& oldsp, MgShape* newsp) {
+        bool ret = updateShape(newsp, true);
         if (ret) {
             oldsp = newsp;
         } else {

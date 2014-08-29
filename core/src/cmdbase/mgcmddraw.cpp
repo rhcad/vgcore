@@ -178,7 +178,8 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender,
     Point2d pt(snap->snapPoint(sender, orignPt,
                                firstStep ? NULL : m_shape, m_step));
     
-    if (!sender->dragging() && snap->getSnappedType() >= kMgSnapPoint) {
+    if ( (firstStep || !sender->dragging())
+        && snap->getSnappedType() >= kMgSnapPoint) {
         sender->view->getCmdSubject()->onPointSnapped(sender, dynshape());
     }
     

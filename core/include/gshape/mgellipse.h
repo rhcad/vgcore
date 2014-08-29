@@ -24,6 +24,9 @@ public:
     //! 设置半轴长度
     void setRadius(float rx, float ry = 0.0);
     
+    //! 是否是圆
+    bool isCircle() const { return getFlag(kMgSquare); }
+    
 #ifndef SWIG
     //! 返回Bezier顶点，13个点
     const Point2d* getBeziers() const { return _bzpts; }

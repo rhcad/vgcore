@@ -165,6 +165,11 @@ private:
         }
         return true;
     }
+    virtual void onShapeChanged(const MgMotion* sender, MgShape* shape) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onShapeChanged(sender, shape);
+        }
+    }
 
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) {
         MgBaseShape* sp = (MgBaseShape*)0;

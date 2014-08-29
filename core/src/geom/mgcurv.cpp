@@ -543,22 +543,18 @@ bool mgcurv::gaussJordan(int n, float *mat, Vector2d *vs)
     if (!mat || !vs || n < 2)
         return false;
     
-    for (k = 0; k < n; k++)
-    {
+    for (k = 0; k < n; k++) {
         // 找主元. 即找第k列中第k行以下绝对值最大的元素
         m = k;
         c = mat[k*n+k];
-        for (i = k+1; i < n; i++)
-        {
-            if (fabsf(mat[i*n+k]) > fabsf(c))
-            {
+        for (i = k+1; i < n; i++) {
+            if (fabsf(mat[i*n+k]) > fabsf(c)) {
                 m = i;
                 c = mat[i*n+k];
             }
         }
         // 交换第k行和第m行中第k列以后的元素
-        if (m != k)
-        {
+        if (m != k) {
             for (j = k; j < n; j++) {
                 t = mat[m*n+j]; mat[m*n+j] = mat[k*n+j]; mat[k*n+j] = t; 
             }
@@ -574,8 +570,7 @@ bool mgcurv::gaussJordan(int n, float *mat, Vector2d *vs)
         vs[k].x = vs[k].x * c;
         vs[k].y = vs[k].y * c;
         // 从第k+1行以下每一行, 对该行第k列以后各元素-=
-        for (i = k+1; i < n; i++)
-        {
+        for (i = k+1; i < n; i++) {
             c = mat[i*n+k];
             for (j = k; j < n; j++)
                 mat[i*n+j] -= mat[k*n+j] * c;
@@ -585,10 +580,8 @@ bool mgcurv::gaussJordan(int n, float *mat, Vector2d *vs)
     }
     
     // 回代
-    for (i = n-2; i >= 0; i--)
-    {
-        for (j = i; j < n; j++)
-        {
+    for (i = n-2; i >= 0; i--) {
+        for (j = i; j < n; j++) {
             vs[i].x -= mat[i*n+j+1] * vs[j+1].x;
             vs[i].y -= mat[i*n+j+1] * vs[j+1].y;
         }
@@ -616,8 +609,7 @@ static bool CalcCubicClosed(
     vecs[n1].x = 3 * (knots[0].x-knots[n1 - 1].x);
     vecs[n1].y = 3 * (knots[0].y-knots[n1 - 1].y);
     
-    for (i = 1; i < n1; i++)
-    {
+    for (i = 1; i < n1; i++) {
         a[i*n+i-1] = 1.0;
         a[i*n+i]   = 4.0;
         a[i*n+i+1] = 1.0;
@@ -632,50 +624,43 @@ static bool CalcCubicUnclosed(
     int flag, int n, const Point2d* knots, 
     float* a, float* b, float* c, Vector2d* vecs)
 {
-    if (flag & mgcurv::cubicTan1)           // 起始夹持端
-    {
+    if (flag & mgcurv::cubicTan1) {         // 起始夹持端
         b[0] = 1.0;
         c[0] = 0.0;
         //vecs[0] = xp0;                    // vecs[0]必须指定切矢量
     }
-    else if (flag & mgcurv::cubicArm1)      // 起始悬臂端
-    {
+    else if (flag & mgcurv::cubicArm1) {    // 起始悬臂端
         b[0] = 1.0;
         c[0] = 1.0;
         vecs[0].x = 2 * (knots[1].x-knots[0].x);
         vecs[0].y = 2 * (knots[1].y-knots[0].y);
     }
-    else                                    // 起始自由端
-    {
+    else {                                  // 起始自由端
         b[0] = 1.0;
         c[0] = 0.5;
         vecs[0].x = 1.5f * (knots[1].x-knots[0].x);
         vecs[0].y = 1.5f * (knots[1].y-knots[0].y);
     }
     
-    if (flag & mgcurv::cubicTan2)           // 终止夹持端
-    {
+    if (flag & mgcurv::cubicTan2) {         // 终止夹持端
         a[n - 2] = 0.0;
         b[n - 1] = 1.0;
         //vecs[n - 1] = xpn;                // vecs[n-1]必须指定切矢量
     }
-    else if (flag & mgcurv::cubicArm2)      // 终止悬臂端
-    {
+    else if (flag & mgcurv::cubicArm2) {    // 终止悬臂端
         a[n - 2] = 1.0;
         b[n - 1] = 1.0;
         vecs[n - 1].x = 2 * (knots[n - 1].x-knots[n - 2].x);
         vecs[n - 1].y = 2 * (knots[n - 1].y-knots[n - 2].y);
     }
-    else                                    // 终止自由端
-    {
+    else {                                  // 终止自由端
         a[n - 2] = 0.5;
         b[n - 1] = 1.0;
         vecs[n - 1].x = 1.5f * (knots[n - 1].x-knots[n - 2].x);
         vecs[n - 1].y = 1.5f * (knots[n - 1].y-knots[n - 2].y);
     }
     
-    for (int i = 1; i < n - 1; i++)
-    {
+    for (int i = 1; i < n - 1; i++) {
         a[i-1] = 1.0;
         b[i] = 4.0;
         c[i] = 1.0;
@@ -695,24 +680,20 @@ bool mgcurv::cubicSplines(
     if (!knots || !knotvs || n < 2)
         return false;
     
-    if ((flag & cubicLoop) && n <= 512)    // 闭合
-    {
+    if ((flag & cubicLoop) && n <= 512) {
         float* a = new float[n * n];
         ret = a && CalcCubicClosed(n, a, knotvs, knots);
         delete[] a;
     }
-    else
-    {
+    else {
         float* a = new float[n * 3];
         ret = a && CalcCubicUnclosed(flag, n, knots, 
             a, a+n, a+2*n, knotvs);
         delete[] a;
     }
     
-    if (!mgEquals(tension, 1.f))
-    {
-        for (int i = 0; i < n; i++)
-        {
+    if (!mgEquals(tension, 1.f)) {
+        for (int i = 0; i < n; i++) {
             knotvs[i].x *= tension;
             knotvs[i].y *= tension;
         }
@@ -749,199 +730,6 @@ void mgcurv::cubicSplineToBezier(
     points[1] = knots[i1] + knotvs[i1] * d;
     points[2] = knots[i2] - knotvs[i2] * d;
     points[3] = knots[i2];
-}
-
-static int RemoveSamePoint(int &n, Point2d* knots, float tol)
-{
-    for (int i = 0; i < n - 1; i++)
-    {
-        if (mgHypot(knots[i].x - knots[i+1].x, knots[i].y - knots[i+1].y) < tol)
-        {
-            for (int j = i + 2; j < n; j++)
-                knots[j-1] = knots[j];
-            i--;
-            n--;
-        }
-    }
-    return n;
-}
-
-static void CalcClampedS1n(
-    int n1, const Point2d* knots, bool closed, float &len1, 
-    float &sx1, float &sy1, float &sxn, float &syn)
-{
-    float dx, dy, len;
-
-    dx = knots[1].x - knots[0].x;
-    dy = knots[1].y - knots[0].y;
-    len1 = mgHypot(dx, dy);
-    sx1 = dx / len1;
-    sy1 = dy / len1;
-    if (closed)
-    {
-        sxn = sx1;
-        syn = sy1;
-    }
-    else
-    {
-        dx = knots[n1].x - knots[n1 - 1].x;
-        dy = knots[n1].y - knots[n1 - 1].y;
-        len = mgHypot(dx, dy);
-        sxn = dx / len;
-        syn = dy / len;
-    }
-}
-
-static float CalcClampedHp(
-    int n1, const Point2d* knots, float* hp, Vector2d* vecs, 
-    float len1, float sx1, float sy1, float sxn, float syn)
-{
-    float dx, dy, dx1, dy1, dx2, dy2, len, s;
-
-    dx1 = sx1;
-    dy1 = sy1;
-    vecs[0].x = 0.;
-    vecs[0].y = 0.;
-    hp[0] = len1;
-    s = len1;
-
-    for (int i = 1; i < n1; i++)
-    {
-        dx = knots[i+1].x - knots[i].x;
-        dy = knots[i+1].y - knots[i].y;
-        len = mgHypot(dx, dy);
-        dx2 = dx / len;          // 分段弦斜率
-        dy2 = dy / len;
-        vecs[i].x = dx2 - dx1;
-        vecs[i].y = dy2 - dy1;
-        hp[i] = len;
-        s += len;
-        dx1 = dx2;
-        dy1 = dy2;
-    }
-    vecs[n1].x = sxn - dx1;
-    vecs[n1].y = syn - dy1;
-
-    return s;
-}
-
-static bool CalcClampedVecs(
-    float sigma, bool closed, int n1, const float* hp, 
-    float* a, float* b, float* c, Vector2d* vecs)
-{
-    int i;
-    float w, ds, d1, d2;
-
-    ds = sigma * hp[0];
-    d1 = sigma * coshf(ds) / sinhf(ds) - 1.f / hp[0];
-    for (i = 0; i < n1; i++)
-    {
-        ds = sigma * hp[i];
-        d2 = sigma * coshf(ds) / sinhf(ds) - 1.f / hp[i];
-        c[i] = 1.f / hp[i] - sigma / sinhf(ds);
-        a[i] = c[i];
-        b[i] = d1 + d2;
-        d1 = d2;
-    }
-    if (closed)
-        b[n1] = d1;
-    else
-        b[n1] = d1 + d1;
-    
-    w = b[0];
-    vecs[0].x /= w;
-    vecs[0].y /= w;
-    for (i = 0; i < n1; i++)
-    {
-        b[i] = c[i] / w;
-        w = b[i+1] - a[i] * b[i];
-        if (mgIsZero(w))
-        {
-            return false;
-        }
-        vecs[i+1].x = (vecs[i+1].x - a[i] * vecs[i].x) / w;
-        vecs[i+1].y = (vecs[i+1].y - a[i] * vecs[i].y) / w;
-    }
-    for (i = n1 - 1; i >= 0; i--)
-    {
-        vecs[i].x -= b[i] * vecs[i+1].x;
-        vecs[i].y -= b[i] * vecs[i+1].y;
-    }
-
-    return true;
-}
-
-bool mgcurv::clampedSplines(
-    int& n, Point2d* knots, 
-    float sgm, float tol, float& sigma, float* hp, Vector2d* knotvs)
-{
-    int n1;
-    float len1, sx1, sy1, sxn, syn, s;
-    bool closed;
-    
-    if (!knots || !knotvs || !hp || n < 2)
-        return false;
-    
-    closed = (mgHypot(knots[0].x-knots[n-1].x, knots[0].y-knots[n-1].y) < tol);
-    
-    if (RemoveSamePoint(n, knots, tol) < 2)
-        return false;
-    
-    n1 = n - 1;
-    
-    // 计算首末端两点之间的斜率(sx1, sy1, sxn, syn)
-    CalcClampedS1n(n1, knots, closed, len1, sx1, sy1, sxn, syn);
-    
-    // 计算累加弦长s、分段弦长hp和方程组右边向量
-    s = CalcClampedHp(n1, knots, hp, knotvs, len1, sx1, sy1, sxn, syn);
-
-    // 规范化张力系数 = 控制参数 / 平均弦长
-    sigma = sgm * n1 / s;
-    
-    float* a = new float[n * 3];
-    bool ret = CalcClampedVecs(sigma, closed, n1, hp, 
-        a, a+n, a+2*n, knotvs);
-    delete[] a;
-    
-    return ret;
-}
-
-// 在张力样条曲线的一条弦上插值得到拟和点坐标
-// 原理：         x"(s_i)   sinh( sigma * (s_(i+1) - s))
-//       x(s) =  ------- * ----------------------------
-//                sigma^2   sinh(sigma * h_i)
-//
-//               x"(s_(i+1))   sinh( sigma * (s - s_i))
-//            +  ----------- * ------------------------
-//                sigma^2         sinh(sigma * h_i)
-//
-//            + (x_i - x"(s_i)/sigma^2 ) * (s_(i+1) - s) / h_i
-//            + (x_(i+1) - x"(s_(i+1))/sigma^2 ) * (s - s_i) / h_i
-//       即 x(t) = xp[i] * sinh(sigma*(hp[i]-t)) / sinh(sigma*hp[i])
-//               + xp[i+1] * sinh(sigma*t) / sinh(sigma*hp[i])
-//               + (x[i] - xp[i]) * (hp[i]-t) / hp[i]
-//               + (x[i+1] - xp[i+1]) * t / hp[i]
-//       s_i <= s <= s_(i+1), 0 <= t <= hp[i]
-//       s_0 = 0, s_i = s_(i-1) + h_i, h_i = | P[i+1]P[i] |
-void mgcurv::fitClampedSpline(
-    const Point2d* knots, 
-    int i, float t, float sigma,
-    const float* hp, const Vector2d* knotvs, Point2d& fitpt)
-{
-    float s1, s2, s3, tx1, ty1, tx2, ty2;
-    float div_hp0 = 1.f / hp[i];
-    
-    tx1 = (knots[i].x - knotvs[i].x)  * div_hp0;
-    tx2 = (knots[i+1].x - knotvs[i+1].x) * div_hp0;
-    ty1 = (knots[i].y - knotvs[i].y)  * div_hp0;
-    ty2 = (knots[i+1].y - knotvs[i+1].y) * div_hp0;
-    
-    s1 = sinhf(sigma * (hp[i] - t));
-    s2 = sinhf(sigma * t);
-    s3 = 1.f / sinhf(sigma * hp[i]);
-    
-    fitpt.x = (knotvs[i].x * s1 + knotvs[i+1].x * s2) *s3 + tx1*(hp[i] - t) + tx2*t;
-    fitpt.y = (knotvs[i].y * s1 + knotvs[i+1].y * s2) *s3 + ty1*(hp[i] - t) + ty2*t;
 }
 
 typedef void (*FitCubicCallback)(void* data, const Point2d curve[4]);

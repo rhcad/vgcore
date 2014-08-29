@@ -23,6 +23,12 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleUnlock,        //!< 解锁
     kGiHandleCancel,        //!< 放弃
     kGiHandleAccept,        //!< 完成
+    kGiHandleNode,          //!< 顶点
+    kGiHandleCenter,        //!< 圆心
+    kGiHandleMidPoint,      //!< 中点
+    kGiHandleQuadrant,      //!< 象限点
+    kGiHandleIntersect,     //!< 交点
+    kGiHandleNear,          //!< 最近点
     kGiHandleCustom = 20,   //!< 应用自定义
 };
 
@@ -146,6 +152,14 @@ public:
     */
     bool drawLine(const GiContext* ctx, const Point2d& startPt,
                   const Point2d& endPt, bool modelUnit = true);
+    
+    //! 绘制射线，模型坐标或世界坐标
+    bool drawRayline(const GiContext* ctx, const Point2d& startPt,
+                     const Point2d& endPt, bool modelUnit = true);
+    
+    //! 绘制无穷直线，模型坐标或世界坐标
+    bool drawBeeline(const GiContext* ctx, const Point2d& startPt,
+                     const Point2d& endPt, bool modelUnit = true);
 
     //! 绘制折线，模型坐标或世界坐标
     /*!
