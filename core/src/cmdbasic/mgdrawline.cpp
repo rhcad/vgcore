@@ -8,13 +8,15 @@
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
 {
     bool ret = _initialize(MgLine::Type(), sender, s);
+    MgLine *line = (MgLine*)dynshape()->shape();
     
+    line->setRayline(false);
     if (s) {
         if (s->readBool("rayline", false)) {
-            ((MgLine*)dynshape()->shape())->setRayline(true);
+            line->setRayline(true);
         }
         if (s->readBool("beeline", false)) {
-            ((MgLine*)dynshape()->shape())->setBeeline(true);
+            line->setBeeline(true);
         }
     }
     return ret;
