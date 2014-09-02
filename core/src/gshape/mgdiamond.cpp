@@ -87,11 +87,11 @@ float MgDiamond::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 
 bool MgDiamond::_hitTestBox(const Box2d& rect) const
 {
-    if (!__super::_hitTestBox(rect))
+    if (!MgBaseShape::_hitTestBox(rect))
         return false;
     
-    for (int i = 0; i < 3; i++) {
-        if (Box2d(_getHandlePoint(i), _getHandlePoint(i + 1)).isIntersect(rect))
+    for (int i = 0; i < 4; i++) {
+        if (Box2d(_getHandlePoint(i), _getHandlePoint((i + 1) % 4)).isIntersect(rect))
             return true;
     }
     

@@ -129,8 +129,8 @@ bool MgParallel::_hitTestBox(const Box2d& rect) const
     if (!__super::_hitTestBox(rect))
         return false;
 
-    for (int i = 0; i < 3; i++) {
-        if (Box2d(_points[i], _points[i + 1]).isIntersect(rect))
+    for (int i = 0; i < 4; i++) {
+        if (Box2d(_points[i], _points[(i + 1) % 4]).isIntersect(rect))
             return true;
     }
 
