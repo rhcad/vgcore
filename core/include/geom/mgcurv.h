@@ -183,8 +183,12 @@ static bool arcBulge(const Point2d& start, const Point2d& end, float bulge,
     \param[in] r2 第二个圆的半径，正数
     \return 交点个数，-1:无穷个，0：没有交点，1：相切，2：两个交点相交
 */
-static int insectTwoCircles(Point2d& pt1, Point2d& pt2,
-                            const Point2d& c1, float r1, const Point2d& c2, float r2);
+static int crossTwoCircles(Point2d& pt1, Point2d& pt2,
+                           const Point2d& c1, float r1, const Point2d& c2, float r2);
+
+//! 计算无穷直线(ab)与圆(cr)的交点，返回交点数
+static int crossLineCircle(Point2d& pt1, Point2d& pt2,
+                           const Point2d& a, const Point2d& b, const Point2d& c, float r);
 
 #ifndef SWIG
 //! 求解三对角线方程组

@@ -119,8 +119,11 @@ bool MgLine::_hitTestBox(const Box2d& rect) const
 
 void MgLine::_output(MgPath& path) const
 {
-    path.moveTo(_points[0]);
-    path.lineTo(_points[1]);
+    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    Point2d pts[2] = { isBeeline() ? _points[0] - vec : _points[0],
+        _subtype ? _points[1] + vec : _points[1] };
+    path.moveTo(pts[0]);
+    path.lineTo(pts[1]);
 }
 
 bool MgLine::_save(MgStorage* s) const

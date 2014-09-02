@@ -269,6 +269,7 @@ static int ptInArea(
     \return 是否为凸多边形
 */
 static bool isConvex(int count, const Point2d* vertexs, bool* acw = (bool*)0);
+
 #endif
 };
 

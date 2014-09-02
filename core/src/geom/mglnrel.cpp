@@ -394,17 +394,19 @@ int mglnrel::ptInArea(
 
 bool mglnrel::isConvex(int count, const Point2d* vs, bool* acw)
 {
-    if (count < 3 || !vs)
+    if (count < 3 || !vs) {
         return true;
-    bool z0 = (vs[count-1].x - vs[count-2].x) * (vs[1].y - vs[0].y)
-            > (vs[count-1].y - vs[count-2].y) * (vs[1].x - vs[0].x);
+    }
+    bool z = (  (vs[count-1].x - vs[count-2].x) * (vs[1].y - vs[0].y)
+              > (vs[count-1].y - vs[count-2].y) * (vs[1].x - vs[0].x) );
     for (int i = 0; i < count; i++) {
-        if (z0 != ((vs[i].x - vs[i-1].x) * (vs[i+1].y - vs[i].y)
-                   > (vs[i].y - vs[i-1].y) * (vs[i+1].x - vs[i].x)))
+        if (z != (  (vs[i].x - vs[i-1].x) * (vs[i+1].y - vs[i].y)
+                  > (vs[i].y - vs[i-1].y) * (vs[i+1].x - vs[i].x) )) {
             return false;
+        }
     }
     if (acw) {
-        *acw = z0;
+        *acw = z;
     }
     return true;
 }

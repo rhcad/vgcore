@@ -27,6 +27,14 @@ public:
     //! 是否是圆
     bool isCircle() const { return getFlag(kMgSquare); }
     
+    //! 是否是圆
+    static bool isCircle(const MgBaseShape* sp) {
+        return sp->isKindOf(Type()) && sp->getFlag(kMgSquare);
+    }
+    
+    //! 求圆与圆、直线的交点(sp1和sp2至少一个是圆)
+    static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1, const MgBaseShape* sp2);
+    
 #ifndef SWIG
     //! 返回Bezier顶点，13个点
     const Point2d* getBeziers() const { return _bzpts; }

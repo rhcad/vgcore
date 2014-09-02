@@ -30,7 +30,8 @@ int MgBaseLines::_getPointCount() const
 
 Point2d MgBaseLines::_getPoint(int index) const
 {
-    return index >= 0 && index < _count ? _points[index] : Point2d();
+    return (_count < 1 || index < 0 ? Point2d()
+            : _points[index < _count ? index : index % _count]);
 }
 
 void MgBaseLines::_setPoint(int index, const Point2d& pt)
@@ -199,9 +200,10 @@ bool MgBaseLines::_hitTestBox(const Box2d& rect) const
     if (!__super::_hitTestBox(rect))
         return false;
     
-    for (int i = 0; i + 1 < _count; i++) {
-        if (Box2d(_points[i], _points[i + 1]).isIntersect(rect))
+    for (int i = 0, n = isClosed() ? _count : _count - 1; i < n; i++) {
+        if (Box2d(_points[i], _points[(i + 1) % _count]).isIntersect(rect)) {
             return true;
+        }
     }
     
     return _count < 2;

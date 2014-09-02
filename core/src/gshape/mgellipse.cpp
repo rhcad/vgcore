@@ -87,14 +87,11 @@ float MgEllipse::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
     const Box2d rect (pt, 2 * tol, 2 * tol);
     Point2d ptTemp;
 
-    for (int i = 0; i < 4; i++)
-    {
-        if (rect.isIntersect(Box2d(4, _bzpts + 3 * i)))
-        {
+    for (int i = 0; i < 4; i++) {
+        if (rect.isIntersect(Box2d(4, _bzpts + 3 * i))) {
             mgnear::nearestOnBezier(pt, _bzpts + 3 * i, ptTemp);
             float dist = pt.distanceTo(ptTemp);
-            if (dist <= tol && dist < distMin)
-            {
+            if (dist <= tol && dist < distMin) {
                 distMin = dist;
                 res.nearpt = ptTemp;
                 res.segment = i;

@@ -19,7 +19,7 @@ int MgBaseRect::_getPointCount() const
 
 Point2d MgBaseRect::_getPoint(int index) const
 {
-    return _points[index];
+    return (index < 0 ? Point2d() : _points[index < 4 ? index : index % 4]);
 }
 
 void MgBaseRect::_setPoint(int index, const Point2d& pt)
@@ -178,8 +178,8 @@ bool MgBaseRect::_hitTestBox(const Box2d& rect) const
     if (!__super::_hitTestBox(rect))
         return false;
     
-    for (int i = 0; i < 3; i++) {
-        if (Box2d(_points[i], _points[i + 1]).isIntersect(rect))
+    for (int i = 0; i < 4; i++) {
+        if (Box2d(_points[i], _points[(i + 1) % 4]).isIntersect(rect))
             return true;
     }
     
