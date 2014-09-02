@@ -421,9 +421,9 @@ bool mgcurv::arcBulge(
     return mgcurv::arc3P(start, point, end, center, radius, startAngle, sweepAngle);
 }
 
-static int _InsectTwoCircles(point_t& pt1, point_t& pt2,
-                             const point_t& c1, double r1,
-                             const point_t& c2, double r2)
+static int _crossTwoCircles(point_t& pt1, point_t& pt2,
+                            const point_t& c1, double r1,
+                            const point_t& c2, double r2)
 {
     double d, a, b, c, p, q, r;
     double cos_value[2], sin_value[2];
@@ -483,17 +483,59 @@ static int _InsectTwoCircles(point_t& pt1, point_t& pt2,
 }
 
 // http://blog.csdn.net/cyg0810/article/details/7765894
-int mgcurv::insectTwoCircles(Point2d& pt1, Point2d& pt2,
-                               const Point2d& c1, float r1, const Point2d& c2, float r2)
+int mgcurv::crossTwoCircles(Point2d& pt1, Point2d& pt2,
+                            const Point2d& c1, float r1, const Point2d& c2, float r2)
 {
     point_t p1, p2;
     point_t ca(c1.x, c1.y);
     point_t cb(c2.x, c2.y);
-    
-    int n = _InsectTwoCircles(p1, p2, ca, r1, cb, r2);
+    int n = _crossTwoCircles(p1, p2, ca, r1, cb, r2);
     
     pt1.set((float)p1.x, (float)p1.y);
     pt2.set((float)p2.x, (float)p2.y);
+    
+    return n;
+}
+
+// http://mathworld.wolfram.com/Circle-LineIntersection.html
+int _crossLineCircle(point_t& pt1, point_t& pt2, const point_t& a,
+                     const point_t& b, double r)
+{
+    point_t d(b - a);
+    double d2 = d.lengthSquare();
+    double dz = a.crossProduct(b);
+    double z2 = dz * dz;
+    double delta = r * r * d2 - z2;
+    
+    if (delta < 0)
+        return 0;
+    
+    double s = sqrt(delta) / d2;
+    double sx = (d.y < 0 ? -d.x : d.x) * s;
+    double sy = fabs(d.y) * s;
+    double tx = dz * d.y / d2;
+    double ty = -dz * d.x / d2;
+    
+    pt1 = point_t(tx + sx, ty + sy);
+    pt2 = point_t(tx - sx, ty - sy);
+    
+    return delta < 1e-8 ? 1 : 2;
+}
+
+int mgcurv::crossLineCircle(Point2d& pt1, Point2d& pt2, const Point2d& a,
+                            const Point2d& b, const Point2d& c, float r)
+{
+    if (a == b) {
+        return 0;
+    }
+    
+    point_t p1, p2;
+    point_t a1(a.x - c.x, a.y - c.y);
+    point_t b1(b.x - c.x, b.y - c.y);
+    int n = _crossLineCircle(p1, p2, a1, b1, r);
+    
+    pt1.set((float)p1.x + c.x, (float)p1.y + c.y);
+    pt2.set((float)p2.x + c.x, (float)p2.y + c.y);
     
     return n;
 }

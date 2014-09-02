@@ -281,7 +281,8 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         int n = shape->shapec()->getHandleCount();
         
         for (int i = 0; i < n; i++) {
-            if (shape->shapec()->isHandleFixed(i)
+            if (i == m_handleIndex - 1 || i == m_rotateHandle - 1
+                || shape->shapec()->isHandleFixed(i)
                 || !isEditMode(sender->view)) {
                 continue;
             }

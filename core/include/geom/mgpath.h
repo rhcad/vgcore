@@ -9,6 +9,7 @@
 #include "mgpnt.h"
 
 class MgPathImpl;
+class Box2d;
 
 //! 矢量路径节点类型
 /*! \see MgPath
@@ -80,6 +81,15 @@ public:
     
     //! 返回终止切线矢量
     Vector2d getEndTangent() const;
+    
+    //! 返回是否为线段
+    bool isLine() const;
+    
+    //! 返回是否为折线或多边形
+    bool isLines() const;
+    
+    //! 返回是否为闭合图形
+    bool isClosed() const;
 
 #ifndef SWIG
     //! 返回节点坐标数组
@@ -96,7 +106,7 @@ public:
     //! 返回节点类型，由 MgPathNode 值组成
     int getNodeType(int index) const;
     
-    //! 得到节点坐标
+    //! 得到节点坐标，超过点数则取余数
     Point2d getPoint(int index) const;
     
     //! 设置节点坐标
@@ -198,6 +208,9 @@ public:
         \return 是否正确添加
     */
     bool closeFigure();
+    
+    //! 求两个路径的交点
+    bool crossWithPath(const MgPath& path, const Box2d& box, Point2d& ptCross) const;
 
 private:
     MgPathImpl*   m_data;

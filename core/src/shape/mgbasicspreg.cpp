@@ -27,6 +27,31 @@ void MgBasicShapes::registerShapes(MgShapeFactory* factory)
     MgShapeT<MgPathShape>::registerCreator(factory);
 }
 
+int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
+                           const MgBaseShape* sp1, const MgBaseShape* sp2)
+{
+    bool c1 = isCircle(sp1);
+    bool c2 = isCircle(sp2);
+    int n = -1;
+    
+    if (c1 && c2) {
+        n = mgcurv::crossTwoCircles(pt1, pt2, ((MgEllipse*)sp1)->getCenter(),
+                                    ((MgEllipse*)sp1)->getRadiusX(),
+                                    ((MgEllipse*)sp2)->getCenter(),
+                                    ((MgEllipse*)sp2)->getRadiusX());
+    } else if (c1 && sp2->isKindOf(MgLine::Type())) {
+        n = mgcurv::crossLineCircle(pt1, pt2, sp2->getPoint(0), sp2->getPoint(1),
+                                    ((MgEllipse*)sp1)->getCenter(),
+                                    ((MgEllipse*)sp1)->getRadiusX());
+    } else if (c2 && sp1->isKindOf(MgLine::Type())) {
+        n = mgcurv::crossLineCircle(pt1, pt2, sp1->getPoint(0), sp1->getPoint(1),
+                                    ((MgEllipse*)sp2)->getCenter(),
+                                    ((MgEllipse*)sp2)->getRadiusX());
+    }
+    
+    return n;
+}
+
 static bool drawRect(const MgRect& sp, int, GiGraphics& gs, const GiContext& ctx, int)
 {
     return gs.drawPolygon(&ctx, 4, sp.getPoints());

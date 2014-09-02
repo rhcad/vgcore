@@ -220,7 +220,7 @@ int MgArc::_getPointCount() const
 
 Point2d MgArc::_getPoint(int index) const
 {
-    return _points[index % 4];
+    return _points[index < 0 ? 0 : index % 4];
 }
 
 void MgArc::_setPoint(int index, const Point2d& pt)

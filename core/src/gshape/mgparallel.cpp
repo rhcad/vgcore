@@ -22,7 +22,7 @@ int MgParallel::_getPointCount() const
 
 Point2d MgParallel::_getPoint(int index) const
 {
-    return _points[index];
+    return (index < 0 ? Point2d() : _points[index < 4 ? index : index % 4]);
 }
 
 void MgParallel::_setPoint(int index, const Point2d& pt)

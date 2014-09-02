@@ -179,13 +179,42 @@ int MgPath::getNodeType(int index) const
 
 Point2d MgPath::getPoint(int index) const
 {
-    return index >= 0 && index < getCount() ? m_data->points[index] : Point2d();
+    return (index < 0 || getCount() == 0 ? Point2d()
+            : m_data->points[index % getCount()]);
 }
 
 void MgPath::setPoint(int index, const Point2d& pt)
 {
     if (index >= 0 && index < getCount())
         m_data->points[index] = pt;
+}
+
+bool MgPath::isLine() const
+{
+    return (getCount() == 2 && getNodeType(0) == kMgMoveTo
+            && getNodeType(1) == kMgLineTo);
+}
+
+bool MgPath::isLines() const
+{
+    int n = getCount();
+    
+    if (n < 2 || getNodeType(0) != kMgMoveTo) {
+        return false;
+    }
+    for (int i = 1; i < n; i++) {
+        if (getNodeType(i) != kMgLineTo) {
+            return i == n - 1 && getNodeType(i) == (kMgLineTo|kMgCloseFigure);
+        }
+    }
+    return true;
+}
+
+bool MgPath::isClosed() const
+{
+    int n = getCount();
+    return n > 2 && ((getNodeType(n - 1) & kMgCloseFigure)
+                     || getEndPoint() == getStartPoint());
 }
 
 void MgPath::clear()
@@ -525,4 +554,31 @@ bool MgPath::genericRoundLines(int count, const Point2d* points,
         this->lineTo(points[count - 1]);
 
     return true;
+}
+
+#include "mglnrel.h"
+
+bool MgPath::crossWithPath(const MgPath& p, const Box2d& box, Point2d& ptCross) const
+{
+    if (isLine() && p.isLine()) {
+        return (mglnrel::cross2Line(getPoint(0), getPoint(1),
+                                    p.getPoint(0), p.getPoint(1), ptCross)
+                && box.contains(ptCross));
+    }
+    if (isLines() && p.isLines()) {
+        for (int m = getCount() - (isClosed() ? 0 : 1), i = 0; i < m; i++) {
+            Point2d a(getPoint(i)), b(getPoint(i + 1));
+            
+            for (int n = p.getCount() - (p.isClosed() ? 0 : 1), j = 0; j < n; j++) {
+                Point2d c(p.getPoint(j)), d(p.getPoint(j + 1));
+                
+                if (mglnrel::cross2Line(a, b, c, d, ptCross)
+                    && box.contains(ptCross)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    return false;
 }
