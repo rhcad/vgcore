@@ -5,6 +5,8 @@
 #include "mgline.h"
 #include "mgshape_.h"
 
+static const float RAYMUL = 1e3f;
+
 MG_IMPLEMENT_CREATE(MgLine)
 
 MgLine::MgLine() : _subtype(0)
@@ -73,7 +75,7 @@ bool MgLine::_equals(const MgLine& src) const
 
 void MgLine::_update()
 {
-    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    Vector2d vec((_points[1] - _points[0]) * RAYMUL);
     _extent.set(isBeeline() ? _points[0] - vec : _points[0],
                 _subtype ? _points[1] + vec : _points[1]);
     __super::_update();
@@ -111,7 +113,7 @@ bool MgLine::_hitTestBox(const Box2d& rect) const
 {
     if (!__super::_hitTestBox(rect))
         return false;
-    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    Vector2d vec((_points[1] - _points[0]) * RAYMUL);
     Point2d pts[2] = { isBeeline() ? _points[0] - vec : _points[0],
         _subtype ? _points[1] + vec : _points[1] };
     return mglnrel::clipLine(pts[0], pts[1], rect);
@@ -119,7 +121,7 @@ bool MgLine::_hitTestBox(const Box2d& rect) const
 
 void MgLine::_output(MgPath& path) const
 {
-    Vector2d vec((_points[1] - _points[0]) * 100.f);
+    Vector2d vec((_points[1] - _points[0]) * RAYMUL);
     Point2d pts[2] = { isBeeline() ? _points[0] - vec : _points[0],
         _subtype ? _points[1] + vec : _points[1] };
     path.moveTo(pts[0]);

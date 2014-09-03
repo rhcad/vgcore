@@ -54,6 +54,7 @@ public:
     }
 #ifndef SWIG
     T *address() { return _v; }
+    const T *address() const { return _v; }
 #endif
     int count() const {
         return this ? _n : 0;

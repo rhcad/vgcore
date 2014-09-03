@@ -53,7 +53,8 @@ public:
 #endif
     
     int draw(GiGraphics& gs, const GiContext *ctx = NULL) const;
-    int dyndraw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) const;
+    int dyndraw(int mode, GiGraphics& gs, const GiContext *ctx, int segment,
+                const int* ignoreIds = NULL) const;
 
     bool save(MgStorage* s, int startIndex = 0) const;
     bool saveShape(MgStorage* s, const MgShape* shape, int index) const;
@@ -149,7 +150,7 @@ class MgShapeIterator
 {
 public:
     //! 给定图形列表(可为空)构造迭代器
-    MgShapeIterator(const MgShapes* shapes) : _s(shapes), _it(NULL), _sp(NULL) {}
+    MgShapeIterator(const MgShapes* s) : _s(s), _it(NULL), _sp(NULL) {}
     ~MgShapeIterator() { if (_it && _s) _s->freeIterator(_it); }
     
     //! 检查是否还有图形可遍历
@@ -173,6 +174,9 @@ public:
         }
         return sp;
     }
+    
+    //! 返回图形列表
+    const MgShapes* shapes() const { return _s; }
 
 private:
     MgShapeIterator();

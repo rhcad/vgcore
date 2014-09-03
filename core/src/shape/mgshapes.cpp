@@ -431,14 +431,23 @@ int MgShapes::draw(GiGraphics& gs, const GiContext *ctx) const
     return dyndraw(0, gs, ctx, -1);
 }
 
-int MgShapes::dyndraw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) const
+int MgShapes::dyndraw(int mode, GiGraphics& gs, const GiContext *ctx,
+                      int segment, const int* ignoreIds) const
 {
     Box2d clip(gs.getClipModel());
     int count = 0;
     
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end() && !gs.isStopping(); ++it) {
         const MgShape* sp = *it;
-        if (sp->shapec()->getExtent().isIntersect(clip)) {
+        if (ignoreIds) {
+            for (int i = 0; ignoreIds[i]; i++) {
+                if (sp->getID() == ignoreIds[i]) {
+                    sp = NULL;
+                    break;
+                }
+            }
+        }
+        if (sp && sp->shapec()->getExtent().isIntersect(clip)) {
             if (sp->draw(mode, gs, ctx, segment))
                 count++;
         }

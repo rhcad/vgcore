@@ -89,6 +89,7 @@ static bool snapHandle(const MgMotion*, const Point2d& orgpt,
         if (dragHandle && arr0.dist > dist - _MGZERO
             && handleType < kMgHandleOutside && n > 1   // >1:除MgDot外
             && !(shape && shape->getID() == 0               // 新画线段的起点已
+                 && shape->shapec()->getPointCount() > 1
                  && pnt == shape->shapec()->getPoint(0))) { // 与此点重合的除外
             arr0.dist = dist;
             arr0.base = orgpt;
@@ -341,6 +342,10 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
 {
+    if (!sender->view->getOptionInt("snap", "snapEnabled", 1)) {
+        return;
+    }
+    
     Box2d snapbox(orgpt, 2 * arr[0].dist, 0);       // 捕捉容差框
     GiTransform* xf = sender->view->xform();
     Box2d wndbox(xf->getWndRectM());

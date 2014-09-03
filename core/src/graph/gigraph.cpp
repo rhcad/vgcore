@@ -11,6 +11,8 @@
 #define SafeCall(p, f)      if (p) p->f
 #endif
 
+static const float RAYMUL = 1e3f;
+
 GiGraphics::GiGraphics()
 {
     m_impl = new GiGraphicsImpl(new GiTransform(), true);
@@ -302,7 +304,7 @@ bool GiGraphics::drawLine(const GiContext* ctx, const Point2d& startPt,
 bool GiGraphics::drawRayline(const GiContext* ctx, const Point2d& startPt,
                              const Point2d& endPt, bool modelUnit)
 {
-    Vector2d vec((endPt - startPt) * 100.f);
+    Vector2d vec((endPt - startPt) * RAYMUL);
     Point2d pts[2] = { startPt * S2D(xf(), modelUnit),
         (endPt + vec) * S2D(xf(), modelUnit) };
     
@@ -315,7 +317,7 @@ bool GiGraphics::drawRayline(const GiContext* ctx, const Point2d& startPt,
 bool GiGraphics::drawBeeline(const GiContext* ctx, const Point2d& startPt,
                              const Point2d& endPt, bool modelUnit)
 {
-    Vector2d vec((endPt - startPt) * 100.f);
+    Vector2d vec((endPt - startPt) * RAYMUL);
     Point2d pts[2] = { (startPt - vec) * S2D(xf(), modelUnit),
         (endPt + vec) * S2D(xf(), modelUnit) };
     

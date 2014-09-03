@@ -55,7 +55,12 @@ public:
     
     //! 动态显示所有图形
     int dyndraw(int mode, GiGraphics& gs) const;
-
+    
+#ifndef SWIG
+    //! 显示除了特定ID图形外的所有图形
+    int dyndraw(int mode, GiGraphics& gs, const int* ignoreIds) const;
+#endif
+    
     //! 返回图形范围
     Box2d getExtent() const;
 

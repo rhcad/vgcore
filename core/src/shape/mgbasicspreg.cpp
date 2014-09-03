@@ -110,7 +110,7 @@ static bool drawDot(const MgDot& sp, int, GiGraphics& gs, const GiContext& ctx, 
     if (type <= 0) {
         GiContext ctx2(0, GiColor::Invalid(), GiContext::kNullLine,
                        ctx.hasFillColor() ? ctx.getFillColor() : ctx.getLineColor());
-        float w = gs.calcPenWidth(ctx.getLineWidth(), false);
+        float w = gs.calcPenWidth(1.5f * ctx.getLineWidth(), false);
         
         ret = gs.drawCircle(&ctx2, sp.getPoint(0), gs.xf().displayToModel(w));
     } else {

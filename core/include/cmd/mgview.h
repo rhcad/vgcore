@@ -83,8 +83,9 @@ struct MgView
     virtual bool shapeCanTransform(const MgShape* shape) = 0;   //!< 通知是否能对图形变形
     virtual bool shapeCanUnlock(const MgShape* shape) = 0;      //!< 通知是否能对图形解锁
     virtual bool shapeCanUngroup(const MgShape* shape) = 0;     //!< 通知是否能对成组图形解散
+    virtual bool shapeCanMovedHandle(const MgShape* shape, int index) = 0;   //!< 通知是否能移动点
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
-    virtual bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) = 0;  //!< 通知将修改图形
+    virtual bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) = 0; //!< 通知将修改图形
     virtual void shapeChanged(MgShape* shape) = 0;              //!< 通知已拖动图形
     
     //! 图形点击的通知，返回false继续显示上下文按钮
