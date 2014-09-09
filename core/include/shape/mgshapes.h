@@ -53,8 +53,10 @@ public:
 #endif
     
     int draw(GiGraphics& gs, const GiContext *ctx = NULL) const;
+#ifndef SWIG
     int dyndraw(int mode, GiGraphics& gs, const GiContext *ctx, int segment,
                 const int* ignoreIds = NULL) const;
+#endif
 
     bool save(MgStorage* s, int startIndex = 0) const;
     bool saveShape(MgStorage* s, const MgShape* shape, int index) const;

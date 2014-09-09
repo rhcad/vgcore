@@ -35,6 +35,9 @@ public:
     //! 求圆与圆、直线的交点(sp1和sp2至少一个是圆)
     static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1, const MgBaseShape* sp2);
     
+    //! 求圆(sp)与直线(pt1-pt2)的交点
+    static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp);
+    
 #ifndef SWIG
     //! 返回Bezier顶点，13个点
     const Point2d* getBeziers() const { return _bzpts; }

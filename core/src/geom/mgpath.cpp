@@ -566,14 +566,16 @@ bool MgPath::crossWithPath(const MgPath& p, const Box2d& box, Point2d& ptCross) 
                 && box.contains(ptCross));
     }
     if (isLines() && p.isLines()) {
+        Point2d tmpcross;
         for (int m = getCount() - (isClosed() ? 0 : 1), i = 0; i < m; i++) {
             Point2d a(getPoint(i)), b(getPoint(i + 1));
             
             for (int n = p.getCount() - (p.isClosed() ? 0 : 1), j = 0; j < n; j++) {
                 Point2d c(p.getPoint(j)), d(p.getPoint(j + 1));
                 
-                if (mglnrel::cross2Line(a, b, c, d, ptCross)
-                    && box.contains(ptCross)) {
+                if (mglnrel::cross2Line(a, b, c, d, tmpcross)
+                    && box.contains(tmpcross)) {
+                    ptCross = tmpcross;
                     return true;
                 }
             }

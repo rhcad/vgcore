@@ -52,6 +52,19 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
     return n;
 }
 
+int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp)
+{
+    int n = -1;
+    
+    if (isCircle(sp) && pt1 != pt2) {
+        n = mgcurv::crossLineCircle(pt1, pt2, pt1, pt2,
+                                    ((MgEllipse*)sp)->getCenter(),
+                                    ((MgEllipse*)sp)->getRadiusX());
+    }
+    return n;
+}
+
+
 static bool drawRect(const MgRect& sp, int, GiGraphics& gs, const GiContext& ctx, int)
 {
     return gs.drawPolygon(&ctx, 4, sp.getPoints());

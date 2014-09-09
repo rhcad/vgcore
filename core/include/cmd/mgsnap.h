@@ -27,6 +27,7 @@ typedef enum {
     kMgSnapReserved,
     kMgSnapIntersect,   //!< 交点
     kMgSnapPerp,        //!< 垂足
+    kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点
     kMgSnapNearPt,      //!< 线上最近点
 } MgSnapType;
 
