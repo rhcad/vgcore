@@ -14,6 +14,10 @@
 #pragma warning(disable: 4251)  // using non-exported as public in exported
 #endif
 
+#ifndef isnan
+#define isnan(x) ((x)!=(x))
+#endif
+
 const float _MGZERO    = 1e-5f;     //!< 定义可以视为零的极小数
 
 // 定义常用的数学常数

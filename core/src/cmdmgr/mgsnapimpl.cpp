@@ -89,6 +89,7 @@ static bool snapHandle(const MgMotion*, const Point2d& orgpt,
         if (dragHandle && arr0.dist > dist - _MGZERO
             && handleType < kMgHandleOutside && n > 1   // >1:除MgDot外
             && !(shape && shape->getID() == 0               // 新画线段的起点已
+                 && shape->shapec()->getPointCount() > 1
                  && pnt == shape->shapec()->getPoint(0))) { // 与此点重合的除外
             arr0.dist = dist;
             arr0.base = orgpt;
@@ -127,10 +128,12 @@ static bool snapHandle(const MgMotion*, const Point2d& orgpt,
 }
 
 static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& tol,
-                     const MgShape* shape, const MgShape* sp, SnapItem& arr0, bool perpOut)
+                     const MgShape* shape, const MgShape* sp, SnapItem& arr0,
+                     bool perpOut, const Box2d& nearBox)
 {
     int ret = -1;
     const MgBaseShape* s = sp->shapec();
+    MgHitResult nearres;
     
     if (shape && shape->getID() == 0            // 正画的线段 与 折线类图形的边垂直
         && shape->shapec()->isKindOf(MgLine::Type()) && !s->isCurve()) {
@@ -139,8 +142,8 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
         const Point2d start(shape->shapec()->getPoint(0));
         
         for (int i = 0, edges = n - (s->isClosed() ? 0 : 1); i < edges; i++) {
-            const Point2d pt1(s->getHandlePoint(i));
-            const Point2d pt2(s->getHandlePoint((i + 1) % n));
+            Point2d pt1(s->getHandlePoint(i));
+            Point2d pt2(s->getHandlePoint((i + 1) % n));
             float d2 = mglnrel::ptToBeeline2(pt1, pt2, orgpt, perp2);
             
             if (mglnrel::isColinear2(pt1, pt2, start, tol)) {   // 起点在线上
@@ -153,8 +156,28 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
                     arr0.type = kMgSnapPerp;
                     arr0.shapeid = sp->getID();
                     arr0.handleIndex = i;
-                    arr0.handleIndexSrc = 1;
+                    arr0.handleIndexSrc = -1;
                     ret = i;
+                    
+                    const MgShape* sp2 = sp->getParent()->hitTest(nearBox, nearres);
+                    if (sp2 && sp2 != shape) {
+                        pt1 = start;
+                        pt2 = arr0.pt;
+                        int n = MgEllipse::crossCircle(pt1, pt2, sp2->shapec());
+                        if (n < 0) {
+                            MgPath path1, path2;
+                            
+                            path1.moveTo(pt1);
+                            path1.lineTo(pt1 + (pt2 - pt1) * 2.f);
+                            
+                            sp2->shapec()->output(path2);
+                            path1.crossWithPath(path2, Box2d(orgpt, 1e10f, 0), arr0.pt);
+                        } else if (n > 0) {
+                            arr0.pt = pt2.distanceTo(orgpt) < pt1.distanceTo(orgpt) ? pt2 : pt1;
+                        }
+                        arr0.type = kMgSnapPerpNear;
+                        arr0.handleIndexSrc = sp2->getID();
+                    }
                 }
             } else if (d2 < arr0.maxdist) {                     // 终点在线附近
                 mglnrel::ptToBeeline2(pt1, pt2, start, perp1);
@@ -167,7 +190,7 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
                     arr0.type = kMgSnapPerp;
                     arr0.shapeid = sp->getID();
                     arr0.handleIndex = i;
-                    arr0.handleIndexSrc = 1;
+                    arr0.handleIndexSrc = sp->getID();
                     ret = i;
                 }
             }
@@ -341,6 +364,10 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
 {
+    if (!sender->view->getOptionInt("snap", "snapEnabled", 1)) {
+        return;
+    }
+    
     Box2d snapbox(orgpt, 2 * arr[0].dist, 0);       // 捕捉容差框
     GiTransform* xf = sender->view->xform();
     Box2d wndbox(xf->getWndRectM());
@@ -353,6 +380,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     float tolNear = sender->displayMmToModel("snap", "snapNearTol", 3.f);
     Tol tolPerp(sender->displayMmToModel(1));
     bool needGrid = !!sender->view->getOptionInt("snap", "snapGrid", 1);
+    Box2d nearBox(orgpt, needNear ? mgMin(tolNear, sender->displayMmToModel(4.f)) : 0.f, 0);
     
     if (shape) {
         wndbox.unionWith(shape->shapec()->getExtent().inflate(arr[0].dist));
@@ -374,7 +402,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
             b |= (needHandle && snapHandle(sender, orgpt, shape, ignoreHd,
                                            sp, arr[0], matchpt));
             b |= (needPerp && snapPerp(sender, orgpt, tolPerp, shape, sp,
-                                       arr[0], perpOut));
+                                       arr[0], perpOut, nearBox));
             b |= (needCross && snapCross(sender, orgpt, ignoreids, ignoreHd,
                                          shape, sp, arr[0], matchpt));
             if (!b && needNear) {
@@ -506,16 +534,21 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs)
     if (sender->dragging() || !sender->view->useFinger()) {
         if (_snapType[0] >= kMgSnapGrid) {
             bool small = (_snapType[0] >= kMgSnapNearPt || _snapType[0] == kMgSnapGrid);
-            Point2d pt(_snapType[0] == kMgSnapPerp ? _snapBase[0] : _ptSnap);
+            Point2d pt(_snapType[0] == kMgSnapPerp || _snapType[0] == kMgSnapPerpNear ? _snapBase[0] : _ptSnap);
             GiContext ctx(-2, GiColor(0, 255, 0, 200), GiContext::kDashLine, GiColor(0, 255, 0, 64));
             
             ret = gs->drawCircle(&ctx, pt, displayMmToModel(small ? 3.f : 8.f, gs));
             gs->drawHandle(pt, snapTypeToHandleType(_snapType[0]));
             
-            if (_snapType[0] == kMgSnapPerp && _snapHandle >= 0) {
+            if ((_snapType[0] == kMgSnapPerp || _snapType[0] == kMgSnapPerpNear) && _snapHandle >= 0) {
                 const MgShape* sp = sender->view->shapes()->findShape(_snapShapeId);
                 int n = sp ? sp->shapec()->getPointCount() : 0;
                 if (n > 1) {
+                    if (_snapType[0] == kMgSnapPerpNear) {
+                        gs->drawCircle(&ctx, _ptSnap, displayMmToModel(4.f, gs));
+                        gs->drawHandle(_ptSnap, kGiHandleNear);
+                    }
+                    
                     Point2d pt1(sp->shapec()->getHandlePoint(_snapHandle));
                     Point2d pt2(sp->shapec()->getHandlePoint((_snapHandle + 1) % n));
                     

@@ -210,6 +210,9 @@ public:
         return mgHypot(x - pnt.x, y - pnt.y) <= tol.equalPoint();
     }
     
+    //! 返回某个分量是为NAN越界值
+    bool isDegenerate() const { return isnan(x) || isnan(y); }
+    
     //! 设置为点(xx, yy)
     Point2d& set(float xx, float yy) {
         x = xx; y = yy; return *this;

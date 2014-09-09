@@ -141,6 +141,8 @@ public:
         return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
+    bool shapeCanMovedHandle(const MgShape* shape, int index) {
+        return !cmds() || getCmdSubject()->onShapeCanMovedHandle(motion(), shape, index); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
     bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {

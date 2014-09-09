@@ -52,6 +52,19 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
     return n;
 }
 
+int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp)
+{
+    int n = -1;
+    
+    if (isCircle(sp) && pt1 != pt2) {
+        n = mgcurv::crossLineCircle(pt1, pt2, pt1, pt2,
+                                    ((MgEllipse*)sp)->getCenter(),
+                                    ((MgEllipse*)sp)->getRadiusX());
+    }
+    return n;
+}
+
+
 static bool drawRect(const MgRect& sp, int, GiGraphics& gs, const GiContext& ctx, int)
 {
     return gs.drawPolygon(&ctx, 4, sp.getPoints());
@@ -110,7 +123,7 @@ static bool drawDot(const MgDot& sp, int, GiGraphics& gs, const GiContext& ctx, 
     if (type <= 0) {
         GiContext ctx2(0, GiColor::Invalid(), GiContext::kNullLine,
                        ctx.hasFillColor() ? ctx.getFillColor() : ctx.getLineColor());
-        float w = gs.calcPenWidth(ctx.getLineWidth(), false);
+        float w = gs.calcPenWidth(1.5f * ctx.getLineWidth(), false);
         
         ret = gs.drawCircle(&ctx2, sp.getPoint(0), gs.xf().displayToModel(w));
     } else {
