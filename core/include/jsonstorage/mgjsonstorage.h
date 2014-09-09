@@ -38,11 +38,11 @@ public:
     MgStorage* storageForRead(FILE* fp);
 
     //! 写数据到给定的文件
-    bool save(FILE* fp, bool pretty = true);
+    bool save(FILE* fp, bool pretty = false);
 #endif
     
     //! 返回JSON内容
-    const char* stringify(bool pretty = true);
+    const char* stringify(bool pretty = false);
     
     //! 清除内存资源
     void clear();

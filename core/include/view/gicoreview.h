@@ -143,7 +143,7 @@ public:
     int getSelectedShapeID();
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
-    bool saveToFile(long doc, const char* vgfile, bool pretty = true);
+    bool saveToFile(long doc, const char* vgfile, bool pretty = false);
     bool loadShapes(MgStorage* s, bool readOnly = false);
     bool saveShapes(long doc, MgStorage* s);
     const char* getContent(long doc);
