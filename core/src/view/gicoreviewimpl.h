@@ -155,6 +155,7 @@ public:
     }
     void selectionChanged() {
         CALL_VIEW(deviceView()->selectionChanged());
+        getCmdSubject()->onSelectionChanged(motion());
     }
     void dynamicChanged() {
         CALL_VIEW(deviceView()->dynamicChanged());

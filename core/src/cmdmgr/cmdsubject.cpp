@@ -100,6 +100,11 @@ private:
         }
     }
 
+    virtual void onSelectionChanged(const MgMotion* sender) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onSelectionChanged(sender);
+        }
+    }
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
             if (!(*it)->onShapeWillAdded(sender, shape)) {

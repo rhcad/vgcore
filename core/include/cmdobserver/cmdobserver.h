@@ -69,6 +69,7 @@ struct CmdObserver {
                                        int* ids, int& i, int n) = 0;
 #endif
 
+    virtual void onSelectionChanged(const MgMotion* sender) = 0;               //!< 选择集改变的通知
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) = 0;    //!< 通知将添加图形
     virtual void onShapeAdded(const MgMotion* sender, const MgShape* sp) = 0;        //!< 通知已添加图形
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) = 0;  //!< 通知将删除图形
@@ -108,6 +109,7 @@ public:
     virtual void drawInShapeCommand(const MgMotion* sender, MgCommand* cmd, GiGraphics* gs) {}
     virtual void drawInSelectCommand(const MgMotion* sender, const MgShape* sp,
                                      int handleIndex, GiGraphics* gs) {}
+    virtual void onSelectionChanged(const MgMotion* sender) {}
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) { return true; }
     virtual void onShapeAdded(const MgMotion* sender, const MgShape* sp) {}
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) { return true; }
