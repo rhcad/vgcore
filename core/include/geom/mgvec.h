@@ -239,6 +239,9 @@ public:
         return mgHypot(x, y) < tol.equalPoint();
     }
     
+    //! 返回某个分量是为NAN越界值
+    bool isDegenerate() const { return isnan(x) || isnan(y); }
+    
 #ifndef SWIG
     //! 判断两个矢量是否相等
     bool operator==(const Vector2d& v) const {

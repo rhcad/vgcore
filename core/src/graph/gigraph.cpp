@@ -1111,7 +1111,8 @@ bool GiGraphics::setBrush(const GiContext* ctx)
 
 bool GiGraphics::rawLine(const GiContext* ctx, float x1, float y1, float x2, float y2)
 {
-    if (m_impl->canvas && !m_impl->stopping && setPen(ctx)) {
+    if (m_impl->canvas && !m_impl->stopping && setPen(ctx)
+        && !isnan(x1) && !isnan(y1) && !isnan(x2) && !isnan(y2)) {
         m_impl->canvas->drawLine(x1, y1, x2, y2);
         return true;
     }
@@ -1122,8 +1123,12 @@ bool GiGraphics::rawLines(const GiContext* ctx, const Point2d* pxs, int count)
 {
     if (m_impl->canvas && setPen(ctx) && pxs && count > 0) {
         m_impl->canvas->beginPath();
+        if (pxs[0].isDegenerate())
+            return false;
         m_impl->canvas->moveTo(pxs[0].x, pxs[0].y);
         for (int i = 1; i < count && !m_impl->stopping; i++) {
+            if (pxs[i].isDegenerate())
+                return false;
             m_impl->canvas->lineTo(pxs[i].x, pxs[i].y);
         }
         m_impl->canvas->drawPath(true, false);
@@ -1136,8 +1141,12 @@ bool GiGraphics::rawBeziers(const GiContext* ctx, const Point2d* pxs, int count,
 {
     if (m_impl->canvas && setPen(ctx) && pxs && count > 0) {
         m_impl->canvas->beginPath();
+        if (pxs[0].isDegenerate())
+            return false;
         m_impl->canvas->moveTo(pxs[0].x, pxs[0].y);
         for (int i = 1; i + 2 < count && !m_impl->stopping; i += 3) {
+            if (pxs[i].isDegenerate() || pxs[i+1].isDegenerate() || pxs[i+2].isDegenerate())
+                return false;
             m_impl->canvas->bezierTo(pxs[i].x, pxs[i].y, pxs[i+1].x, pxs[i+1].y,
                                      pxs[i+2].x, pxs[i+2].y);
         }
@@ -1157,8 +1166,12 @@ bool GiGraphics::rawPolygon(const GiContext* ctx, const Point2d* pxs, int count)
     
     if (m_impl->canvas && pxs && count > 0) {
         m_impl->canvas->beginPath();
+        if (pxs[0].isDegenerate())
+            return false;
         m_impl->canvas->moveTo(pxs[0].x, pxs[0].y);
         for (int i = 1; i < count && !m_impl->stopping; i++) {
+            if (pxs[i].isDegenerate())
+                return false;
             m_impl->canvas->lineTo(pxs[i].x, pxs[i].y);
         }
         m_impl->canvas->closePath();
@@ -1173,7 +1186,8 @@ bool GiGraphics::rawRect(const GiContext* ctx, float x, float y, float w, float 
     bool usePen = setPen(ctx);
     bool useBrush = setBrush(ctx);
     
-    if (m_impl->canvas && !m_impl->stopping) {
+    if (m_impl->canvas && !m_impl->stopping
+        && !isnan(x) && !isnan(y) && !isnan(w) && !isnan(h)) {
         m_impl->canvas->drawRect(x, y, w, h, usePen, useBrush);
         return true;
     }
@@ -1185,7 +1199,8 @@ bool GiGraphics::rawEllipse(const GiContext* ctx, float x, float y, float w, flo
     bool usePen = setPen(ctx);
     bool useBrush = setBrush(ctx);
     
-    if (m_impl->canvas && !m_impl->stopping) {
+    if (m_impl->canvas && !m_impl->stopping
+        && !isnan(x) && !isnan(y) && !isnan(w) && !isnan(h)) {
         m_impl->canvas->drawEllipse(x, y, w, h, usePen, useBrush);
         return true;
     }
@@ -1214,35 +1229,42 @@ bool GiGraphics::rawEndPath(const GiContext* ctx, bool fill)
 
 bool GiGraphics::rawMoveTo(float x, float y)
 {
-    if (m_impl->canvas) {
+    if (m_impl->canvas && !isnan(x) && !isnan(y)) {
         m_impl->canvas->moveTo(x, y);
+        return true;
     }
-    return !!m_impl->canvas;
+    return false;
 }
 
 bool GiGraphics::rawLineTo(float x, float y)
 {
-    if (m_impl->canvas && !m_impl->stopping) {
+    if (m_impl->canvas && !isnan(x) && !isnan(y)) {
         m_impl->canvas->lineTo(x, y);
+        return true;
     }
-    return !!m_impl->canvas;
+    return false;
 }
 
 bool GiGraphics::rawBezierTo(float c1x, float c1y, float c2x, 
                              float c2y, float x, float y)
 {
-    if (m_impl->canvas && !m_impl->stopping) {
+    if (m_impl->canvas && !m_impl->stopping
+        && !isnan(c1x) && !isnan(c1y) && !isnan(c2x) && !isnan(c2y)
+        && !isnan(x) && !isnan(y)) {
         m_impl->canvas->bezierTo(c1x, c1y, c2x, c2y, x, y);
+        return true;
     }
-    return !!m_impl->canvas;
+    return false;
 }
 
 bool GiGraphics::rawQuadTo(float cpx, float cpy, float x, float y)
 {
-    if (m_impl->canvas && !m_impl->stopping) {
+    if (m_impl->canvas && !m_impl->stopping
+        && !isnan(cpx) && !isnan(cpy) && !isnan(x) && !isnan(y)) {
         m_impl->canvas->quadTo(cpx, cpy, x, y);
+        return true;
     }
-    return !!m_impl->canvas;
+    return false;
 }
 
 bool GiGraphics::rawClosePath()
@@ -1255,7 +1277,8 @@ bool GiGraphics::rawClosePath()
 
 bool GiGraphics::rawText(const char* text, float x, float y, float h, int align)
 {
-    if (m_impl->canvas && text && !m_impl->stopping) {
+    if (m_impl->canvas && text && !m_impl->stopping
+        && !isnan(x) && !isnan(y)) {
         m_impl->canvas->drawTextAt(text, x, y, h, align);
         return true;
     }
@@ -1265,7 +1288,8 @@ bool GiGraphics::rawText(const char* text, float x, float y, float h, int align)
 bool GiGraphics::rawImage(const char* name, float xc, float yc, 
                           float w, float h, float angle)
 {
-    if (m_impl->canvas && name && !m_impl->stopping) {
+    if (m_impl->canvas && name && !m_impl->stopping
+        && !isnan(xc) && !isnan(yc)) {
         return m_impl->canvas->drawBitmap(name, xc, yc, w, h, angle);
     }
     return false;
@@ -1273,7 +1297,7 @@ bool GiGraphics::rawImage(const char* name, float xc, float yc,
 
 bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool modelUnit)
 {
-    if (m_impl->canvas && type >= 0 && !m_impl->stopping) {
+    if (m_impl->canvas && type >= 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * S2D(xf(), modelUnit));
         return m_impl->canvas->drawHandle(ptd.x, ptd.y, type, angle);
     }

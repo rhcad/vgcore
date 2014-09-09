@@ -34,7 +34,7 @@ void MgLine::_setPoint(int index, const Point2d& pt)
 
 int MgLine::_getHandleCount() const
 {
-    return 3;
+    return _subtype ? 2 : 3;
 }
 
 Point2d MgLine::_getHandlePoint(int index) const
