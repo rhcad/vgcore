@@ -741,10 +741,14 @@ static bool moveIntoLimits(MgBaseShape* shape, const MgMotion* sender)
 {
     Box2d limits(sender->view->xform()->getWorldLimits()
                  * sender->view->xform()->worldToModel());
-    Box2d rect(shape->getExtent());
+    Box2d rect;
     bool outside = false;
     
     limits.normalize();
+    for (int i = shape->getPointCount() - 1; i >= 0; i--) {
+        rect.unionWith(shape->getPoint(i));
+    }
+    
     if (rect.xmin < limits.xmin) {
         rect.offset(limits.xmin - rect.xmin, 0);
         outside = true;
