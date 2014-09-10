@@ -25,9 +25,9 @@ bool MgCmdDrawCircle3P::initialize(const MgMotion* sender, MgStorage* s)
     return ret;
 }
 
-void MgCmdDrawCircle3P::drawHandles(const MgMotion*, GiGraphics* gs)
+void MgCmdDrawCircle3P::drawHandles(const MgMotion* sender, GiGraphics* gs)
 {
-    if (m_step > 0 && m_step < 3) {
+    if (m_step > 0 && m_step < 3 && !getSnappedType(sender)) {
         gs->drawHandle(_points[m_step], kGiHandleHotVertex);
     }
 }

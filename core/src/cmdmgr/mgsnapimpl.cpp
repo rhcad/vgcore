@@ -88,7 +88,7 @@ static bool snapHandle(const MgMotion*, const Point2d& orgpt,
         
         float dist = pnt.distanceTo(orgpt);             // 触点与顶点匹配
         if (dragHandle && arr0.dist > dist - _MGZERO
-            && handleType < kMgHandleOutside && n > 1   // >1:除MgDot外
+            && handleType < kMgHandleOutside
             && !(shape && shape->getID() == 0               // 新画线段的起点已
                  && shape->shapec()->getPointCount() > 1
                  && pnt == shape->shapec()->getPoint(0))) { // 与此点重合的除外
