@@ -102,12 +102,12 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
 
 static int s_useFinger = -1;
 
-float MgCmdManagerImpl::displayMmToModel(float mm, GiGraphics* gs)
+float MgCmdManagerImpl::displayMmToModel(float mm, GiGraphics* gs) const
 {
     return gs->xf().displayToModel(s_useFinger ? mm : mm / 2.f, true);
 }
 
-float MgCmdManagerImpl::displayMmToModel(float mm, const MgMotion* sender)
+float MgCmdManagerImpl::displayMmToModel(float mm, const MgMotion* sender) const
 {
     if (s_useFinger < 0) {
         s_useFinger = sender->view->useFinger() ? 1 : 0;

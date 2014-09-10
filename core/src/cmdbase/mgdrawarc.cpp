@@ -12,9 +12,9 @@ bool MgCmdArc3P::initialize(const MgMotion* sender, MgStorage* s)
     return _initialize(MgArc::Type(), sender, s);
 }
 
-void MgCmdArc3P::drawArcHandle(const MgMotion*, GiGraphics* gs)
+void MgCmdArc3P::drawArcHandle(const MgMotion* sender, GiGraphics* gs)
 {
-    if (m_step > 0 && m_step < 3) {
+    if (m_step > 0 && m_step < 3 && !getSnappedType(sender)) {
         gs->drawHandle(_points[m_step], kGiHandleHotVertex);
     }
 }

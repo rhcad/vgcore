@@ -141,8 +141,8 @@ bool MgArc::setStartMidEnd(const Point2d& start, const Point2d& point, const Poi
     Point2d center;
     float radius, startAngle, sweepAngle = 0;
 
-    return mgcurv::arc3P(start, point, end, center, radius, &startAngle, &sweepAngle)
-        && setCenterRadius(center, radius, startAngle, sweepAngle);
+    return (mgcurv::arc3P(start, point, end, center, radius, &startAngle, &sweepAngle)
+            && setCenterRadius(center, radius, startAngle, sweepAngle));
 }
 
 bool MgArc::setCenterStartEnd(const Point2d& center, const Point2d& start)
@@ -179,8 +179,8 @@ bool MgArc::setTanStartEnd(const Vector2d& startTan, const Point2d& start, const
     Point2d center;
     float radius, startAngle, sweepAngle = 0;
 
-    return mgcurv::arcTan(start, end, startTan, center, radius, &startAngle, &sweepAngle)
-        && setCenterRadius(center, radius, startAngle, sweepAngle);
+    return (mgcurv::arcTan(start, end, startTan, center, radius, &startAngle, &sweepAngle)
+            && setCenterRadius(center, radius, startAngle, sweepAngle));
 }
 
 void MgArc::_output(MgPath& path) const

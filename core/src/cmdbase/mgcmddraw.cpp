@@ -186,6 +186,11 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender,
     return pt;
 }
 
+int MgCommandDraw::getSnappedType(const MgMotion* sender) const
+{
+    return sender->view->getSnap()->getSnappedType();
+}
+
 void MgCommandDraw::setStepPoint(int step, const Point2d& pt)
 {
     if (step > 0) {

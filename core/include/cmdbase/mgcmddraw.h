@@ -25,6 +25,9 @@ public:
     //! 返回新图形的类型，供其他语言重载使用
     virtual int getShapeType() { return m_shape ? m_shape->shapec()->getType() : 0; }
     
+    //! 返回当前捕捉结果类型, >=kMgSnapGrid
+    int getSnappedType(const MgMotion* sender) const;
+    
 protected:
     bool _initialize(int shapeType, const MgMotion* sender, MgStorage* s);
     bool _click(const MgMotion* sender);

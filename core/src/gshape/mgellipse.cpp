@@ -36,6 +36,29 @@ void MgEllipse::setRadius(float rx, float ry)
     setRectWithAngle(rect.leftTop(), rect.rightBottom(), getAngle(), getCenter());
 }
 
+bool MgEllipse::setCircle(const Point2d& center, float radius)
+{
+    if (radius < _MGZERO)
+        return false;
+    Box2d rect(center, radius * 2, 0);
+    setRectWithAngle(rect.leftTop(), rect.rightBottom(), getAngle(), center);
+    return true;
+}
+
+bool MgEllipse::setCircle2P(const Point2d& start, const Point2d& end)
+{
+    return setCircle((start + end) / 2, start.distanceTo(end) / 2);
+}
+
+bool MgEllipse::setCircle3P(const Point2d& start, const Point2d& point, const Point2d& end)
+{
+    Point2d center;
+    float radius;
+    
+    return (mgcurv::arc3P(start, point, end, center, radius)
+            && setCircle(center, radius));
+}
+
 void MgEllipse::_update()
 {
     mgcurv::ellipseToBezier(_bzpts, getCenter(), getWidth() / 2, getHeight() / 2);
