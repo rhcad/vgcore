@@ -50,15 +50,15 @@ void MgCmdManagerImpl::unloadCommands()
     freeSubject();
 }
 
-const char* MgCmdManagerImpl::getCommandName()
+const char* MgCmdManagerImpl::getCommandName() const
 {
     MgCommand* cmd = getCommand();
     return cmd ? cmd->getName() : "";
 }
 
-const char* MgCmdManagerImpl::getCommandName(int index)
+const char* MgCmdManagerImpl::getCommandName(int index) const
 {
-    Factories::iterator it = _factories.begin();
+    Factories::const_iterator it = _factories.begin();
     for (; it != _factories.end() && index-- > 0; ++it) ;
     return it != _factories.end() ? it->first.c_str() : "";
 }
@@ -77,9 +77,9 @@ bool MgCmdManagerImpl::switchCommand(const MgMotion* sender)
     return setCommand(sender, getCommandName(0), NULL);
 }
 
-MgCommand* MgCmdManagerImpl::getCommand()
+MgCommand* MgCmdManagerImpl::getCommand() const
 {
-    CMDS::iterator it = _cmds.find(_cmdname);
+    CMDS::const_iterator it = _cmds.find(_cmdname);
     return (it != _cmds.end()) ? it->second : NULL;
 }
 
