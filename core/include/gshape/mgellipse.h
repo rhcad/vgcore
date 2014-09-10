@@ -24,6 +24,15 @@ public:
     //! 设置半轴长度
     void setRadius(float rx, float ry = 0.0);
     
+    //! 设置圆心和半径
+    bool setCircle(const Point2d& center, float radius);
+    
+    //! 给定直径画圆
+    bool setCircle2P(const Point2d& start, const Point2d& end);
+    
+    //! 过三点画圆
+    bool setCircle3P(const Point2d& start, const Point2d& point, const Point2d& end);
+    
     //! 是否是圆
     bool isCircle() const { return getFlag(kMgSquare); }
     

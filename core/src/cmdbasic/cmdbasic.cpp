@@ -23,6 +23,7 @@ void MgBasicCommands::registerCmds(MgView* view)
     mgRegisterCommand<MgCmdDrawSquare>(view);
     mgRegisterCommand<MgCmdDrawEllipse>(view);
     mgRegisterCommand<MgCmdDrawCircle>(view);
+    mgRegisterCommand<MgCmdDrawCircle3P>(view);
     mgRegisterCommand<MgCmdDrawDiamond>(view);
     mgRegisterCommand<MgCmdDrawLine>(view);
     mgRegisterCommand<MgCmdDrawDot>(view);
