@@ -32,21 +32,39 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
 {
     bool c1 = isCircle(sp1);
     bool c2 = isCircle(sp2);
+    bool a1 = sp1->isKindOf(MgArc::Type());
+    bool a2 = sp2->isKindOf(MgArc::Type());
+    Point2d cen1, cen2;
+    float r1, r2;
     int n = -1;
     
+    if (c1) {
+        cen1 = ((MgEllipse*)sp1)->getCenter();
+        r1 = ((MgEllipse*)sp1)->getRadiusX();
+    }
+    if (c2) {
+        cen2 = ((MgEllipse*)sp2)->getCenter();
+        r2 = ((MgEllipse*)sp2)->getRadiusX();
+    }
+    if (a1) {
+        cen1 = ((MgArc*)sp1)->getCenter();
+        r1 = ((MgArc*)sp1)->getRadius();
+    }
+    if (a2) {
+        cen2 = ((MgArc*)sp2)->getCenter();
+        r2 = ((MgArc*)sp2)->getRadius();
+    }
+    c1 = c1 || a1;
+    c2 = c2 || a2;
+    
     if (c1 && c2) {
-        n = mgcurv::crossTwoCircles(pt1, pt2, ((MgEllipse*)sp1)->getCenter(),
-                                    ((MgEllipse*)sp1)->getRadiusX(),
-                                    ((MgEllipse*)sp2)->getCenter(),
-                                    ((MgEllipse*)sp2)->getRadiusX());
+        n = mgcurv::crossTwoCircles(pt1, pt2, cen1, r1, cen2, r2);
     } else if (c1 && sp2->isKindOf(MgLine::Type())) {
         n = mgcurv::crossLineCircle(pt1, pt2, sp2->getPoint(0), sp2->getPoint(1),
-                                    ((MgEllipse*)sp1)->getCenter(),
-                                    ((MgEllipse*)sp1)->getRadiusX());
+                                    cen1, r1);
     } else if (c2 && sp1->isKindOf(MgLine::Type())) {
         n = mgcurv::crossLineCircle(pt1, pt2, sp1->getPoint(0), sp1->getPoint(1),
-                                    ((MgEllipse*)sp2)->getCenter(),
-                                    ((MgEllipse*)sp2)->getRadiusX());
+                                    cen2, r2);
     }
     
     return n;
@@ -60,6 +78,11 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp)
         n = mgcurv::crossLineCircle(pt1, pt2, pt1, pt2,
                                     ((MgEllipse*)sp)->getCenter(),
                                     ((MgEllipse*)sp)->getRadiusX());
+    }
+    else if (sp->isKindOf(MgArc::Type()) && pt1 != pt2) {
+        n = mgcurv::crossLineCircle(pt1, pt2, pt1, pt2,
+                                    ((MgArc*)sp)->getCenter(),
+                                    ((MgArc*)sp)->getRadius());
     }
     return n;
 }

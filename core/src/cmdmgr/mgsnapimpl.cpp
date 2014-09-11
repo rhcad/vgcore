@@ -72,7 +72,7 @@ static bool skipShape(const int* ignoreids, const MgShape* sp)
     return skip;
 }
 
-static bool snapHandle(const MgMotion*, const Point2d& orgpt,
+static bool snapHandle(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const MgShape* sp, SnapItem& arr0, Point2d* matchpt)
 {
@@ -87,6 +87,10 @@ static bool snapHandle(const MgMotion*, const Point2d& orgpt,
         int handleType = sp->shapec()->getHandleType(i);
         
         float dist = pnt.distanceTo(orgpt);             // 触点与顶点匹配
+        
+        if (handleType == kMgHandleMidPoint) {          // 交点优先于中点
+            dist += sender->displayMmToModel(0.5f);
+        }
         if (dragHandle && arr0.dist > dist - _MGZERO
             && handleType < kMgHandleOutside
             && !(shape && shape->getID() == 0               // 新画线段的起点已

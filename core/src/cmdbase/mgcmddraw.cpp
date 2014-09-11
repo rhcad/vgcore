@@ -235,10 +235,10 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     if (!pnt.isEqualTo(dynshape()->shape()->getPoint(m_step - 1), tol)) {
         m_step++;
         if (m_step >= getMaxStep()) {
+            m_step = 0;
             if (!dynshape()->shape()->getExtent().isEmpty(tol, false)) {
                 addShape(sender);
             }
-            m_step = 0;
         }
     }
 

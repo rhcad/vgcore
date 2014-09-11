@@ -18,6 +18,7 @@ public:
     virtual ~MgCommandDraw();
     
     MgShape* addShape(const MgMotion* sender, MgShape* shape = NULL);
+    
     bool touchBeganStep(const MgMotion* sender);
     bool touchMovedStep(const MgMotion* sender);
     bool touchEndedStep(const MgMotion* sender);

@@ -27,6 +27,8 @@ public:
     Vector2d getEndTangent() const;
     
     bool setStartMidEnd(const Point2d& start, const Point2d& point, const Point2d& end);
+    bool setCenterStartMidEnd(const Point2d& center, const Point2d& start,
+                              const Point2d& midpt, const Point2d& end);
     bool setCenterStartEnd(const Point2d& center, const Point2d& start);
     bool setCenterStartEnd(const Point2d& center, const Point2d& start, const Point2d& end);
     bool setTanStartEnd(const Vector2d& startTan, const Point2d& start, const Point2d& end);

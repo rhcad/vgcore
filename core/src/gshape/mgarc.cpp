@@ -139,10 +139,20 @@ bool MgArc::setCenterRadius(const Point2d& center, float radius, float startAngl
 bool MgArc::setStartMidEnd(const Point2d& start, const Point2d& point, const Point2d& end)
 {
     Point2d center;
-    float radius, startAngle, sweepAngle = 0;
+    float r, startAngle, sweepAngle = 0;
 
-    return (mgcurv::arc3P(start, point, end, center, radius, &startAngle, &sweepAngle)
-            && setCenterRadius(center, radius, startAngle, sweepAngle));
+    return (mgcurv::arc3P(start, point, end, center, r, &startAngle, &sweepAngle)
+            && setCenterRadius(center, r, startAngle, sweepAngle));
+}
+
+bool MgArc::setCenterStartMidEnd(const Point2d& center, const Point2d& start,
+                                 const Point2d& midpt, const Point2d& end)
+{
+    Point2d tmpcen;
+    float r, startAngle, sweepAngle = 0;
+    
+    return (mgcurv::arc3P(start, midpt, end, tmpcen, r, &startAngle, &sweepAngle)
+            && setCenterRadius(center, center.distanceTo(start), startAngle, sweepAngle));
 }
 
 bool MgArc::setCenterStartEnd(const Point2d& center, const Point2d& start)
