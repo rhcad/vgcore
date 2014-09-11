@@ -113,6 +113,9 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt,
             Point2d ptd (shape->shapec()->getHandlePoint(d));   // 当前图形的顶点
             
             dist = pnt.distanceTo(ptd);                 // 当前图形与其他图形顶点匹配
+            if (handleType == kMgHandleMidPoint) {      // 交点优先于中点
+                dist += sender->displayMmToModel(0.5f);
+            }
             if (arr0.dist > dist - _MGZERO && handleType < kMgHandleOutside) {
                 arr0.dist = dist;
                 arr0.base = ptd;  // 新的移动起点为当前图形的一个顶点
@@ -335,7 +338,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
                 continue;
             }
             
-            int n = MgEllipse::crossCircle(pt1, pt2, sp1->shapec(), sp2->shapec());
+            int n = MgEllipse::crossCircle(pt1, pt2, sp1->shapec(), sp2->shapec(), orgpt);
             
             if (n < 0) {
                 MgPath path2;

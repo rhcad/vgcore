@@ -27,8 +27,8 @@ void MgBasicShapes::registerShapes(MgShapeFactory* factory)
     MgShapeT<MgPathShape>::registerCreator(factory);
 }
 
-int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
-                           const MgBaseShape* sp1, const MgBaseShape* sp2)
+int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
+                           const MgBaseShape* sp2, const Point2d& hitpt)
 {
     bool c1 = isCircle(sp1);
     bool c2 = isCircle(sp2);
@@ -56,15 +56,35 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2,
     }
     c1 = c1 || a1;
     c2 = c2 || a2;
+    sp1 = c1 ? sp2 : sp1;
     
     if (c1 && c2) {
         n = mgcurv::crossTwoCircles(pt1, pt2, cen1, r1, cen2, r2);
-    } else if (c1 && sp2->isKindOf(MgLine::Type())) {
-        n = mgcurv::crossLineCircle(pt1, pt2, sp2->getPoint(0), sp2->getPoint(1),
-                                    cen1, r1);
-    } else if (c2 && sp1->isKindOf(MgLine::Type())) {
+    } else if ((c1 || c2) && sp1->isKindOf(MgLine::Type())) {
         n = mgcurv::crossLineCircle(pt1, pt2, sp1->getPoint(0), sp1->getPoint(1),
                                     cen2, r2);
+    } else if ((c1 || c2) && sp1->isKindOf(MgLines::Type())) {
+        int edges = sp1->getPointCount() - (sp1->isClosed() ? 0 : 1);
+        Point2d pt1r, pt2r;
+        float dist = _FLT_MAX;
+        int n2;
+        
+        for (int i = 0; i < edges; i++) {
+            n2 = mgcurv::crossLineCircle(pt1r, pt2r, sp1->getHandlePoint(i),
+                                        sp1->getHandlePoint((i + 1) % sp1->getPointCount()),
+                                        cen2, r2);
+            if (n2 > 0) {
+                Point2d pt(pt2r.distanceTo(hitpt) < pt1r.distanceTo(hitpt) ? pt2r : pt1r);
+                float d = hitpt.distanceTo(pt);
+                
+                if (dist > d) {
+                    dist = d;
+                    n = n2;
+                    pt1 = pt1r;
+                    pt2 = pt2r;
+                }
+            }
+        }
     }
     
     return n;
