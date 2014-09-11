@@ -112,6 +112,8 @@ public:
     CmdSubject* getCmdSubject() { return cmds()->getCmdSubject(); }
     MgSelection* getSelection() { return cmds()->getSelection(); }
     MgShapeFactory* getShapeFactory() { return this; }
+    MgShape* createShapeCtx(int type) { MgShape* s = createShape(type);
+        if (s) s->setContext(*context()); return s; }
     MgSnap* getSnap() { return _cmds->getSnap(); }
     MgActionDispatcher* getAction() {
         return _cmds->getActionDispatcher(); }

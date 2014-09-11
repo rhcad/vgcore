@@ -14,7 +14,6 @@
 #include "cmdsubject.h"
 #include "mglocal.h"
 #include "mglog.h"
-#include "mgspfactory.h"
 #include "mgstorage.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
@@ -1166,7 +1165,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
     if (m_selIds.size() > 1) {
         applyCloneShapes(sender->view, false);
 
-        MgShape* newgroup = sender->view->getShapeFactory()->createShape(MgGroup::Type());
+        MgShape* newgroup = sender->view->createShapeCtx(MgGroup::Type());
         MgGroup* group = (MgGroup*)newgroup->shape();
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {

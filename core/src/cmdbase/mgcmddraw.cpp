@@ -8,7 +8,6 @@
 #include "cmdsubject.h"
 #include <string.h>
 #include "mglog.h"
-#include "mgspfactory.h"
 #include "mgstorage.h"
 
 MgCommandDraw::MgCommandDraw(const char* name)
@@ -36,7 +35,7 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
 bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage* s)
 {
     if (!m_shape) {
-        m_shape = sender->view->getShapeFactory()->createShape(shapeType);
+        m_shape = sender->view->createShapeCtx(shapeType);
         if (!m_shape || !m_shape->shape())
             return false;
         m_shape->setParent(sender->view->shapes(), 0);

@@ -51,6 +51,7 @@ struct MgView
     virtual Matrix2d& modelTransform() const = 0;               //!< 文档的模型变换矩阵
 
     virtual MgShapeFactory* getShapeFactory() = 0;              //!< 返回图形工厂对象
+    virtual MgShape* createShapeCtx(int type) = 0;              //!< 根据类型号和当前属性创建图形对象
     virtual MgSnap* getSnap() = 0;                              //!< 返回图形特征点捕捉器
     virtual MgActionDispatcher* getAction() = 0;                //!< 返回上下文动作分发对象
     virtual CmdSubject* getCmdSubject() = 0;                    //!< 返回命令扩展目标对象
