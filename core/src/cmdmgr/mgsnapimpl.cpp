@@ -161,7 +161,7 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
                     arr0.startpt = start;
                     arr0.dist = dist;                           // 当前点距捕捉点
                     arr0.base = start;                          // 起点同垂足
-                    arr0.pt = start + orgpt - perp2.asVector(); // 投影到垂线
+                    arr0.pt = orgpt + (start - perp2);          // 投影到垂线
                     arr0.type = kMgSnapPerp;
                     arr0.shapeid = sp->getID();
                     arr0.handleIndex = i;

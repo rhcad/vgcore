@@ -112,8 +112,6 @@ public:
     CmdSubject* getCmdSubject() { return cmds()->getCmdSubject(); }
     MgSelection* getSelection() { return cmds()->getSelection(); }
     MgShapeFactory* getShapeFactory() { return this; }
-    MgShape* createShapeCtx(int type) { MgShape* s = createShape(type);
-        if (s) s->setContext(*context()); return s; }
     MgSnap* getSnap() { return _cmds->getSnap(); }
     MgActionDispatcher* getAction() {
         return _cmds->getActionDispatcher(); }
@@ -152,6 +150,13 @@ public:
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
     
+    MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {
+        MgShape* s = createShape(type);
+        if (s) {
+            s->setContext(*(ctx ? ctx : context()));
+        }
+        return s;
+    }
     void commandChanged() {
         CALL_VIEW(deviceView()->commandChanged());
     }

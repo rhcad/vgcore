@@ -567,6 +567,8 @@ bool MgPath::crossWithPath(const MgPath& p, const Box2d& box, Point2d& ptCross) 
     }
     if (isLines() && p.isLines()) {
         Point2d tmpcross;
+        float mindist = _FLT_MAX;
+        
         for (int m = getCount() - (isClosed() ? 0 : 1), i = 0; i < m; i++) {
             Point2d a(getPoint(i)), b(getPoint(i + 1));
             
@@ -575,12 +577,15 @@ bool MgPath::crossWithPath(const MgPath& p, const Box2d& box, Point2d& ptCross) 
                 
                 if (mglnrel::cross2Line(a, b, c, d, tmpcross)
                     && box.contains(tmpcross)) {
-                    ptCross = tmpcross;
-                    return true;
+                    float dist = tmpcross.distanceTo(box.center());
+                    if (mindist > dist) {
+                        mindist = dist;
+                        ptCross = tmpcross;
+                    }
                 }
             }
         }
-        return false;
+        return mindist < box.width();
     }
     return false;
 }
