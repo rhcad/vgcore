@@ -393,5 +393,5 @@ bool MgArc::_setHandlePoint2(int index, const Point2d& pt, float, int& data)
         return (setTanStartEnd(getEndPoint() - pt, getEndPoint(), getStartPoint())
             && _reverse());
     }
-    return setCenterStartEnd(pt, getStartPoint(), getEndPoint());
+    return offset(pt - getCenter(), -1);
 }

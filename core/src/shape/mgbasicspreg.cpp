@@ -30,12 +30,12 @@ void MgBasicShapes::registerShapes(MgShapeFactory* factory)
 int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
                            const MgBaseShape* sp2, const Point2d& hitpt)
 {
-    bool c1 = isCircle(sp1);
-    bool c2 = isCircle(sp2);
-    bool a1 = sp1->isKindOf(MgArc::Type());
-    bool a2 = sp2->isKindOf(MgArc::Type());
+    const bool c1 = isCircle(sp1);
+    const bool c2 = isCircle(sp2);
+    const bool a1 = sp1->isKindOf(MgArc::Type());
+    const bool a2 = sp2->isKindOf(MgArc::Type());
     Point2d cen1, cen2;
-    float r1, r2;
+    float r1 = 0, r2 = 0;
     int n = -1;
     
     if (c1) {
@@ -54,25 +54,26 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
         cen2 = ((MgArc*)sp2)->getCenter();
         r2 = ((MgArc*)sp2)->getRadius();
     }
-    c1 = c1 || a1;
-    c2 = c2 || a2;
-    sp1 = c1 ? sp2 : sp1;
     
-    if (c1 && c2) {
+    const bool ca1 = c1 || a1;
+    const bool ca2 = c2 || a2;
+    const MgBaseShape* line = ca1 ? sp2 : sp1;
+    
+    if (ca1 && ca2) {
         n = mgcurv::crossTwoCircles(pt1, pt2, cen1, r1, cen2, r2);
-    } else if ((c1 || c2) && sp1->isKindOf(MgLine::Type())) {
-        n = mgcurv::crossLineCircle(pt1, pt2, sp1->getPoint(0), sp1->getPoint(1),
-                                    cen2, r2);
-    } else if ((c1 || c2) && sp1->isKindOf(MgLines::Type())) {
-        int edges = sp1->getPointCount() - (sp1->isClosed() ? 0 : 1);
+    } else if ((ca1 || ca2) && line->isKindOf(MgLine::Type())) {
+        n = mgcurv::crossLineCircle(pt1, pt2, line->getPoint(0), line->getPoint(1),
+                                    ca1 ? cen1 : cen2, ca1 ? r1 : r2);
+    } else if ((ca1 || ca2) && line->isKindOf(MgLines::Type())) {
+        int edges = line->getPointCount() - (line->isClosed() ? 0 : 1);
         Point2d pt1r, pt2r;
         float dist = _FLT_MAX;
         int n2;
         
         for (int i = 0; i < edges; i++) {
-            n2 = mgcurv::crossLineCircle(pt1r, pt2r, sp1->getHandlePoint(i),
-                                        sp1->getHandlePoint((i + 1) % sp1->getPointCount()),
-                                        cen2, r2);
+            n2 = mgcurv::crossLineCircle(pt1r, pt2r, line->getHandlePoint(i),
+                                        line->getHandlePoint((i + 1) % line->getPointCount()),
+                                        ca1 ? cen1 : cen2, ca1 ? r1 : r2);
             if (n2 > 0) {
                 Point2d pt(pt2r.distanceTo(hitpt) < pt1r.distanceTo(hitpt) ? pt2r : pt1r);
                 float d = hitpt.distanceTo(pt);

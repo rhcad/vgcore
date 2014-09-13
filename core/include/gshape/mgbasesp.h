@@ -66,9 +66,9 @@ public:
     //! 返回本对象的类型
     static int Type() { return 3; }
     
-    //! 返回确实小容差，用于计算包络框等
+    //! 返回缺省小容差，用于计算包络框等
     static Tol& minTol() {
-        static Tol tol;
+        static Tol tol(1e-4f);
         return tol;
     }
 

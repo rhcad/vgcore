@@ -350,7 +350,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
             }
             
             if (n) {
-                float dist = ptcross.distanceTo(ptd);
+                float dist = ptcross.distanceTo(ptd) - _MGZERO; // 优先于顶点
                 if (arr0.dist > dist) {
                     arr0.dist = dist;
                     arr0.base = ptd;
