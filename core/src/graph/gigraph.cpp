@@ -1315,6 +1315,16 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool mode
     return false;
 }
 
+bool GiGraphics::drawTextAt(const char* text, const Point2d& pnt, float h, int align)
+{
+    if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
+        Point2d ptd(pnt * xf().modelToDisplay());
+        h *= xf().getWorldToDisplayY();
+        return m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align);
+    }
+    return false;
+}
+
 bool GiGraphics::beginShape(int type, int sid, int version, float x, float y, float w, float h)
 {
     return m_impl->canvas && m_impl->canvas->beginShape(type, sid, version, x, y, w, h);
