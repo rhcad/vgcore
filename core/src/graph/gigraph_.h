@@ -19,6 +19,7 @@ public:
     GiContext   ctx;                //!< 当前绘图参数
     int         ctxused;            //!< 画笔和画刷的设置标志
     GiColor     bkcolor;            //!< 背景色
+    float       phase;              //!< 虚线其实偏移
 
     float       maxPenWidth;        //!< 最大像素线宽
     float       minPenWidth;        //!< 最小像素线宽
@@ -43,6 +44,7 @@ public:
         isPrint = false;
         ctxused = 0;
         bkcolor = GiColor::White();
+        phase = -1;
         maxPenWidth = 100;
         minPenWidth = 1;
     }

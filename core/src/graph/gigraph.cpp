@@ -54,6 +54,13 @@ GiTransform& GiGraphics::_xf()
     return *m_impl->xform;
 }
 
+bool GiGraphics::setPhaseEnabled(bool enabled)
+{
+    bool old = m_impl->phase > 0;
+    m_impl->phase = fabsf(m_impl->phase) * (enabled ? 1.f : -1.f);
+    return old;
+}
+
 bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
 {
     if (!canvas || m_impl->canvas || isStopping()) {
@@ -63,6 +70,9 @@ bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
     m_impl->canvas = canvas;
     m_impl->ctxused = 0;
     m_impl->stopping = 0;
+    
+    float phase = fabsf(m_impl->phase);
+    m_impl->phase = (phase < 10.f ? phase + 0.5f : 0.5f) * (m_impl->phase > 0 ? 1.f : -1.f);
     
     if (m_impl->lastZoomTimes != xf().getZoomTimes()) {
         m_impl->zoomChanged();
@@ -1083,7 +1093,8 @@ bool GiGraphics::setPen(const GiContext* ctx)
         orgw = (orgw < -0.1f && ctx->isAutoScale()) ? orgw - 1e4f : orgw;
         m_impl->canvas->setPen(calcPenColor(ctx->getLineColor()).getARGB(),
                                w + ctx->getExtraWidth(),
-                               ctx->getLineStyleEx(), 0, orgw);
+                               ctx->getLineStyleEx(),
+                               mgMax(m_impl->phase, 0.f), orgw);
     }
     
     return !ctx->isNullLine();

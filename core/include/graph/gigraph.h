@@ -141,6 +141,9 @@ public:
     //! 设置像素线宽的放大系数
     static void setPenWidthFactor(float factor);
     
+    //! 是否允许虚线偏移量
+    bool setPhaseEnabled(bool enabled);
+    
 public:
     //! 绘制直线段，模型坐标或世界坐标
     /*!

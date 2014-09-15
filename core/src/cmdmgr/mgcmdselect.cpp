@@ -193,9 +193,12 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     else if (m_clones.empty()) {                    // 蓝色显示选中的图形
         float w = 0.5f * gs->xf().getWorldToDisplayY();
         GiContext ctx(-w, GiColor(0, 0, 255, 48));
+        bool old = gs->setPhaseEnabled(true);
+        
         for (it = shapes.begin(); it != shapes.end(); ++it) {
             (*it)->draw(1, *gs, &ctx, m_hit.segment);
         }
+        gs->setPhaseEnabled(old);
     }
     
     if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)) {
