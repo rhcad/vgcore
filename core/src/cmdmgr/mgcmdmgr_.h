@@ -59,6 +59,9 @@ private:
     
 private:
     virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs) const;
+    virtual bool drawPerpMark(GiGraphics* gs, const GiContext& ctx,
+                              const Point2d& a, const Point2d& b,
+                              const Point2d& perp, const Point2d& c, float len) const;
     virtual Point2d snapPoint(const MgMotion* sender, 
         const Point2d& orignPt, const MgShape* shape,
         int hotHandle, int ignoreHandle = -1, const int* ignoreids = NULL);

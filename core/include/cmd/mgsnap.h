@@ -42,6 +42,11 @@ struct MgSnap {
     //! 显示捕捉提示线
     virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs) const = 0;
     
+    //! 显示垂足标志(90度折线), perp为perp-c与a-b相交的垂足
+    virtual bool drawPerpMark(GiGraphics* gs, const GiContext& ctx,
+                              const Point2d& a, const Point2d& b,
+                              const Point2d& perp, const Point2d& c, float len) const = 0;
+    
     //! 返回捕捉到的特征点类型, >=kMgSnapGrid
     virtual int getSnappedType() const = 0;
     

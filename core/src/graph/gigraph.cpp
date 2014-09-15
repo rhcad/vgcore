@@ -72,7 +72,7 @@ bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
     m_impl->stopping = 0;
     
     float phase = fabsf(m_impl->phase);
-    m_impl->phase = (phase < 10.f ? phase + 0.5f : 0.5f) * (m_impl->phase > 0 ? 1.f : -1.f);
+    m_impl->phase = (phase < 1e4f ? phase + 0.5f : 0.5f) * (m_impl->phase > 0 ? 1.f : -1.f);
     
     if (m_impl->lastZoomTimes != xf().getZoomTimes()) {
         m_impl->zoomChanged();

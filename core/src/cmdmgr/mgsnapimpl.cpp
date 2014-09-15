@@ -551,6 +551,19 @@ static GiHandleTypes snapTypeToHandleType(int snapType)
     }
 }
 
+bool MgCmdManagerImpl::drawPerpMark(GiGraphics* gs, const GiContext& ctx,
+                                    const Point2d& a, const Point2d& b,
+                                    const Point2d& perp, const Point2d& c, float len) const
+{
+    float d1 = a.distanceTo(perp);
+    float d2 = b.distanceTo(perp);
+    Point2d markpt1(perp.rulerPoint(d1 > d2 ? a : b, len, 0));
+    Point2d markpt3(perp.rulerPoint(c, len, 0));
+    Point2d markpts[] = { markpt1, markpt1 + (markpt3 - perp), markpt3 };
+    
+    return gs->drawLines(&ctx, 3, markpts);
+}
+
 void MgCmdManagerImpl::drawPerpMark(const MgMotion* sender, GiGraphics* gs, GiContext& ctx) const
 {
     const MgShape* sp = sender->view->shapes()->findShape(_snapShapeId);
@@ -566,16 +579,8 @@ void MgCmdManagerImpl::drawPerpMark(const MgMotion* sender, GiGraphics* gs, GiCo
         Point2d pt1(sp->shapec()->getHandlePoint(_snapHandle));
         Point2d pt2(sp->shapec()->getHandlePoint((_snapHandle + 1) % n));
         
-        Point2d dirpt(pt1.distanceTo(_snapBase[0])
-                      > pt2.distanceTo(_snapBase[0]) ? pt1 : pt2);
-        Point2d markpt1(_snapBase[0].rulerPoint(dirpt, 2 * r, 0));
-        
-        dirpt = _ptSnap == _snapBase[0] ? _startpt : _ptSnap;
-        Point2d markpt3(_snapBase[0].rulerPoint(dirpt, 2 * r, 0));
-        Point2d markpts[] = { markpt1, markpt1 + (markpt3 - _snapBase[0]), markpt3 };
-        
-        GiContext ctxmark(-2, GiColor(255, 255, 0, 200));
-        gs->drawLines(&ctxmark, 3, markpts);
+        drawPerpMark(gs, GiContext(-2, GiColor(255, 255, 0, 200)), pt1, pt2, _snapBase[0],
+                     _ptSnap == _snapBase[0] ? _startpt : _ptSnap, 2 * r);
         
         ctx.setLineWidth(0, false);
         ctx.setLineStyle(GiContext::kSolidLine);

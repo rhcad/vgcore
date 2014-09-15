@@ -106,6 +106,15 @@ bool MgEllipse::_setHandlePoint(int index, const Point2d& pt, float tol)
 
 float MgEllipse::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
+    if (isCircle()) {
+        Point2d pt1(getCenter()), pt2(pt);
+        crossCircle(pt1, pt2, this);
+        float d1 = pt.distanceTo(pt1);
+        float d2 = pt.distanceTo(pt2);
+        res.nearpt = d1 < d2 ? pt1 : pt2;
+        return mgMin(d1, d2);
+    }
+    
     float distMin = _FLT_MAX;
     const Box2d rect (pt, 2 * tol, 2 * tol);
     Point2d ptTemp;
