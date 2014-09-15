@@ -580,7 +580,7 @@ void MgCmdManagerImpl::drawPerpMark(const MgMotion* sender, GiGraphics* gs, GiCo
         ctx.setLineWidth(0, false);
         ctx.setLineStyle(GiContext::kSolidLine);
         gs->drawBeeline(&ctx, pt1, pt2);
-        gs->drawTextAt("@perppt", _snapBase[0], 4.f);
+        gs->drawTextAt("@perppt", _snapBase[0], 3.f);
         
         ctx.setFillAlpha(64);
         if (pt1.distanceTo(_snapBase[0]) > r)
@@ -608,9 +608,8 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
                 
                 GiHandleTypes handleType = snapTypeToHandleType(_snapType[0]);
                 const char* names[] = { "@nodept", "@centerpt", "@midpt", "@quadpt", "@crosspt" };
-                if (handleType >= kGiHandleNode
-                    && handleType - kGiHandleNode < sizeof(names)/sizeof(names[0])) {
-                    gs->drawTextAt(names[handleType - kGiHandleNode], _ptSnap, 4.f);
+                if (handleType >= kGiHandleNode && handleType - kGiHandleNode < 5) {
+                    gs->drawTextAt(names[handleType - kGiHandleNode], _ptSnap, 3.f);
                 }
                 gs->drawHandle(_ptSnap, handleType);
             }
