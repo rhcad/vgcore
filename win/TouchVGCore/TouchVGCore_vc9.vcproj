@@ -168,6 +168,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\cmdbase\mgdrawline.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\cmdbase\mgdrawrect.cpp"
 					>
 				</File>
@@ -205,10 +209,6 @@
 				</File>
 				<File
 					RelativePath="..\..\core\src\cmdbasic\mgdrawgrid.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\src\cmdbasic\mgdrawline.cpp"
 					>
 				</File>
 				<File
@@ -654,6 +654,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\include\cmdbase\mgdrawline.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\include\cmdbase\mgdrawrect.h"
 					>
 				</File>
@@ -683,10 +687,6 @@
 				</File>
 				<File
 					RelativePath="..\..\core\include\cmdbasic\mgdrawgrid.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\core\include\cmdbasic\mgdrawline.h"
 					>
 				</File>
 				<File

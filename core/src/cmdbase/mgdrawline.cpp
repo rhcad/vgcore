@@ -11,13 +11,11 @@ bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
     MgLine *line = (MgLine*)dynshape()->shape();
     
     line->setRayline(false);
-    if (s) {
-        if (s->readBool("rayline", false)) {
-            line->setRayline(true);
-        }
-        if (s->readBool("beeline", false)) {
-            line->setBeeline(true);
-        }
+    if (s && s->readBool("rayline", false)) {
+        line->setRayline(true);
+    }
+    if (s && s->readBool("beeline", false)) {
+        line->setBeeline(true);
     }
     return ret;
 }
@@ -67,7 +65,12 @@ bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 
 bool MgCmdDrawDot::initialize(const MgMotion* sender, MgStorage* s)
 {
-    return _initialize(MgDot::Type(), sender, s);
+    bool ret = _initialize(MgDot::Type(), sender, s);
+    
+    if (s) {
+        ((MgDot*)dynshape()->shape())->setPointType(s->readInt("pttype", 0));
+    }
+    return ret;
 }
 
 bool MgCmdDrawDot::click(const MgMotion* sender)

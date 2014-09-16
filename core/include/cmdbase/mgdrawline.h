@@ -15,11 +15,11 @@
 class MgCmdDrawLine : public MgCommandDraw
 {
 public:
+    MgCmdDrawLine(const char* name = Name()) : MgCommandDraw(name) {}
+#ifndef SWIG
     static const char* Name() { return "line"; }
     static MgCommand* Create() { return new MgCmdDrawLine; }
-    
-private:
-    MgCmdDrawLine() : MgCommandDraw(Name()) {}
+#endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool backStep(const MgMotion* sender);
@@ -35,11 +35,11 @@ private:
 class MgCmdDrawDot : public MgCommandDraw
 {
 public:
+    MgCmdDrawDot(const char* name = Name()) : MgCommandDraw(name) {}
+#ifndef SWIG
     static const char* Name() { return "dot"; }
     static MgCommand* Create() { return new MgCmdDrawDot; }
-
-private:
-    MgCmdDrawDot() : MgCommandDraw(Name()) {}
+#endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool click(const MgMotion* sender);

@@ -75,6 +75,7 @@ test_files := $(core_src)/test/testcanvas.cpp \
 
 base_files := $(core_src)/cmdbase/mgcmddraw.cpp \
               $(core_src)/cmdbase/mgdrawarc.cpp \
+              $(core_src)/cmdbase/mgdrawline.cpp \
               $(core_src)/cmdbase/mgdrawrect.cpp
 
 basic_files := $(core_src)/cmdbasic/cmdbasic.cpp \
@@ -84,7 +85,6 @@ basic_files := $(core_src)/cmdbasic/cmdbasic.cpp \
               $(core_src)/cmdbasic/mgdrawellipse.cpp \
               $(core_src)/cmdbasic/mgdrawfreelines.cpp \
               $(core_src)/cmdbasic/mgdrawgrid.cpp \
-              $(core_src)/cmdbasic/mgdrawline.cpp \
               $(core_src)/cmdbasic/mgdrawlines.cpp \
               $(core_src)/cmdbasic/mgdrawparallel.cpp \
               $(core_src)/cmdbasic/mgdrawpolygon.cpp \
