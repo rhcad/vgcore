@@ -1320,7 +1320,7 @@ bool GiGraphics::drawTextAt(const char* text, const Point2d& pnt, float h, int a
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * xf().modelToDisplay());
         h *= xf().getWorldToDisplayY(false);
-        return m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align);
+        return m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align) > 0;
     }
     return false;
 }
