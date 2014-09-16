@@ -1201,9 +1201,8 @@ bool GiCoreView::getImageSize(mgvector<float>& info, int sid)
     if (ret) {
         const MgImageShape *image = (const MgImageShape*)shape->shapec();
         Box2d rect(image->getRect() * impl->curview->xform()->modelToDisplay());
-        Vector2d v;
+        Vector2d v(Vector2d::angledVector(image->getAngle(), 1));
         
-        v.setAngleLength(image->getAngle(), 1);
         info.set(0, image->getImageSize().x, image->getImageSize().y);
         info.set(2, rect.width(), rect.height());
         info.set(4, (v * impl->curview->xform()->modelToDisplay()).angle2());

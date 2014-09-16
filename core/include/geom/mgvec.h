@@ -284,6 +284,11 @@ public:
         return set(len * cosf(angle), len * sinf(angle));
     }
     
+    //! 返回指定角度和长度的矢量
+    static Vector2d angledVector(float angle, float len) {
+        return Vector2d(len * cosf(angle), len * sinf(angle));
+    }
+    
     //! 设置矢量的长度
     Vector2d& setLength(float newLength) {
         float oldlen = length();
