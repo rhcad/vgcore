@@ -59,6 +59,18 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
             touchEnded(&tmpmotion);
         }
     }
+    if (s && s->readBool("fixedlen", false)) {
+        m_shape->shape()->setFlag(kMgFixedLength, true);
+    }
+    if (s && s->readBool("fixedsize", false)) {
+        m_shape->shape()->setFlag(kMgFixedSize, true);
+    }
+    if (s && s->readBool("locked", false)) {
+        m_shape->shape()->setFlag(kMgLocked, true);
+    }
+    if (s && s->readBool("hiden", false)) {
+        m_shape->shape()->setFlag(kMgHideContent, true);
+    }
     
     return true;
 }
