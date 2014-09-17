@@ -174,6 +174,8 @@ bool MgBaseLines::_setHandlePoint(int index, const Point2d& pt, float tol)
     float postdist = postindex >= _count ? _FLT_MAX : getPoint(postindex).distanceTo(pt);
     
     if (predist < tol || postdist < tol) {
+        if (_count <= 3)
+            return false;
         removePoint(index);
     }
     else if (!isClosed() && ((index == 0 && getPoint(_count - 1).distanceTo(pt) < tol)

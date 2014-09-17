@@ -78,8 +78,9 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt,
 {
     bool ignored = sp->shapec()->isKindOf(MgSplines::Type()); // 除自由曲线外
     int n = ignored ? 0 : sp->shapec()->getHandleCount();
-    bool dragHandle = (!shape || shape->getID() == 0 || // 正画的图形:末点动
-                       orgpt == shape->shapec()->getHandlePoint(ignoreHd)); // 拖已有图形的点
+    bool dragHandle = (!shape || shape->getID() == 0    // 正画的图形:末点动
+                       || orgpt == shape->shapec()->getHandlePoint(ignoreHd)    // 拖已有图形的点
+                       || n == 1);                      // 点可定位
     bool handleFound = false;
     
     for (int i = 0; i < n; i++) {                       // 循环每一个控制点
@@ -469,7 +470,7 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     bool matchpt = (shape && shape->getID() != 0    // 拖动整个图形
                     && (hotHandle < 0 || (ignoreHd >= 0 && ignoreHd != hotHandle)));
     
-    snapPoints(sender, orgpt, shape, ignoreHd, ignoreids,
+    snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
                arr, matchpt ? &pnt : NULL);         // 在所有图形中捕捉
     checkResult(arr);
     
