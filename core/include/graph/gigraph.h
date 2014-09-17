@@ -141,6 +141,9 @@ public:
     //! 设置像素线宽的放大系数
     static void setPenWidthFactor(float factor);
     
+    //! 是否允许虚线偏移量
+    bool setPhaseEnabled(bool enabled);
+    
 public:
     //! 绘制直线段，模型坐标或世界坐标
     /*!
@@ -360,6 +363,9 @@ public:
         \return 是否显示成功
      */
     bool drawHandle(const Point2d& pnt, int type, float angle = 0, bool modelUnit = true);
+    
+    //! 在给定模型坐标位置显示指定像素高的单行文本
+    bool drawTextAt(const char* text, const Point2d& pnt, float h, int align = 1);
 
     //! 在显示适配类的 beginPaint() 中调用
     bool beginPaint(GiCanvas* canvas, const RECT_2D& clipBox = RECT_2D());

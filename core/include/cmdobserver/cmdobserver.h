@@ -64,8 +64,12 @@ struct CmdObserver {
     virtual void onSelectTouchEnded(const MgMotion* sender, int shapeid,
         int handleIndex, int snapid, int snapHandle,
         int count, const int* ids) = 0;
+    //! 添加不捕捉的图形, sp为NULL时添加不在静态图形中显示的图形的ID
+    virtual void onGatherSnapIgnoredID(const MgMotion* sender, const MgShape* sp,
+                                       int* ids, int& i, int n) = 0;
 #endif
 
+    virtual void onSelectionChanged(const MgMotion* sender) = 0;               //!< 选择集改变的通知
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) = 0;    //!< 通知将添加图形
     virtual void onShapeAdded(const MgMotion* sender, const MgShape* sp) = 0;        //!< 通知已添加图形
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) = 0;  //!< 通知将删除图形
@@ -74,6 +78,7 @@ struct CmdObserver {
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* sp) = 0; //!< 通知是否能对图形变形
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) = 0;    //!< 通知是否能对图形解锁
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* sp) = 0;   //!< 通知是否能对成组图形解散
+    virtual bool onShapeCanMovedHandle(const MgMotion* sender, const MgShape* sp, int index) = 0; //!< 通知是否能移动点
     virtual void onShapeMoved(const MgMotion* sender, MgShape* sp, int segment) = 0; //!< 通知图形已拖动
     virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) = 0; //!< 通知将修改图形
     virtual void onShapeChanged(const MgMotion* sender, MgShape* shape) = 0;   //!< 通知已拖动图形
@@ -104,6 +109,7 @@ public:
     virtual void drawInShapeCommand(const MgMotion* sender, MgCommand* cmd, GiGraphics* gs) {}
     virtual void drawInSelectCommand(const MgMotion* sender, const MgShape* sp,
                                      int handleIndex, GiGraphics* gs) {}
+    virtual void onSelectionChanged(const MgMotion* sender) {}
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) { return true; }
     virtual void onShapeAdded(const MgMotion* sender, const MgShape* sp) {}
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) { return true; }
@@ -112,6 +118,7 @@ public:
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* sp) { return true; }
+    virtual bool onShapeCanMovedHandle(const MgMotion* sender, const MgShape* sp, int index) { return true; }
     virtual void onShapeMoved(const MgMotion* sender, MgShape* sp, int segment) {}
     virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) { return true; }
     virtual void onShapeChanged(const MgMotion* sender, MgShape* shape) {}
@@ -122,6 +129,7 @@ public:
     virtual void onSelectTouchEnded(const MgMotion* sender, int shapeid,
                                     int handleIndex, int snapid, int snapHandle,
                                     int count, const int* ids) {}
+    virtual void onGatherSnapIgnoredID(const MgMotion* sender, const MgShape* sp, int* ids, int& i, int n) {}
 #endif
     virtual bool onPreGesture(MgMotion* sender) { return true; }
     virtual void onPostGesture(const MgMotion* sender) {}

@@ -38,11 +38,14 @@ public:
     void releaseGraphics(long gs);                                  //!< 释放 GiGraphics 句柄
     int acquireFrontDocs(mgvector<long>& docs);                     //!< 获取前端图形文档的句柄
     static void releaseDocs(const mgvector<long>& docs);            //!< 释放文档句柄
+    int getSkipDrawIds(mgvector<int>& ids);                         //!< 获取不在静态图形中显示的图形ID
     int acquireDynamicShapesArray(mgvector<long>& shapes);          //!< 获取前端图形列表的句柄
     static void releaseShapesArray(const mgvector<long>& shapes);   //!< 释放图形列表句柄
     
     int drawAll(long doc, long gs, GiCanvas* canvas);               //!< 显示所有图形
     int drawAll(const mgvector<long>& docs, long gs, GiCanvas* canvas);  //!< 显示所有图形
+    int drawAll(const mgvector<long>& docs, long gs, GiCanvas* canvas,
+                const mgvector<int>& ignoreIds);                    //!< 显示除特定ID外的图形
     int drawAppend(long doc, long gs, GiCanvas* canvas, int sid);   //!< 显示新图形
     int dynDraw(long shapes, long gs, GiCanvas* canvas);            //!< 显示动态图形
     int dynDraw(const mgvector<long>& shapes, long gs, GiCanvas* canvas); //!< 显示动态图形
@@ -143,7 +146,7 @@ public:
     int getSelectedShapeID();
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
-    bool saveToFile(long doc, const char* vgfile, bool pretty = true);
+    bool saveToFile(long doc, const char* vgfile, bool pretty = false);
     bool loadShapes(MgStorage* s, bool readOnly = false);
     bool saveShapes(long doc, MgStorage* s);
     const char* getContent(long doc);

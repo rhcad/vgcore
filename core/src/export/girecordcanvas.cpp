@@ -11,7 +11,7 @@ struct CmdSetPen : public MgRecordShape::ICmd {
     int argb; float width; int style; float phase; float orgw;
     CmdSetPen() : argb(0xFF000000), width(0), style(0), phase(0), orgw(0) {}
     CmdSetPen(int argb, float width, int style, float phase, float orgw)
-        : argb(argb), width(width), style(style), phase(), orgw(orgw) {}
+        : argb(argb), width(width), style(style), phase(phase), orgw(orgw) {}
     
     virtual int type() const { return 1; }
     virtual void copy(const ICmd& src) {

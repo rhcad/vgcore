@@ -8,7 +8,6 @@
 #include "cmdsubject.h"
 #include <string.h>
 #include "mglog.h"
-#include "mgspfactory.h"
 #include "mgstorage.h"
 
 MgCommandDraw::MgCommandDraw(const char* name)
@@ -36,7 +35,7 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
 bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage* s)
 {
     if (!m_shape) {
-        m_shape = sender->view->getShapeFactory()->createShape(shapeType);
+        m_shape = sender->view->createShapeCtx(shapeType);
         if (!m_shape || !m_shape->shape())
             return false;
         m_shape->setParent(sender->view->shapes(), 0);
@@ -59,6 +58,18 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
             tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
             touchEnded(&tmpmotion);
         }
+    }
+    if (s && s->readBool("fixedlen", false)) {
+        m_shape->shape()->setFlag(kMgFixedLength, true);
+    }
+    if (s && s->readBool("fixedsize", false)) {
+        m_shape->shape()->setFlag(kMgFixedSize, true);
+    }
+    if (s && s->readBool("locked", false)) {
+        m_shape->shape()->setFlag(kMgLocked, true);
+    }
+    if (s && s->readBool("hiden", false)) {
+        m_shape->shape()->setFlag(kMgHideContent, true);
     }
     
     return true;
@@ -186,6 +197,11 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender,
     return pt;
 }
 
+int MgCommandDraw::getSnappedType(const MgMotion* sender) const
+{
+    return sender->view->getSnap()->getSnappedType();
+}
+
 void MgCommandDraw::setStepPoint(int step, const Point2d& pt)
 {
     if (step > 0) {
@@ -231,10 +247,10 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     if (!pnt.isEqualTo(dynshape()->shape()->getPoint(m_step - 1), tol)) {
         m_step++;
         if (m_step >= getMaxStep()) {
+            m_step = 0;
             if (!dynshape()->shape()->getExtent().isEmpty(tol, false)) {
                 addShape(sender);
             }
-            m_step = 0;
         }
     }
 

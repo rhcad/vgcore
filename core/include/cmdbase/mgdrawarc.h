@@ -48,6 +48,8 @@ public:
 #endif
     virtual void release() { delete this; }
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
+    virtual bool click(const MgMotion* sender);
+
 protected:
     virtual void setStepPoint(int step, const Point2d& pt);
 };

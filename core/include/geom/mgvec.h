@@ -239,6 +239,9 @@ public:
         return mgHypot(x, y) < tol.equalPoint();
     }
     
+    //! 返回某个分量是为NAN越界值
+    bool isDegenerate() const { return isnan(x) || isnan(y); }
+    
 #ifndef SWIG
     //! 判断两个矢量是否相等
     bool operator==(const Vector2d& v) const {
@@ -279,6 +282,11 @@ public:
     */
     Vector2d& setAngleLength(float angle, float len) {
         return set(len * cosf(angle), len * sinf(angle));
+    }
+    
+    //! 返回指定角度和长度的矢量
+    static Vector2d angledVector(float angle, float len) {
+        return Vector2d(len * cosf(angle), len * sinf(angle));
     }
     
     //! 设置矢量的长度

@@ -79,6 +79,8 @@
 		AE3A247418C7197400873314 /* gicorerecord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE3A247318C7197400873314 /* gicorerecord.cpp */; };
 		AE3A247618C71A1900873314 /* gicoreviewimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = AE3A247518C71A1900873314 /* gicoreviewimpl.h */; };
 		AE57CE7E188D06760080E97D /* recordshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE57CE7D188D06760080E97D /* recordshapes.cpp */; };
+		AE5A050619C7FBA2006AB564 /* mgdrawline.h in Headers */ = {isa = PBXBuildFile; fileRef = AE5A050519C7FBA2006AB564 /* mgdrawline.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AE5A050819C7FBD3006AB564 /* mgdrawline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE5A050719C7FBD3006AB564 /* mgdrawline.cpp */; };
 		AEC058C1186D1010005F8479 /* corever.h in Headers */ = {isa = PBXBuildFile; fileRef = AEC058C0186D1010005F8479 /* corever.h */; };
 		AED3709A1866883700C0A778 /* mgcmddraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37047186681DB00C0A778 /* mgcmddraw.cpp */; };
 		AED3709B1866883700C0A778 /* mgdrawarc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37048186681DB00C0A778 /* mgdrawarc.cpp */; };
@@ -90,7 +92,6 @@
 		AED370A31866884700C0A778 /* mgdrawellipse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37051186681DB00C0A778 /* mgdrawellipse.cpp */; };
 		AED370A41866884700C0A778 /* mgdrawfreelines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37052186681DB00C0A778 /* mgdrawfreelines.cpp */; };
 		AED370A51866884700C0A778 /* mgdrawgrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37053186681DB00C0A778 /* mgdrawgrid.cpp */; };
-		AED370A61866884700C0A778 /* mgdrawline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37054186681DB00C0A778 /* mgdrawline.cpp */; };
 		AED370A71866884700C0A778 /* mgdrawlines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37055186681DB00C0A778 /* mgdrawlines.cpp */; };
 		AED370A81866884700C0A778 /* mgdrawparallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37056186681DB00C0A778 /* mgdrawparallel.cpp */; };
 		AED370A91866884700C0A778 /* mgdrawpolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AED37057186681DB00C0A778 /* mgdrawpolygon.cpp */; };
@@ -171,7 +172,6 @@
 		AED37109186689DC00C0A778 /* mgdrawellipse.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37008186681DB00C0A778 /* mgdrawellipse.h */; };
 		AED3710A186689DC00C0A778 /* mgdrawfreelines.h in Headers */ = {isa = PBXBuildFile; fileRef = AED37009186681DB00C0A778 /* mgdrawfreelines.h */; };
 		AED3710B186689DC00C0A778 /* mgdrawgrid.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3700A186681DB00C0A778 /* mgdrawgrid.h */; };
-		AED3710C186689DC00C0A778 /* mgdrawline.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3700B186681DB00C0A778 /* mgdrawline.h */; };
 		AED3710D186689DC00C0A778 /* mgdrawlines.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3700C186681DB00C0A778 /* mgdrawlines.h */; };
 		AED3710E186689DC00C0A778 /* mgdrawparallel.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3700D186681DB00C0A778 /* mgdrawparallel.h */; };
 		AED3710F186689DC00C0A778 /* mgdrawpolygon.h in Headers */ = {isa = PBXBuildFile; fileRef = AED3700E186681DB00C0A778 /* mgdrawpolygon.h */; };
@@ -190,7 +190,6 @@
 		AED3711D186689DC00C0A778 /* mgdrawellipse.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37051186681DB00C0A778 /* mgdrawellipse.cpp */; };
 		AED3711E186689DC00C0A778 /* mgdrawfreelines.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37052186681DB00C0A778 /* mgdrawfreelines.cpp */; };
 		AED3711F186689DC00C0A778 /* mgdrawgrid.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37053186681DB00C0A778 /* mgdrawgrid.cpp */; };
-		AED37120186689DC00C0A778 /* mgdrawline.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37054186681DB00C0A778 /* mgdrawline.cpp */; };
 		AED37121186689DC00C0A778 /* mgdrawlines.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37055186681DB00C0A778 /* mgdrawlines.cpp */; };
 		AED37122186689DC00C0A778 /* mgdrawparallel.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37056186681DB00C0A778 /* mgdrawparallel.cpp */; };
 		AED37123186689DC00C0A778 /* mgdrawpolygon.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AED37057186681DB00C0A778 /* mgdrawpolygon.cpp */; };
@@ -310,6 +309,8 @@
 		AE490E54185715D9004F70CC /* libTouchVGCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTouchVGCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE490E5B185715D9004F70CC /* TouchVGCore-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TouchVGCore-Prefix.pch"; sourceTree = "<group>"; };
 		AE57CE7D188D06760080E97D /* recordshapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = recordshapes.cpp; sourceTree = "<group>"; };
+		AE5A050519C7FBA2006AB564 /* mgdrawline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgdrawline.h; sourceTree = "<group>"; };
+		AE5A050719C7FBD3006AB564 /* mgdrawline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawline.cpp; sourceTree = "<group>"; };
 		AEC058C0186D1010005F8479 /* corever.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = corever.h; path = src/corever.h; sourceTree = "<group>"; };
 		AED36FF6186681DB00C0A778 /* gicanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicanvas.h; sourceTree = "<group>"; };
 		AED36FF8186681DB00C0A778 /* mgaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgaction.h; sourceTree = "<group>"; };
@@ -327,7 +328,6 @@
 		AED37008186681DB00C0A778 /* mgdrawellipse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawellipse.h; sourceTree = "<group>"; };
 		AED37009186681DB00C0A778 /* mgdrawfreelines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawfreelines.h; sourceTree = "<group>"; };
 		AED3700A186681DB00C0A778 /* mgdrawgrid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawgrid.h; sourceTree = "<group>"; };
-		AED3700B186681DB00C0A778 /* mgdrawline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawline.h; sourceTree = "<group>"; };
 		AED3700C186681DB00C0A778 /* mgdrawlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawlines.h; sourceTree = "<group>"; };
 		AED3700D186681DB00C0A778 /* mgdrawparallel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawparallel.h; sourceTree = "<group>"; };
 		AED3700E186681DB00C0A778 /* mgdrawpolygon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgdrawpolygon.h; sourceTree = "<group>"; };
@@ -379,7 +379,6 @@
 		AED37051186681DB00C0A778 /* mgdrawellipse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawellipse.cpp; sourceTree = "<group>"; };
 		AED37052186681DB00C0A778 /* mgdrawfreelines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawfreelines.cpp; sourceTree = "<group>"; };
 		AED37053186681DB00C0A778 /* mgdrawgrid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawgrid.cpp; sourceTree = "<group>"; };
-		AED37054186681DB00C0A778 /* mgdrawline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawline.cpp; sourceTree = "<group>"; };
 		AED37055186681DB00C0A778 /* mgdrawlines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawlines.cpp; sourceTree = "<group>"; };
 		AED37056186681DB00C0A778 /* mgdrawparallel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawparallel.cpp; sourceTree = "<group>"; };
 		AED37057186681DB00C0A778 /* mgdrawpolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mgdrawpolygon.cpp; sourceTree = "<group>"; };
@@ -653,6 +652,7 @@
 		AED37000186681DB00C0A778 /* cmdbase */ = {
 			isa = PBXGroup;
 			children = (
+				AE5A050519C7FBA2006AB564 /* mgdrawline.h */,
 				AED37001186681DB00C0A778 /* mgcmddraw.h */,
 				AED37002186681DB00C0A778 /* mgdrawarc.h */,
 				AED37003186681DB00C0A778 /* mgdrawrect.h */,
@@ -669,7 +669,6 @@
 				AED37008186681DB00C0A778 /* mgdrawellipse.h */,
 				AED37009186681DB00C0A778 /* mgdrawfreelines.h */,
 				AED3700A186681DB00C0A778 /* mgdrawgrid.h */,
-				AED3700B186681DB00C0A778 /* mgdrawline.h */,
 				AED3700C186681DB00C0A778 /* mgdrawlines.h */,
 				AED3700D186681DB00C0A778 /* mgdrawparallel.h */,
 				AED3700E186681DB00C0A778 /* mgdrawpolygon.h */,
@@ -802,6 +801,7 @@
 		AED37046186681DB00C0A778 /* cmdbase */ = {
 			isa = PBXGroup;
 			children = (
+				AE5A050719C7FBD3006AB564 /* mgdrawline.cpp */,
 				AED37047186681DB00C0A778 /* mgcmddraw.cpp */,
 				AED37048186681DB00C0A778 /* mgdrawarc.cpp */,
 				AED37049186681DB00C0A778 /* mgdrawrect.cpp */,
@@ -820,7 +820,6 @@
 				AED37051186681DB00C0A778 /* mgdrawellipse.cpp */,
 				AED37052186681DB00C0A778 /* mgdrawfreelines.cpp */,
 				AED37053186681DB00C0A778 /* mgdrawgrid.cpp */,
-				AED37054186681DB00C0A778 /* mgdrawline.cpp */,
 				AED37055186681DB00C0A778 /* mgdrawlines.cpp */,
 				AED37056186681DB00C0A778 /* mgdrawparallel.cpp */,
 				AED37057186681DB00C0A778 /* mgdrawpolygon.cpp */,
@@ -951,6 +950,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE5A050619C7FBA2006AB564 /* mgdrawline.h in Headers */,
 				0224FF3419989AAC00895C27 /* mgobject.h in Headers */,
 				0224FF3B19989AAC00895C27 /* mgshapetype.h in Headers */,
 				02ED017C18F13E280060BE0A /* giplaying.h in Headers */,
@@ -1023,7 +1023,6 @@
 				AED3710A186689DC00C0A778 /* mgdrawfreelines.h in Headers */,
 				AED3710B186689DC00C0A778 /* mgdrawgrid.h in Headers */,
 				0269CE2E18F29DC300999778 /* girecordcanvas.h in Headers */,
-				AED3710C186689DC00C0A778 /* mgdrawline.h in Headers */,
 				0224FF2F19989AAC00895C27 /* mgdot.h in Headers */,
 				AED3710D186689DC00C0A778 /* mgdrawlines.h in Headers */,
 				AED3710E186689DC00C0A778 /* mgdrawparallel.h in Headers */,
@@ -1060,7 +1059,6 @@
 				AED3711D186689DC00C0A778 /* mgdrawellipse.cpp in Headers */,
 				AED3711E186689DC00C0A778 /* mgdrawfreelines.cpp in Headers */,
 				AED3711F186689DC00C0A778 /* mgdrawgrid.cpp in Headers */,
-				AED37120186689DC00C0A778 /* mgdrawline.cpp in Headers */,
 				AED37121186689DC00C0A778 /* mgdrawlines.cpp in Headers */,
 				AED37122186689DC00C0A778 /* mgdrawparallel.cpp in Headers */,
 				AED37123186689DC00C0A778 /* mgdrawpolygon.cpp in Headers */,
@@ -1205,6 +1203,7 @@
 				AE20C4CE1866D33600471A19 /* GcMagnifierView.cpp in Sources */,
 				0224FF641998B13F00895C27 /* mgbasesp.cpp in Sources */,
 				0224FF4C19989BDB00895C27 /* mgarc.cpp in Sources */,
+				AE5A050819C7FBD3006AB564 /* mgdrawline.cpp in Sources */,
 				AE20C4CF1866D33600471A19 /* GcShapeDoc.cpp in Sources */,
 				0224FF5719989BDB00895C27 /* mgrect.cpp in Sources */,
 				AE3A247418C7197400873314 /* gicorerecord.cpp in Sources */,
@@ -1256,7 +1255,6 @@
 				AED370A31866884700C0A778 /* mgdrawellipse.cpp in Sources */,
 				AED370A41866884700C0A778 /* mgdrawfreelines.cpp in Sources */,
 				AED370A51866884700C0A778 /* mgdrawgrid.cpp in Sources */,
-				AED370A61866884700C0A778 /* mgdrawline.cpp in Sources */,
 				0224FF4F19989BDB00895C27 /* mgdot.cpp in Sources */,
 				AED370A71866884700C0A778 /* mgdrawlines.cpp in Sources */,
 				AED370A81866884700C0A778 /* mgdrawparallel.cpp in Sources */,

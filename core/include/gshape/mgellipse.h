@@ -24,6 +24,15 @@ public:
     //! 设置半轴长度
     void setRadius(float rx, float ry = 0.0);
     
+    //! 设置圆心和半径
+    bool setCircle(const Point2d& center, float radius);
+    
+    //! 给定直径画圆
+    bool setCircle2P(const Point2d& start, const Point2d& end);
+    
+    //! 过三点画圆
+    bool setCircle3P(const Point2d& start, const Point2d& point, const Point2d& end);
+    
     //! 是否是圆
     bool isCircle() const { return getFlag(kMgSquare); }
     
@@ -33,7 +42,11 @@ public:
     }
     
     //! 求圆与圆、直线的交点(sp1和sp2至少一个是圆)
-    static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1, const MgBaseShape* sp2);
+    static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
+                           const MgBaseShape* sp2, const Point2d& hitpt);
+    
+    //! 求圆(sp)与直线(pt1-pt2)的交点
+    static int crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp);
     
 #ifndef SWIG
     //! 返回Bezier顶点，13个点

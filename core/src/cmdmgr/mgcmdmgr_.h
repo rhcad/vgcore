@@ -30,19 +30,19 @@ public:
 private:
     virtual bool registerCommand(const char* name, MgCommand* (*creator)());
     virtual void release() { delete this; }
-    virtual const char* getCommandName();
-    virtual const char* getCommandName(int index);
-    virtual MgCommand* getCommand();
+    virtual const char* getCommandName() const;
+    virtual const char* getCommandName(int index) const;
+    virtual MgCommand* getCommand() const;
     virtual MgCommand* findCommand(const char* name);
     virtual bool setCommand(const MgMotion* sender,
         const char* name, MgStorage* s);
     virtual bool switchCommand(const MgMotion* sender);
     virtual bool cancel(const MgMotion* sender);
     virtual void unloadCommands();
-    virtual int getNewShapeID() { return _newShapeID; }
+    virtual int getNewShapeID() const { return _newShapeID; }
     virtual void setNewShapeID(int sid) { _newShapeID = sid; }
-    virtual float displayMmToModel(float mm, GiGraphics* gs);
-    virtual float displayMmToModel(float mm, const MgMotion* sender);
+    virtual float displayMmToModel(float mm, GiGraphics* gs) const;
+    virtual float displayMmToModel(float mm, const MgMotion* sender) const;
     virtual int getSelection(MgView* view, int count, const MgShape** shapes);
     virtual int getSelectionForChange(MgView* view, int count, MgShape** shapes);
     virtual bool dynamicChangeEnded(MgView* view, bool apply);
@@ -58,13 +58,16 @@ private:
     virtual void getBoundingBox(Box2d& box, const MgMotion* sender);
     
 private:
-    virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs);
+    virtual bool drawSnap(const MgMotion* sender, GiGraphics* gs) const;
+    virtual bool drawPerpMark(GiGraphics* gs, const GiContext& ctx,
+                              const Point2d& a, const Point2d& b,
+                              const Point2d& perp, const Point2d& c, float len) const;
     virtual Point2d snapPoint(const MgMotion* sender, 
         const Point2d& orignPt, const MgShape* shape,
         int hotHandle, int ignoreHandle = -1, const int* ignoreids = NULL);
-    virtual int getSnappedType();
-    virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt);
-    virtual bool getSnappedHandle(int& shapeid, int& handleIndex, int& handleIndexSrc);
+    virtual int getSnappedType() const;
+    virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const;
+    virtual bool getSnappedHandle(int& shapeid, int& handleIndex, int& handleIndexSrc) const;
     virtual void clearSnap(const MgMotion* sender);
     
     virtual bool showInSelect(const MgMotion* sender, int selState, const MgShape* shape, const Box2d& selbox);
@@ -75,6 +78,7 @@ private:
     void eraseWnd(const MgMotion* sender);
     void checkResult(SnapItem arr[3]);
     void freeSubject();
+    void drawPerpMark(const MgMotion* sender, GiGraphics* gs, GiContext& ctx) const;
 
 private:
     typedef std::map<std::string, MgCommand*> CMDS;
@@ -87,6 +91,7 @@ private:
     CmdSubjectImpl* _subject;
     
     Point2d         _ptSnap;
+    Point2d         _startpt;
     Point2d         _snapBase[2];
     int             _snapType[2];
     int             _snapShapeId;

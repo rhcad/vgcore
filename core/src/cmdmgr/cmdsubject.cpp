@@ -93,7 +93,18 @@ private:
                 handleIndex, snapid, snapHandle, count, ids);
         }
     }
+    virtual void onGatherSnapIgnoredID(const MgMotion* sender, const MgShape* sp,
+                                       int* ids, int& i, int n) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onGatherSnapIgnoredID(sender, sp, ids, i, n);
+        }
+    }
 
+    virtual void onSelectionChanged(const MgMotion* sender) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            (*it)->onSelectionChanged(sender);
+        }
+    }
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
             if (!(*it)->onShapeWillAdded(sender, shape)) {
@@ -147,6 +158,14 @@ private:
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
             if (!(*it)->onShapeCanUngroup(sender, shape)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    virtual bool onShapeCanMovedHandle(const MgMotion* sender, const MgShape* sp, int index) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            if (!(*it)->onShapeCanMovedHandle(sender, sp, index)) {
                 return false;
             }
         }

@@ -20,13 +20,13 @@ struct MgCmdManager {
 #ifndef SWIG
     //! 注册外部命令, 为NULL则取消注册
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0;
-    virtual const char* getCommandName() = 0;               //!< 得到当前命令名称
-    virtual const char* getCommandName(int index) = 0;      //!< 得到指定序号命令的名称
+    virtual const char* getCommandName() const = 0;             //!< 得到当前命令名称
+    virtual const char* getCommandName(int index) const = 0;    //!< 得到指定序号命令的名称
 #endif
 
     virtual void release() = 0;                             //!< 销毁管理器
     
-    virtual MgCommand* getCommand() = 0;                    //!< 得到当前命令
+    virtual MgCommand* getCommand() const = 0;              //!< 得到当前命令
     virtual MgCommand* findCommand(const char* name) = 0;   //!< 查找命令
     virtual bool setCommand(const MgMotion* sender,
         const char* name, MgStorage* s) = 0;                //!< 启动命令
@@ -34,13 +34,13 @@ struct MgCmdManager {
     virtual bool cancel(const MgMotion* sender) = 0;        //!< 取消当前命令
     virtual void unloadCommands() = 0;                      //!< 退出时卸载命令
     
-    virtual int getNewShapeID() = 0;                        //!< 返回新绘图形的ID
+    virtual int getNewShapeID() const = 0;                  //!< 返回新绘图形的ID
     virtual void setNewShapeID(int sid) = 0;                //!< 设置新绘图形的ID
 
     //! 返回屏幕毫米长度对应的模型长度，在命令显示函数中使用
-    virtual float displayMmToModel(float mm, GiGraphics* gs) = 0;
+    virtual float displayMmToModel(float mm, GiGraphics* gs) const = 0;
     //! 返回屏幕毫米长度对应的模型长度
-    virtual float displayMmToModel(float mm, const MgMotion* sender) = 0;
+    virtual float displayMmToModel(float mm, const MgMotion* sender) const = 0;
 
 #ifndef SWIG
     //! 得到当前选择的图形

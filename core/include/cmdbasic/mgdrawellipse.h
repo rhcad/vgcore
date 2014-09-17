@@ -14,15 +14,12 @@
 */
 class MgCmdDrawEllipse : public MgCmdDrawRect
 {
-protected:
-    MgCmdDrawEllipse(const char* name = Name()) : MgCmdDrawRect(name) {}
-    virtual ~MgCmdDrawEllipse() {}
-    
 public:
+    MgCmdDrawEllipse(const char* name = Name()) : MgCmdDrawRect(name) {}
+#ifndef SWIG
     static const char* Name() { return "ellipse"; }
     static MgCommand* Create() { return new MgCmdDrawEllipse; }
-    
-private:
+#endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);

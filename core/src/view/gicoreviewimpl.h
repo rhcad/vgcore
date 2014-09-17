@@ -141,6 +141,8 @@ public:
         return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
+    bool shapeCanMovedHandle(const MgShape* shape, int index) {
+        return !cmds() || getCmdSubject()->onShapeCanMovedHandle(motion(), shape, index); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
     bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {
@@ -148,11 +150,19 @@ public:
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
     
+    MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {
+        MgShape* s = createShape(type);
+        if (s) {
+            s->setContext(*(ctx ? ctx : context()));
+        }
+        return s;
+    }
     void commandChanged() {
         CALL_VIEW(deviceView()->commandChanged());
     }
     void selectionChanged() {
         CALL_VIEW(deviceView()->selectionChanged());
+        getCmdSubject()->onSelectionChanged(motion());
     }
     void dynamicChanged() {
         CALL_VIEW(deviceView()->dynamicChanged());

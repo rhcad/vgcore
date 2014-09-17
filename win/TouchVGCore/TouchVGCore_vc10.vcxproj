@@ -21,7 +21,7 @@
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawellipse.h" />
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawfreelines.h" />
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawgrid.h" />
-    <ClInclude Include="..\..\core\include\cmdbasic\mgdrawline.h" />
+    <ClInclude Include="..\..\core\include\cmdbase\mgdrawline.h" />
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawlines.h" />
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawparallel.h" />
     <ClInclude Include="..\..\core\include\cmdbasic\mgdrawpolygon.h" />
@@ -134,7 +134,7 @@
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawellipse.cpp" />
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawfreelines.cpp" />
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawgrid.cpp" />
-    <ClCompile Include="..\..\core\src\cmdbasic\mgdrawline.cpp" />
+    <ClCompile Include="..\..\core\src\cmdbase\mgdrawline.cpp" />
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawlines.cpp" />
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawparallel.cpp" />
     <ClCompile Include="..\..\core\src\cmdbasic\mgdrawpolygon.cpp" />

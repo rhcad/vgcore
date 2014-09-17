@@ -14,7 +14,6 @@
 #include "cmdsubject.h"
 #include "mglocal.h"
 #include "mglog.h"
-#include "mgspfactory.h"
 #include "mgstorage.h"
 
 #if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
@@ -179,13 +178,6 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     }
     
     if (!m_showSel || (!m_clones.empty() && !isCloneDrag(sender))) {
-        GiContext ctxbk(0, gs->getBkColor());       // 背景色、原线型
-        for (it = selection.begin(); it != selection.end(); ++it) {
-            if (! (*it)->shapec()->isKindOf(kMgShapeImage)) {
-                (*it)->draw(1, *gs, &ctxbk, -1);    // 用背景色擦掉原图形
-            }
-        }
-        
         if (m_showSel && !rorate) {                 // 拖动提示的参考线
             GiContext ctxshap(-1.05f, GiColor(0, 0, 255, 32), GiContext::kDotLine);
             gs->drawLine(&ctxshap, m_ptStart, m_ptSnap);
@@ -201,9 +193,12 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     else if (m_clones.empty()) {                    // 蓝色显示选中的图形
         float w = 0.5f * gs->xf().getWorldToDisplayY();
         GiContext ctx(-w, GiColor(0, 0, 255, 48));
+        bool old = gs->setPhaseEnabled(true);
+        
         for (it = shapes.begin(); it != shapes.end(); ++it) {
             (*it)->draw(1, *gs, &ctx, m_hit.segment);
         }
+        gs->setPhaseEnabled(old);
     }
     
     if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)) {
@@ -417,16 +412,20 @@ int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
 
 Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
 {
-    std::vector<int> ignoreids(1 + m_clones.size(), 0);
+    CmdSubject *subject = sender->view->getCmdSubject();
+    int n = (int)m_clones.size();
+    std::vector<int> ignoreids(50 + n, 0);
+    
     for (unsigned i = 0; i < m_clones.size(); i++)
         ignoreids[i] = m_clones[i]->getID();
+    subject->onGatherSnapIgnoredID(sender, shape, (int*)&ignoreids.front(), n,
+                                   (int)ignoreids.size() - 1);
     
     MgSnap* snap = sender->cmds()->getSnap();
     Point2d pt(snap->snapPoint(sender, sender->pointM, shape, m_handleIndex - 1,
                                m_rotateHandle - 1, (const int*)&ignoreids.front()));
-    
     if (!sender->dragging() && snap->getSnappedType() >= kMgSnapPoint) {
-        sender->view->getCmdSubject()->onPointSnapped(sender, shape);
+        subject->onPointSnapped(sender, shape);
     }
     
     return pt;
@@ -744,10 +743,14 @@ static bool moveIntoLimits(MgBaseShape* shape, const MgMotion* sender)
 {
     Box2d limits(sender->view->xform()->getWorldLimits()
                  * sender->view->xform()->worldToModel());
-    Box2d rect(shape->getExtent());
+    Box2d rect;
     bool outside = false;
     
     limits.normalize();
+    for (int i = shape->getPointCount() - 1; i >= 0; i--) {
+        rect.unionWith(shape->getPoint(i));
+    }
+    
     if (rect.xmin < limits.xmin) {
         rect.offset(limits.xmin - rect.xmin, 0);
         outside = true;
@@ -820,7 +823,8 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             if (m_rotateHandle > 0 && canRotate(basesp, sender)) {
                 Point2d center(basesp->shapec()->getHandlePoint(m_rotateHandle - 1));
                 
-                if (center != m_ptStart && m_handleIndex != m_rotateHandle) {
+                if (center != m_ptStart && m_handleIndex != m_rotateHandle
+                    && sender->view->shapeCanMovedHandle(m_clones[i], -1)) {
                     float angle = (m_ptStart - center).angleTo2(pointM - center);
                     shape->transform(Matrix2d::rotation(angle, center));
                     
@@ -834,14 +838,16 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 }
             }
             else if (m_handleIndex > 0 && isEditMode(sender->view)) { // 拖动顶点
-                float tol = sender->displayMmToModel(3.f);
-                shape->setHandlePoint2(m_handleIndex - 1, 
-                    snapPoint(sender, m_clones[i]), tol, _dragData);
+                if (sender->view->shapeCanMovedHandle(m_clones[i], m_handleIndex - 1)) {
+                    float tol = sender->displayMmToModel(3.f);
+                    Point2d pt(snapPoint(sender, m_clones[i]));
+                    shape->setHandlePoint2(m_handleIndex - 1, pt, tol, _dragData);
+                }
             }
             else if (dragCorner) {                          // 拖动变形框的特定点
                 shape->transform(mat);
             }
-            else {                                          // 拖动整个图形
+            else if (sender->view->shapeCanMovedHandle(m_clones[i], -1)) { // 拖动整个图形
                 segment = (!m_editMode &&
                     shape->isKindOf(kMgShapeComposite)) ? -1 : m_hit.segment;
 
@@ -865,11 +871,13 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     shape->offset(minsnap, segment);        // 这些图形都移动相同距离
                 }
             }
+            
+            shape->update();
+            moveIntoLimits(shape, sender);                  // 限制图形在视图范围内
+            
             if (t == 1) {
                 sender->view->shapeMoved(m_clones[i], segment); // 通知已移动
             }
-            shape->update();
-            moveIntoLimits(shape, sender);                  // 限制图形在视图范围内
             
             if (!isEditMode(sender->view)) {
                 shape->setFlag(kMgFixedLength, oldFixedLength);
@@ -1019,7 +1027,8 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
                 }
             }
             else {
-                if (oldsp && view->shapeWillChanged(m_clones[i], oldsp)
+                if (oldsp && !oldsp->equals(*m_clones[i])
+                    && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     view->shapeChanged(m_clones[i]);
                     changed = true;
@@ -1160,7 +1169,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
     if (m_selIds.size() > 1) {
         applyCloneShapes(sender->view, false);
 
-        MgShape* newgroup = sender->view->getShapeFactory()->createShape(MgGroup::Type());
+        MgShape* newgroup = sender->view->createShapeCtx(MgGroup::Type());
         MgGroup* group = (MgGroup*)newgroup->shape();
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {

@@ -299,6 +299,15 @@ void GiCoreView::releaseDocs(const mgvector<long>& docs)
     }
 }
 
+int GiCoreView::getSkipDrawIds(mgvector<int>& ids)
+{
+    int n = 0;
+    ids.setSize(50);
+    impl->getCmdSubject()->onGatherSnapIgnoredID(impl->motion(), NULL,
+                                                 ids.address(), n, ids.count() - 1);
+    return n;
+}
+
 int GiCoreView::acquireDynamicShapesArray(mgvector<long>& shapes)
 {
     int n = 0;
@@ -552,6 +561,13 @@ int GiCoreView::drawAll(long doc, long hGs, GiCanvas* canvas)
 
 int GiCoreView::drawAll(const mgvector<long>& docs, long hGs, GiCanvas* canvas)
 {
+    mgvector<int> ignoreIds;
+    return drawAll(docs, hGs, canvas, ignoreIds);
+}
+
+int GiCoreView::drawAll(const mgvector<long>& docs, long hGs,
+                        GiCanvas* canvas, const mgvector<int>& ignoreIds)
+{
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
@@ -559,7 +575,7 @@ int GiCoreView::drawAll(const mgvector<long>& docs, long hGs, GiCanvas* canvas)
         n = 0;
         for (int i = 0; i < docs.count(); i++) {
             MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
-            n += doc ? doc->dyndraw(isZooming() ? 2 : 0, *gs) : 0;
+            n += doc ? doc->dyndraw(isZooming() ? 2 : 0, *gs, ignoreIds.address()) : 0;
         }
         gs->endPaint();
     }
@@ -1185,9 +1201,8 @@ bool GiCoreView::getImageSize(mgvector<float>& info, int sid)
     if (ret) {
         const MgImageShape *image = (const MgImageShape*)shape->shapec();
         Box2d rect(image->getRect() * impl->curview->xform()->modelToDisplay());
-        Vector2d v;
+        Vector2d v(Vector2d::angledVector(image->getAngle(), 1));
         
-        v.setAngleLength(image->getAngle(), 1);
         info.set(0, image->getImageSize().x, image->getImageSize().y);
         info.set(2, rect.width(), rect.height());
         info.set(4, (v * impl->curview->xform()->modelToDisplay()).angle2());
