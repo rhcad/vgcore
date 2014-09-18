@@ -58,7 +58,8 @@ gshape_files := $(core_src)/gshape/mgarc.cpp \
               $(core_src)/gshape/mgpathsp.cpp \
               $(core_src)/gshape/mgrdrect.cpp \
               $(core_src)/gshape/mgrect.cpp \
-              $(core_src)/gshape/mgsplines.cpp
+              $(core_src)/gshape/mgsplines.cpp \
+              $(core_src)/gshape/mgarccross.cpp
 
 shape_files := $(core_src)/shape/mgcomposite.cpp \
               $(core_src)/shape/mgimagesp.cpp \

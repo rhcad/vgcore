@@ -165,6 +165,7 @@
     <ClCompile Include="..\..\core\src\graph\gixform.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgarc.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgbasesp.cpp" />
+    <ClCompile Include="..\..\core\src\gshape\mgarccross.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgcshapes.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgdiamond.cpp" />
     <ClCompile Include="..\..\core\src\gshape\mgdot.cpp" />

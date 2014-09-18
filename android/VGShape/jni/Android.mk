@@ -37,7 +37,8 @@ gshape_files := $(core_src)/gshape/mgarc.cpp \
               $(core_src)/gshape/mgpathsp.cpp \
               $(core_src)/gshape/mgrdrect.cpp \
               $(core_src)/gshape/mgrect.cpp \
-              $(core_src)/gshape/mgsplines.cpp
+              $(core_src)/gshape/mgsplines.cpp \
+              $(core_src)/gshape/mgarccross.cpp
 
 include $(CLEAR_VARS)
 LOCAL_MODULE     := libVGShape

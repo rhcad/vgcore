@@ -37,6 +37,7 @@
 		0224FF181998984300895C27 /* mgrdrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0C1998984300895C27 /* mgrdrect.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0224FF191998984300895C27 /* mgrect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0D1998984300895C27 /* mgrect.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0224FF1A1998984300895C27 /* mgsplines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF0E1998984300895C27 /* mgsplines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		02338E3219CA70250006BB44 /* mgarccross.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02338E3119CA70250006BB44 /* mgarccross.cpp */; };
 		026C374C199B371D00F29369 /* nanosvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 026C374B199B371D00F29369 /* nanosvg.cpp */; };
 		026DF6941998793000B66B83 /* mgpath.h in Headers */ = {isa = PBXBuildFile; fileRef = 026DF6931998793000B66B83 /* mgpath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		026DF6961998793700B66B83 /* mgpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 026DF6951998793700B66B83 /* mgpath.cpp */; };
@@ -106,6 +107,7 @@
 		0224FF0D1998984300895C27 /* mgrect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgrect.h; sourceTree = "<group>"; };
 		0224FF0E1998984300895C27 /* mgsplines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgsplines.h; sourceTree = "<group>"; };
 		0224FF651998B69600895C27 /* gshape.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = gshape.i; sourceTree = "<group>"; };
+		02338E3119CA70250006BB44 /* mgarccross.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgarccross.cpp; sourceTree = "<group>"; };
 		026C374B199B371D00F29369 /* nanosvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nanosvg.cpp; sourceTree = "<group>"; };
 		026DF6931998793000B66B83 /* mgpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgpath.h; sourceTree = "<group>"; };
 		026DF6951998793700B66B83 /* mgpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpath.cpp; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 		026DF69219986DE300B66B83 /* gshape */ = {
 			isa = PBXGroup;
 			children = (
+				02338E3119CA70250006BB44 /* mgarccross.cpp */,
 				0224FF651998B69600895C27 /* gshape.i */,
 				0224FEB7199884B500895C27 /* mgcshapes.cpp */,
 				0224FEE71998935900895C27 /* mgparallel.cpp */,
@@ -445,6 +448,7 @@
 				0224FEC4199884B500895C27 /* mgsplines.cpp in Sources */,
 				0224FEC2199884B500895C27 /* mgcshapes.cpp in Sources */,
 				0224FEC9199884B500895C27 /* mgrdrect.cpp in Sources */,
+				02338E3219CA70250006BB44 /* mgarccross.cpp in Sources */,
 				0224FEE6199892D100895C27 /* mgdot.cpp in Sources */,
 				02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */,
 				AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */,
