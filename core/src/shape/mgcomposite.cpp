@@ -340,10 +340,15 @@ bool MgGroup::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment)
 {
     const MgShape* sp = _shapes->findShape(segment);
     if (sp) {
-        Point2d cen(_shapes->getExtent().center());
-        if (_insert != cen) {
-            GiContext ctxln(0, GiColor(0, 126, 0, 64), GiContext::kDotLine);
-            gs.drawLine(&ctxln, _insert, cen);
+        if (mode > 0) {
+            Box2d rect(_shapes->getExtent());
+            Point2d cen(rect.center());
+            GiContext ctxln(0, GiColor(0, 126, 0, 128), GiContext::kDotLine);
+            
+            if (_insert != cen) {
+                gs.drawLine(&ctxln, _insert, cen);
+            }
+            gs.drawRect(&ctxln, rect);
         }
         return sp->draw(mode, gs, ctx.isNullLine() ? NULL : &ctx, -1);
     }
