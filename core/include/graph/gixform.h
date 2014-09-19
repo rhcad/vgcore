@@ -138,7 +138,7 @@ public:
         可用 GiSaveModelTransform 类保存和恢复模型坐标系的变换矩阵
         \param mat 模型坐标系到世界坐标系的变换矩阵，必须可逆
     */
-    void setModelTransform(const Matrix2d& mat);
+    bool setModelTransform(const Matrix2d& mat);
     
     //! 返回显示窗口的世界坐标范围
     Box2d getWndRectW() const;

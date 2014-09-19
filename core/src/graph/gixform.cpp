@@ -195,15 +195,17 @@ bool GiTransform::setWndSize(int width, int height)
     return false;
 }
 
-void GiTransform::setModelTransform(const Matrix2d& mat)
+bool GiTransform::setModelTransform(const Matrix2d& mat)
 {
-    if (mat.isInvertible() && m_impl->matM2W != mat) {
+    bool changed = mat.isInvertible() && m_impl->matM2W != mat;
+    if (changed) {
         m_impl->matM2W = mat;
         m_impl->matW2M = m_impl->matM2W.inverse();
         m_impl->matD2M = m_impl->matD2W * m_impl->matW2M;
         m_impl->matM2D = m_impl->matM2W * m_impl->matW2D;
         m_impl->zoomChanged();
     }
+    return changed;
 }
 
 void GiTransform::setResolution(float dpiX, float dpiY)
