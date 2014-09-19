@@ -44,7 +44,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
     m_step = 0;
     m_shape->shape()->clear();
     m_shape->setContext(*sender->view->context());
-    m_oneShapeEnd = !!sender->view->getOptionInt(getName(), "oneShape", 0);
+    m_oneShapeEnd = !!sender->view->getOptionBool("drawOneShape", false);
     
     int n = s ? s->readFloatArray("points", NULL, 0) : 0;
     if (n > 1) {
@@ -134,7 +134,7 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
-    Box2d limits(sender->displayMmToModelBox("select", "hitTestTol", 10.f));
+    Box2d limits(sender->displayMmToModelBox("hitTestTol", 10.f));
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
     

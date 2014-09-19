@@ -18,7 +18,10 @@ class GiCoreViewImpl;
  */
 struct MgOptionCallback {
     virtual ~MgOptionCallback() {}
-    virtual void onGetOption(const char* group, const char* name, const char* text) = 0;
+    
+    virtual void onGetOptionBool(const char* name, bool value) = 0;     //!< 布尔选项值
+    virtual void onGetOptionInt(const char* name, int value) = 0;       //!< 整型选项值
+    virtual void onGetOptionFloat(const char* name, float value) = 0;   //!< 浮点型选项值
 };
 
 //! 内核视图分发器类
@@ -95,8 +98,10 @@ public:
     bool restoreRecord(int type, const char* path, long doc, long changeCount,
                        int index, int count, int tick, long curTick);   //!< 恢复录制
     
-    int traverseOptions(MgOptionCallback* c);                       //!< 遍历选项
-    void setOption(const char* group, const char* name, const char* text); //!< 设置或清除选项值
+    void traverseOptions(MgOptionCallback* c);                      //!< 遍历选项
+    void setOptionBool(const char* name, bool value);               //!< 设置或清除布尔选项值
+    void setOptionInt(const char* name, int value);                 //!< 设置或清除整型选项值
+    void setOptionFloat(const char* name, float value);             //!< 设置或清除浮点型选项值
     
 // MgCoreView
 #ifndef SWIG

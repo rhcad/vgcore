@@ -72,7 +72,7 @@ static bool skipShape(const int* ignoreids, const MgShape* sp)
     return skip;
 }
 
-static bool snapHandle(const MgMotion* sender, const Point2d& orgpt,
+static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
                        const MgShape* shape, int ignoreHd,
                        const MgShape* sp, SnapItem& arr0, Point2d* matchpt)
 {
@@ -86,6 +86,9 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt,
     for (int i = 0; i < n; i++) {                       // 循环每一个控制点
         Point2d pnt(sp->shapec()->getHandlePoint(i));   // 已有图形的一个控制点
         int handleType = sp->shapec()->getHandleType(i);
+        
+        if ((mask & (1 << handleType)) == 0)
+            continue;
         
         float dist = pnt.distanceTo(orgpt);             // 触点与顶点匹配
         
@@ -373,7 +376,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
 
 static void snapShape(const MgMotion* sender, const Point2d& orgpt,
                       float minBox, const Box2d& snapbox, const Box2d& wndbox,
-                      bool needHandle, bool needNear, float tolNear,
+                      int handleMask, bool needNear, float tolNear,
                       bool needPerp, bool perpOut, const Tol& tolPerp,
                       bool needCross, const Box2d& nearBox, bool needGrid,
                       const MgShape* sp, const MgShape* shape, int ignoreHd,
@@ -391,7 +394,7 @@ static void snapShape(const MgMotion* sender, const Point2d& orgpt,
         return;
     }
     if (extent.isIntersect(wndbox)) {
-        b |= (needHandle && snapHandle(sender, orgpt, shape, ignoreHd,
+        b |= (handleMask && snapHandle(sender, orgpt, handleMask, shape, ignoreHd,
                                        sp, arr[0], matchpt));
         b |= (needPerp && snapPerp(sender, orgpt, tolPerp, shape, sp,
                                    arr[0], perpOut, nearBox));
@@ -406,11 +409,27 @@ static void snapShape(const MgMotion* sender, const Point2d& orgpt,
     }
 }
 
+static inline int getHandleMask(MgView* view)
+{
+    int handleMask = 0;
+    
+    if (view->getOptionBool("snapVertext", true))
+        handleMask |= 1 << kMgHandleVertext;
+    if (view->getOptionBool("snapCenter", true))
+        handleMask |= 1 << kMgHandleCenter;
+    if (view->getOptionBool("snapMidPoint", true))
+        handleMask |= 1 << kMgHandleMidPoint;
+    if (view->getOptionBool("snapQuadrant", false))
+        handleMask |= 1 << kMgHandleQuadrant;
+    
+    return handleMask;
+}
+
 static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
 {
-    if (!sender->view->getOptionInt("snap", "snapEnabled", 1)) {
+    if (!sender->view->getOptionBool("snapEnabled", true)) {
         return;
     }
     
@@ -418,14 +437,15 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     GiTransform* xf = sender->view->xform();
     Box2d wndbox(xf->getWndRectM());
     MgShapeIterator it(sender->view->shapes());
-    bool needHandle = !!sender->view->getOptionInt("snap", "snapHandle", 1);
-    bool needNear = !!sender->view->getOptionInt("snap", "snapNear", 1);
-    bool needPerp = !!sender->view->getOptionInt("snap", "snapPerp", 1);
-    bool perpOut = !!sender->view->getOptionInt("snap", "perpOut", 0);
-    bool needCross = !!sender->view->getOptionInt("snap", "snapCross", 1);
-    float tolNear = sender->displayMmToModel("snap", "snapNearTol", 3.f);
+    
+    int handleMask = getHandleMask(sender->view);
+    bool needNear = !!sender->view->getOptionBool("snapNear", true);
+    bool needPerp = !!sender->view->getOptionBool("snapPerp", true);
+    bool perpOut = !!sender->view->getOptionBool("perpOut", false);
+    bool needCross = !!sender->view->getOptionBool("snapCross", true);
+    float tolNear = sender->displayMmToModel("snapNearTol", 3.f);
     Tol tolPerp(sender->displayMmToModel(1));
-    bool needGrid = !!sender->view->getOptionInt("snap", "snapGrid", 1);
+    bool needGrid = !!sender->view->getOptionBool("snapGrid", true);
     Box2d nearBox(orgpt, needNear ? mgMin(tolNear, sender->displayMmToModel(4.f)) : 0.f, 0);
     
     if (shape) {
@@ -433,7 +453,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     }
     while (const MgShape* sp = it.getNext()) {
         snapShape(sender, orgpt, xf->displayToModel(2, true), snapbox, wndbox,
-                  needHandle, needNear, tolNear, needPerp, perpOut, tolPerp,
+                  handleMask, needNear, tolNear, needPerp, perpOut, tolPerp,
                   needCross, nearBox, needGrid,
                   sp, shape, ignoreHd, ignoreids, arr, matchpt);
     }
@@ -451,8 +471,8 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     }
     _ptSnap = orgpt;   // 默认结果为当前触点位置
     
-    const float xytol = sender->displayMmToModel("snap", "snapPointTol", 4.f);
-    const float xtol = sender->displayMmToModel("snap", "snapXTol", 1.f);
+    const float xytol = sender->displayMmToModel("snapPointTol", 4.f);
+    const float xtol = sender->displayMmToModel("snapXTol", 1.f);
     SnapItem arr[3] = {         // 设置捕捉容差和捕捉初值
         SnapItem(_ptSnap, _ptSnap, xytol),                          // XY点捕捉
         SnapItem(_ptSnap, _ptSnap, xtol),                           // X分量捕捉，竖直线

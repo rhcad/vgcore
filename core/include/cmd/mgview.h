@@ -104,10 +104,12 @@ struct MgView
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
 #endif
     
-    virtual int getOptionInt(const char* group, const char* name, int defValue) = 0;        //!< 整形选项值
-    virtual float getOptionFloat(const char* group, const char* name, float defValue) = 0;  //!< 浮点型选项值
-    virtual void setOptionInt(const char* group, const char* name, int value) = 0;          //!< 设置选项值
-    virtual void setOptionFloat(const char* group, const char* name, float value) = 0;      //!< 设置选项值
+    virtual bool getOptionBool(const char* name, bool defValue) = 0;     //!< 布尔选项值
+    virtual int getOptionInt(const char* name, int defValue) = 0;        //!< 整型选项值
+    virtual float getOptionFloat(const char* name, float defValue) = 0;  //!< 浮点型选项值
+    virtual void setOptionBool(const char* name, bool value) = 0;        //!< 设置布尔选项值
+    virtual void setOptionInt(const char* name, int value) = 0;          //!< 设置整型选项值
+    virtual void setOptionFloat(const char* name, float value) = 0;      //!< 设置浮点型选项值
 };
 
 //! 触摸动作参数
@@ -158,16 +160,16 @@ public:
     //! 返回屏幕毫米长度对应的模型长度
     float displayMmToModel(float mm) const { return d2m * mm; }
     //! 返回屏幕毫米长度对应的模型长度，优先取配置值
-    float displayMmToModel(const char* group, const char* name, float mm) const {
-        return d2m * view->getOptionFloat(group, name, mm);
+    float displayMmToModel(const char* name, float mm) const {
+        return d2m * view->getOptionFloat(name, mm);
     }
     //! 返回屏幕毫米宽度的正方形区域
     Box2d displayMmToModelBox(float mm) const {
         return Box2d(pointM, displayMmToModel(mm), 0);
     }
     //! 返回屏幕毫米宽度的正方形区域，优先取配置值
-    Box2d displayMmToModelBox(const char* group, const char* name, float mm) const {
-        return Box2d(pointM, displayMmToModel(group, name, mm), 0);
+    Box2d displayMmToModelBox(const char* name, float mm) const {
+        return Box2d(pointM, displayMmToModel(name, mm), 0);
     }
 };
 

@@ -59,7 +59,7 @@ bool MgCmdErase::draw(const MgMotion* sender, GiGraphics* gs)
 
 const MgShape* MgCmdErase::hitTest(const MgMotion* sender)
 {
-    Box2d limits(sender->startPtM, sender->displayMmToModel("select", "hitTestTol", 10.f), 0);
+    Box2d limits(sender->startPtM, sender->displayMmToModel("hitTestTol", 10.f), 0);
     MgHitResult res;
     return sender->view->shapes()->hitTest(limits, res);
 }
