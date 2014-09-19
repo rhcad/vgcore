@@ -1177,6 +1177,7 @@ bool MgCmdSelect::groupSelection(const MgMotion* sender)
                 count++;
             }
         }
+        group->setPoint(0, group->shapes()->getExtent().center());
         sender->view->shapes()->addShapeDirect(newgroup);
         
         m_id = newgroup->getID();
@@ -1439,6 +1440,9 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
     else {
         const MgShape* sp = sender->view->shapes()->findShape(m_id);
         if (sp && sp->shapec()->isKindOf(kMgShapeComposite)) {
+            if (sender->view->compositeShapeWillEdit(sp)) {
+                return true;
+            }
             MgShapes* shapes = ((MgComposite*)sp->shapec())->shapes();
             sender->view->setCurrentShapes(shapes);
             selectAll(sender);

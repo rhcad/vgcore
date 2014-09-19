@@ -88,6 +88,7 @@ struct MgView
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
     virtual bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) = 0; //!< 通知将修改图形
     virtual void shapeChanged(MgShape* shape) = 0;              //!< 通知已拖动图形
+    virtual bool compositeShapeWillEdit(const MgShape* shape) = 0;  //!< 通知组合图形将要编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮
     virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
