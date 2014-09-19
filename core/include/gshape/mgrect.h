@@ -59,7 +59,6 @@ public:
     void setSquare(bool square) { setFlag(kMgSquare, square); }
     
 #ifndef SWIG
-    virtual bool isCurve() const { return false; }
     virtual const Point2d* getPoints() const { return _points; }
 #endif
 

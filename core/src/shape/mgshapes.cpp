@@ -564,7 +564,7 @@ void MgShapes::setNewShapeID(int sid)
 
 MgShape* MgShapes::I::findShape(int sid) const
 {
-    if (!this || 0 == sid)
+    if (!this || 0 == sid || -1 == sid)
         return NULL;
     ID2SHAPE::const_iterator it = id2shape.find(sid);
     return it != id2shape.end() ? it->second : NULL;
