@@ -231,12 +231,12 @@ int MgGroup::_getPointCount() const
 
 Point2d MgGroup::_getPoint(int index) const
 {
-    return index > 0 && !_box.isEmpty() ? _box.center() : _insert;
+    return index == 0 && !_box.isEmpty() ? _box.center() : _insert;
 }
 
 void MgGroup::_setPoint(int index, const Point2d& pt)
 {
-    if (index == 0) {
+    if (index == 1) {
         _insert = pt;
     }
 }
@@ -256,8 +256,8 @@ bool MgGroup::_equals(const MgGroup& src) const
 void MgGroup::_update()
 {
     __super::_update();
-    _box = _extent;
     _extent.unionWith(_insert);
+    _box = _shapes->getExtent();
 }
 
 void MgGroup::_transform(const Matrix2d& mat)
@@ -299,14 +299,14 @@ int MgGroup::_getHandleCount() const
 
 Point2d MgGroup::_getHandlePoint(int index) const
 {
-    return index > 0 ? _box.center() : _insert;
+    return _getPoint(index);
 }
 
 bool MgGroup::_setHandlePoint(int index, const Point2d& pt, float)
 {
     Vector2d vec(pt - _getHandlePoint(index));
     return (vec.isZeroVector() ? false :
-            index == 0 ? _offset(vec, -1) : __super::_offset(vec, -1));
+            index == 1 ? _offset(vec, -1) : __super::_offset(vec, -1));
 }
 
 bool MgGroup::_isHandleFixed(int index) const
@@ -316,7 +316,7 @@ bool MgGroup::_isHandleFixed(int index) const
 
 int MgGroup::_getHandleType(int index) const
 {
-    return index == 0 ? kMgHandleVertext : kMgHandleNoSnap;
+    return index == 0 ? kMgHandleNoSnap : kMgHandleVertext;
 }
 
 bool MgGroup::_offset(const Vector2d& vec, int segment)

@@ -82,6 +82,7 @@ bool MgCmdSelect::dynamicChangeEnded(MgView* view, bool apply)
 MgCmdSelect::MgCmdSelect() : MgCommand(Name())
 {
     m_editMode = true;
+    m_compositeEdited = false;
 }
 
 bool MgCmdSelect::cancel(const MgMotion* sender)
@@ -118,6 +119,10 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_id = shape->getID();
         sender->view->redraw();
         selectionChanged(sender->view);
+        if (shape->shapec()->isKindOf(MgComposite::Type())
+            && ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0) {
+            return doubleClick(sender);
+        }
         longPress(sender);
     }
     
@@ -517,10 +522,15 @@ bool MgCmdSelect::doubleClick(const MgMotion* sender)
     const MgShape* shape = getSelectedShape(sender);
     Box2d box(getBoundingBox(sender));
 
+    m_compositeEdited = (shape && shape->shapec()->isKindOf(kMgShapeComposite)
+                         && sender->view->compositeShapeWillEdit(shape));
+    if (m_compositeEdited) {
+        return setEditMode(sender, true);
+    }
     if (dispatcher->showInSelect(sender, getSelectState(sender->view), shape, box)) {
         return shape != NULL;
     }
-
+    
     return setEditMode(sender, !isEditMode(sender->view));  // 如果没实现菜单
 }
 
@@ -1202,7 +1212,7 @@ bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
                             : sender->view->shapes()->findShape(m_selIds.front()));
     int count = 0;
     
-    if (oldsp && sender->view->shapeWillDeleted(oldsp)) {
+    if (oldsp && !m_compositeEdited && sender->view->shapeWillDeleted(oldsp)) {
         applyCloneShapes(sender->view, false);
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
@@ -1437,14 +1447,10 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
         m_selIds.clear();
         m_selIds.push_back(m_id);
     }
-    else {
+    else if (!m_compositeEdited) {
         const MgShape* sp = sender->view->shapes()->findShape(m_id);
         if (sp && sp->shapec()->isKindOf(kMgShapeComposite)) {
-            if (sender->view->compositeShapeWillEdit(sp)) {
-                return true;
-            }
-            MgShapes* shapes = ((MgComposite*)sp->shapec())->shapes();
-            sender->view->setCurrentShapes(shapes);
+            sender->view->setCurrentShapes(((MgComposite*)sp->shapec())->shapes());
             selectAll(sender);
         }
     }
@@ -1452,7 +1458,9 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
     m_handleIndex = 0;
     m_rotateHandle = 0;
     sender->view->redraw();
-    longPress(sender);
+    if (!m_compositeEdited) {
+        longPress(sender);
+    }
     
     return true;
 }
