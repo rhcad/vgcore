@@ -88,7 +88,7 @@ int MgComposite::_getHandleType(int index) const
         n += c;
     }
     
-    return kMgHandleOutside;
+    return kMgHandleNoSnap;
 }
 
 bool MgComposite::_isHandleFixed(int index) const
@@ -120,12 +120,7 @@ void MgComposite::_clearCachedData()
 
 void MgComposite::_update()
 {
-    MgShapeIterator it(_shapes);
-    _extent.empty();
-
-    while (const MgShape* sp = it.getNext()) {
-        _extent.unionWith(sp->shapec()->getExtent());
-    }
+    _extent = _shapes->getExtent();
     __super::_update();
 }
 
@@ -135,6 +130,7 @@ void MgComposite::_transform(const Matrix2d& mat)
     while (MgShape* sp = const_cast<MgShape*>(it.getNext())) {
         sp->shape()->transform(mat);
     }
+    _extent = _shapes->getExtent();
 }
 
 void MgComposite::_clear()
@@ -230,23 +226,26 @@ MgGroup::~MgGroup()
 
 int MgGroup::_getPointCount() const
 {
-    return 1;
+    return 2;
 }
 
 Point2d MgGroup::_getPoint(int index) const
 {
-    return _insert;
+    return index > 0 && !_box.isEmpty() ? _box.center() : _insert;
 }
 
 void MgGroup::_setPoint(int index, const Point2d& pt)
 {
-    _insert = pt;
+    if (index == 0) {
+        _insert = pt;
+    }
 }
 
 void MgGroup::_copy(const MgGroup& src)
 {
     __super::_copy(src);
     _insert = src._insert;
+    _box = _shapes->getExtent();
 }
 
 bool MgGroup::_equals(const MgGroup& src) const
@@ -257,6 +256,7 @@ bool MgGroup::_equals(const MgGroup& src) const
 void MgGroup::_update()
 {
     __super::_update();
+    _box = _extent;
     _extent.unionWith(_insert);
 }
 
@@ -264,11 +264,13 @@ void MgGroup::_transform(const Matrix2d& mat)
 {
     __super::_transform(mat);
     _insert *= mat;
+    _box = _shapes->getExtent();
 }
 
 void MgGroup::_clear()
 {
     _insert = Point2d::kOrigin();
+    _box.empty();
     __super::_clear();
 }
 
@@ -292,17 +294,12 @@ bool MgGroup::_hitTestBox(const Box2d& rect) const
 
 int MgGroup::_getHandleCount() const
 {
-    return 5;
+    return 2;
 }
 
 Point2d MgGroup::_getHandlePoint(int index) const
 {
-    if (index > 0 && index <= 4) {
-        Point2d pt;
-        mgnear::getRectHandle(_shapes->getExtent(), index - 1, pt);
-        return pt;
-    }
-    return _insert;
+    return index > 0 ? _box.center() : _insert;
 }
 
 bool MgGroup::_setHandlePoint(int index, const Point2d& pt, float)
@@ -319,7 +316,7 @@ bool MgGroup::_isHandleFixed(int index) const
 
 int MgGroup::_getHandleType(int index) const
 {
-    return index == 0 ? kMgHandleVertext : kMgHandleOutside;
+    return index == 0 ? kMgHandleVertext : kMgHandleNoSnap;
 }
 
 bool MgGroup::_offset(const Vector2d& vec, int segment)
@@ -341,14 +338,13 @@ bool MgGroup::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment)
     const MgShape* sp = _shapes->findShape(segment);
     if (sp) {
         if (mode > 0) {
-            Box2d rect(_shapes->getExtent());
-            Point2d cen(rect.center());
+            Point2d cen(_box.center());
             GiContext ctxln(0, GiColor(0, 126, 0, 128), GiContext::kDotLine);
             
             if (_insert != cen) {
                 gs.drawLine(&ctxln, _insert, cen);
             }
-            gs.drawRect(&ctxln, rect);
+            gs.drawRect(&ctxln, _box);
         }
         return sp->draw(mode, gs, ctx.isNullLine() ? NULL : &ctx, -1);
     }

@@ -98,6 +98,7 @@ protected:
     
 protected:
     Point2d     _insert;
+    Box2d       _box;
 };
 
 #endif // TOUCHVG_COMPOSITE_SHAPE_H_
