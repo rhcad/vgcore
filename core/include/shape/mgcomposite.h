@@ -74,6 +74,13 @@ class MgGroup : public MgComposite
 public:
     //! 添加一个新图形或其他图形列表中的图形
     bool addShapeToGroup(const MgShape* shape);
+    
+    //! 返回插入点
+    Point2d getInsertionPoint() const { return _getPoint(1); }
+    void setInsertionPoint(const Point2d& pt) { _setPoint(1, pt); }
+    
+    //! 返回子图形中心点
+    Point2d getCenterPoint() const { return _getPoint(0); }
 
 protected:
     void _copy(const MgGroup& src);
@@ -98,6 +105,7 @@ protected:
     
 protected:
     Point2d     _insert;
+    Box2d       _box;
 };
 
 #endif // TOUCHVG_COMPOSITE_SHAPE_H_

@@ -41,6 +41,7 @@ typedef enum {
     kMgHandleMidPoint,  //!< 中点
     kMgHandleQuadrant,  //!< 象限点
     kMgHandleOutside,   //!< 线外点
+    kMgHandleNoSnap,    //!< 不捕捉的线外点
 } MgHandleType;
 
 //! 选中点击测试的结果
