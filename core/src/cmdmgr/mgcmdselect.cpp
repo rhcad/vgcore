@@ -1435,8 +1435,10 @@ bool MgCmdSelect::isEditMode(MgView* view)
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
 {
     const MgObject* owner = sender->view->shapes()->getOwner();
+    const MgShape* sp = sender->view->shapes()->findShape(m_id);
+    bool isComposite = sp && sp->shapec()->isKindOf(kMgShapeComposite);
 
-    if (owner && owner->isKindOf(kMgShapeComposite)) {
+    if (owner && owner->isKindOf(kMgShapeComposite)) {  // 已进入Composite编辑
         editMode = false;
         sender->view->setCurrentShapes(NULL);
 
@@ -1447,18 +1449,15 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
         m_selIds.clear();
         m_selIds.push_back(m_id);
     }
-    else if (!m_compositeEdited) {
-        const MgShape* sp = sender->view->shapes()->findShape(m_id);
-        if (sp && sp->shapec()->isKindOf(kMgShapeComposite)) {
-            sender->view->setCurrentShapes(((MgComposite*)sp->shapec())->shapes());
-            selectAll(sender);
-        }
+    else if (isComposite && !m_compositeEdited) {       // 进入Composite编辑
+        sender->view->setCurrentShapes(((MgComposite*)sp->shapec())->shapes());
+        selectAll(sender);
     }
     m_editMode = editMode;
     m_handleIndex = 0;
     m_rotateHandle = 0;
     sender->view->redraw();
-    if (!m_compositeEdited) {
+    if (!isComposite || !m_compositeEdited) {
         longPress(sender);
     }
     
