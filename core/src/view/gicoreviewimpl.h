@@ -150,8 +150,8 @@ public:
         return getCmdSubject()->onShapeWillChanged(motion(), shape, oldsp); }
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
-    bool compositeShapeWillEdit(const MgShape* shape) {
-        return CALL_VIEW2(deviceView()->compositeShapeWillEdit(shape->getID()), false);
+    bool shapeDblClick(const MgShape* shape) {
+        return CALL_VIEW2(deviceView()->shapeDblClick(shape->getType(), shape->getID()), false);
     }
     
     MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {

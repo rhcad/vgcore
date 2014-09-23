@@ -99,7 +99,7 @@ private:
     bool                    m_boxsel;           // 是否开始框选
     bool                    m_dragging;         // 是否正在拖动
     bool                    m_canRotateHandle;  // 是否允许绕控制点旋转
-    bool                    m_compositeEdited;  // 复合图形可自定义编辑
+    bool                    m_shapeEdited;      // 图形可自定义编辑
 };
 
 #endif // TOUCHVG_CMD_SELECT_H_

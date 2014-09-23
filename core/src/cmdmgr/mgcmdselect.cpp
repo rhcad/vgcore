@@ -81,8 +81,8 @@ bool MgCmdSelect::dynamicChangeEnded(MgView* view, bool apply)
 
 MgCmdSelect::MgCmdSelect() : MgCommand(Name())
 {
-    m_editMode = true;
-    m_compositeEdited = false;
+    m_editMode = false;
+    m_shapeEdited = false;
 }
 
 bool MgCmdSelect::cancel(const MgMotion* sender)
@@ -375,7 +375,7 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
             return true;
         }
         if (d > limits.width() / 2) {
-            int n = m_editMode ? shape->shapec()->getHandleCount() : 0;
+            int n = isEditMode(sender->view) ? shape->shapec()->getHandleCount() : 0;
             while (--n >= 0 && d > limits.width() / 2) {
                 d = shape->shapec()->getHandlePoint(n).distanceTo(sender->startPtM);
             }
@@ -477,7 +477,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
         else if (shape && m_selIds.size() == 1 && !shape->shapec()->isKindOf(kMgShapeSplines)) {
             bool issmall = (shape->shapec()->getExtent().width() < sender->displayMmToModel(5.f)
                             && shape->shapec()->getExtent().height() < sender->displayMmToModel(5.f));
-            m_handleIndex = (m_editMode || !issmall ?
+            m_handleIndex = (isEditMode(sender->view) || !issmall ?
                              hitTestHandles(shape, sender->pointM, sender) : 0);
         }
     }
@@ -506,7 +506,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
     {
         return true;
     }
-    if (!sender->pressDrag && (m_editMode || m_handleIndex == 0)) {
+    if (!sender->pressDrag && (isEditMode(sender->view) || m_handleIndex == 0)) {
         MgActionDispatcher* dispatcher = sender->cmds()->getActionDispatcher();
         dispatcher->showInSelect(sender, getSelectState(sender->view),
                                  shape, getBoundingBox(sender));
@@ -522,10 +522,9 @@ bool MgCmdSelect::doubleClick(const MgMotion* sender)
     const MgShape* shape = getSelectedShape(sender);
     Box2d box(getBoundingBox(sender));
 
-    m_compositeEdited = (shape && shape->shapec()->isKindOf(kMgShapeComposite)
-                         && sender->view->compositeShapeWillEdit(shape));
-    if (m_compositeEdited) {
-        return setEditMode(sender, true);
+    m_shapeEdited = shape && sender->view->shapeDblClick(shape);
+    if (m_shapeEdited) {
+        return true;
     }
     if (dispatcher->showInSelect(sender, getSelectState(sender->view), shape, box)) {
         return shape != NULL;
@@ -595,7 +594,8 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
     }
     
     _dragData = 0;
-    m_handleIndex = (m_clones.size() == 1 && (m_handleIndex > 0 || m_editMode) ?
+    m_handleIndex = (m_clones.size() == 1
+                     && (m_handleIndex > 0 || isEditMode(sender->view)) ?
                      hitTestHandles(shape, sender->pointM, sender) : 0);
     
     if (m_insertPt && shape && shape->shape()->isKindOf(kMgShapeBaseLines)) {
@@ -858,7 +858,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 shape->transform(mat);
             }
             else if (sender->view->shapeCanMovedHandle(m_clones[i], -1)) { // 拖动整个图形
-                segment = (!m_editMode &&
+                segment = (!isEditMode(sender->view) &&
                     shape->isKindOf(kMgShapeComposite)) ? -1 : m_hit.segment;
 
                 shape->offset(pointM - m_ptStart, segment); // 先从起始点拖到当前点
@@ -1212,7 +1212,7 @@ bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
                             : sender->view->shapes()->findShape(m_selIds.front()));
     int count = 0;
     
-    if (oldsp && !m_compositeEdited && sender->view->shapeWillDeleted(oldsp)) {
+    if (oldsp && !m_shapeEdited && sender->view->shapeWillDeleted(oldsp)) {
         applyCloneShapes(sender->view, false);
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
@@ -1429,7 +1429,7 @@ bool MgCmdSelect::isEditMode(MgView* view)
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         return true;
     }
-    return m_editMode && m_selIds.size() == 1;
+    return (m_editMode || m_shapeEdited) && m_selIds.size() == 1;
 }
 
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
@@ -1449,7 +1449,7 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
         m_selIds.clear();
         m_selIds.push_back(m_id);
     }
-    else if (isComposite && !m_compositeEdited) {       // 进入Composite编辑
+    else if (isComposite && !m_shapeEdited) {           // 进入Composite编辑
         sender->view->setCurrentShapes(((MgComposite*)sp->shapec())->shapes());
         selectAll(sender);
     }
@@ -1457,7 +1457,7 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
     m_handleIndex = 0;
     m_rotateHandle = 0;
     sender->view->redraw();
-    if (!isComposite || !m_compositeEdited) {
+    if (!isComposite || !m_shapeEdited) {
         longPress(sender);
     }
     
