@@ -61,15 +61,20 @@ static void bezier4P(const Point2d& pt1, const Point2d& pt2, const Point2d& pt3,
 //! 对数据点光滑拟合为三次贝塞尔曲线
 /*!
     \param[in] knotCount 缓冲区knots和knotvs的元素个数
-    \param[out] knots 贝塞尔曲线的顶点
-    \param[out] knotvs 顶点处的切向矢量
+    \param[out] knots 贝塞尔曲线的顶点，元素个数为knotCount
+    \param[out] knotvs 顶点处的切向矢量，可为NULL
     \param[in] count 数据点pts的个数
     \param[in] pts 数据点
     \param[in] tol 拟合曲线与数据点的最大允许距离
-    \return 拟合的knots和knotvs的个数
+    \return knots和knotvs的结果元素个数，不超过knotCount
 */
 static int fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
                     int count, const Point2d* pts, float tol);
+
+#ifndef SWIG
+typedef Point2d (*PtCallback)(void* data, int i);
+static int fitCurve2(int knotCount, Point2d* knots, int count, PtCallback pts, void* data, float tol);
+#endif
 
 //! 二次贝塞尔曲线段转为三次贝塞尔曲线段
 static void quadBezierToCubic(const Point2d quad[3], Point2d cubic[4]);

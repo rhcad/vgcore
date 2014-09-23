@@ -17,9 +17,20 @@ typedef struct {
     void set(int i, const point_t &pt) { pts[i].set((float)pt.x, (float)pt.y); }
 } BezierCurve;
 
-typedef struct {
+typedef Point2d (*PtCallback)(void* data, int i);
+typedef struct _PtArr {
     const Point2d *d;
-    point_t operator[](int i) const { return point_t(d[i].x, d[i].y); }
+    PtCallback  c;
+    void        *data;
+    
+    _PtArr(const Point2d *d) : d(d), c((PtCallback)0) {}
+    _PtArr(PtCallback c, void *data) : d((const Point2d *)0), c(c), data(data) {}
+    
+    point_t operator[](int i) const {
+        if (d) return point_t(d[i].x, d[i].y);
+        Point2d pt(c(data, i));
+        return point_t(pt.x, pt.y);
+    }
 } PtArr;
 
 // Forward declarations
@@ -50,14 +61,22 @@ static  BezierCurve GenerateBezier(const PtArr &d, int first, int last,
 void FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error)
 {
     point_t     tHat1, tHat2;   // Unit tangent vectors at endpoints
-    PtArr       arr;
+    PtArr       arr(d);
 
-    arr.d = d;
     tHat1 = ComputeLeftTangent(arr, 0);
     tHat2 = ComputeRightTangent(arr, nPts - 1);
     FitCubic(fc, data, arr, 0, nPts - 1, tHat1, tHat2, error);
 }
 
+void FitCurve2(FitCubicCallback fc, void* data, PtCallback d, void* data2, int nPts, float error)
+{
+    point_t     tHat1, tHat2;   // Unit tangent vectors at endpoints
+    PtArr       arr(d, data2);
+    
+    tHat1 = ComputeLeftTangent(arr, 0);
+    tHat2 = ComputeRightTangent(arr, nPts - 1);
+    FitCubic(fc, data, arr, 0, nPts - 1, tHat1, tHat2, error);
+}
 
 /*
  *  FitCubic :

@@ -776,6 +776,7 @@ void mgcurv::cubicSplineToBezier(
 
 typedef void (*FitCubicCallback)(void* data, const Point2d curve[4]);
 extern  void FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error);
+extern  void FitCurve2(FitCubicCallback fc, void* data, mgcurv::PtCallback d, void* data2, int nPts, float error);
 
 struct FitCurveHelper {
     int index;
@@ -786,16 +787,30 @@ struct FitCurveHelper {
     static void append(void* data, const Point2d curve[4]) {
         FitCurveHelper* p = (FitCurveHelper*)data;
         
-        if (p->index + 1 < p->knotCount) {
+        if (p->knotvs) {
             if (p->index > 0 && p->knots[p->index - 1] == curve[0]) {
-                p->knots[p->index] = curve[3];
-                p->knotvs[p->index++] = curve[3] - curve[2];
-            } else {
+                if (p->index < p->knotCount) {
+                    p->knots[p->index] = curve[3];
+                    p->knotvs[p->index++] = curve[3] - curve[2];
+                }
+            } else if (p->index + 1 < p->knotCount) {
                 p->knots[p->index] = curve[0];
                 p->knots[p->index + 1] = curve[3];
                 p->knotvs[p->index] = curve[1] - curve[0];
                 p->knotvs[p->index + 1] = curve[3] - curve[2];
                 p->index += 2;
+            }
+        } else {
+            if (p->index > 0 && p->knots[p->index - 1] == curve[0]) {
+                if (p->index + 2 < p->knotCount) {
+                    p->knots[p->index++] = curve[2];
+                    p->knots[p->index++] = curve[3];
+                }
+            } else if (p->index + 4 < p->knotCount) {
+                p->knots[p->index++] = curve[0];
+                p->knots[p->index++] = curve[1];
+                p->knots[p->index++] = curve[2];
+                p->knots[p->index++] = curve[3];
             }
         }
     }
@@ -812,5 +827,18 @@ int mgcurv::fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
     helper.knotvs = knotvs;
     
     FitCurve(&FitCurveHelper::append, &helper, pts, count, tol);
+    return helper.index;
+}
+
+int mgcurv::fitCurve2(int knotCount, Point2d* knots, int count, PtCallback pts, void* data, float tol)
+{
+    FitCurveHelper helper;
+    
+    helper.index = 0;
+    helper.knotCount = knotCount;
+    helper.knots = knots;
+    helper.knotvs = (Vector2d*)0;
+    
+    FitCurve2(&FitCurveHelper::append, &helper, pts, data, count, tol);
     return helper.index;
 }
