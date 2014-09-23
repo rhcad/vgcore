@@ -429,7 +429,9 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
 {
-    if (!sender->view->getOptionBool("snapEnabled", true)) {
+    if (!sender->view->getOptionBool("snapEnabled", true)
+        || (shape && ignoreHd >= 0 &&
+            shape->shapec()->getHandleType(ignoreHd) > kMgHandleOutside)) {
         return;
     }
     

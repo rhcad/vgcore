@@ -185,9 +185,15 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, bool firstStep)
 Point2d MgCommandDraw::snapPoint(const MgMotion* sender, 
                                  const Point2d& orignPt, bool firstStep)
 {
+    return snapPoint(sender, orignPt, firstStep, m_step);
+}
+
+Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
+                                 bool firstStep, int handle)
+{
     MgSnap *snap = sender->view->getSnap();
     Point2d pt(snap->snapPoint(sender, orignPt,
-                               firstStep ? NULL : m_shape, m_step));
+                               firstStep ? NULL : m_shape, handle));
     
     if ( (firstStep || !sender->dragging())
         && snap->getSnappedType() >= kMgSnapPoint) {
