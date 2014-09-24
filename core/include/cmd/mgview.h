@@ -63,7 +63,7 @@ struct MgView
     virtual void setNewShapeID(int sid) = 0;                    //!< 设置新绘图形的ID
     virtual MgCommand* getCommand() = 0;                        //!< 得到当前命令
     virtual MgCommand* findCommand(const char* name) = 0;       //!< 查找命令
-    virtual bool setCommand(const char* name) = 0;              //!< 启动命令
+    virtual bool setCommand(const char* name, const char* params = "") = 0; //!< 启动命令
     virtual bool isReadOnly() const = 0;                        //!< 返回文档是否只读
     virtual bool isCommand(const char* name) = 0;               //!< 当前是否为指定名称的命令
     
