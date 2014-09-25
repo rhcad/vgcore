@@ -58,6 +58,19 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
         MgBasicCommands::registerCmds(this);
         MgShapeT<MgRecordShape>::registerCreator(this);
     }
+    
+    setOptionBool("snapEnabled", true);
+    setOptionBool("snapVertext", true);
+    setOptionBool("snapCenter", true);
+    setOptionBool("snapMidPoint", true);
+    setOptionBool("snapQuadrant", false);
+    setOptionBool("snapNear", true);
+    setOptionBool("snapPerp", true);
+    setOptionBool("perpOut", false);
+    setOptionBool("snapCross", true);
+    setOptionBool("snapGrid", true);
+    setOptionBool("drawOneShape", false);
+    setOptionBool("canRotateHandle", true);
 }
 
 GiCoreViewImpl::~GiCoreViewImpl()
@@ -807,16 +820,28 @@ const char* GiCoreView::getCommand() const
 
 bool GiCoreView::setCommand(const char* name, const char* params)
 {
-    if (impl->curview && impl->_cmds) {
-        DrawLocker locker(impl);
-        MgJsonStorage js;
-        MgStorage* s = js.storageForRead(params);
+    return impl->setCommand(name, params);
+}
+
+bool GiCoreViewImpl::setCommand(const char* name, const char* params)
+{
+    bool ret = false;
+    
+    if (curview && _cmds) {
+        DrawLocker locker(this);
         
-        impl->motion()->d2m = impl->_cmds->displayMmToModel(1, impl->motion());
-        s->readNode(NULL, -1, false);
-        return impl->_cmds->setCommand(impl->motion(), name, s);
+        _motion.d2m = _cmds->displayMmToModel(1, &_motion);
+        if (params && *params) {
+            MgJsonStorage js;
+            MgStorage* s = js.storageForRead(params);
+            s->readNode(NULL, -1, false);
+            ret = _cmds->setCommand(&_motion, name, s);
+        } else {
+            ret = _cmds->setCommand(&_motion, name, NULL);
+        }
     }
-    return false;
+    
+    return ret;
 }
 
 bool GiCoreView::switchCommand()
@@ -1440,78 +1465,101 @@ bool GiCoreViewImpl::gestureToCommand()
     return ret;
 }
 
-int GiCoreViewImpl::getOptionInt(const char* group, const char* name, int defValue)
+bool GiCoreViewImpl::getOptionBool(const char* name, bool defValue)
+{
+    return !!getOptionInt(name, defValue ? 1 : 0);
+}
+
+int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
 {
     int ret = defValue;
-    OPT_GROUP::const_iterator it = options.find(group);
+    OPT_MAP::const_iterator kv = options.find(name);
     
-    if (it != options.end()) {
-        OPT_KEY_VALUE::const_iterator kv = it->second.find(name);
-        
-        if (kv != it->second.end()
-            && MgJsonStorage::parseInt(kv->second.c_str(), defValue)) {
-            ret = defValue;
-        }
+    if (kv != options.end()
+        && MgJsonStorage::parseInt(kv->second.second.c_str(), defValue)) {
+        ret = defValue;
     }
     
     return ret;
 }
 
-float GiCoreViewImpl::getOptionFloat(const char* group, const char* name, float defValue)
+float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
 {
     float ret = defValue;
-    OPT_GROUP::const_iterator it = options.find(group);
+    OPT_MAP::const_iterator kv = options.find(name);
     
-    if (it != options.end()) {
-        OPT_KEY_VALUE::const_iterator kv = it->second.find(name);
-        
-        if (kv != it->second.end()
-            && MgJsonStorage::parseFloat(kv->second.c_str(), defValue)) {
-            ret = defValue;
-        }
+    if (kv != options.end()
+        && MgJsonStorage::parseFloat(kv->second.second.c_str(), defValue)) {
+        ret = defValue;
     }
     
     return ret;
 }
 
-void GiCoreViewImpl::setOptionInt(const char* group, const char* name, int value)
+void GiCoreViewImpl::setOptionBool(const char* name, bool value)
+{
+    options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+}
+
+void GiCoreViewImpl::setOptionInt(const char* name, int value)
 {
     std::stringstream ss;
     ss << value;
-    options[group][name] = ss.str();
+    options[name] = OPT_VALUE(kOptInt, ss.str());
 }
 
-void GiCoreViewImpl::setOptionFloat(const char* group, const char* name, float value)
+void GiCoreViewImpl::setOptionFloat(const char* name, float value)
 {
     std::stringstream ss;
     ss << value;
-    options[group][name] = ss.str();
+    options[name] = OPT_VALUE(kOptFloat, ss.str());
 }
 
-void GiCoreView::setOption(const char* group, const char* name, const char* text)
+void GiCoreView::setOptionBool(const char* name, bool value)
 {
-    if (!group || !*group) {
+    if (!name || !*name) {
         impl->getOptions().clear();
-    } else if (!name || !*name) {
-        impl->getOptions()[group].clear();
-    } else if (text && *text) {
-        impl->getOptions()[group][name] = text;
     } else {
-        impl->getOptions()[group].erase(name);
+        impl->setOptionBool(name, value);
     }
 }
 
-int GiCoreView::traverseOptions(MgOptionCallback* c)
+void GiCoreView::setOptionInt(const char* name, int value)
 {
-    int ret = 0;
-    GiCoreViewImpl::OPT_GROUP::const_iterator it = impl->getOptions().begin();
+    if (!name || !*name) {
+        impl->getOptions().clear();
+    } else {
+        impl->setOptionInt(name, value);
+    }
+}
+
+void GiCoreView::setOptionFloat(const char* name, float value)
+{
+    if (!name || !*name) {
+        impl->getOptions().clear();
+    } else {
+        impl->setOptionFloat(name, value);
+    }
+}
+
+void GiCoreView::traverseOptions(MgOptionCallback* c)
+{
+    GiCoreViewImpl::OPT_MAP::const_iterator kv = impl->getOptions().begin();
     
-    for (; it != impl->getOptions().end(); ++it) {
-        for (GiCoreViewImpl::OPT_KEY_VALUE::const_iterator kv = it->second.begin();
-             kv != it->second.end(); ++kv, ++ret) {
-            c->onGetOption(it->first.c_str(), kv->first.c_str(), kv->second.c_str());
+    for (; kv != impl->getOptions().end(); ++kv) {
+        const std::string& name = kv->first;
+        switch (kv->second.first) {
+            case GiCoreViewImpl::kOptBool:
+                c->onGetOptionBool(name.c_str(), impl->getOptionBool(name.c_str(), false));
+                break;
+            case GiCoreViewImpl::kOptInt:
+                c->onGetOptionInt(name.c_str(), impl->getOptionInt(name.c_str(), 0));
+                break;
+            case GiCoreViewImpl::kOptFloat:
+                c->onGetOptionFloat(name.c_str(), impl->getOptionFloat(name.c_str(), 0));
+                break;
+            default:
+                break;
         }
     }
-    
-    return ret;
 }

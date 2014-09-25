@@ -35,7 +35,6 @@ public:
         return getWidth() <= minDist || getHeight() <= minDist; }
     
 #ifndef SWIG
-    virtual bool isCurve() const { return false; }
     virtual const Point2d* getPoints() const { return _points; }
 #endif
 

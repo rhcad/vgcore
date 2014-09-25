@@ -55,6 +55,7 @@ protected:
     void _transform(const Matrix2d& mat);
     void _clear();
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
+    bool _hitTestBox(const Box2d& rect) const;
     bool _offset(const Vector2d& vec, int segment);
     bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     void _output(MgPath& path) const;
@@ -73,12 +74,38 @@ class MgGroup : public MgComposite
 public:
     //! 添加一个新图形或其他图形列表中的图形
     bool addShapeToGroup(const MgShape* shape);
+    
+    //! 返回插入点
+    Point2d getInsertionPoint() const { return _getPoint(1); }
+    void setInsertionPoint(const Point2d& pt) { _setPoint(1, pt); }
+    
+    //! 返回子图形中心点
+    Point2d getCenterPoint() const { return _getPoint(0); }
 
 protected:
+    void _copy(const MgGroup& src);
+    bool _equals(const MgGroup& src) const;
+    void _update();
+    void _transform(const Matrix2d& mat);
     bool _offset(const Vector2d& vec, int segment);
+    void _clear();
+    int _getPointCount() const;
+    Point2d _getPoint(int index) const;
+    void _setPoint(int index, const Point2d& pt);
+    int _getHandleCount() const;
+    Point2d _getHandlePoint(int index) const;
+    int _getHandleType(int index) const;
+    bool _setHandlePoint(int index, const Point2d& pt, float tol);
+    bool _isHandleFixed(int index) const;
+    float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
+    bool _hitTestBox(const Box2d& rect) const;
     bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
+    
+protected:
+    Point2d     _insert;
+    Box2d       _box;
 };
 
 #endif // TOUCHVG_COMPOSITE_SHAPE_H_

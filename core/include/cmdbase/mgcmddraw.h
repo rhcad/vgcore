@@ -59,6 +59,7 @@ public:
     void setStep(int step) { m_step = step; }
     Point2d snapPoint(const MgMotion* sender, bool firstStep = false);
     Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt, bool firstStep = false);
+    Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt, bool firstStep, int handle);
     
 protected:
     int         m_step;

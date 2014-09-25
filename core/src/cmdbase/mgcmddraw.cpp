@@ -34,6 +34,8 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
 
 bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage* s)
 {
+    GiContext ctx(*sender->view->context());
+    
     if (!m_shape) {
         m_shape = sender->view->createShapeCtx(shapeType);
         if (!m_shape || !m_shape->shape())
@@ -43,33 +45,47 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
     sender->view->setNewShapeID(0);
     m_step = 0;
     m_shape->shape()->clear();
-    m_shape->setContext(*sender->view->context());
-    m_oneShapeEnd = !!sender->view->getOptionInt(getName(), "oneShape", 0);
+    m_oneShapeEnd = !!sender->view->getOptionBool("drawOneShape", false);
+    
+    if (s) {
+        if (s->readBool("fixedlen", false)) {
+            m_shape->shape()->setFlag(kMgFixedLength, true);
+        }
+        if (s->readBool("fixedsize", false)) {
+            m_shape->shape()->setFlag(kMgFixedSize, true);
+        }
+        if (s->readBool("locked", false)) {
+            m_shape->shape()->setFlag(kMgLocked, true);
+        }
+        if (s->readBool("hiden", false)) {
+            m_shape->shape()->setFlag(kMgHideContent, true);
+        }
+        if (s->readFloat("lineWidth", -1e3f) > 1-1e3f) {
+            ctx.setLineWidth(s->readFloat("lineWidth", 0), true);
+        }
+        if (s->readInt("lineStyle", -10) > -10) {
+            ctx.setLineStyle(s->readInt("lineStyle", 0));
+        }
+    }
+    m_shape->setContext(ctx);
     
     int n = s ? s->readFloatArray("points", NULL, 0) : 0;
     if (n > 1) {
         MgMotion tmpmotion(*sender);
         Point2d buf[20];
+        bool oldSnap = sender->view->getOptionBool("snapEnabled", true);
         
-        n = s->readFloatArray("points", &buf[0].x, mgMin(n, 100*2)) / 2;
+        sender->view->setOptionBool("snapEnabled", false);
+        n = s->readFloatArray("points", &buf[0].x, mgMin(n, 20*2)) / 2;
         for (int i = 0; i < n; i += 2) {
+            tmpmotion.startPtM = buf[i];
             tmpmotion.pointM = buf[i];
             touchBegan(&tmpmotion);
             tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
             touchEnded(&tmpmotion);
+            m_shape->setContext(ctx);
         }
-    }
-    if (s && s->readBool("fixedlen", false)) {
-        m_shape->shape()->setFlag(kMgFixedLength, true);
-    }
-    if (s && s->readBool("fixedsize", false)) {
-        m_shape->shape()->setFlag(kMgFixedSize, true);
-    }
-    if (s && s->readBool("locked", false)) {
-        m_shape->shape()->setFlag(kMgLocked, true);
-    }
-    if (s && s->readBool("hiden", false)) {
-        m_shape->shape()->setFlag(kMgHideContent, true);
+        sender->view->setOptionBool("snapEnabled", oldSnap);
     }
     
     return true;
@@ -134,7 +150,7 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
-    Box2d limits(sender->displayMmToModelBox("select", "hitTestTol", 10.f));
+    Box2d limits(sender->displayMmToModelBox("hitTestTol", 10.f));
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
     
@@ -154,7 +170,6 @@ bool MgCommandDraw::longPress(const MgMotion* sender)
 
 bool MgCommandDraw::touchBegan(const MgMotion* sender)
 {
-    m_shape->setContext(*sender->view->context());
     sender->view->redraw();
     return true;
 }
@@ -185,9 +200,15 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, bool firstStep)
 Point2d MgCommandDraw::snapPoint(const MgMotion* sender, 
                                  const Point2d& orignPt, bool firstStep)
 {
+    return snapPoint(sender, orignPt, firstStep, m_step);
+}
+
+Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
+                                 bool firstStep, int handle)
+{
     MgSnap *snap = sender->view->getSnap();
     Point2d pt(snap->snapPoint(sender, orignPt,
-                               firstStep ? NULL : m_shape, m_step));
+                               firstStep ? NULL : m_shape, handle));
     
     if ( (firstStep || !sender->dragging())
         && snap->getSnappedType() >= kMgSnapPoint) {

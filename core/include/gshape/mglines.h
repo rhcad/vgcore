@@ -78,10 +78,6 @@ class MgLines : public MgBaseLines
 {
     MG_INHERIT_CREATE(MgLines, MgBaseLines, 15)
 public:
-    
-#ifndef SWIG
-    virtual bool isCurve() const { return false; }
-#endif
 
 protected:
     int _getHandleCount() const;

@@ -84,9 +84,10 @@ public:
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
     
-    typedef std::map<std::string, std::string> OPT_KEY_VALUE;
-    typedef std::map<std::string, OPT_KEY_VALUE> OPT_GROUP;
-    OPT_GROUP       options;
+    typedef enum { kOptBool, kOptInt, kOptFloat } OPT_TYPE;
+    typedef std::pair<OPT_TYPE, std::string> OPT_VALUE;
+    typedef std::map<std::string, OPT_VALUE> OPT_MAP;
+    OPT_MAP         options;
     
     GiGraphics*     gsBuf[20];
     volatile long   gsUsed[20];
@@ -123,7 +124,7 @@ public:
     MgCommand* getCommand() { return _cmds ? _cmds->getCommand() : NULL; }
     MgCommand* findCommand(const char* name) {
         return _cmds->findCommand(name); }
-    bool setCommand(const char* name) { return _cmds->setCommand(&_motion, name, NULL); }
+    bool setCommand(const char* name, const char* params = "");
     bool setCurrentShapes(MgShapes* shapes) {
         return doc()->setCurrentShapes(shapes); }
     bool isReadOnly() const { return doc()->isReadOnly() || doc()->getCurrentLayer()->isLocked(); }
@@ -149,6 +150,9 @@ public:
         return getCmdSubject()->onShapeWillChanged(motion(), shape, oldsp); }
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
+    bool shapeDblClick(const MgShape* shape) {
+        return CALL_VIEW2(deviceView()->shapeDblClick(shape->getType(), shape->getID()), false);
+    }
     
     MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {
         MgShape* s = createShape(type);
@@ -290,11 +294,13 @@ public:
     bool gestureToCommand();
     void submitDynamicShapes(GcBaseView* v);
 
-    int getOptionInt(const char* group, const char* name, int defValue);
-    float getOptionFloat(const char* group, const char* name, float defValue);
-    void setOptionInt(const char* group, const char* name, int value);
-    void setOptionFloat(const char* group, const char* name, float value);
-    OPT_GROUP& getOptions() { return options; }
+    bool getOptionBool(const char* name, bool defValue);
+    int getOptionInt(const char* name, int defValue);
+    float getOptionFloat(const char* name, float defValue);
+    void setOptionBool(const char* name, bool value);
+    void setOptionInt(const char* name, int value);
+    void setOptionFloat(const char* name, float value);
+    OPT_MAP& getOptions() { return options; }
     
 private:
     void registerShape(int type, MgShape* (*creator)()) {

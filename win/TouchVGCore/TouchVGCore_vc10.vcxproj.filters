@@ -652,5 +652,8 @@
     <ClCompile Include="..\..\core\src\geom\nanosvg.cpp">
       <Filter>Source Files\geom</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\core\src\gshape\mgarccross.cpp">
+      <Filter>Source Files\gshape</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

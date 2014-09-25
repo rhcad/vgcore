@@ -41,6 +41,7 @@
 		0224FF6019989E1B00895C27 /* mgimagesp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF5F19989E1B00895C27 /* mgimagesp.cpp */; };
 		0224FF621998B11C00895C27 /* mgbasesp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224FF611998B11C00895C27 /* mgbasesp.h */; };
 		0224FF641998B13F00895C27 /* mgbasesp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224FF631998B13F00895C27 /* mgbasesp.cpp */; };
+		02338E3019CA70060006BB44 /* mgarccross.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02338E2F19CA70060006BB44 /* mgarccross.cpp */; };
 		024FCF73188A8541000B0C41 /* svgcanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024FCF6C188A84E3000B0C41 /* svgcanvas.cpp */; };
 		024FCF76188A8552000B0C41 /* svgcanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF63188A84A6000B0C41 /* svgcanvas.h */; };
 		024FCF78188A8552000B0C41 /* recordshapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 024FCF66188A84A6000B0C41 /* recordshapes.h */; };
@@ -272,6 +273,7 @@
 		0224FF5F19989E1B00895C27 /* mgimagesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgimagesp.cpp; sourceTree = "<group>"; };
 		0224FF611998B11C00895C27 /* mgbasesp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgbasesp.h; sourceTree = "<group>"; };
 		0224FF631998B13F00895C27 /* mgbasesp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgbasesp.cpp; sourceTree = "<group>"; };
+		02338E2F19CA70060006BB44 /* mgarccross.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgarccross.cpp; sourceTree = "<group>"; };
 		024FCF63188A84A6000B0C41 /* svgcanvas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgcanvas.h; sourceTree = "<group>"; };
 		024FCF66188A84A6000B0C41 /* recordshapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recordshapes.h; sourceTree = "<group>"; };
 		024FCF6B188A84E3000B0C41 /* simple_svg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_svg.hpp; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 		026DF69219986DE300B66B83 /* gshape */ = {
 			isa = PBXGroup;
 			children = (
+				02338E2F19CA70060006BB44 /* mgarccross.cpp */,
 				0224FF3E19989BDB00895C27 /* mgcshapes.cpp */,
 				0224FF631998B13F00895C27 /* mgbasesp.cpp */,
 				0224FF3D19989BDB00895C27 /* mgarc.cpp */,
@@ -1230,6 +1233,7 @@
 				AED370BC1866888300C0A778 /* gigraph.cpp in Sources */,
 				AED370BE1866888300C0A778 /* gixform.cpp in Sources */,
 				AED370B31866887500C0A778 /* mgbase.cpp in Sources */,
+				02338E3019CA70060006BB44 /* mgarccross.cpp in Sources */,
 				AED370B51866887500C0A778 /* mgbox.cpp in Sources */,
 				AED370B61866887500C0A778 /* mgcurv.cpp in Sources */,
 				02C3324E199A10DF00C5F226 /* mgpath.cpp in Sources */,

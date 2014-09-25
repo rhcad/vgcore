@@ -63,7 +63,7 @@ struct MgView
     virtual void setNewShapeID(int sid) = 0;                    //!< 设置新绘图形的ID
     virtual MgCommand* getCommand() = 0;                        //!< 得到当前命令
     virtual MgCommand* findCommand(const char* name) = 0;       //!< 查找命令
-    virtual bool setCommand(const char* name) = 0;              //!< 启动命令
+    virtual bool setCommand(const char* name, const char* params = "") = 0; //!< 启动命令
     virtual bool isReadOnly() const = 0;                        //!< 返回文档是否只读
     virtual bool isCommand(const char* name) = 0;               //!< 当前是否为指定名称的命令
     
@@ -88,6 +88,7 @@ struct MgView
     virtual void shapeMoved(MgShape* shape, int segment) = 0;   //!< 通知图形已拖动
     virtual bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) = 0; //!< 通知将修改图形
     virtual void shapeChanged(MgShape* shape) = 0;              //!< 通知已拖动图形
+    virtual bool shapeDblClick(const MgShape* shape) = 0;       //!< 通知图形双击编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮
     virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
@@ -104,10 +105,12 @@ struct MgView
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
 #endif
     
-    virtual int getOptionInt(const char* group, const char* name, int defValue) = 0;        //!< 整形选项值
-    virtual float getOptionFloat(const char* group, const char* name, float defValue) = 0;  //!< 浮点型选项值
-    virtual void setOptionInt(const char* group, const char* name, int value) = 0;          //!< 设置选项值
-    virtual void setOptionFloat(const char* group, const char* name, float value) = 0;      //!< 设置选项值
+    virtual bool getOptionBool(const char* name, bool defValue) = 0;     //!< 布尔选项值
+    virtual int getOptionInt(const char* name, int defValue) = 0;        //!< 整型选项值
+    virtual float getOptionFloat(const char* name, float defValue) = 0;  //!< 浮点型选项值
+    virtual void setOptionBool(const char* name, bool value) = 0;        //!< 设置布尔选项值
+    virtual void setOptionInt(const char* name, int value) = 0;          //!< 设置整型选项值
+    virtual void setOptionFloat(const char* name, float value) = 0;      //!< 设置浮点型选项值
 };
 
 //! 触摸动作参数
@@ -158,16 +161,16 @@ public:
     //! 返回屏幕毫米长度对应的模型长度
     float displayMmToModel(float mm) const { return d2m * mm; }
     //! 返回屏幕毫米长度对应的模型长度，优先取配置值
-    float displayMmToModel(const char* group, const char* name, float mm) const {
-        return d2m * view->getOptionFloat(group, name, mm);
+    float displayMmToModel(const char* name, float mm) const {
+        return d2m * view->getOptionFloat(name, mm);
     }
     //! 返回屏幕毫米宽度的正方形区域
     Box2d displayMmToModelBox(float mm) const {
         return Box2d(pointM, displayMmToModel(mm), 0);
     }
     //! 返回屏幕毫米宽度的正方形区域，优先取配置值
-    Box2d displayMmToModelBox(const char* group, const char* name, float mm) const {
-        return Box2d(pointM, displayMmToModel(group, name, mm), 0);
+    Box2d displayMmToModelBox(const char* name, float mm) const {
+        return Box2d(pointM, displayMmToModel(name, mm), 0);
     }
 };
 

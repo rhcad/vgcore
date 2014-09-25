@@ -544,6 +544,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\core\src\gshape\mgarccross.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\core\src\gshape\mgcshapes.cpp"
 					>
 				</File>

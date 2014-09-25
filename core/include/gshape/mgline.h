@@ -48,11 +48,6 @@ public:
     //! 返回是否为无穷直线
     bool isBeeline() const { return _subtype == 2; }
     
-#ifndef SWIG
-    virtual bool isCurve() const { return false; }
-    virtual const Point2d* getPoints() const { return _points; }
-#endif
-    
 protected:
     bool _hitTestBox(const Box2d& rect) const;
     void _output(MgPath& path) const;

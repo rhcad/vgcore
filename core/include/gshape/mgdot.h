@@ -21,10 +21,6 @@ public:
     //! 设置点图案类型. 0:默认, 1-19: GiHandleTypes+1, kGiHandleCustom~99:应用自定义图片
     void setPointType(int type) { _type = type; }
 
-#ifndef SWIG
-    virtual bool isCurve() const { return false; }
-#endif
-
 protected:
     bool _isClosed() const { return false; }
     void _output(MgPath& path) const;
