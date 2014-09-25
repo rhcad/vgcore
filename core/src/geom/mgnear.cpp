@@ -89,19 +89,33 @@ float mgnear::cubicSplinesHit(
 {
     Point2d ptTemp;
     float dist, distMin = _FLT_MAX;
-    Point2d pts[4];
     const Box2d rect (pt, 2 * tol, 2 * tol);
-    int n2 = (closed && n > 1) ? n + 1 : n;
 
     segment = -1;
-    for (int i = 0; i + 1 < n2; i++) {
-        mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts, hermite);
-        if (rect.isIntersect(bezierBox1(pts))) {
-            dist = mgnear::nearestOnBezier(pt, pts, ptTemp);
-            if (dist < distMin) {
-                distMin = dist;
-                nearpt = ptTemp;
-                segment = i;
+    if (knotvs) {
+        Point2d pts[4];
+        int n2 = (closed && n > 1) ? n + 1 : n;
+        
+        for (int i = 0; i + 1 < n2; i++) {
+            mgcurv::cubicSplineToBezier(n, knots, knotvs, i, pts, hermite);
+            if (rect.isIntersect(bezierBox1(pts))) {
+                dist = mgnear::nearestOnBezier(pt, pts, ptTemp);
+                if (dist < distMin) {
+                    distMin = dist;
+                    nearpt = ptTemp;
+                    segment = i;
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i + 3 < n; i += 3) {
+            if (rect.isIntersect(bezierBox1(knots + i))) {
+                dist = mgnear::nearestOnBezier(pt, knots + i, ptTemp);
+                if (dist < distMin) {
+                    distMin = dist;
+                    nearpt = ptTemp;
+                    segment = i;
+                }
             }
         }
     }

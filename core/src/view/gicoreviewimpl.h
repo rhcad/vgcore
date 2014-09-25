@@ -124,7 +124,7 @@ public:
     MgCommand* getCommand() { return _cmds ? _cmds->getCommand() : NULL; }
     MgCommand* findCommand(const char* name) {
         return _cmds->findCommand(name); }
-    bool setCommand(const char* name) { return _cmds->setCommand(&_motion, name, NULL); }
+    bool setCommand(const char* name, const char* params = "");
     bool setCurrentShapes(MgShapes* shapes) {
         return doc()->setCurrentShapes(shapes); }
     bool isReadOnly() const { return doc()->isReadOnly() || doc()->getCurrentLayer()->isLocked(); }
