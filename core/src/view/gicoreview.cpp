@@ -1195,6 +1195,11 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
         }
         else {
             impl->context()->copy(ctx, mask);
+            
+            MgCommand* cmd = impl->_cmds->getCommand();
+            if (cmd && cmd->isDrawingCommand()) {
+                ((MgShape*)cmd->getShape(impl->motion()))->setContext(ctx, mask);
+            }
         }
     }
 
