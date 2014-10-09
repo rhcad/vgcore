@@ -143,44 +143,6 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
     return MgCommandDraw::touchEnded(sender);
 }
 
-bool MgCmdDrawSplines::doubleClick(const MgMotion* sender)
-{
-    if (!m_freehand) {
-        if (m_step > 1) {
-            MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
-            float dist = lines->endPoint().distanceTo(dynshape()->shape()->getPoint(m_step - 1));
-
-            if (dist < sender->displayMmToModel(2.f)) { // 最后两点重合
-                lines->removePoint(m_step--);           // 去掉最末点
-            }
-        }
-        if (m_step > 1) {
-            addShape(sender);
-            m_step = 0;
-        }
-    }
-    else {
-        MgShapeT<MgLine> line(*sender->view->context());
-        Vector2d vec(Vector2d(1.f, 1.f) * sender->view->xform()->displayToModel());
-        
-        line.shape()->setPoint(0, sender->pointM);
-        line.shape()->setPoint(1, sender->pointM + vec);
-        
-        MgShape* newsp = addShape(sender, &line);
-        
-        if (sender->pointM.distanceTo(sender->startPtM) > vec.length()) {
-            line.shape()->setPoint(0, sender->startPtM);
-            line.shape()->setPoint(1, sender->startPtM + vec);
-            addShape(sender, &line);
-            sender->view->regenAll(true);
-        } else if (newsp) {
-            sender->view->regenAppend(newsp->getID());
-        }
-    }
-    
-    return true;
-}
-
 bool MgCmdDrawSplines::cancel(const MgMotion* sender)
 {
     if (!m_freehand && m_step > 1) {

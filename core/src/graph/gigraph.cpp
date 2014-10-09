@@ -596,7 +596,7 @@ bool GiGraphics::drawArc(const GiContext* ctx,
     Point2d points[16];
     int count = mgcurv::arcToBezier(points, center,
         rx, ry, startAngle, sweepAngle);
-    S2D(xf(), modelUnit).TransformPoints(count, points);
+    S2D(xf(), modelUnit).transformPoints(count, points);
 
     return count > 3 && rawBeziers(ctx, points, count);
 }
@@ -780,7 +780,7 @@ bool GiGraphics::drawEllipse(const GiContext* ctx, const Point2d& center,
     } else {
         Point2d pxs[13];
         mgcurv::ellipseToBezier(pxs, center, rx, ry);
-        matD.TransformPoints(13, pxs);
+        matD.transformPoints(13, pxs);
 
         ret = rawBeziers(ctx, pxs, 13, true);
     }
@@ -807,7 +807,7 @@ bool GiGraphics::drawPie(const GiContext* ctx,
         rx, ry, startAngle, sweepAngle);
     if (count < 4)
         return false;
-    S2D(xf(), modelUnit).TransformPoints(count, pxs);
+    S2D(xf(), modelUnit).transformPoints(count, pxs);
     Point2d cen(center * S2D(xf(), modelUnit));
 
     bool ret = rawBeginPath();
@@ -863,7 +863,7 @@ bool GiGraphics::drawRoundRect(const GiContext* ctx,
         Point2d pxs[16];
 
         mgcurv::roundRectToBeziers(pxs, rect, rx, ry);
-        S2D(xf(), modelUnit).TransformPoints(16, pxs);
+        S2D(xf(), modelUnit).transformPoints(16, pxs);
 
         ret = rawBeginPath();
         if (ret) {

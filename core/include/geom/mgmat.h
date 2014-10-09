@@ -110,14 +110,14 @@ public:
         \param[in] count 点的个数
         \param[in,out] points 要变换的点的数组，元素个数为count
     */
-    void TransformPoints(int count, Point2d* points) const;
+    void transformPoints(int count, Point2d* points) const;
 
     //! 对多个矢量进行矩阵变换
     /*! 对矢量进行矩阵变换时，矩阵的平移分量部分不起作用
         \param[in] count 矢量的个数
         \param[in,out] vectors 要变换的矢量的数组，元素个数为count
     */
-    void TransformVectors(int count, Vector2d* vectors) const;
+    void transformVectors(int count, Vector2d* vectors) const;
     
     //! 行列式值
     float det() const;

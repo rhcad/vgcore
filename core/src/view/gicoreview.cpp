@@ -315,9 +315,12 @@ void GiCoreView::releaseDocs(const mgvector<long>& docs)
 int GiCoreView::getSkipDrawIds(mgvector<int>& ids)
 {
     int n = 0;
-    ids.setSize(50);
-    impl->getCmdSubject()->onGatherSnapIgnoredID(impl->motion(), NULL,
-                                                 ids.address(), n, ids.count() - 1);
+    
+    if (impl->cmds()) {
+        ids.setSize(50);
+        impl->getCmdSubject()->onGatherSnapIgnoredID(impl->motion(), NULL,
+                                                     ids.address(), n, ids.count() - 1);
+    }
     return n;
 }
 

@@ -12,9 +12,14 @@
 #include "mgdblpt.h"
 
 typedef struct {
-    Point2d pts[4];
-    point_t operator[](int i) const { return point_t(pts[i].x, pts[i].y); }
-    void set(int i, const point_t &pt) { pts[i].set((float)pt.x, (float)pt.y); }
+    point_t pts[4];
+    const point_t& operator[](int i) const { return pts[i]; }
+    void set(int i, const point_t &pt) { pts[i] = pt; }
+    Point2d* copy(Point2d* p) {
+        for (int i = 0; i < 4; i++)
+            p[i].set((float)pts[i].x, (float)pts[i].y);
+        return p;
+    }
 } BezierCurve;
 
 typedef Point2d (*PtCallback)(void* data, int i);
@@ -36,20 +41,23 @@ typedef struct _PtArr {
 // Forward declarations
 typedef void        (*FitCubicCallback)(void* data, const Point2d curve[4]);
 void                FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error);
-static  void        FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
-                             int last, point_t tHat1, point_t tHat2, double error);
-static  double      *Reparameterize(const PtArr &d, int first, int last, double *u, BezierCurve bezCurve);
-static  double      NewtonRaphsonRootFind(BezierCurve Q, point_t P, double u);
-static  point_t     BezierII(int degree, point_t *V, double t);
+void      FitCurve2(FitCubicCallback fc, void* data, PtCallback d, void* data2, int nPts, float error);
+static  void        FitCurve_(FitCubicCallback fc, void* data, const PtArr &d, int nPts, float error);
+static  void        FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first, int &last,
+                             const point_t& tHat1, const point_t& tHat2, double error);
+static  double      *Reparameterize(const PtArr &d, int first, int last, double *u,
+                                    const BezierCurve& bezCurve);
+static  double      NewtonRaphsonRootFind(const BezierCurve& Q, const point_t& P, double u);
+static  point_t     BezierII(int degree, const point_t *V, double t);
 static  double      B0(double u), B1(double u), B2(double u), B3(double u);
 static  point_t     ComputeLeftTangent(const PtArr &d, int end);
 static  point_t     ComputeRightTangent(const PtArr &d, int end);
 static  point_t     ComputeCenterTangent(const PtArr &d, int center);
 static  double      ComputeMaxError(const PtArr &d, int first, int last,
-                                    BezierCurve bezCurve, double *u, int &splitPoint);
-static  double      *ChordLengthParameterize(const PtArr &d, int first, int last);
+                                    const BezierCurve& bezCurve, double *u, int &splitPoint);
+static  double      *ChordLengthParameterize(const PtArr &d, int first, int &last);
 static  BezierCurve GenerateBezier(const PtArr &d, int first, int last,
-                                   double *uPrime, point_t tHat1, point_t tHat2);
+                                   const double *uPrime, const point_t& tHat1, const point_t& tHat2);
 
 /*
  *  FitCurve :
@@ -60,22 +68,48 @@ static  BezierCurve GenerateBezier(const PtArr &d, int first, int last,
  */
 void FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error)
 {
-    point_t     tHat1, tHat2;   // Unit tangent vectors at endpoints
-    PtArr       arr(d);
-
-    tHat1 = ComputeLeftTangent(arr, 0);
-    tHat2 = ComputeRightTangent(arr, nPts - 1);
-    FitCubic(fc, data, arr, 0, nPts - 1, tHat1, tHat2, error);
+    PtArr arr(d);
+    FitCurve_(fc, data, arr, nPts, error);
 }
 
 void FitCurve2(FitCubicCallback fc, void* data, PtCallback d, void* data2, int nPts, float error)
 {
+    PtArr arr(d, data2);
+    FitCurve_(fc, data, arr, nPts, error);
+}
+
+static void FitCurve_(FitCubicCallback fc, void* data, const PtArr &d, int nPts, float error)
+{
     point_t     tHat1, tHat2;   // Unit tangent vectors at endpoints
-    PtArr       arr(d, data2);
+    int         first = 0;
+    int         last = nPts - 1;
+    int         oldlast;
+    const Point2d ptbuf[4] = { Point2d(NAN, NAN) };
     
-    tHat1 = ComputeLeftTangent(arr, 0);
-    tHat2 = ComputeRightTangent(arr, nPts - 1);
-    FitCubic(fc, data, arr, 0, nPts - 1, tHat1, tHat2, error);
+    tHat1 = ComputeLeftTangent(d, first);
+    while (tHat1.isDegenerate() && first < last)
+        tHat1 = ComputeLeftTangent(d, ++first);
+    
+    tHat2 = ComputeRightTangent(d, last);
+    while (tHat2.isDegenerate() && last > first)
+        tHat2 = ComputeRightTangent(d, --last);
+    
+    if (first < last) {
+        oldlast = last;
+        FitCubic(fc, data, d, first, last, tHat1, tHat2, mgMax(error, 1.1f));
+        while (last < oldlast) {
+            for (first = last + 1; first < oldlast; first++) {
+                tHat1 = ComputeLeftTangent(d, first);
+                if (!tHat1.isDegenerate())
+                    break;
+            }
+            last = oldlast;
+            if (first < last) {
+                (*fc)(data, ptbuf);
+                FitCubic(fc, data, d, first, last, tHat1, tHat2, mgMax(error, 1.1f));
+            }
+        }
+    }
 }
 
 /*
@@ -86,32 +120,31 @@ void FitCurve2(FitCubicCallback fc, void* data, PtCallback d, void* data2, int n
  *  tHat1, tHat2: Unit tangent vectors at endpoints
  *  error: User-defined error squared
  */
-static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
-                     int last, point_t tHat1, point_t tHat2, double error)
+static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first, int &last,
+                     const point_t& tHat1, const point_t& tHat2, double error)
 {
     BezierCurve bezCurve;       // Control points of fitted Bezier curve
     double      *u;             // Parameter values for point
     double      *uPrime;        // Improved parameter values
     double      maxError;       // Maximum fitting error
     int         splitPoint;     // Point to split point set at
-    int         nPts;           // Number of points in subset
     double      iterationError; // Error below which you try iterating
     int         maxIterations = 5;  // Max times to try iterating
     point_t     tHatCenter;     // Unit tangent vector at splitPoint
     int         i;
+    Point2d     ptbuf[4];
 
-    iterationError = mgMax(error * error, error * 2.0);
-    nPts = last - first + 1;
+    iterationError = error * error;
 
     // Use heuristic if region only has two points in it
-    if (nPts == 2) {
+    if (last - first == 1) {
         double dist = d[last].distanceTo(d[first]) / 3.0;
 
         bezCurve.set(0, d[first]);
         bezCurve.set(3, d[last]);
         bezCurve.set(1, bezCurve[0] + tHat1.scaledVector(dist));
         bezCurve.set(2, bezCurve[3] + tHat2.scaledVector(dist));
-        (*fc)(data, bezCurve.pts);
+        (*fc)(data, bezCurve.copy(ptbuf));
         return;
     }
 
@@ -123,7 +156,7 @@ static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
     maxError = ComputeMaxError(d, first, last, bezCurve, u, splitPoint);
     if (maxError < error) {
         delete[] u;
-        (*fc)(data, bezCurve.pts);
+        (*fc)(data, bezCurve.copy(ptbuf));
         return;
     }
 
@@ -136,7 +169,7 @@ static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
             if (maxError < error) {
                 delete[] u;
                 delete[] uPrime;
-                (*fc)(data, bezCurve.pts);
+                (*fc)(data, bezCurve.copy(ptbuf));
                 return;
             }
             delete[] u;
@@ -148,7 +181,7 @@ static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
     delete[] u;
     tHatCenter = ComputeCenterTangent(d, splitPoint);
     FitCubic(fc, data, d, first, splitPoint, tHat1, tHatCenter, error);
-    tHatCenter = point_t(-tHatCenter.x, -tHatCenter.y);
+    tHatCenter = point_t(-tHatCenter.x, -tHatCenter.y); // negate
     FitCubic(fc, data, d, splitPoint, last, tHatCenter, tHat2, error);
 }
 
@@ -162,7 +195,7 @@ static void FitCubic(FitCubicCallback fc, void* data, const PtArr &d, int first,
  *  tHat1, tHat2: Unit tangents at endpoints
  */
 static BezierCurve GenerateBezier(const PtArr &d, int first, int last,
-                                  double *uPrime, point_t tHat1, point_t tHat2)
+                                  const double *uPrime, const point_t& tHat1, const point_t& tHat2)
 {
     int     i;
     point_t *A, *B;                         // Precomputed rhs for eqn
@@ -211,16 +244,15 @@ static BezierCurve GenerateBezier(const PtArr &d, int first, int last,
     det_X_C1  = X[0]    * C[1][1] - X[1]    * C[0][1];
 
     // Finally, derive alpha values
-    alpha_l = mgIsZero(det_C0_C1) ? 0.0 : det_X_C1 / det_C0_C1;
-    alpha_r = mgIsZero(det_C0_C1) ? 0.0 : det_C0_X / det_C0_C1;
+    alpha_l = (det_C0_C1 == 0) ? 0.0 : det_X_C1 / det_C0_C1;
+    alpha_r = (det_C0_C1 == 0) ? 0.0 : det_C0_X / det_C0_C1;
 
     // If alpha negative, use the Wu/Barsky heuristic (see text)
     // (if alpha is 0, you get coincident control points that lead to
     // divide by zero in any subsequent NewtonRaphsonRootFind() call.
     double segLength = d[last].distanceTo(d[first]);
-    double epsilon = _MGZERO * segLength;
-    if (alpha_l < epsilon || alpha_r < epsilon)
-    {
+    double epsilon = 1.0e-6 * segLength;
+    if (alpha_l < epsilon || alpha_r < epsilon) {
         // fall back on standard (probably inaccurate) formula, and subdivide further if needed.
         double dist = segLength / 3.0;
         bezCurve.set(0, d[first]);
@@ -252,13 +284,12 @@ static BezierCurve GenerateBezier(const PtArr &d, int first, int last,
  *  u: Current parameter values
  *  bezCurve: Current fitted curve
  */
-static double *Reparameterize(const PtArr &d, int first, int last, double *u, BezierCurve bezCurve)
+static double *Reparameterize(const PtArr &d, int first, int last, double *u, const BezierCurve& bezCurve)
 {
-    int     i;
     double  *uPrime;                // New parameter values
 
     uPrime = new double[last - first + 1];
-    for (i = first; i <= last; i++) {
+    for (int i = first; i <= last; i++) {
         uPrime[i-first] = NewtonRaphsonRootFind(bezCurve, d[i], u[i - first]);
     }
     return uPrime;
@@ -272,7 +303,7 @@ static double *Reparameterize(const PtArr &d, int first, int last, double *u, Be
  *  P: Digitized point
  *  u: Parameter value for "P"
  */
-static double NewtonRaphsonRootFind(BezierCurve Q, point_t P, double u)
+static double NewtonRaphsonRootFind(const BezierCurve& Q, const point_t& P, double u)
 {
     double      numerator, denominator;
     point_t     Q1[3], Q2[2];       // Q' and Q''
@@ -281,8 +312,7 @@ static double NewtonRaphsonRootFind(BezierCurve Q, point_t P, double u)
     int         i;
 
     // Compute Q(u)
-    point_t qs[] = { Q[0], Q[1], Q[2], Q[3] };
-    Q_u = BezierII(3, qs, u);
+    Q_u = BezierII(3, Q.pts, u);
 
     // Generate control vertices for Q'
     for (i = 0; i <= 2; i++) {
@@ -305,7 +335,7 @@ static double NewtonRaphsonRootFind(BezierCurve Q, point_t P, double u)
     denominator = ((Q1_u.x) * (Q1_u.x) + (Q1_u.y) * (Q1_u.y) +
                    (Q_u.x - P.x) * (Q2_u.x) + (Q_u.y - P.y) * (Q2_u.y));
     
-    if (mgIsZero(denominator))
+    if (denominator == 0.0)
         return u;
 
     // u = u - f(u)/f'(u)
@@ -321,7 +351,7 @@ static double NewtonRaphsonRootFind(BezierCurve Q, point_t P, double u)
  *  V: Array of control points
  *  t: Parametric value to find point for
  */
-static point_t BezierII(int degree, point_t *V, double t)
+static point_t BezierII(int degree, const point_t *V, double t)
 {
     int         i, j;
     point_t     Vtemp[5];       // Local copy of control points
@@ -346,26 +376,22 @@ static point_t BezierII(int degree, point_t *V, double t)
  *  B0, B1, B2, B3 :
  *  Bezier multipliers
  */
-static double B0(double u)
-{
+static double B0(double u) {
     double tmp = 1.0 - u;
     return (tmp * tmp * tmp);
 }
 
-static double B1(double u)
-{
+static double B1(double u) {
     double tmp = 1.0 - u;
     return (3 * u * (tmp * tmp));
 }
 
-static double B2(double u)
-{
+static double B2(double u) {
     double tmp = 1.0 - u;
     return (3 * u * u * tmp);
 }
 
-static double B3(double u)
-{
+static double B3(double u) {
     return (u * u * u);
 }
 
@@ -373,41 +399,29 @@ static double B3(double u)
 /*
  *  ComputeLeftTangent, ComputeRightTangent, ComputeCenterTangent :
  *  Approximate unit tangents at endpoints and "center" of digitized curve
+ *  d: Digitized points
  *  end: Index to "left" end of region
  */
-static point_t ComputeLeftTangent(const PtArr &d, int end)
-{
-    point_t tHat1(d[end+1] - d[end]);
-    tHat1.normalize();
-    return tHat1;
+static point_t ComputeLeftTangent(const PtArr &d, int end) {
+    return (d[end+1] - d[end]).normalized();
 }
 
 // end: Index to "right" end of region
-static point_t ComputeRightTangent(const PtArr &d, int end)
-{
-    point_t tHat2(d[end-1] - d[end]);
-    tHat2.normalize();
-    return tHat2;
+static point_t ComputeRightTangent(const PtArr &d, int end) {
+    return (d[end-1] - d[end]).normalized();
 }
 
-// d: Digitized points
 // center: Index to point inside region
-static point_t ComputeCenterTangent(const PtArr &d, int center)
-{
-    point_t V1(d[center-1] - d[center]);
-    point_t V2(d[center] - d[center+1]);
-    point_t tHatCenter( (V1 + V2) / 2.0 );
-    tHatCenter.normalize();
-    return tHatCenter;
+static point_t ComputeCenterTangent(const PtArr &d, int center) {
+    return (d[center-1] - d[center+1]).normalized();
 }
-
 
 /*
  *  ChordLengthParameterize :
  *  Assign parameter values to digitized points
  *  using relative distances between points.
  */
-static double *ChordLengthParameterize(const PtArr &d, int first, int last)
+static double *ChordLengthParameterize(const PtArr &d, int first, int &last)
 {
     int     i;
     double  *u;         // Parameterization
@@ -416,6 +430,10 @@ static double *ChordLengthParameterize(const PtArr &d, int first, int last)
 
     u[0] = 0.0;
     for (i = first+1; i <= last; i++) {
+        if (d[i].isDegenerate()) {
+            last = i - 1;
+            break;
+        }
         u[i-first] = u[i-first-1] + d[i].distanceTo(d[i-1]);
     }
 
@@ -438,18 +456,17 @@ static double *ChordLengthParameterize(const PtArr &d, int first, int last)
  *  splitPoint: Point of maximum error
  */
 static double ComputeMaxError(const PtArr &d, int first, int last,
-                             BezierCurve Q, double *u, int &splitPoint)
+                             const BezierCurve& Q, double *u, int &splitPoint)
 {
     int     i;
-    double  maxDist = 0; // Maximum error
-    double  dist;       // Current error
-    point_t P;          // Point on curve
-    point_t v;          // Vector from point to curve
-    point_t qs[] = { Q[0], Q[1], Q[2], Q[3] };
+    double  maxDist = 0.0;  // Maximum error
+    double  dist;           // Current error
+    point_t P;              // Point on curve
+    point_t v;              // Vector from point to curve
 
     splitPoint = (last - first + 1) / 2;
     for (i = first + 1; i < last; i++) {
-        P = BezierII(3, qs, u[i-first]);
+        P = BezierII(3, Q.pts, u[i-first]);
         v = P - d[i];
         dist = v.lengthSquare();
         if (dist >= maxDist) {
@@ -457,5 +474,5 @@ static double ComputeMaxError(const PtArr &d, int first, int last,
             splitPoint = i;
         }
     }
-    return (maxDist);
+    return maxDist;
 }

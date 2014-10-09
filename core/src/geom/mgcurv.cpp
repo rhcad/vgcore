@@ -774,10 +774,6 @@ void mgcurv::cubicSplineToBezier(
     points[3] = knots[i2];
 }
 
-typedef void (*FitCubicCallback)(void* data, const Point2d curve[4]);
-extern  void FitCurve(FitCubicCallback fc, void* data, const Point2d *d, int nPts, float error);
-extern  void FitCurve2(FitCubicCallback fc, void* data, mgcurv::PtCallback d, void* data2, int nPts, float error);
-
 struct FitCurveHelper {
     int index;
     int knotCount;
@@ -816,6 +812,9 @@ struct FitCurveHelper {
     }
 };
 
+extern void FitCurve(mgcurv::FitCubicCallback, void*, const Point2d *, int, float);
+extern void FitCurve2(mgcurv::FitCubicCallback, void*, mgcurv::PtCallback, void*, int, float);
+
 int mgcurv::fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
                      int count, const Point2d* pts, float tol)
 {
@@ -841,4 +840,14 @@ int mgcurv::fitCurve2(int knotCount, Point2d* knots, int count, PtCallback pts, 
     
     FitCurve2(&FitCurveHelper::append, &helper, pts, data, count, tol);
     return helper.index;
+}
+
+void mgcurv::fitCurve3(FitCubicCallback fc, void* data, const Point2d *pts, int n, float tol)
+{
+    FitCurve(fc, data, pts, n, tol);
+}
+
+void mgcurv::fitCurve4(FitCubicCallback fc, void* data, PtCallback pts, void* data2, int n, float tol)
+{
+    FitCurve2(fc, data, pts, data2, n, tol);
 }
