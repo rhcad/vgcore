@@ -63,13 +63,13 @@ Point2d Point2d::transform(const Matrix2d& m) const
         x * m.m12 + y * m.m22 + m.dy);
 }
 
-void Matrix2d::TransformPoints(int count, Point2d* points) const
+void Matrix2d::transformPoints(int count, Point2d* points) const
 {
     for (int i = 0; i < count; i++)
         points[i] *= (*this);
 }
 
-void Matrix2d::TransformVectors(int count, Vector2d* vectors) const
+void Matrix2d::transformVectors(int count, Vector2d* vectors) const
 {
     for (int i = 0; i < count; i++)
         vectors[i] *= (*this);

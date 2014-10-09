@@ -31,7 +31,6 @@ private:
     virtual bool touchMoved(const MgMotion* sender);
     virtual bool touchEnded(const MgMotion* sender);
     virtual bool click(const MgMotion* sender);
-    virtual bool doubleClick(const MgMotion* sender);
     virtual bool cancel(const MgMotion* sender);
     virtual bool mouseHover(const MgMotion* sender);
     

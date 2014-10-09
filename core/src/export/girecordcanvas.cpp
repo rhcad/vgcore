@@ -40,8 +40,9 @@ struct CmdSetPen : public MgRecordShape::ICmd {
         orgw = s->readFloat("orgw", orgw);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         gs.getCanvas()->setPen(argb, width, style, phase, orgw);
+        return true;
     }
 };
 
@@ -68,8 +69,9 @@ struct CmdSetBrush : public MgRecordShape::ICmd {
         style = s->readInt("style", style);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         gs.getCanvas()->setBrush(argb, style);
+        return true;
     }
 };
 
@@ -99,10 +101,11 @@ struct CmdClearRect : public MgRecordShape::ICmd {
         vec.set(s->readFloat("w", vec.x), s->readFloat("h", vec.y));
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->clearRect(pt2.x, pt2.y, vec2.x, vec2.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -133,10 +136,10 @@ struct CmdClipRect : public MgRecordShape::ICmd {
         vec.set(s->readFloat("w", vec.x), s->readFloat("h", vec.y));
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
-        gs.getCanvas()->clipRect(pt2.x, pt2.y, vec2.x, vec2.y);
+        return gs.getCanvas()->clipRect(pt2.x, pt2.y, vec2.x, vec2.y);
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -173,10 +176,11 @@ struct CmdDrawRect : public MgRecordShape::ICmd {
         fill = s->readBool("fill", fill);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawRect(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -207,10 +211,11 @@ struct CmdDrawLine : public MgRecordShape::ICmd {
         pt2.set(s->readFloat("x2", pt2.x), s->readFloat("y2", pt2.y));
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt3(pt1 * w2d);
         Point2d pt4(pt2 * w2d);
         gs.getCanvas()->drawLine(pt3.x, pt3.y, pt4.x, pt4.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt1, pt2); }
 };
@@ -247,10 +252,11 @@ struct CmdDrawEllipse : public MgRecordShape::ICmd {
         fill = s->readBool("fill", fill);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
         gs.getCanvas()->drawEllipse(pt2.x, pt2.y, vec2.x, vec2.y, stroke, fill);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -266,8 +272,9 @@ struct CmdBeginPath : public MgRecordShape::ICmd {
     virtual bool load(MgStorage*) {
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         gs.getCanvas()->beginPath();
+        return true;
     }
 };
 
@@ -292,9 +299,10 @@ struct CmdMoveTo : public MgRecordShape::ICmd {
         pt.set(s->readFloat("x", pt.x), s->readFloat("y", pt.y));
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->moveTo(pt2.x, pt2.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
@@ -321,9 +329,10 @@ struct CmdLineTo : public MgRecordShape::ICmd {
         s->writeFloat("y", pt.y);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         gs.getCanvas()->lineTo(pt2.x, pt2.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
@@ -361,9 +370,10 @@ struct CmdBezierTo : public MgRecordShape::ICmd {
         pt.y = s->readFloat("y", pt.y);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d c1t(c1 * w2d), c2t(c2 * w2d), pt2(pt * w2d);
         gs.getCanvas()->bezierTo(c1t.x, c1t.y, c2t.x, c2t.y, pt2.x, pt2.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, c1, c2, pt); }
 };
@@ -396,9 +406,10 @@ struct CmdQuadTo : public MgRecordShape::ICmd {
         pt.y = s->readFloat("y", pt.y);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d cp2(cp * w2d), pt2(pt * w2d);
         gs.getCanvas()->quadTo(cp2.x, cp2.y, pt2.x, pt2.y);
+        return true;
     }
     virtual Box2d getExtentW() const { return Box2d(cp, pt); }
 };
@@ -414,8 +425,9 @@ struct CmdClosePath : public MgRecordShape::ICmd {
     virtual bool load(MgStorage*) {
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         gs.getCanvas()->closePath();
+        return true;
     }
 };
 
@@ -442,8 +454,9 @@ struct CmdDrawPath : public MgRecordShape::ICmd {
         fill = s->readBool("fill", fill);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         gs.getCanvas()->drawPath(stroke, fill);
+        return true;
     }
 };
 
@@ -452,7 +465,8 @@ struct CmdClipPath : public MgRecordShape::ICmd {
     CmdClipPath(int t = 0) : t(t) {}
     
     enum { Clip, Save, Restore };
-    virtual int type() const { return 17; }
+    static int Type() { return 17; }
+    virtual int type() const { return Type(); }
     virtual void copy(const ICmd& src) {
         if (src.type() == type()) {
             const CmdClipPath& p = (const CmdClipPath&)src;
@@ -467,11 +481,10 @@ struct CmdClipPath : public MgRecordShape::ICmd {
         t = s->readInt("t", t);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d&) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d&) const {
         switch (t) {
             case Clip:
-                gs.getCanvas()->clipPath();
-                break;
+                return gs.getCanvas()->clipPath();
             case Save:
                 gs.getCanvas()->saveClip();
                 break;
@@ -481,6 +494,7 @@ struct CmdClipPath : public MgRecordShape::ICmd {
             default:
                 break;
         }
+        return true;
     }
 };
 
@@ -513,9 +527,9 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
         t = s->readInt("t", t);
         return true;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
-        gs.getCanvas()->drawHandle(pt2.x, pt2.y, t, angle);
+        return gs.getCanvas()->drawHandle(pt2.x, pt2.y, t, angle);
     }
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
@@ -558,10 +572,10 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
         
         return len > 0;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
-        gs.getCanvas()->drawBitmap(name.c_str(), pt2.x, pt2.y, vec2.x, vec2.y, angle);
+        return gs.getCanvas()->drawBitmap(name.c_str(), pt2.x, pt2.y, vec2.x, vec2.y, angle);
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -602,10 +616,10 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
         
         return len > 0;
     }
-    virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const {
+    virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
-        gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align);
+        return gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align) > 0;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -717,8 +731,15 @@ bool MgRecordShape::load(MgShapeFactory* factory, MgStorage* s)
 bool MgRecordShape::draw(int, GiGraphics& gs, const GiContext& ctx, int) const
 {
     const Matrix2d& w2d = gs.xf().worldToDisplay();
+    bool candraw = true;
+    
     for (ITEMS::const_iterator it = _items.begin(); it != _items.end(); ++it) {
-        (*it)->draw(gs, w2d);
+        int type = (*it)->type();
+        if (type == CmdClipPath::Type()) {
+            candraw = (*it)->draw(gs, w2d);
+        } else if (candraw) {
+            (*it)->draw(gs, w2d);
+        }
     }
     return !_items.empty();
 }

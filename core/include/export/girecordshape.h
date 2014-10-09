@@ -24,7 +24,7 @@ public:
         virtual void copy(const ICmd& src) = 0;
         virtual bool save(MgStorage* s) const = 0;
         virtual bool load(MgStorage* s) = 0;
-        virtual void draw(GiGraphics& gs, const Matrix2d& w2d) const = 0;
+        virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const = 0;
         virtual Box2d getExtentW() const { return Box2d(0, 0, 1, 1); }
     };
     

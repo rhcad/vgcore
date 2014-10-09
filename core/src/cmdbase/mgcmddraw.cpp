@@ -34,8 +34,11 @@ bool MgCommandDraw::cancel(const MgMotion* sender)
 
 bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage* s)
 {
-    GiContext ctx(*sender->view->context());
+    GiContext ctx;
     
+    if (sender->view->context()) {
+        ctx = *sender->view->context();
+    }
     if (!m_shape) {
         m_shape = sender->view->createShapeCtx(shapeType);
         if (!m_shape || !m_shape->shape())

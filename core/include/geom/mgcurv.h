@@ -74,6 +74,10 @@ static int fitCurve(int knotCount, Point2d* knots, Vector2d* knotvs,
 #ifndef SWIG
 typedef Point2d (*PtCallback)(void* data, int i);
 static int fitCurve2(int knotCount, Point2d* knots, int count, PtCallback pts, void* data, float tol);
+
+typedef void (*FitCubicCallback)(void* data, const Point2d curve[4]);
+static void fitCurve3(FitCubicCallback fc, void* data, const Point2d *pts, int n, float tol);
+static void fitCurve4(FitCubicCallback fc, void* data, PtCallback pts, void* data2, int n, float tol);
 #endif
 
 //! 二次贝塞尔曲线段转为三次贝塞尔曲线段

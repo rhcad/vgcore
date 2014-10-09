@@ -32,7 +32,13 @@ struct point_t {
     double crossProduct(const point_t& v) const {
         return (x * v.y - y * v.x);
     }
-    
+    bool isDegenerate() const {
+        return isnan(x) || isnan(y);
+    }
+    point_t normalized() const {
+        double oldlen = length();
+        return oldlen != 0.0 ? point_t(x / oldlen, y / oldlen) : *this;
+    }
     void normalize() {
         double oldlen = length();
         
