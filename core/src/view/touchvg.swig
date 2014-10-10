@@ -26,6 +26,7 @@
 
 #include <mgstorage.h>
 #include <mgvector.h>
+#include <mgjsonstorage.h>
 
 #include <mgcshapes.h>
 #include <mgshapetype.h>
@@ -99,6 +100,7 @@
 %template(Shapes) mgvector<MgShape*>;
 
 %include <mgstorage.h>
+%include <mgjsonstorage.h>
 
 %feature("director") MgObject;
 %feature("director") MgBaseShape;
