@@ -28,6 +28,32 @@ public:
     virtual bool touchEnded(const MgMotion* sender);
 };
 
+//! 射线绘图命令
+class MgCmdDrawRayLine : public MgCmdDrawLine
+{
+public:
+    MgCmdDrawRayLine(const char* name = Name()) : MgCmdDrawLine(name) {}
+#ifndef SWIG
+    static const char* Name() { return "rayline"; }
+    static MgCommand* Create() { return new MgCmdDrawRayLine; }
+#endif
+    virtual void release() { delete this; }
+    virtual bool initialize(const MgMotion* sender, MgStorage* s);
+};
+
+//! 无穷直线绘图命令
+class MgCmdDrawBeeLine : public MgCmdDrawLine
+{
+public:
+    MgCmdDrawBeeLine(const char* name = Name()) : MgCmdDrawLine(name) {}
+#ifndef SWIG
+    static const char* Name() { return "beeline"; }
+    static MgCommand* Create() { return new MgCmdDrawBeeLine; }
+#endif
+    virtual void release() { delete this; }
+    virtual bool initialize(const MgMotion* sender, MgStorage* s);
+};
+
 //! 点绘图命令
 /*! \ingroup CORE_COMMAND
     \see MgDot
