@@ -99,14 +99,8 @@ bool MgCmdDrawSplines::touchMoved(const MgMotion* sender)
 bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
 {
     MgSplines* lines = (MgSplines*)dynshape()->shape();
-    Point2d pnt(!m_freehand ? snapPoint(sender) : (sender->pointM + sender->lastPtM) / 2.f);
     
     if (m_freehand) {
-        if (lines->endPoint() != pnt) {
-            lines->addPoint(pnt);
-            dynshape()->shape()->update();
-        }
-        
         Tol tol(sender->displayMmToModel(1.f));
         if (m_step > 0 && !dynshape()->shape()->getExtent().isEmpty(tol, false)) {
             MgShape* newsp = addShape(sender);

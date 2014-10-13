@@ -47,9 +47,6 @@ bool MgCmdDrawLine::touchMoved(const MgMotion* sender)
 
 bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 {
-    dynshape()->shape()->setPoint(1, snapPoint(sender));
-    dynshape()->shape()->update();
-
     if ( ((MgLine*)dynshape()->shape())->length() > sender->displayMmToModel(2.f)) {
         addShape(sender);
     } else {
@@ -97,9 +94,6 @@ bool MgCmdDrawDot::touchMoved(const MgMotion* sender)
 
 bool MgCmdDrawDot::touchEnded(const MgMotion* sender)
 {
-    dynshape()->shape()->setPoint(0, snapPoint(sender));
-    dynshape()->shape()->update();
-    
     addShape(sender);
     m_step = 0;
     

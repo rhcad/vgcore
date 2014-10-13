@@ -68,32 +68,9 @@ bool MgCmdDrawFreeLines::touchMoved(const MgMotion* sender)
 
 bool MgCmdDrawFreeLines::touchEnded(const MgMotion* sender)
 {
-    MgBaseLines* lines = (MgBaseLines*)dynshape()->shape();
-    
-    float closelen  = sender->displayMmToModel(5.f);
-    float closedist = sender->pointM.distanceTo(dynshape()->shape()->getPoint(0));
-    bool  closed    = (m_step > 2 && closedist < closelen
-        && dynshape()->shape()->getExtent().width() > closedist * 1.5f
-        && dynshape()->shape()->getExtent().height() > closedist * 1.5f);
-    
-    if (m_step > 2 && dynshape()->shape()->isClosed() != closed) {
-        lines->setClosed(closed);
-        if (closed)
-            lines->removePoint(m_step);
-        else
-            lines->addPoint(sender->pointM);
-    }
-    if (!closed) {
-        dynshape()->shape()->setPoint(m_step, sender->pointM);
-        if (m_step > 0 && !canAddPoint(sender, true))
-            lines->removePoint(m_step);
-    }
-    dynshape()->shape()->update();
-    
     if (m_step > 1) {
         addShape(sender);
-    }
-    else {
+    } else {
         click(sender);  // add a point
     }
     m_step = 0;

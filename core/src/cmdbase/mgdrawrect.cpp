@@ -39,13 +39,7 @@ bool MgCmdDrawRect::touchMoved(const MgMotion* sender)
 
 bool MgCmdDrawRect::touchEnded(const MgMotion* sender)
 {
-    Point2d pt1(m_startPt);
-    Point2d pt2(snapPoint(sender));
     MgBaseRect* shape = (MgBaseRect*)dynshape()->shape();
-    
-    shape->setRect2P(pt1, pt2);
-    dynshape()->shape()->update();
-
     float minDist = sender->displayMmToModel(2.f);
 
     if (shape->getWidth() > minDist && shape->getHeight() > minDist
