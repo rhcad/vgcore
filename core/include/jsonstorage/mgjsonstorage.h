@@ -18,6 +18,30 @@ inline FILE* mgopenfile(const char* fn, const char* m) {
 #endif
 struct MgStorage;
 
+//! 打开JSON文件的辅助类
+class MgJsonFile
+{
+public:
+    MgJsonFile(const char* filename, bool forRead) {
+        fp = mgopenfile(filename, forRead ? "rt" : "wt");
+    }
+    ~MgJsonFile() { close(); }
+    bool opened() const { return !!fp; }
+    
+    void close() {
+        if (fp) {
+            fclose(fp);
+            fp = NULL;
+        }
+    }
+#ifndef SWIG
+    FILE* getHandle() const { return fp; }
+#endif
+    
+private:
+    FILE* fp;
+};
+
 //! JSON序列化类
 /*! \ingroup CORE_STORAGE
  */
@@ -40,6 +64,12 @@ public:
     //! 写数据到给定的文件
     bool save(FILE* fp, bool pretty = false);
 #endif
+    
+    //! 给定JSON文件对象，返回存取接口对象以便开始读取
+    MgStorage* storageForRead(const MgJsonFile& file) { return storageForRead(file.getHandle()); }
+    
+    //! 写数据到给定的文件
+    bool save(const MgJsonFile& file, bool pretty = false) { return save(file.getHandle(), pretty); }
     
     //! 返回JSON内容
     const char* stringify(bool pretty = false);
