@@ -998,7 +998,13 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
 
 void GiCoreView::clear()
 {
+    int n = getShapeCount();
     loadShapes((MgStorage*)0);
+    if (n > 0) {
+        char buf[31];
+        MgLocalized::formatString(buf, sizeof(buf), impl, "@shape_n_deleted", n);
+        impl->showMessage(buf);
+    }
 }
 
 const char* GiCoreView::getContent(long doc)
@@ -1506,7 +1512,11 @@ float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
 
 void GiCoreViewImpl::setOptionBool(const char* name, bool value)
 {
-    options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+    if (!value && strchr(name, '_')) {
+        options.erase(name);
+    } else {
+        options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+    }
 }
 
 void GiCoreViewImpl::setOptionInt(const char* name, int value)
