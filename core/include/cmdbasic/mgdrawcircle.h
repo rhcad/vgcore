@@ -17,7 +17,7 @@ class MgCmdDrawCircle : public MgCmdDrawEllipse
 public:
     MgCmdDrawCircle(const char* name = Name()) : MgCmdDrawEllipse(name) {}
 #ifndef SWIG
-    static const char* Name() { return "circle"; }
+    static const char* Name() { return "circle2p"; }
     static MgCommand* Create() { return new MgCmdDrawCircle(); }
 #endif
     virtual void release() { delete this; }

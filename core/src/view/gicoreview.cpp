@@ -71,6 +71,8 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
     setOptionBool("canRotateHandle", true);
+    setOptionFloat("snapPointTol", 4.f);
+    setOptionFloat("snapNearTol", 3.f);
 }
 
 GiCoreViewImpl::~GiCoreViewImpl()
@@ -829,6 +831,17 @@ bool GiCoreView::setCommand(const char* name, const char* params)
 bool GiCoreViewImpl::setCommand(const char* name, const char* params)
 {
     bool ret = false;
+    char tmpname[30];
+    
+    if (strchr(name, '{') && (!params || !*params)) {
+        int i = 0;
+        while (*name != '{') {
+            tmpname[i++] = *name++;
+        }
+        tmpname[i] = 0;
+        params = name;
+        name = tmpname;
+    }
     
     if (curview && _cmds) {
         DrawLocker locker(this);
@@ -885,7 +898,7 @@ int GiCoreView::getShapeCount(long doc)
 
 static void getUnlockedShapeCount_(const MgShape* sp, void* d)
 {
-    if (!sp->shapec()->getFlag(kMgLocked)) {
+    if (!sp->shapec()->getFlag(kMgLocked) && !sp->shapec()->getFlag(kMgHideContent)) {
         int* n = (int*)d;
         *n = *n + 1;
     }
@@ -918,6 +931,12 @@ int GiCoreView::getSelectedShapeID()
     const MgShape* shape = NULL;
     impl->cmds()->getSelection(impl, 1, &shape);
     return shape ? shape->getID() : 0;
+}
+
+int GiCoreView::getSelectedHandle()
+{
+    MgSelection* sel = impl->cmds()->getSelection();
+    return sel ? sel->getSelectedHandle(impl->motion()) : -1;
 }
 
 int GiCoreView::getSelectedShapeType()
@@ -1452,7 +1471,7 @@ bool GiCoreViewImpl::gestureToCommand()
             break;
         case kMgGestureEnded:
         default:
-            ret = cmd->touchEnded(&_motion);
+            ret = cmd->touchMoved(&_motion) && cmd->touchEnded(&_motion);
             break;
         }
         break;
