@@ -846,7 +846,7 @@ bool GiCoreViewImpl::setCommand(const char* name, const char* params)
     bool ret = false;
     char tmpname[30];
     
-    if (strchr(name, '{') && (!params || !*params)) {
+    if (name && strchr(name, '{') && (!params || !*params)) {
         int i = 0;
         while (*name != '{') {
             tmpname[i++] = *name++;
