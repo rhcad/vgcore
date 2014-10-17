@@ -160,6 +160,9 @@ struct MgCoreView {
     //! 遍历有容纳图像的图形对象
     virtual int traverseImageShapes(long doc, MgFindImageCallback* c) = 0;
     
+    //! 返回当前视图区域的模型坐标范围，模型坐标(left, top, right, bottom)
+    virtual bool getViewModelBox(mgvector<float>& box) = 0;
+    
     //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;
     

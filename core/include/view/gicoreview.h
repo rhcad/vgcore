@@ -173,6 +173,7 @@ public:
     int findShapeByImageID(long doc, const char* name);
     int findShapeByTag(long doc, int tag);
     int traverseImageShapes(long doc, MgFindImageCallback* c);
+    bool getViewModelBox(mgvector<float>& box);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);

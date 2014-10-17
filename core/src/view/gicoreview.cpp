@@ -1359,6 +1359,17 @@ int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
     return ret;
 }
 
+bool GiCoreView::getViewModelBox(mgvector<float>& box)
+{
+    bool ret = box.count() == 4 && impl->curview;
+    if (ret) {
+        Box2d rect(impl->xform()->getWndRectM());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)
 {
     bool ret = box.count() == 4 && impl->curview;
