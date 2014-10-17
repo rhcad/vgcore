@@ -143,7 +143,8 @@ public:
     bool shapeCanUngroup(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     bool shapeCanMovedHandle(const MgShape* shape, int index) {
-        return !cmds() || getCmdSubject()->onShapeCanMovedHandle(motion(), shape, index); }
+        return (!cmds() || (getOptionBool(index < 0 ? "canMoveShape" : "canMoveHandle", true)
+                            && getCmdSubject()->onShapeCanMovedHandle(motion(), shape, index))); }
     void shapeMoved(MgShape* shape, int segment) {
         getCmdSubject()->onShapeMoved(motion(), shape, segment); }
     bool shapeWillChanged(MgShape* shape, const MgShape* oldsp) {
@@ -183,7 +184,8 @@ public:
         hideContextActions();
         bool ret = (shape && shape->getParent()
                     && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgLocked));
+                    && !shape->shapec()->getFlag(kMgLocked)
+                    && !shape->shapec()->getFlag(kMgNoDel));
         if (ret) {
             int sid = shape->getID();
             getCmdSubject()->onShapeDeleted(motion(), shape);
@@ -301,6 +303,7 @@ public:
     void setOptionInt(const char* name, int value);
     void setOptionFloat(const char* name, float value);
     OPT_MAP& getOptions() { return options; }
+    void resetOptions();
     
 private:
     void registerShape(int type, MgShape* (*creator)()) {

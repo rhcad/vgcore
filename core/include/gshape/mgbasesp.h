@@ -32,6 +32,7 @@ typedef enum {
     kMgNoAction,        //!< 禁止上下文按钮
     kMgNoClone,         //!< 禁止克隆
     kMgHideContent,     //!< 隐藏内容
+    kMgNoDel,           //!< 禁止删除
 } MgShapeBit;
 
 //! 图形特征点类型

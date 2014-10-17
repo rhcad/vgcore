@@ -57,7 +57,22 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
         _cmds = MgCmdManagerFactory::create();
         MgBasicCommands::registerCmds(this);
         MgShapeT<MgRecordShape>::registerCreator(this);
+        resetOptions();
     }
+}
+
+GiCoreViewImpl::~GiCoreViewImpl()
+{
+    for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
+        delete gsBuf[i];
+    }
+    MgObject::release_pointer(_cmds);
+    delete _gcdoc;
+}
+
+void GiCoreViewImpl::resetOptions()
+{
+    options.clear();
     
     setOptionBool("snapEnabled", true);
     setOptionBool("snapVertext", true);
@@ -73,15 +88,13 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     setOptionBool("canRotateHandle", true);
     setOptionFloat("snapPointTol", 4.f);
     setOptionFloat("snapNearTol", 3.f);
-}
-
-GiCoreViewImpl::~GiCoreViewImpl()
-{
-    for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
-        delete gsBuf[i];
-    }
-    MgObject::release_pointer(_cmds);
-    delete _gcdoc;
+    
+    setOptionBool("canRotateHandle", true);
+    setOptionBool("canMoveShape", true);
+    setOptionBool("canMoveHandle", true);
+    setOptionInt("lockSelShape", 0);
+    setOptionInt("lockSelHandle", 0);
+    setOptionInt("lockRotateHandle", 0);
 }
 
 void GiCoreViewImpl::showMessage(const char* text)
@@ -1508,12 +1521,11 @@ int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
     int ret = defValue;
     OPT_MAP::const_iterator kv = options.find(name);
     
-    if (kv != options.end()
-        && MgJsonStorage::parseInt(kv->second.second.c_str(), defValue)) {
-        ret = defValue;
+    if (kv != options.end()) {
+        MgJsonStorage::parseInt(kv->second.second.c_str(), ret);
     }
     
-    return ret;
+    return ret == 0 ? defValue : ret;
 }
 
 float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
@@ -1555,7 +1567,7 @@ void GiCoreViewImpl::setOptionFloat(const char* name, float value)
 void GiCoreView::setOptionBool(const char* name, bool value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionBool(name, value);
     }
@@ -1564,7 +1576,7 @@ void GiCoreView::setOptionBool(const char* name, bool value)
 void GiCoreView::setOptionInt(const char* name, int value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionInt(name, value);
     }
@@ -1573,7 +1585,7 @@ void GiCoreView::setOptionInt(const char* name, int value)
 void GiCoreView::setOptionFloat(const char* name, float value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionFloat(name, value);
     }
