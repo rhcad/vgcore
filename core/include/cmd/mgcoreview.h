@@ -88,7 +88,7 @@ struct MgCoreView {
     
     virtual int getShapeCount() = 0;                //!< 返回后端文档的图形总数
     virtual int getShapeCount(long doc) = 0;        //!< 返回前端文档的图形总数
-    virtual int getUnlockedShapeCount() = 0;        //!< 返回未锁定的图形的个数
+    virtual int getUnlockedShapeCount(int type = 0) = 0;    //!< 返回未锁定的可见图形的个数
     virtual long getChangeCount() = 0;              //!< 返回静态图形改变次数，可用于检查是否需要保存
     virtual long getDrawCount() const = 0;          //!< 返回已绘制次数，可用于录屏
     virtual int getSelectedShapeCount() = 0;        //!< 返回选中的图形个数

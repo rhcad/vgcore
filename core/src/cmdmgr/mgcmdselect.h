@@ -70,7 +70,9 @@ private:
     int hitTestHandles(const MgShape* shape, const Point2d& pointM,
                          const MgMotion* sender, float tolmm = 10.f);
     bool isIntersectMode(const MgMotion* sender);
+    int getLockSelShape(const MgMotion* sender, int defValue) const;
     int getLockSelHandle(const MgMotion* sender, int defValue) const;
+    int getLockRotateHandle(const MgMotion* sender, int defValue) const;
     Point2d snapPoint(const MgMotion* sender, const MgShape* shape);
     
     typedef std::vector<int>::iterator sel_iterator;

@@ -143,7 +143,7 @@ public:
     int addShapesForTest(int n = 1000);
     int getShapeCount();
     int getShapeCount(long doc);
-    int getUnlockedShapeCount();
+    int getUnlockedShapeCount(int type = 0);
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();

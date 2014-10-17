@@ -92,9 +92,22 @@ bool MgCmdSelect::cancel(const MgMotion* sender)
     return backStep(sender) || ret;
 }
 
+int MgCmdSelect::getLockSelShape(const MgMotion* sender, int defValue) const
+{
+    int ret = sender->view->getOptionInt("lockSelShape", defValue);
+    return ret == 0 ? defValue : ret;
+}
+
 int MgCmdSelect::getLockSelHandle(const MgMotion* sender, int defValue) const
 {
-    return sender->view->getOptionInt("lockSelHandle", defValue);
+    int ret = sender->view->getOptionInt("lockSelHandle", defValue);
+    return ret == 0 ? defValue : ret;
+}
+
+int MgCmdSelect::getLockRotateHandle(const MgMotion* sender, int defValue) const
+{
+    int ret = sender->view->getOptionInt("lockRotateHandle", defValue);
+    return ret == 0 ? defValue : ret;
 }
 
 bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
@@ -115,9 +128,9 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_editMode = !!s->readInt("editMode", m_editMode);
     }
     
-    m_id = sender->view->getOptionInt("lockSelShape", m_id);
+    m_id = getLockSelShape(sender, m_id);
     m_handleIndex = getLockSelHandle(sender, m_handleIndex);
-    m_rotateHandle = sender->view->getOptionInt("lockRotateHandle", m_rotateHandle);
+    m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
     m_canRotateHandle = !!sender->view->getOptionBool("canRotateHandle", true);
     m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
@@ -378,7 +391,7 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
     Box2d limits(sender->startPtM, sender->displayMmToModel("hitTestTol", 10.f), 0);
     float d = _FLT_MAX;
     
-    if (shape && shape->getID() == sender->view->getOptionInt("lockSelShape", 0)) {
+    if (shape && shape->getID() == getLockSelShape(sender, 0)) {
         d = 0;
     }
     else if (shape) {

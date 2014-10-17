@@ -917,10 +917,10 @@ static void getUnlockedShapeCount_(const MgShape* sp, void* d)
     }
 }
 
-int GiCoreView::getUnlockedShapeCount()
+int GiCoreView::getUnlockedShapeCount(int type)
 {
     int n = 0;
-    impl->shapes()->traverseByType(0, getUnlockedShapeCount_, &n);
+    impl->shapes()->traverseByType(type, getUnlockedShapeCount_, &n);
     return n;
 }
 
@@ -1532,11 +1532,12 @@ int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
     int ret = defValue;
     OPT_MAP::const_iterator kv = options.find(name);
     
-    if (kv != options.end()) {
-        MgJsonStorage::parseInt(kv->second.second.c_str(), ret);
+    if (kv != options.end()
+        && MgJsonStorage::parseInt(kv->second.second.c_str(), defValue)) {
+        ret = defValue;
     }
     
-    return ret == 0 ? defValue : ret;
+    return ret;
 }
 
 float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
