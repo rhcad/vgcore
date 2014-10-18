@@ -10,6 +10,8 @@
 #include "mglog.h"
 #include "mgstorage.h"
 
+Point2d MgCommandDraw::m_lastSnapped[];
+
 MgCommandDraw::MgCommandDraw(const char* name)
     : MgCommand(name), m_step(0), m_shape(NULL)
 {
@@ -216,6 +218,10 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
     if ( (firstStep || !sender->dragging())
         && snap->getSnappedType() >= kMgSnapPoint) {
         sender->view->getCmdSubject()->onPointSnapped(sender, dynshape());
+    }
+    if (firstStep || snap->getSnappedType() >= kMgSnapPoint) {
+        m_lastSnapped[0] = pt;
+        m_lastSnapped[1] = sender->pointM;
     }
     
     return pt;

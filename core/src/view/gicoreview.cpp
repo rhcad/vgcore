@@ -6,6 +6,7 @@
 #include "gicoreviewimpl.h"
 #include "RandomShape.h"
 #include "mgselect.h"
+#include "mgcmddraw.h"
 #include "girecordcanvas.h"
 #include "mgbasicspreg.h"
 #include "mgbasicsps.h"
@@ -1249,6 +1250,28 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
     }
 }
 
+bool GiCoreView::getShapeFlag(int sid, int bit)
+{
+    const MgShape* shape = impl->doc()->findShape(sid);
+    return shape && shape->shapec()->getFlag((MgShapeBit)bit);
+}
+
+bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
+{
+    const MgShape* shape = impl->doc()->findShape(sid);
+    bool ret = false;
+    
+    if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+        MgShape *newsp = shape->cloneShape();
+        newsp->shape()->setFlag((MgShapeBit)bit, on);
+        ret = shape->getParent()->updateShape(shape, newsp);
+    }
+    if (ret) {
+        impl->regenAll(true);
+    }
+    return ret;
+}
+
 int GiCoreView::addImageShape(const char* name, float width, float height)
 {
     DrawLocker locker(impl);
@@ -1495,6 +1518,14 @@ bool GiCoreViewImpl::gestureToCommand()
             break;
         case kMgGestureEnded:
         default:
+            if (cmd->isDrawingCommand() && _motion.gestureType == kGiGesturePan) {
+                Point2d pt(MgCommandDraw::getLastSnappedPoint());
+                Point2d orgpt(MgCommandDraw::getLastSnappedOriginPoint());
+                
+                if (orgpt.distanceTo(_motion.pointM) < _motion.displayMmToModel(2.f)) {
+                    _motion.pointM = pt;
+                }
+            }
             ret = cmd->touchMoved(&_motion) && cmd->touchEnded(&_motion);
             break;
         }

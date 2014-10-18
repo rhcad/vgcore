@@ -135,7 +135,9 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
     m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
-    const MgShape* shape = getShape(m_id ? m_id : sender->view->getNewShapeID(), sender);
+    const MgShape* sp = getShape(sender->view->getNewShapeID(), sender);
+    const MgShape* shape = ((sp && sp->shapec()->isKindOf(MgComposite::Type())) || !m_id
+                            ? sp : getShape(m_id, sender));
     if (shape) {
         m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
         m_id = shape->getID();

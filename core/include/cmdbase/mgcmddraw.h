@@ -29,6 +29,12 @@ public:
     //! 返回当前捕捉结果类型, >=kMgSnapGrid
     int getSnappedType(const MgMotion* sender) const;
     
+    //! 返回上次捕捉到的位置
+    static Point2d getLastSnappedPoint() { return m_lastSnapped[0]; }
+    
+    //! 返回上次捕捉到对象坐标时的原始位置
+    static Point2d getLastSnappedOriginPoint() { return m_lastSnapped[1]; }
+    
 protected:
     bool _initialize(int shapeType, const MgMotion* sender, MgStorage* s);
     bool _click(const MgMotion* sender);
@@ -66,6 +72,7 @@ protected:
 private:
     MgShape*    m_shape;
     bool        m_oneShapeEnd;
+    static Point2d m_lastSnapped[2];
 };
 
 #endif // TOUCHVG_CMD_DRAW_H_

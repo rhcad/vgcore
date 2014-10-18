@@ -34,6 +34,20 @@ struct MgStringCallback {
     \interface MgCoreView
  */
 struct MgCoreView {
+    enum {
+        kMgSquare,          //!< 方形
+        kMgClosed,          //!< 闭合
+        kMgFixedLength,     //!< 边长固定
+        kMgFixedSize,       //!< 大小固定，只能旋转和移动
+        kMgRotateDisnable,  //!< 不能旋转
+        kMgLocked,          //!< 锁定形状
+        kMgNoSnap,          //!< 禁止捕捉
+        kMgNoAction,        //!< 禁止上下文按钮
+        kMgNoClone,         //!< 禁止克隆
+        kMgHideContent,     //!< 隐藏内容
+        kMgNoDel,           //!< 禁止删除
+    };
+    
     virtual ~MgCoreView() {}
     static MgCoreView* fromHandle(long h) { MgCoreView* p; *(long*)&p = h; return p; } //!< 转为对象
     long toHandle() { long h; *(MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
@@ -121,6 +135,8 @@ struct MgCoreView {
     
     virtual GiContext& getContext(bool forChange) = 0;  //!< 当前绘图属性，可用 calcPenWidth() 计算线宽
     virtual void setContext(int mask) = 0;              //!< 绘图属性改变后提交更新
+    virtual bool getShapeFlag(int sid, int bit) = 0;    //!< 返回图形标志, kMgNoSnap 等位值
+    virtual bool setShapeFlag(int sid, int bit, bool on) = 0;   //!< 设置图形标志
 
     //! 绘图属性改变后提交更新
     /*! 在 getContext(true) 后调用本函数。

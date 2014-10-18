@@ -165,6 +165,8 @@ public:
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);
+    bool getShapeFlag(int sid, int bit);
+    bool setShapeFlag(int sid, int bit, bool on);
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
     int addImageShape(const char* name, float xc, float yc, float w, float h, int tag);
