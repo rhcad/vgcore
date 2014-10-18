@@ -76,7 +76,7 @@ private:
     
 private:
     void eraseWnd(const MgMotion* sender);
-    void checkResult(SnapItem arr[3]);
+    void checkResult(SnapItem arr[3], int hotHandle);
     void freeSubject();
     void drawPerpMark(const MgMotion* sender, GiGraphics* gs, GiContext& ctx) const;
 

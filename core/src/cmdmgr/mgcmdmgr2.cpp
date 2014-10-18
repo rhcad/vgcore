@@ -75,6 +75,7 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
     
     while (const MgShape* shape = it.getNext()) {
         if (!shape->shapec()->getFlag(kMgLocked)
+            && !shape->shapec()->getFlag(kMgNoDel)
             && shape->shapec()->hitTestBox(snap)) {
             delIds.push_back(shape->getID());
         }

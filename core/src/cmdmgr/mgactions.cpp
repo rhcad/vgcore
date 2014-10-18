@@ -40,7 +40,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
                 actions[n++] = kMgActionGroup;
             }
         case kMgSelOneShape:
-            if (!locked && shape) {
+            if (!locked && shape && !shape->shapec()->getFlag(kMgNoDel)) {
                 actions[n++] = kMgActionDelete;
             }
             if (shape && !shape->shapec()->getFlag(kMgNoClone)) {

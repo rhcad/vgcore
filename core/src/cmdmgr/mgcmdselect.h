@@ -25,6 +25,8 @@ public:
     virtual int getSelectionForChange(MgView* view, int count, MgShape** shapes);
     virtual MgSelState getSelectState(MgView* view);
     virtual int getSelectType(MgView* view);
+    virtual int getSelectedHandle(const MgMotion* sender);
+    virtual long getSelectedShapeHandle(const MgMotion* sender);
     virtual bool selectAll(const MgMotion* sender);
     virtual bool deleteSelection(const MgMotion* sender);
     virtual bool cloneSelection(const MgMotion* sender);
@@ -69,6 +71,9 @@ private:
     int hitTestHandles(const MgShape* shape, const Point2d& pointM,
                          const MgMotion* sender, float tolmm = 10.f);
     bool isIntersectMode(const MgMotion* sender);
+    int getLockSelShape(const MgMotion* sender, int defValue) const;
+    int getLockSelHandle(const MgMotion* sender, int defValue) const;
+    int getLockRotateHandle(const MgMotion* sender, int defValue) const;
     Point2d snapPoint(const MgMotion* sender, const MgShape* shape);
     
     typedef std::vector<int>::iterator sel_iterator;

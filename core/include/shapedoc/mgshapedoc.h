@@ -113,7 +113,7 @@ public:
     void setReadOnly(bool readOnly);
     
     static MgShapeDoc* fromHandle(long h) { MgShapeDoc* p; *(long*)&p = h; return p; } //!< 转为对象
-    long toHandle() { long h; *(MgShapeDoc**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
+    long toHandle() const { long h; *(const MgShapeDoc**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
 
 public:
     virtual MgObject* clone() const;

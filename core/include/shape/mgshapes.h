@@ -122,7 +122,7 @@ public:
     int getIndex() const;
     
     static MgShapes* fromHandle(long h) { MgShapes* p; *(long*)&p = h; return p; } //!< 转为对象
-    long toHandle() { long h; *(MgShapes**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
+    long toHandle() const { long h; *(const MgShapes**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
     
 public:
     virtual MgObject* clone() const;

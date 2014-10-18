@@ -494,12 +494,12 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     
     snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
                arr, matchpt ? &pnt : NULL);         // 在所有图形中捕捉
-    checkResult(arr);
+    checkResult(arr, hotHandle);
     
     return matchpt && pnt.x > -1e8f ? pnt : _ptSnap;    // 顶点匹配优先于用触点捕捉结果
 }
 
-void MgCmdManagerImpl::checkResult(SnapItem arr[3])
+void MgCmdManagerImpl::checkResult(SnapItem arr[3], int hotHandle)
 {
     if (arr[0].type > 0) {                          // X和Y方向同时捕捉到一个点
         _ptSnap = arr[0].pt;                        // 结果点
@@ -509,6 +509,9 @@ void MgCmdManagerImpl::checkResult(SnapItem arr[3])
         _snapHandle = arr[0].handleIndex;
         _snapHandleSrc = arr[0].handleIndexSrc;
         _startpt = arr[0].startpt;
+        if (_snapHandleSrc < 0 && (_snapType[0] == kMgSnapNearPt || _snapType[0] == kMgSnapPoint)) {
+            _snapHandleSrc = hotHandle;
+        }
     }
     else {
         _snapShapeId = 0;

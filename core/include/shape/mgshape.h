@@ -22,6 +22,9 @@ class MgShape : public MgObject
 public:
     //! 返回本对象的类型
     static int Type() { return 2; }
+    
+    static MgShape* fromHandle(long h) { MgShape* p; *(long*)&p = h; return p; } //!< 转为对象
+    long toHandle() const { long h; *(const MgShape**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
 
     //! 复制出一个新图形对象
     MgShape* cloneShape() const { return (MgShape*)clone(); }

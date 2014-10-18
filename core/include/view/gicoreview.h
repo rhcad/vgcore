@@ -143,12 +143,13 @@ public:
     int addShapesForTest(int n = 1000);
     int getShapeCount();
     int getShapeCount(long doc);
-    int getUnlockedShapeCount();
+    int getUnlockedShapeCount(int type = 0);
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();
     int getSelectedShapeType();
     int getSelectedShapeID();
+    int getSelectedHandle();
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
     bool saveToFile(long doc, const char* vgfile, bool pretty = false);
@@ -164,6 +165,8 @@ public:
     GiContext& getContext(bool forChange);
     void setContext(const GiContext& ctx, int mask, int apply);
     void setContext(int mask);
+    bool getShapeFlag(int sid, int bit);
+    bool setShapeFlag(int sid, int bit, bool on);
     void setContextEditing(bool editing);
     int addImageShape(const char* name, float width, float height);
     int addImageShape(const char* name, float xc, float yc, float w, float h, int tag);
@@ -172,6 +175,7 @@ public:
     int findShapeByImageID(long doc, const char* name);
     int findShapeByTag(long doc, int tag);
     int traverseImageShapes(long doc, MgFindImageCallback* c);
+    bool getViewModelBox(mgvector<float>& box);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);

@@ -92,6 +92,24 @@ bool MgCmdSelect::cancel(const MgMotion* sender)
     return backStep(sender) || ret;
 }
 
+int MgCmdSelect::getLockSelShape(const MgMotion* sender, int defValue) const
+{
+    int ret = sender->view->getOptionInt("lockSelShape", defValue);
+    return ret == 0 ? defValue : ret;
+}
+
+int MgCmdSelect::getLockSelHandle(const MgMotion* sender, int defValue) const
+{
+    int ret = sender->view->getOptionInt("lockSelHandle", defValue);
+    return ret == 0 ? defValue : ret;
+}
+
+int MgCmdSelect::getLockRotateHandle(const MgMotion* sender, int defValue) const
+{
+    int ret = sender->view->getOptionInt("lockRotateHandle", defValue);
+    return ret == 0 ? defValue : ret;
+}
+
 bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
 {
     m_boxsel = false;
@@ -110,10 +128,16 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_editMode = !!s->readInt("editMode", m_editMode);
     }
     
+    m_id = getLockSelShape(sender, m_id);
+    m_handleIndex = getLockSelHandle(sender, m_handleIndex);
+    m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
     m_canRotateHandle = !!sender->view->getOptionBool("canRotateHandle", true);
+    m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
-    const MgShape* shape = getShape(m_id ? m_id : sender->view->getNewShapeID(), sender);
+    const MgShape* sp = getShape(sender->view->getNewShapeID(), sender);
+    const MgShape* shape = ((sp && sp->shapec()->isKindOf(MgComposite::Type())) || !m_id
+                            ? sp : getShape(m_id, sender));
     if (shape) {
         m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
         m_id = shape->getID();
@@ -369,7 +393,10 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
     Box2d limits(sender->startPtM, sender->displayMmToModel("hitTestTol", 10.f), 0);
     float d = _FLT_MAX;
     
-    if (shape) {
+    if (shape && shape->getID() == getLockSelShape(sender, 0)) {
+        d = 0;
+    }
+    else if (shape) {
         d = shape->shapec()->hitTest(limits.center(), limits.width() / 2, m_hit);
         if (m_hit.inside && shape->hasFillColor()) {
             return true;
@@ -412,7 +439,7 @@ int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
         m_insertPt = true;
     }
     
-    return handleIndex;
+    return getLockSelHandle(sender, handleIndex);
 }
 
 Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
@@ -481,7 +508,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
                              hitTestHandles(shape, sender->pointM, sender) : 0);
         }
     }
-    else {
+    else if (!getLockSelHandle(sender, 0)) {
         m_handleIndex = 0;
         if (isEditMode(sender->view) || (canRotate(shape, sender)
                 && !shape->shapec()->isKindOf(kMgShapeSplines))) {
@@ -530,7 +557,8 @@ bool MgCmdSelect::doubleClick(const MgMotion* sender)
         return shape != NULL;
     }
     
-    return setEditMode(sender, !isEditMode(sender->view));  // 如果没实现菜单
+    return (!getLockSelHandle(sender, 0)
+            && setEditMode(sender, !isEditMode(sender->view))); // 如果没实现菜单
 }
 
 bool MgCmdSelect::longPress(const MgMotion* sender)
@@ -545,7 +573,7 @@ bool MgCmdSelect::longPress(const MgMotion* sender)
     int selState = getSelectState(sender->view);    
     MgActionDispatcher* dispatcher = sender->cmds()->getActionDispatcher();
 
-    if (shape && m_handleIndex > 0) {
+    if (shape && m_handleIndex > 0 && !getLockSelHandle(sender, 0)) {
         m_handleIndex = hitTestHandles(shape, sender->pointM, sender);
         sender->view->redraw();
     }
@@ -950,7 +978,8 @@ bool MgCmdSelect::touchEnded(const MgMotion* sender)
     m_hit.nearpt = sender->pointM;
     m_boxHandle = 99;
     
-    if (isEditMode(sender->view) && m_handleIndex > 0) {
+    if (isEditMode(sender->view) && m_handleIndex > 0
+        && !getLockSelHandle(sender, 0)) {
         m_handleIndex = hitTestHandles(getShape(m_selIds[0], sender), 
                                        sender->pointM, sender);
         sender->view->redraw();
@@ -1108,6 +1137,18 @@ int MgCmdSelect::getSelectType(MgView* view)
     return type;
 }
 
+int MgCmdSelect::getSelectedHandle(const MgMotion* sender)
+{
+    const MgShape* shape = getSelectedShape(sender);
+    return shape && !shape->shapec()->isCurve() ? m_handleIndex - 1 : -1;
+}
+
+long MgCmdSelect::getSelectedShapeHandle(const MgMotion* sender)
+{
+    const MgShape* shape = m_clones.size() == 1 ? m_clones.front() : getSelectedShape(sender);
+    return shape ? shape->toHandle() : 0;
+}
+
 bool MgCmdSelect::selectAll(const MgMotion* sender)
 {
     size_t oldn = m_selIds.size();
@@ -1146,6 +1187,7 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
             if (shape && !shape->shapec()->getFlag(kMgLocked)
+                && !shape->shapec()->getFlag(kMgNoDel)
                 && sender->view->removeShape(shape)) {
                 count++;
             }
@@ -1454,7 +1496,7 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
         selectAll(sender);
     }
     m_editMode = editMode;
-    m_handleIndex = 0;
+    m_handleIndex = getLockSelHandle(sender, 0);
     m_rotateHandle = 0;
     sender->view->redraw();
     if (!isComposite || !m_shapeEdited) {

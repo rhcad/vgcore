@@ -6,6 +6,7 @@
 #include "gicoreviewimpl.h"
 #include "RandomShape.h"
 #include "mgselect.h"
+#include "mgcmddraw.h"
 #include "girecordcanvas.h"
 #include "mgbasicspreg.h"
 #include "mgbasicsps.h"
@@ -57,7 +58,22 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
         _cmds = MgCmdManagerFactory::create();
         MgBasicCommands::registerCmds(this);
         MgShapeT<MgRecordShape>::registerCreator(this);
+        resetOptions();
     }
+}
+
+GiCoreViewImpl::~GiCoreViewImpl()
+{
+    for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
+        delete gsBuf[i];
+    }
+    MgObject::release_pointer(_cmds);
+    delete _gcdoc;
+}
+
+void GiCoreViewImpl::resetOptions()
+{
+    options.clear();
     
     setOptionBool("snapEnabled", true);
     setOptionBool("snapVertext", true);
@@ -71,15 +87,15 @@ GiCoreViewImpl::GiCoreViewImpl(GiCoreView* owner, bool useCmds)
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
     setOptionBool("canRotateHandle", true);
-}
-
-GiCoreViewImpl::~GiCoreViewImpl()
-{
-    for (unsigned i = 0; i < sizeof(gsBuf)/sizeof(gsBuf[0]); i++) {
-        delete gsBuf[i];
-    }
-    MgObject::release_pointer(_cmds);
-    delete _gcdoc;
+    setOptionFloat("snapPointTol", 4.f);
+    setOptionFloat("snapNearTol", 3.f);
+    
+    setOptionBool("canRotateHandle", true);
+    setOptionBool("canMoveShape", true);
+    setOptionBool("canMoveHandle", true);
+    setOptionInt("lockSelShape", 0);
+    setOptionInt("lockSelHandle", 0);
+    setOptionInt("lockRotateHandle", 0);
 }
 
 void GiCoreViewImpl::showMessage(const char* text)
@@ -829,6 +845,17 @@ bool GiCoreView::setCommand(const char* name, const char* params)
 bool GiCoreViewImpl::setCommand(const char* name, const char* params)
 {
     bool ret = false;
+    char tmpname[30];
+    
+    if (name && strchr(name, '{') && (!params || !*params)) {
+        int i = 0;
+        while (*name != '{') {
+            tmpname[i++] = *name++;
+        }
+        tmpname[i] = 0;
+        params = name;
+        name = tmpname;
+    }
     
     if (curview && _cmds) {
         DrawLocker locker(this);
@@ -885,16 +912,16 @@ int GiCoreView::getShapeCount(long doc)
 
 static void getUnlockedShapeCount_(const MgShape* sp, void* d)
 {
-    if (!sp->shapec()->getFlag(kMgLocked)) {
+    if (!sp->shapec()->getFlag(kMgLocked) && !sp->shapec()->getFlag(kMgHideContent)) {
         int* n = (int*)d;
         *n = *n + 1;
     }
 }
 
-int GiCoreView::getUnlockedShapeCount()
+int GiCoreView::getUnlockedShapeCount(int type)
 {
     int n = 0;
-    impl->shapes()->traverseByType(0, getUnlockedShapeCount_, &n);
+    impl->shapes()->traverseByType(type, getUnlockedShapeCount_, &n);
     return n;
 }
 
@@ -918,6 +945,12 @@ int GiCoreView::getSelectedShapeID()
     const MgShape* shape = NULL;
     impl->cmds()->getSelection(impl, 1, &shape);
     return shape ? shape->getID() : 0;
+}
+
+int GiCoreView::getSelectedHandle()
+{
+    MgSelection* sel = impl->cmds()->getSelection();
+    return sel ? sel->getSelectedHandle(impl->motion()) : -1;
 }
 
 int GiCoreView::getSelectedShapeType()
@@ -998,7 +1031,13 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
 
 void GiCoreView::clear()
 {
+    int n = getShapeCount();
     loadShapes((MgStorage*)0);
+    if (n > 0) {
+        char buf[31];
+        MgLocalized::formatString(buf, sizeof(buf), impl, "@shape_n_deleted", n);
+        impl->showMessage(buf);
+    }
 }
 
 const char* GiCoreView::getContent(long doc)
@@ -1211,6 +1250,28 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
     }
 }
 
+bool GiCoreView::getShapeFlag(int sid, int bit)
+{
+    const MgShape* shape = impl->doc()->findShape(sid);
+    return shape && shape->shapec()->getFlag((MgShapeBit)bit);
+}
+
+bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
+{
+    const MgShape* shape = impl->doc()->findShape(sid);
+    bool ret = false;
+    
+    if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+        MgShape *newsp = shape->cloneShape();
+        newsp->shape()->setFlag((MgShapeBit)bit, on);
+        ret = shape->getParent()->updateShape(shape, newsp);
+    }
+    if (ret) {
+        impl->regenAll(true);
+    }
+    return ret;
+}
+
 int GiCoreView::addImageShape(const char* name, float width, float height)
 {
     DrawLocker locker(impl);
@@ -1318,6 +1379,17 @@ int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
         ret = MgPathShape::exportSVGPath(path, buf, size);
     }
     
+    return ret;
+}
+
+bool GiCoreView::getViewModelBox(mgvector<float>& box)
+{
+    bool ret = box.count() == 4 && impl->curview;
+    if (ret) {
+        Box2d rect(impl->xform()->getWndRectM());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
     return ret;
 }
 
@@ -1446,7 +1518,15 @@ bool GiCoreViewImpl::gestureToCommand()
             break;
         case kMgGestureEnded:
         default:
-            ret = cmd->touchEnded(&_motion);
+            if (cmd->isDrawingCommand() && _motion.gestureType == kGiGesturePan) {
+                Point2d pt(MgCommandDraw::getLastSnappedPoint());
+                Point2d orgpt(MgCommandDraw::getLastSnappedOriginPoint());
+                
+                if (orgpt.distanceTo(_motion.pointM) < _motion.displayMmToModel(2.f)) {
+                    _motion.pointM = pt;
+                }
+            }
+            ret = cmd->touchMoved(&_motion) && cmd->touchEnded(&_motion);
             break;
         }
         break;
@@ -1506,7 +1586,11 @@ float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
 
 void GiCoreViewImpl::setOptionBool(const char* name, bool value)
 {
-    options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+    if (!value && strchr(name, '_')) {
+        options.erase(name);
+    } else {
+        options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+    }
 }
 
 void GiCoreViewImpl::setOptionInt(const char* name, int value)
@@ -1526,7 +1610,7 @@ void GiCoreViewImpl::setOptionFloat(const char* name, float value)
 void GiCoreView::setOptionBool(const char* name, bool value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionBool(name, value);
     }
@@ -1535,7 +1619,7 @@ void GiCoreView::setOptionBool(const char* name, bool value)
 void GiCoreView::setOptionInt(const char* name, int value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionInt(name, value);
     }
@@ -1544,7 +1628,7 @@ void GiCoreView::setOptionInt(const char* name, int value)
 void GiCoreView::setOptionFloat(const char* name, float value)
 {
     if (!name || !*name) {
-        impl->getOptions().clear();
+        impl->resetOptions();
     } else {
         impl->setOptionFloat(name, value);
     }

@@ -32,6 +32,7 @@ typedef enum {
     kMgNoAction,        //!< 禁止上下文按钮
     kMgNoClone,         //!< 禁止克隆
     kMgHideContent,     //!< 隐藏内容
+    kMgNoDel,           //!< 禁止删除
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -125,6 +126,8 @@ public:
     virtual float hitTest(const Point2d& pt, float tol, MgHitResult& res) const = 0;
 
 #ifndef SWIG
+    virtual const Point2d* getPoints() const { return (const Point2d*)0; }
+    
     //! 设置指定序号的控制点坐标，可以处理拖动状态
     virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data) {
         return _setHandlePoint2(index, pt, tol, data);

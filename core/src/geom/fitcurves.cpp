@@ -11,6 +11,11 @@
 #include "mgpnt.h"
 #include "mgdblpt.h"
 
+#if !defined(NAN) && defined(_WIN32)
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
+#endif
+
 typedef struct {
     point_t pts[4];
     const point_t& operator[](int i) const { return pts[i]; }

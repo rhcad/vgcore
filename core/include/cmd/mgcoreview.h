@@ -34,9 +34,23 @@ struct MgStringCallback {
     \interface MgCoreView
  */
 struct MgCoreView {
+    enum {
+        kMgSquare,          //!< 方形
+        kMgClosed,          //!< 闭合
+        kMgFixedLength,     //!< 边长固定
+        kMgFixedSize,       //!< 大小固定，只能旋转和移动
+        kMgRotateDisnable,  //!< 不能旋转
+        kMgLocked,          //!< 锁定形状
+        kMgNoSnap,          //!< 禁止捕捉
+        kMgNoAction,        //!< 禁止上下文按钮
+        kMgNoClone,         //!< 禁止克隆
+        kMgHideContent,     //!< 隐藏内容
+        kMgNoDel,           //!< 禁止删除
+    };
+    
     virtual ~MgCoreView() {}
     static MgCoreView* fromHandle(long h) { MgCoreView* p; *(long*)&p = h; return p; } //!< 转为对象
-    long toHandle() { long h; *(MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
+    long toHandle() const { long h; *(const MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
     
     virtual void release() = 0;                     //!< 释放引用计数，为0时销毁对象
     virtual void addRef() = 0;                      //!< 添加引用计数
@@ -88,12 +102,13 @@ struct MgCoreView {
     
     virtual int getShapeCount() = 0;                //!< 返回后端文档的图形总数
     virtual int getShapeCount(long doc) = 0;        //!< 返回前端文档的图形总数
-    virtual int getUnlockedShapeCount() = 0;        //!< 返回未锁定的图形的个数
+    virtual int getUnlockedShapeCount(int type = 0) = 0;    //!< 返回未锁定的可见图形的个数
     virtual long getChangeCount() = 0;              //!< 返回静态图形改变次数，可用于检查是否需要保存
     virtual long getDrawCount() const = 0;          //!< 返回已绘制次数，可用于录屏
     virtual int getSelectedShapeCount() = 0;        //!< 返回选中的图形个数
     virtual int getSelectedShapeType() = 0;         //!< 返回选中的图形的类型, MgShapeType
     virtual int getSelectedShapeID() = 0;           //!< 返回当前选中的图形的ID，选中多个时只取第一个
+    virtual int getSelectedHandle() = 0;            //!< 返回当前线性图形中当前控制点序号
 
     virtual void clear() = 0;                       //!< 删除所有图形，包括锁定的图形
     virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;       //!< 从文件中加载
@@ -120,6 +135,8 @@ struct MgCoreView {
     
     virtual GiContext& getContext(bool forChange) = 0;  //!< 当前绘图属性，可用 calcPenWidth() 计算线宽
     virtual void setContext(int mask) = 0;              //!< 绘图属性改变后提交更新
+    virtual bool getShapeFlag(int sid, int bit) = 0;    //!< 返回图形标志, kMgNoSnap 等位值
+    virtual bool setShapeFlag(int sid, int bit, bool on) = 0;   //!< 设置图形标志
 
     //! 绘图属性改变后提交更新
     /*! 在 getContext(true) 后调用本函数。
@@ -158,6 +175,9 @@ struct MgCoreView {
     
     //! 遍历有容纳图像的图形对象
     virtual int traverseImageShapes(long doc, MgFindImageCallback* c) = 0;
+    
+    //! 返回当前视图区域的模型坐标范围，模型坐标(left, top, right, bottom)
+    virtual bool getViewModelBox(mgvector<float>& box) = 0;
     
     //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;

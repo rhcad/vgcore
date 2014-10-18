@@ -37,7 +37,7 @@ struct MgView
 {
     virtual ~MgView() {}
     static MgView* fromHandle(long h) { MgView* p; *(long*)&p = h; return p; } //!< 句柄转为对象
-    long toHandle() { long h; *(MgView**)&h = this; return h; }       //!< 得到句柄，用于跨库转换
+    long toHandle() const { long h; *(const MgView**)&h = this; return h; }       //!< 得到句柄，用于跨库转换
     
 #ifndef SWIG
     virtual GcShapeDoc* document() const = 0;                   //!< 返回内核的内部文档对象
