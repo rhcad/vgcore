@@ -53,7 +53,7 @@ public:
     virtual ~GiGraphics();
     
     static GiGraphics* fromHandle(long h) { GiGraphics* p; *(long*)&p = h; return p; }  //!< 转为对象
-    long toHandle() { long h; *(GiGraphics**)&h = this; return h; }                     //!< 得到句柄
+    long toHandle() const { long h; *(const GiGraphics**)&h = this; return h; }                     //!< 得到句柄
 
 public:
     //! 复制指定对象到本对象

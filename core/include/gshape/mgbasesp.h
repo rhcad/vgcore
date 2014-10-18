@@ -126,6 +126,8 @@ public:
     virtual float hitTest(const Point2d& pt, float tol, MgHitResult& res) const = 0;
 
 #ifndef SWIG
+    virtual const Point2d* getPoints() const { return (const Point2d*)0; }
+    
     //! 设置指定序号的控制点坐标，可以处理拖动状态
     virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data) {
         return _setHandlePoint2(index, pt, tol, data);

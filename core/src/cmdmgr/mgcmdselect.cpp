@@ -1143,6 +1143,12 @@ int MgCmdSelect::getSelectedHandle(const MgMotion* sender)
     return shape && !shape->shapec()->isCurve() ? m_handleIndex - 1 : -1;
 }
 
+long MgCmdSelect::getSelectedShapeHandle(const MgMotion* sender)
+{
+    const MgShape* shape = m_clones.size() == 1 ? m_clones.front() : getSelectedShape(sender);
+    return shape ? shape->toHandle() : 0;
+}
+
 bool MgCmdSelect::selectAll(const MgMotion* sender)
 {
     size_t oldn = m_selIds.size();

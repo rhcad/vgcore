@@ -57,6 +57,9 @@ struct MgSelection {
     //! 返回当前控制点序号
     virtual int getSelectedHandle(const MgMotion* sender) = 0;
     
+    //! 返回当前图形的句柄
+    virtual long getSelectedShapeHandle(const MgMotion* sender) = 0;
+    
     //! 选中所有图形
     virtual bool selectAll(const MgMotion* sender) = 0;
     

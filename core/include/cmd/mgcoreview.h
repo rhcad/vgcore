@@ -50,7 +50,7 @@ struct MgCoreView {
     
     virtual ~MgCoreView() {}
     static MgCoreView* fromHandle(long h) { MgCoreView* p; *(long*)&p = h; return p; } //!< 转为对象
-    long toHandle() { long h; *(MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
+    long toHandle() const { long h; *(const MgCoreView**)&h = this; return h; }   //!< 得到句柄，用于跨库转换
     
     virtual void release() = 0;                     //!< 释放引用计数，为0时销毁对象
     virtual void addRef() = 0;                      //!< 添加引用计数
