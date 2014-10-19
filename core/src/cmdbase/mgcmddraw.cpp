@@ -155,6 +155,10 @@ bool MgCommandDraw::click(const MgMotion* sender)
 
 bool MgCommandDraw::_click(const MgMotion* sender)
 {
+    if (sender->view->getOptionBool("notClickSelectInDrawCmd", false)) {
+        return true;
+    }
+    
     Box2d limits(sender->displayMmToModelBox("hitTestTol", 10.f));
     MgHitResult res;
     const MgShape* shape = sender->view->shapes()->hitTest(limits, res);
