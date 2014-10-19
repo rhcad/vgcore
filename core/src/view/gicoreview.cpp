@@ -1589,7 +1589,7 @@ void GiCoreViewImpl::setOptionBool(const char* name, bool value)
     if (!value && strchr(name, '_')) {
         options.erase(name);
     } else {
-        options[name] = OPT_VALUE(kOptBool, value ? "1" : "0");
+        options[std::string(name)] = OPT_VALUE(kOptBool, std::string(value ? "1" : "0"));
     }
 }
 
@@ -1597,14 +1597,14 @@ void GiCoreViewImpl::setOptionInt(const char* name, int value)
 {
     std::stringstream ss;
     ss << value;
-    options[name] = OPT_VALUE(kOptInt, ss.str());
+    options[std::string(name)] = OPT_VALUE(kOptInt, ss.str());
 }
 
 void GiCoreViewImpl::setOptionFloat(const char* name, float value)
 {
     std::stringstream ss;
     ss << value;
-    options[name] = OPT_VALUE(kOptFloat, ss.str());
+    options[std::string(name)] = OPT_VALUE(kOptFloat, ss.str());
 }
 
 void GiCoreView::setOptionBool(const char* name, bool value)
