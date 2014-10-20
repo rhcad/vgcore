@@ -1529,13 +1529,22 @@ bool MgCmdSelect::overturnPolygon(const MgMotion* sender)
     return false;
 }
 
+static bool isZoomShapeEnabled(const MgMotion* sender)
+{
+    return (sender->view->getOptionBool("zoomShapeEnabled", true)
+            && !sender->view->getOptionInt("lockSelHandle", 0)
+            && !sender->view->getOptionInt("lockRotateHandle", 0));
+}
+
 bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
 {
     if (sender->gestureState == kMgGesturePossible) {
-        return !m_selIds.empty() && !mgIsZero(sender->distanceM()); // 选择了图形，且双指未重合
+        return (!m_selIds.empty() && !mgIsZero(sender->distanceM()) // 选择了图形，且双指未重合
+                && isZoomShapeEnabled(sender));
     }
     if (sender->gestureState == kMgGestureBegan) {
-        if (m_selIds.empty() || sender->view->isReadOnly()) {       // 没有选择图形
+        if (m_selIds.empty() || sender->view->isReadOnly()          // 没有选择图形
+            || !isZoomShapeEnabled(sender)) {
             return false;
         }
         cloneShapes(sender->view);

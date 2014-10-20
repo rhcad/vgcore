@@ -96,6 +96,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionInt("lockSelShape", 0);
     setOptionInt("lockSelHandle", 0);
     setOptionInt("lockRotateHandle", 0);
+    setOptionBool("zoomShapeEnabled", true);
 }
 
 void GiCoreViewImpl::showMessage(const char* text)
