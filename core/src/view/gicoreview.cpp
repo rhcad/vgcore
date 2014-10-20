@@ -998,11 +998,11 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
     GcBaseView* aview = impl->_gcdoc->findView(view);
     bool ret = aview && aview == impl->curview;
     
-    if (ret) {
-        impl->submitDynamicShapes(aview);
-    }
     if (aview) {
         aview->submitBackXform();
+    }
+    if (ret) {
+        impl->submitDynamicShapes(aview);
     }
     return ret;
 }
