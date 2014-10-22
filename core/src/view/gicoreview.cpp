@@ -1562,7 +1562,7 @@ bool GiCoreViewImpl::getOptionBool(const char* name, bool defValue)
 int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
 {
     int ret = defValue;
-    OPT_MAP::const_iterator kv = options.find(name);
+    OPT_MAP::const_iterator kv = options.find(std::string(name));
     
     if (kv != options.end()
         && MgJsonStorage::parseInt(kv->second.second.c_str(), defValue)) {
@@ -1575,7 +1575,7 @@ int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
 float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
 {
     float ret = defValue;
-    OPT_MAP::const_iterator kv = options.find(name);
+    OPT_MAP::const_iterator kv = options.find(std::string(name));
     
     if (kv != options.end()
         && MgJsonStorage::parseFloat(kv->second.second.c_str(), defValue)) {
