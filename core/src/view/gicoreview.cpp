@@ -729,9 +729,7 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
         
         impl->motion()->point.set(x, y);
-        float margin = impl->motion()->displayMmToModel(2);
-        movePointInView(impl->motion()->point,
-                        aview->xform()->getWndRect().deflate(margin));
+        movePointInView(impl->motion()->point, aview->xform()->getWndRect().deflate(5));
         
         impl->motion()->pointM = impl->motion()->point * aview->xform()->displayToModel();
         impl->motion()->point2 = impl->motion()->point;

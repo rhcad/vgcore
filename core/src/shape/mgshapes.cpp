@@ -382,11 +382,17 @@ const MgShape* MgShapes::getParentShape(const MgShape* shape)
     return composite ? composite->getOwnerShape() : NULL;
 }
 
+static const float EXTENT_LIMIT = 1e6f - 1e-2f;
+
 Box2d MgShapes::getExtent() const
 {
     Box2d extent;
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
-        extent.unionWith((*it)->shapec()->getExtent());
+        Box2d box((*it)->shapec()->getExtent());
+        if (box.xmin > -EXTENT_LIMIT && box.ymin > -EXTENT_LIMIT &&
+            box.xmax <  EXTENT_LIMIT && box.ymax <  EXTENT_LIMIT) {
+            extent.unionWith(box);
+        }
     }
     
     return extent;

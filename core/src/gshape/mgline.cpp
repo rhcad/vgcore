@@ -5,7 +5,7 @@
 #include "mgline.h"
 #include "mgshape_.h"
 
-static const float RAYMUL = 1e3f;
+static const float RAYMUL = 1e6f;
 
 MG_IMPLEMENT_CREATE(MgLine)
 
