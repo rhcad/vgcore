@@ -96,6 +96,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionInt("lockSelShape", 0);
     setOptionInt("lockSelHandle", 0);
     setOptionInt("lockRotateHandle", 0);
+    setOptionBool("zoomShapeEnabled", true);
 }
 
 void GiCoreViewImpl::showMessage(const char* text)
@@ -728,9 +729,7 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
         
         impl->motion()->point.set(x, y);
-        float margin = impl->motion()->displayMmToModel(2);
-        movePointInView(impl->motion()->point,
-                        aview->xform()->getWndRect().deflate(margin));
+        movePointInView(impl->motion()->point, aview->xform()->getWndRect().deflate(5));
         
         impl->motion()->pointM = impl->motion()->point * aview->xform()->displayToModel();
         impl->motion()->point2 = impl->motion()->point;
@@ -1561,7 +1560,7 @@ bool GiCoreViewImpl::getOptionBool(const char* name, bool defValue)
 int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
 {
     int ret = defValue;
-    OPT_MAP::const_iterator kv = options.find(name);
+    OPT_MAP::const_iterator kv = options.find(std::string(name));
     
     if (kv != options.end()
         && MgJsonStorage::parseInt(kv->second.second.c_str(), defValue)) {
@@ -1574,7 +1573,7 @@ int GiCoreViewImpl::getOptionInt(const char* name, int defValue)
 float GiCoreViewImpl::getOptionFloat(const char* name, float defValue)
 {
     float ret = defValue;
-    OPT_MAP::const_iterator kv = options.find(name);
+    OPT_MAP::const_iterator kv = options.find(std::string(name));
     
     if (kv != options.end()
         && MgJsonStorage::parseFloat(kv->second.second.c_str(), defValue)) {
