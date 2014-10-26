@@ -199,33 +199,56 @@ bool mglnrel::cross2Beeline(
     return true;
 }
 
+static const float LINE_LIMIT = 1e5f - 1.f;
+
 bool mglnrel::cross2Line(
     const Point2d& a, const Point2d& b, const Point2d& c, const Point2d& d,
     Point2d& ptCross, const Tol& tolVec)
 {
+    Box2d box(-LINE_LIMIT, -LINE_LIMIT, LINE_LIMIT, LINE_LIMIT);
+    Box2d clipbox(box * 0.5f);
+    
+    if (!box.contains(a) || !box.contains(b)) {
+        Point2d a2(a), b2(b);
+        if (!mglnrel::clipLine(a2, b2, clipbox))
+            return false;
+        return cross2Line(a2, b2, c, d, ptCross, tolVec);
+    }
+    if (!box.contains(c) || !box.contains(d)) {
+        Point2d c2(c), d2(d);
+        if (!mglnrel::clipLine(c2, d2, clipbox))
+            return false;
+        return cross2Line(a, b, c2, d2, ptCross, tolVec);
+    }
+    
     float u, v, denom, cosnum;
     
     if (mgMin(a.x,b.x) - mgMax(c.x,d.x) > _MGZERO 
         || mgMin(c.x,d.x) - mgMax(a.x,b.x) > _MGZERO
         || mgMin(a.y,b.y) - mgMax(c.y,d.y) > _MGZERO 
-        || mgMin(c.y,d.y) - mgMax(a.y,b.y) > _MGZERO)
+        || mgMin(c.y,d.y) - mgMax(a.y,b.y) > _MGZERO) {
         return false;
+    }
     
     denom = (c.x-d.x)*(b.y-a.y)-(c.y-d.y)*(b.x-a.x);
-    if (mgIsZero(denom))
+    if (mgIsZero(denom)) {
         return false;
+    }
     
     cosnum = (b.x-a.x)*(d.x - c.x) + (b.y-a.y)*(d.y-c.y);
-    if (!mgIsZero(cosnum) && fabsf(denom / cosnum) < tolVec.equalVector())
+    if (!mgIsZero(cosnum) && fabsf(denom / cosnum) < tolVec.equalVector()) {
         return false;
+    }
     
     u = ((c.x-a.x)*(d.y-c.y)-(c.y-a.y)*(d.x-c.x)) / denom;
-    if (u < _MGZERO || u > 1.f - _MGZERO)
+    if (u < _MGZERO || u > 1.f - _MGZERO) {
         return false;
+    }
     
     v = ((c.x-a.x)*(b.y-a.y)-(c.y-a.y)*(b.x-a.x)) / denom;
-    if (v < _MGZERO || v > 1.f - _MGZERO)
+    if (v < _MGZERO || v > 1.f - _MGZERO) {
         return false;
+    }
     
     ptCross.x = (1 - u) * a.x + u * b.x;
     ptCross.y = (1 - u) * a.y + u * b.y;
@@ -291,7 +314,7 @@ bool mglnrel::clipLine(Point2d& pt1, Point2d& pt2, const Box2d& _box)
         if (v1 & v2)
             return false;
         
-        float x = 0.f, y = 0.f;
+        double x = 0, y = 0, t;
         unsigned v;
         
         if (v1)
@@ -299,29 +322,31 @@ bool mglnrel::clipLine(Point2d& pt1, Point2d& pt2, const Box2d& _box)
         else
             v = v2;
         if (v & kOutUp) {
-            x = pt1.x + (pt2.x - pt1.x) * (box.ymax - pt1.y) / (pt2.y - pt1.y);
+            t = pt1.y;
+            x = pt1.x + ((double)pt2.x - pt1.x) * (box.ymax - t) / (pt2.y - y);
             y = box.ymax;
         }
         else if (v & kOutBottom) {
-            x = pt1.x + (pt2.x - pt1.x) * (box.ymin - pt1.y) / (pt2.y - pt1.y);
+            t = pt1.y;
+            x = pt1.x + ((double)pt2.x - pt1.x) * (box.ymin - t) / (pt2.y - t);
             y = box.ymin;
         }
         else if (v & kOutLeft) {
-            y = pt1.y + (pt2.y - pt1.y) * (box.xmin - pt1.x) / (pt2.x - pt1.x);
+            t = pt1.x;
+            y = pt1.y + ((double)pt2.y - pt1.y) * (box.xmin - t) / (pt2.x - t);
             x = box.xmin;
         }
         else if (v & kOutRight) {
-            y = pt1.y + (pt2.y - pt1.y) * (box.xmax - pt1.x) / (pt2.x - pt1.x);
+            t = pt1.x;
+            y = pt1.y + ((double)pt2.y - pt1.y) * (box.xmax - t) / (pt2.x - t);
             x = box.xmax;
         }
         
         if (v == v1) {
-            pt1.x = x;
-            pt1.y = y;
+            pt1.set((float)x, (float)y);
             v1 = clipValue(pt1, box);
         } else {
-            pt2.x = x;
-            pt2.y = y;
+            pt2.set((float)x, (float)y);
             v2 = clipValue(pt2, box);
         }
     }

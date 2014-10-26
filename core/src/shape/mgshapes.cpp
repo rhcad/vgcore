@@ -382,7 +382,7 @@ const MgShape* MgShapes::getParentShape(const MgShape* shape)
     return composite ? composite->getOwnerShape() : NULL;
 }
 
-static const float EXTENT_LIMIT = 1e6f - 1e-2f;
+static const float EXTENT_LIMIT = 1e5f - 1.f;
 
 Box2d MgShapes::getExtent() const
 {
