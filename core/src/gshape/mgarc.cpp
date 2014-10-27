@@ -246,8 +246,7 @@ bool MgArc::_equals(const MgArc& src) const
 
 void MgArc::_transform(const Matrix2d& mat)
 {
-    for (int i = 0; i < _getPointCount(); i++)
-        _points[i] *= mat;
+    mat.transformPoints(_getPointCount(), _points);
     __super::_transform(mat);
 }
 

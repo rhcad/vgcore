@@ -57,8 +57,7 @@ void MgParallel::_update()
 
 void MgParallel::_transform(const Matrix2d& mat)
 {
-    for (int i = 0; i < 4; i++)
-        _points[i] *= mat;
+    mat.transformPoints(4, _points);
     __super::_transform(mat);
 }
 

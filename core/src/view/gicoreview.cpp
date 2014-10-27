@@ -635,9 +635,10 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
-
-    if (hShapes && gs && gs->beginPaint(canvas)) {
+    
+    if (hShapes && gs && impl->curview && gs->beginPaint(canvas)) {
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+        impl->curview->dyndraw(*gs);
         n = MgShapes::fromHandle(hShapes)->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1);
         gs->endPaint();
     }
@@ -650,9 +651,10 @@ int GiCoreView::dynDraw(const mgvector<long>& shapes, long hGs, GiCanvas* canvas
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (gs && gs->beginPaint(canvas)) {
+    if (gs && impl->curview && gs->beginPaint(canvas)) {
         n = 0;
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+        impl->curview->dyndraw(*gs);
         for (int i = 0; i < shapes.count(); i++) {
             MgShapes* sp = MgShapes::fromHandle(shapes.get(i));
             n += sp ? sp->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1) : 0;
@@ -729,7 +731,9 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
         
         impl->motion()->point.set(x, y);
-        movePointInView(impl->motion()->point, aview->xform()->getWndRect().deflate(5));
+        
+        Box2d limits(aview->xform()->getWorldLimits().intersectWith(aview->xform()->getWndRectW()));
+        movePointInView(impl->motion()->point, limits.deflate(1) * aview->xform()->worldToDisplay());
         
         impl->motion()->pointM = impl->motion()->point * aview->xform()->displayToModel();
         impl->motion()->point2 = impl->motion()->point;

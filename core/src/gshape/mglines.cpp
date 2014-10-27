@@ -91,8 +91,7 @@ void MgBaseLines::_update()
 
 void MgBaseLines::_transform(const Matrix2d& mat)
 {
-    for (int i = 0; i < _count; i++)
-        _points[i] *= mat;
+    mat.transformPoints(_count, _points);
     __super::_transform(mat);
 }
 

@@ -61,8 +61,7 @@ void MgBaseRect::_update()
 
 void MgBaseRect::_transform(const Matrix2d& mat)
 {
-    for (int i = 0; i < 4; i++)
-        _points[i] *= mat;
+    mat.transformPoints(4, _points);
     Box2d rect(getRect());
     setRectWithAngle(rect.leftTop(), rect.rightBottom(), getAngle(), rect.center());
     __super::_transform(mat);
@@ -146,11 +145,9 @@ void MgBaseRect::setRectWithAngle(const Point2d& pt1, const Point2d& pt2,
     _points[2] = rect.rightBottom();
     _points[3] = rect.leftBottom();
 
-    if (!mgIsZero(angle))
-    {
+    if (!mgIsZero(angle)) {
         Matrix2d mat(Matrix2d::rotation(angle, basept));
-        for (int i = 0; i < 4; i++)
-            _points[i] *= mat;
+        mat.transformPoints(4, _points);
     }
 }
 

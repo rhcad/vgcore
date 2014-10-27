@@ -74,6 +74,12 @@ bool GcBaseView::twoFingersMove(const MgMotion& motion)
     return true;
 }
 
+void GcBaseView::dyndraw(GiGraphics& gs)
+{
+    GiContext ctx(0, GiColor(255, 0, 0, 24), GiContext::kDashLine);
+    gs.drawRect(&ctx, gs.xf().getWorldLimits(), false);
+}
+
 // GcGraphView
 //
 

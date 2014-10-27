@@ -922,17 +922,25 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
     if (m_clones.empty() && m_boxsel) {    // 没有选中图形时就滑动多选
         Box2d snap(sender->startPtM, sender->pointM);
         MgShapeIterator it(sender->view->shapes());
+        float mindist = _FLT_MAX;
+        MgHitResult res;
         
         m_selIds.clear();
         m_id = 0;
         m_hit.segment = -1;
         while (const MgShape* shape = it.getNext()) {
-            if (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
-                : snap.contains(shape->shapec()->getExtent())) {
-                if (!shape->shapec()->getFlag(kMgLocked) ||
-                    !shape->shapec()->getFlag(kMgNoAction)) {
-                    m_selIds.push_back(shape->getID());
+            if (!shape->shapec()->getFlag(kMgHideContent)
+                && (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
+                    : snap.contains(shape->shapec()->getExtent())))
+            {
+                float dist = shape->shapec()->hitTest(snap.center(), mindist, res);
+                if (mindist > dist - _MGZERO
+                    || (mindist < dist + _MGZERO && snap.contains(shape->shapec()->getExtent()))) {
+                    mindist = dist;
                     m_id = shape->getID();
+                    m_selIds.insert(m_selIds.begin(), shape->getID());
+                } else {
+                    m_selIds.push_back(shape->getID());
                 }
             }
         }
