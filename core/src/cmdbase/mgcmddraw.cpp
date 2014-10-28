@@ -87,6 +87,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
             tmpmotion.pointM = buf[i];
             touchBegan(&tmpmotion);
             tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
+            touchMoved(&tmpmotion);
             touchEnded(&tmpmotion);
             m_shape->setContext(ctx);
         }
