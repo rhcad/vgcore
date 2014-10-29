@@ -105,8 +105,10 @@ float MgLine::_hitTest(const Point2d& pt, float, MgHitResult& res) const
         }
         return d;
     }
-    return (isBeeline() ? mglnrel::ptToBeeline2(_points[0], _points[1], pt, res.nearpt)
-            : mglnrel::ptToLine(_points[0], _points[1], pt, res.nearpt));
+    if (isBeeline()) {
+        return mglnrel::ptToBeeline2(_points[0], _points[1], pt, res.nearpt);
+    }
+    return (res.ignoreHandle == 0 ? _FLT_MAX : mglnrel::ptToLine(_points[0], _points[1], pt, res.nearpt));
 }
 
 bool MgLine::_hitTestBox(const Box2d& rect) const

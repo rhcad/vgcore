@@ -65,7 +65,7 @@ static int snapHV(const Point2d& basePt, Point2d& newPt, SnapItem arr[3])
 
 static bool skipShape(const int* ignoreids, const MgShape* sp)
 {
-    bool skip = sp->shapec()->getFlag(kMgNoSnap);
+    bool skip = (sp->shapec()->getFlag(kMgNoSnap) || sp->shapec()->getFlag(kMgHideContent));
     for (int t = 0; ignoreids[t] != 0 && !skip; t++) {
         skip = (ignoreids[t] == sp->getID());           // 跳过当前图形
     }
@@ -103,7 +103,7 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
             arr0.dist = dist;
             arr0.base = orgpt;
             arr0.pt = pnt;
-            arr0.type = kMgSnapPoint + handleType - kMgHandleVertext;
+            arr0.type = kMgSnapPoint + handleType - kMgHandleVertex;
             arr0.shapeid = sp->getID();
             arr0.handleIndex = i;
             arr0.handleIndexSrc = dragHandle ? ignoreHd : -1;
@@ -124,7 +124,7 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
                 arr0.dist = dist;
                 arr0.base = ptd;  // 新的移动起点为当前图形的一个顶点
                 arr0.pt = pnt;    // 将从ptd移到其他图形顶点pnt
-                arr0.type = kMgSnapPoint + handleType - kMgHandleVertext;
+                arr0.type = kMgSnapPoint + handleType - kMgHandleVertex;
                 arr0.shapeid = sp->getID();
                 arr0.handleIndex = i;
                 arr0.handleIndexSrc = d;
@@ -216,16 +216,29 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
 
 static void snapNear(const MgMotion* sender, const Point2d& orgpt,
                      const MgShape* shape, int ignoreHd, float tolNear,
-                     const MgShape* sp, SnapItem& arr0, Point2d* matchpt)
+                     const MgShape* sp, SnapItem& arr0,
+                     Point2d* matchpt, const Point2d& ignoreStart)
 {
-    if (arr0.type >= kMgSnapGrid && arr0.type < kMgSnapNearPt)
+    if ((arr0.type >= kMgSnapGrid && arr0.type < kMgSnapNearPt)
+        || sp->shapec()->getPointCount() < 2) {
         return;
+    }
     
     Point2d ptd;
     MgHitResult res;
     const float mind = sender->displayMmToModel(4.f);
-    float minDist = arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f);
+    float minDist = ((arr0.type > 0 && arr0.type < kMgSnapNearPt) ?
+                     (arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f)) : _FLT_MAX);
     int d = matchpt ? shape->shapec()->getHandleCount() : 0;
+    
+    res.disnableSnapVertex();
+    for (int i = sp->shapec()->getExtent().contains(ignoreStart) ?
+         sp->shapec()->getPointCount() - 1 : 0; i >= 0; i--) {
+        if (sp->shapec()->getHandlePoint(i) == ignoreStart) {
+            res.ignoreHandle = i;
+            break;
+        }
+    }
     
     for (; d >= 0; d--) {       // 对需定位的图形(shape)的每个控制点和当前触点
         if (d == 0) {
@@ -380,7 +393,8 @@ static void snapShape(const MgMotion* sender, const Point2d& orgpt,
                       bool needPerp, bool perpOut, const Tol& tolPerp,
                       bool needCross, const Box2d& nearBox, bool needGrid,
                       const MgShape* sp, const MgShape* shape, int ignoreHd,
-                      const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
+                      const int* ignoreids, SnapItem arr[3],
+                      Point2d* matchpt, const Point2d& ignoreStart)
 {
     if (skipShape(ignoreids, sp) || sp == shape) {
         return;
@@ -401,7 +415,7 @@ static void snapShape(const MgMotion* sender, const Point2d& orgpt,
         b |= (needCross && snapCross(sender, orgpt, ignoreids, ignoreHd,
                                      shape, sp, arr[0], matchpt));
         if (!b && needNear) {
-            snapNear(sender, orgpt, shape, ignoreHd, tolNear, sp, arr[0], matchpt);
+            snapNear(sender, orgpt, shape, ignoreHd, tolNear, sp, arr[0], matchpt, ignoreStart);
         }
     }
     if (!b && needGrid && extent.isIntersect(snapbox)) {
@@ -413,8 +427,8 @@ static inline int getHandleMask(MgView* view)
 {
     int handleMask = 0;
     
-    if (view->getOptionBool("snapVertext", true))
-        handleMask |= 1 << kMgHandleVertext;
+    if (view->getOptionBool("snapVertex", true))
+        handleMask |= 1 << kMgHandleVertex;
     if (view->getOptionBool("snapCenter", true))
         handleMask |= 1 << kMgHandleCenter;
     if (view->getOptionBool("snapMidPoint", true))
@@ -427,7 +441,8 @@ static inline int getHandleMask(MgView* view)
 
 static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
-                       const int* ignoreids, SnapItem arr[3], Point2d* matchpt)
+                       const int* ignoreids, SnapItem arr[3],
+                       Point2d* matchpt, const Point2d& ignoreStart)
 {
     if (!sender->view->getOptionBool("snapEnabled", true)
         || (shape && ignoreHd >= 0 &&
@@ -448,7 +463,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     float tolNear = sender->displayMmToModel("snapNearTol", 3.f);
     Tol tolPerp(sender->displayMmToModel(1));
     bool needGrid = !!sender->view->getOptionBool("snapGrid", true);
-    Box2d nearBox(orgpt, needNear ? mgMin(tolNear, sender->displayMmToModel(4.f)) : 0.f, 0);
+    Box2d nearBox(orgpt, needNear ? tolNear : 0.f, 0);
     
     if (shape) {
         wndbox.unionWith(shape->shapec()->getExtent().inflate(arr[0].dist));
@@ -457,7 +472,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
         snapShape(sender, orgpt, xf->displayToModel(2, true), snapbox, wndbox,
                   handleMask, needNear, tolNear, needPerp, perpOut, tolPerp,
                   needCross, nearBox, needGrid,
-                  sp, shape, ignoreHd, ignoreids, arr, matchpt);
+                  sp, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
     }
 }
 
@@ -493,7 +508,7 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
                     && (hotHandle < 0 || (ignoreHd >= 0 && ignoreHd != hotHandle)));
     
     snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
-               arr, matchpt ? &pnt : NULL);         // 在所有图形中捕捉
+               arr, matchpt ? &pnt : NULL, _ignoreStart);         // 在所有图形中捕捉
     checkResult(arr, hotHandle);
     
     return matchpt && pnt.x > -1e8f ? pnt : _ptSnap;    // 顶点匹配优先于用触点捕捉结果
@@ -555,8 +570,14 @@ bool MgCmdManagerImpl::getSnappedHandle(int& shapeid, int& handleIndex, int& han
     return shapeid != 0;
 }
 
+void MgCmdManagerImpl::setIgnoreStartPoint(const Point2d& pt)
+{
+    _ignoreStart = pt;
+}
+
 void MgCmdManagerImpl::clearSnap(const MgMotion* sender)
 {
+    _ignoreStart.set(_FLT_MAX, _FLT_MAX);
     if (_snapType[0] || _snapType[1]) {
         _snapType[0] = kMgSnapNone;
         _snapType[1] = kMgSnapNone;

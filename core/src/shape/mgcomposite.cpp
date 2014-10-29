@@ -316,7 +316,7 @@ bool MgGroup::_isHandleFixed(int index) const
 
 int MgGroup::_getHandleType(int index) const
 {
-    return index == 0 ? kMgHandleNoSnap : kMgHandleVertext;
+    return index == 0 ? kMgHandleNoSnap : kMgHandleVertex;
 }
 
 bool MgGroup::_offset(const Vector2d& vec, int segment)

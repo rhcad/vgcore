@@ -192,8 +192,7 @@ bool MgBaseLines::_setHandlePoint(int index, const Point2d& pt, float tol)
 
 float MgBaseLines::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
-    return mgnear::linesHit(_count, _points, isClosed(), pt, tol, 
-                            res.nearpt, res.segment, &res.inside);
+    return linesHit(_count, _points, isClosed(), pt, tol, res);
 }
 
 bool MgBaseLines::_hitTestBox(const Box2d& rect) const

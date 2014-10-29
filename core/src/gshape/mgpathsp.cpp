@@ -161,8 +161,9 @@ float MgPathShape::_hitTest(const Point2d& pt, float tol, MgHitResult& res) cons
     }
     if (isClosed() && edges.size() > 2) {
         MgHitResult tmpres;
-        mgnear::linesHit((int)edges.size(), &edges.front(), true, pt, tol,
-                         tmpres.nearpt, tmpres.segment, &res.inside);
+        tmpres = res;
+        linesHit((int)edges.size(), &edges.front(), true, pt, tol, tmpres);
+        res.inside = tmpres.inside;
     }
     
     return res.dist;

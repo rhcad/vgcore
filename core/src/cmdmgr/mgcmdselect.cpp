@@ -311,7 +311,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             
             GiHandleTypes imageType;
             switch (shape->shapec()->getHandleType(i)) {
-                case kMgHandleVertext: imageType = kGiHandleNode; break;
+                case kMgHandleVertex: imageType = kGiHandleNode; break;
                 case kMgHandleCenter: imageType = kGiHandleCenter; break;
                 case kMgHandleMidPoint: imageType = kGiHandleMidPoint; break;
                 case kMgHandleQuadrant: imageType = kGiHandleQuadrant; break;
@@ -1329,7 +1329,7 @@ bool MgCmdSelect::addSelection(const MgMotion* sender, int shapeID)
     return shape != NULL;
 }
 
-bool MgCmdSelect::deleteVertext(const MgMotion* sender)
+bool MgCmdSelect::deleteVertex(const MgMotion* sender)
 {
     const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
     bool ret = false;
@@ -1358,7 +1358,7 @@ bool MgCmdSelect::deleteVertext(const MgMotion* sender)
     return ret;
 }
 
-bool MgCmdSelect::insertVertext(const MgMotion* sender)
+bool MgCmdSelect::insertVertex(const MgMotion* sender)
 {
     const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
     bool ret = false;

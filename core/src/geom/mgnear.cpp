@@ -189,14 +189,14 @@ int mgcurv::bsplinesToBeziers(
 float mgnear::linesHit(
     int n, const Point2d* points, bool closed, 
     const Point2d& pt, float tol, Point2d& nearpt, int& segment,
-    bool* inside, int* hitType)
+    bool* inside, int* hitType, int flags, int ignoreVertex)
 {
     Point2d ptTemp;
     float dist, distMin = _FLT_MAX;
     const Box2d rect (pt, 2 * tol, 2 * tol);
     int n2 = (closed && n > 1) ? n + 1 : n;
     
-    int type = mglnrel::ptInArea(pt, n, points, segment, Tol(tol), closed);
+    int type = mglnrel::ptInArea(pt, n, points, segment, Tol(tol), closed, flags, ignoreVertex);
     
     if (inside) {
         *inside = (closed && type == mglnrel::kPtInArea);

@@ -453,7 +453,8 @@ int MgShapes::dyndraw(int mode, GiGraphics& gs, const GiContext *ctx,
                 }
             }
         }
-        if (sp && sp->shapec()->getExtent().isIntersect(clip)) {
+        if (sp && !sp->shapec()->getFlag(kMgHideContent)
+            && sp->shapec()->getExtent().isIntersect(clip)) {
             if (sp->draw(mode, gs, ctx, segment))
                 count++;
         }

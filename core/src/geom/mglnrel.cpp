@@ -375,46 +375,58 @@ static bool checkEdge(int &isodd, const Point2d& pt, const Point2d& p1,
 
 int mglnrel::ptInArea(
     const Point2d& pt, int count, const Point2d* pts, 
-    int& order, const Tol& tol, bool closed)
+    int& order, const Tol& tol, bool closed, int flags, int ignoreVertex)
 {
     int i;
     int odd = 1;
     float minDist = tol.equalPoint();
     Point2d nearpt;
     
-    order = -1;
-    for (i = 0; i < count && tol.equalPoint() < 1.e5f; i++) {
-        float d = pt.distanceTo(pts[i]);
-        if (minDist > d) {
-            minDist = d;
-            order = i;
+    if (flags & (1 << kPtAtVertex)) {
+        order = -1;
+        for (i = 0; i < count && tol.equalPoint() < 1.e5f; i++) {
+            if (i == ignoreVertex) {
+                continue;
+            }
+            float d = pt.distanceTo(pts[i]);
+            if (minDist > d) {
+                minDist = d;
+                order = i;
+            }
+        }
+        if (order >= 0) {
+            return kPtAtVertex;
         }
     }
-    if (order >= 0) {
-        return kPtAtVertex;
-    }
     
-    order = -1;
-    minDist = tol.equalPoint();
-    
-    for (i = 0; i < (closed ? count : count - 1); i++) {
-        const Point2d& p1 = pts[i];
-        const Point2d& p2 = (i+1 < count) ? pts[i+1] : pts[0];
+    if (flags & (1 << kPtOnEdge)) {
+        order = -1;
+        minDist = tol.equalPoint();
         
-        float d = mglnrel::ptToBeeline2(p1, p2, pt, nearpt);
-        if (minDist > d) {
-            minDist = d;
-            order = i;
+        for (i = 0; i < (closed ? count : count - 1); i++) {
+            int ei = i+1 < count ? i+1 : 0;
+            if (i == ignoreVertex || ei == ignoreVertex) {
+                continue;
+            }
+            
+            const Point2d& p1 = pts[i];
+            const Point2d& p2 = pts[ei];
+            
+            float d = mglnrel::ptToBeeline2(p1, p2, pt, nearpt);
+            if (minDist > d) {
+                minDist = d;
+                order = i;
+            }
+            else if (!checkEdge(odd, pt, p1, p2, i > 0 ? pts[i-1] : pts[count-1])) {
+                continue;
+            }
         }
-        else if (!checkEdge(odd, pt, p1, p2, i > 0 ? pts[i-1] : pts[count-1])) {
-            continue;
+        if (order >= 0) {
+            return kPtOnEdge;
         }
-    }
-    if (order >= 0) {
-        return kPtOnEdge;
     }
 
-    return 0 == odd ? kPtInArea : kPtOutArea;
+    return 0 == odd && (flags & (1 << kPtInArea)) ? kPtInArea : kPtOutArea;
 }
 
 bool mglnrel::isConvex(int count, const Point2d* vs, bool* acw)

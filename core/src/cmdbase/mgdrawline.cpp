@@ -55,6 +55,7 @@ bool MgCmdDrawLine::touchBegan(const MgMotion* sender)
 
 bool MgCmdDrawLine::touchMoved(const MgMotion* sender)
 {
+    ignoreStartPoint(sender, 0);
     dynshape()->shape()->setPoint(1, snapPoint(sender));
     dynshape()->shape()->update();
 

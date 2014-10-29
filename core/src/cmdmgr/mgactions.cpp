@@ -186,11 +186,11 @@ bool MgCmdManagerImpl::doAction(const MgMotion* sender, int action)
             break;
             
         case kMgActionAddVertex:
-            ret = sel && sel->insertVertext(sender);
+            ret = sel && sel->insertVertex(sender);
             break;
             
         case kMgActionDelVertex:
-            ret = sel && sel->deleteVertext(sender);
+            ret = sel && sel->deleteVertex(sender);
             break;
             
         case kMgActionOverturn:
