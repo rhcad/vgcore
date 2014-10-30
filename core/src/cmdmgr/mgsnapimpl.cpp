@@ -95,7 +95,8 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
         if (handleType == kMgHandleMidPoint) {          // 交点优先于中点
             dist += sender->displayMmToModel(0.5f);
         }
-        if (dragHandle && arr0.dist > dist - _MGZERO
+        if (dragHandle && dist < arr0.maxdist
+            && arr0.dist > dist - _MGZERO
             && handleType < kMgHandleOutside
             && !(shape && shape->getID() == 0               // 新画线段的起点已
                  && shape->shapec()->getPointCount() > 1
@@ -120,7 +121,8 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
             if (handleType == kMgHandleMidPoint) {      // 交点优先于中点
                 dist += sender->displayMmToModel(0.5f);
             }
-            if (arr0.dist > dist - _MGZERO && handleType < kMgHandleOutside) {
+            if (dist < arr0.maxdist && arr0.dist > dist - _MGZERO
+                && handleType < kMgHandleOutside) {
                 arr0.dist = dist;
                 arr0.base = ptd;  // 新的移动起点为当前图形的一个顶点
                 arr0.pt = pnt;    // 将从ptd移到其他图形顶点pnt
@@ -160,7 +162,7 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
             
             if (mglnrel::isColinear2(pt1, pt2, start, tol)) {   // 起点在线上
                 float dist = perp2.distanceTo(start) * 2;
-                if (d2 > 2 * arr0.maxdist && arr0.dist > dist
+                if (d2 > 2 * arr0.maxdist && dist < arr0.maxdist && arr0.dist > dist
                     && (perpOut || mglnrel::isProjectBetweenLine(pt1, pt2, perp2))) {
                     arr0.startpt = start;
                     arr0.dist = dist;                           // 当前点距捕捉点
@@ -195,7 +197,7 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
             } else if (d2 < arr0.maxdist) {                     // 终点在线附近
                 mglnrel::ptToBeeline2(pt1, pt2, start, perp1);
                 float dist = perp1.distanceTo(orgpt);
-                if (arr0.dist > dist
+                if (dist < arr0.maxdist && arr0.dist > dist
                     && (perpOut || mglnrel::isProjectBetweenLine(pt1, pt2, perp1))) {
                     arr0.startpt = start;
                     arr0.dist = dist;                           // 当前点距垂足
@@ -220,7 +222,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
                      Point2d* matchpt, const Point2d& ignoreStart)
 {
     if ((arr0.type >= kMgSnapGrid && arr0.type < kMgSnapNearPt)
-        || sp->shapec()->getPointCount() < 2) {
+        || !shape || sp->shapec()->getPointCount() < 2) {
         return;
     }
     
@@ -228,7 +230,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
     MgHitResult res;
     const float mind = sender->displayMmToModel(4.f);
     float minDist = ((arr0.type > 0 && arr0.type < kMgSnapNearPt) ?
-                     (arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f)) : _FLT_MAX);
+                     (arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f)) : tolNear);
     int d = matchpt ? shape->shapec()->getHandleCount() : 0;
     
     res.disnableSnapVertex();
@@ -368,7 +370,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
             
             if (n) {
                 float dist = ptcross.distanceTo(ptd) - _MGZERO; // 优先于顶点
-                if (arr0.dist > dist) {
+                if (dist < arr0.maxdist && arr0.dist > dist) {
                     arr0.dist = dist;
                     arr0.base = ptd;
                     arr0.pt = ptcross;

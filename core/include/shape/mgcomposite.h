@@ -78,10 +78,15 @@ public:
     //! 返回插入点
     Point2d getInsertionPoint() const { return _getPoint(1); }
     void setInsertionPoint(const Point2d& pt) { _setPoint(1, pt); }
+    bool hasInsertionPoint() const { return !_getPoint(1).isDegenerate(); }
     
     //! 返回子图形中心点
     Point2d getCenterPoint() const { return _getPoint(0); }
 
+#ifndef SWIG
+    virtual int getSubType() const { return hasInsertionPoint() ? 1 : 0; }
+#endif
+    
 protected:
     void _copy(const MgGroup& src);
     bool _equals(const MgGroup& src) const;

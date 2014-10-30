@@ -107,8 +107,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             actions[i] = arr.get(i);
         }
 
-        if (shape->shapec()->isKindOf(kMgShapeGroup)
-            && sender->view->shapeCanUngroup(shape)) {
+        if (sender->view->shapeCanUngroup(shape)) {
             actions[n++] = kMgActionUngroup;
         }
     }

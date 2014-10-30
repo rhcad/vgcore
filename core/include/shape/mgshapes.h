@@ -37,6 +37,8 @@ public:
 
     int getShapeCount() const;
     int getShapeCountByTypeOrTag(int type, int tag) const;
+    int getShapeIndex(int sid) const;
+    const MgShape* getShapeAtIndex(int index) const;
     const MgShape* getHeadShape() const;
     const MgShape* getLastShape() const;
     const MgShape* findShape(int sid) const;

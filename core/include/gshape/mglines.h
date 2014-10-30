@@ -43,6 +43,7 @@ public:
     bool isIncrementFrom(const MgBaseLines& src) const;
 
 #ifndef SWIG
+    virtual int getSubType() const { return isClosed() ? 1 : 0; }
     virtual const Point2d* getPoints() const { return _points; }
 #endif
     

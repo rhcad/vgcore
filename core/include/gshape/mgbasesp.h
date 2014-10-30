@@ -207,6 +207,9 @@ public:
     //! 设置拥有者图形对象
     virtual void setOwner(MgObject* owner) {}
     
+    //! 子类型，由具体图形类解释含义
+    virtual int getSubType() const { return 0; }
+    
     //! 计算点到折线或多边形的最近距离
     static float linesHit(int n, const Point2d* points, bool closed,
                           const Point2d& pt, float tol, MgHitResult& res);

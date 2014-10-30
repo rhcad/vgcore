@@ -331,6 +331,26 @@ int MgShapes::getShapeCountByTypeOrTag(int type, int tag) const
     return n;
 }
 
+int MgShapes::getShapeIndex(int sid) const
+{
+    int i = 0;
+    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it, ++i) {
+        if ((*it)->getID() == sid)
+            return i;
+    }
+    return -1;
+}
+
+const MgShape* MgShapes::getShapeAtIndex(int index) const
+{
+    int i = 0;
+    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it, ++i) {
+        if (i == index)
+            return *it;
+    }
+    return NULL;
+}
+
 const MgShape* MgShapes::findShapeByType(int type) const
 {
     if (!this || 0 == type)

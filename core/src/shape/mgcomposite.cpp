@@ -216,7 +216,7 @@ void MgComposite::_output(MgPath& path) const
 
 MG_IMPLEMENT_CREATE(MgGroup)
 
-MgGroup::MgGroup()
+MgGroup::MgGroup() : _insert(Point2d::kInvalid())
 {
 }
 
@@ -353,8 +353,10 @@ bool MgGroup::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment)
 
 bool MgGroup::_save(MgStorage* s) const
 {
-    s->writeFloat("x", _insert.x);
-    s->writeFloat("y", _insert.y);
+    if (!_insert.isDegenerate()) {
+        s->writeFloat("x", _insert.x);
+        s->writeFloat("y", _insert.y);
+    }
     return __super::_save(s) && _shapes->save(s);
 }
 

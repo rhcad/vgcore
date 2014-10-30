@@ -17,6 +17,7 @@
 #include "mgshapet.h"
 #include "cmdbasic.h"
 #include "mglayer.h"
+#include "mgcomposite.h"
 #include "mglog.h"
 #include <map>
 
@@ -141,6 +142,10 @@ public:
     bool shapeCanUnlock(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
+        if (!shape->shapec()->isKindOf(MgGroup::Type())
+            || ((const MgGroup*)shape->shapec())->hasInsertionPoint()) {
+            return false;
+        }
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     bool shapeCanMovedHandle(const MgShape* shape, int index) {
         return (!cmds() || (getOptionBool(index < 0 ? "canMoveShape" : "canMoveHandle", true)
@@ -184,10 +189,10 @@ public:
         hideContextActions();
         bool ret = (shape && shape->getParent()
                     && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgLocked)
                     && !shape->shapec()->getFlag(kMgNoDel));
         if (ret) {
             int sid = shape->getID();
+            CALL_VIEW(deviceView()->shapeWillDelete(sid));
             getCmdSubject()->onShapeDeleted(motion(), shape);
             ret = shape->getParent()->removeShape(shape->getID());
             CALL_VIEW(deviceView()->shapeDeleted(sid));
