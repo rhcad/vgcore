@@ -224,7 +224,7 @@ GiColor GiGraphics::calcPenColor(const GiColor& color) const
     if (isGrayMode()) {
         unsigned char by = (unsigned char)(
             (77 * ret.r + 151 * ret.g + 28 * ret.b + 128) / 256);
-        ret.set(by, by, by);
+        ret.set(by, by, by, color.a);
     }
 
     return ret;
