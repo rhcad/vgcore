@@ -945,6 +945,9 @@ int GiCoreView::getSelectedShapeCount()
 
 int GiCoreView::getSelectedShapeID()
 {
+    if (isDrawingCommand()) {
+        return impl->getNewShapeID();
+    }
     const MgShape* shape = NULL;
     impl->cmds()->getSelection(impl, 1, &shape);
     return shape ? shape->getID() : 0;

@@ -134,7 +134,12 @@ public:
     bool shapeWillAdded(MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeWillAdded(motion(), shape); }
     bool shapeWillDeleted(const MgShape* shape) {
-        return !cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape); }
+        if (!cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape)) {
+            CALL_VIEW(deviceView()->shapeWillDelete(shape->getID()));
+            return true;
+        }
+        return false;
+    }
     bool shapeCanRotated(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanRotated(motion(), shape); }
     bool shapeCanTransform(const MgShape* shape) {
@@ -192,7 +197,6 @@ public:
                     && !shape->shapec()->getFlag(kMgNoDel));
         if (ret) {
             int sid = shape->getID();
-            CALL_VIEW(deviceView()->shapeWillDelete(sid));
             getCmdSubject()->onShapeDeleted(motion(), shape);
             ret = shape->getParent()->removeShape(shape->getID());
             CALL_VIEW(deviceView()->shapeDeleted(sid));

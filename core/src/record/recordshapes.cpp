@@ -19,7 +19,8 @@ struct MgRecordShapes::Impl
 {
     std::string     path;
     int             type;
-    std::map<int, long>  id2ver;
+    std::map<int, long> id2ver;
+    std::vector<int>    lastids;
     volatile int    fileCount;
     volatile int    maxCount;
     volatile long   loading;
@@ -340,6 +341,17 @@ bool MgRecordShapes::redo(MgShapeFactory *factory, MgShapeDoc* doc, long* change
     return ret != 0;
 }
 
+static void saveIds(const std::vector<int>& ids, MgStorage *s, const char* group)
+{
+    s->writeNode(group, -1, false);
+    for (int i = 0; i < (int)ids.size(); ++i) {
+        std::stringstream ss;
+        ss << "d" << i;
+        s->writeInt(ss.str().c_str(), ids[i]);
+    }
+    s->writeNode(group, -1, true);
+}
+
 void MgRecordShapes::Impl::recordShapes(const MgShapes* shapes)
 {
     MgShapeIterator it(shapes);
@@ -347,7 +359,7 @@ void MgRecordShapes::Impl::recordShapes(const MgShapes* shapes)
     std::map<int, long>::iterator i;
     int i2 = 0;
     int sid;
-    std::vector<int> newids;
+    std::vector<int> newids, nowids;
     
     s[0]->writeNode("shapes", shapes->getIndex(), false);
     s[1]->writeNode("shapes", shapes->getIndex(), false);
@@ -355,6 +367,7 @@ void MgRecordShapes::Impl::recordShapes(const MgShapes* shapes)
     while (const MgShape* sp = it.getNext()) {
         sid = sp->getID();
         i = id2ver.find(sid);                                   // 查找是否之前已存在
+        nowids.push_back(sid);
         
         if (i == id2ver.end()) {                                // 是新增的图形
             newids.push_back(sid);
@@ -405,6 +418,14 @@ void MgRecordShapes::Impl::recordShapes(const MgShapes* shapes)
         }
         s[1]->writeNode("delete", -1, true);
     }
+    if (!flags[0] && nowids.size() == lastids.size() && nowids != lastids) {
+        flags[0] |= EDIT;
+        flags[1] |= EDIT;
+        saveIds(lastids, s[1], "reorder");
+        saveIds(nowids, s[0], "reorder");
+    }
+    lastids = nowids;
+    
     s[1]->writeInt("flags", flags[1]);
     s[1]->writeInt("count", i2 + (int)newids.size());
 }
@@ -414,8 +435,10 @@ void MgRecordShapes::Impl::resetVersion(const MgShapes* shapes)
     MgShapeIterator it(shapes);
     
     id2ver.clear();
+    lastids.clear();
     while (const MgShape* sp = it.getNext()) {
         id2ver[sp->getID()] = sp->shapec()->getChangeCount();
+        lastids.push_back(sp->getID());
     }
 }
 
@@ -585,6 +608,23 @@ int MgRecordShapes::applyFile(int& tick, MgShapeFactory *f,
                     }
                 }
                 s->readNode("delete", -1, true);
+            }
+            if (s->readNode("reorder", -1, false)) {
+                std::vector<int> ids;
+                
+                for (int i = 0; ; i++) {
+                    std::stringstream ss;
+                    ss << "d" << i;
+                    int sid = s->readInt(ss.str().c_str(), 0);
+                    if (sid == 0)
+                        break;
+                    ids.push_back(sid);
+                }
+                s->readNode("reorder", -1, true);
+                
+                if (!ids.empty() && stds->reorderShapes((int)ids.size(), &ids.front())) {
+                    ret |= DOC_CHANGED;
+                }
             }
         }
         if (dyns && s->readNode("dynamic", -1, false)) {

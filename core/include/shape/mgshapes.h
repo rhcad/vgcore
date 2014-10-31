@@ -94,6 +94,8 @@ public:
         }
         return ret;
     }
+    //! 指定新的顺序
+    bool reorderShapes(int n, const int *ids);
 #endif
     
     //! 复制出一个新图形对象
@@ -111,8 +113,14 @@ public:
     //! 将所有图形复制到另一个图形列表
     void copyShapesTo(MgShapes* dest) const;
     
-    //! 移动图形到最后，以便显示在最前面
+    //! 移动图形到最后，以便显示在最顶部
     bool bringToFront(int sid);
+    
+    //! 移动图形到开始处，以便显示在最下面
+    bool bringToBack(int sid);
+    
+    //! 移动图形到指定序号位置
+    bool bringToIndex(int sid, int index);
     
     //! 得到上一级图形对象，或NULL
     static const MgShape* getParentShape(const MgShape* shape);

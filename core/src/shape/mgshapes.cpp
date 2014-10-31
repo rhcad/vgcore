@@ -8,6 +8,7 @@
 #include "mgcomposite.h"
 #include <list>
 #include <map>
+#include <set>
 
 struct MgShapes::I
 {
@@ -26,9 +27,19 @@ struct MgShapes::I
     MgShape* findShape(int sid) const;
     int getNewID(int sid);
     
-    iterator findPosition(int sid) {
+    iterator findPositionOfID(int sid) {
         iterator it = shapes.begin();
         for (; it != shapes.end() && (*it)->getID() != sid; ++it) ;
+        return it;
+    }
+    iterator findPositionOfIndex(int index) {
+        iterator it = shapes.begin();
+        for (int i = 0; it != shapes.end() && i != index; ++it, ++i) ;
+        return it;
+    }
+    citerator findPositionOfIndex(int index) const {
+        citerator it = shapes.begin();
+        for (int i = 0; it != shapes.end() && i != index; ++it, ++i) ;
         return it;
     }
 };
@@ -149,7 +160,7 @@ int MgShapes::getIndex() const
 bool MgShapes::updateShape(MgShape* shape, bool force)
 {
     if (shape && (force || !shape->getParent() || shape->getParent() == this)) {
-        I::iterator it = im->findPosition(shape->getID());
+        I::iterator it = im->findPositionOfID(shape->getID());
         if (it != im->shapes.end()) {
             shape->shape()->update();
             shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount() + 1);
@@ -204,7 +215,7 @@ bool MgShapes::addShapeDirect(MgShape* shape, bool force)
 
 bool MgShapes::removeShape(int sid)
 {
-    I::iterator it = im->findPosition(sid);
+    I::iterator it = im->findPositionOfID(sid);
     
     if (it != im->shapes.end()) {
         MgShape* shape = *it;
@@ -219,7 +230,7 @@ bool MgShapes::removeShape(int sid)
 
 bool MgShapes::moveShapeTo(int sid, MgShapes* dest)
 {
-    I::iterator it = im->findPosition(sid);
+    I::iterator it = im->findPositionOfID(sid);
     
     if (dest && dest != this && it != im->shapes.end()) {
         MgShape* newsp = (*it)->cloneShape();
@@ -247,7 +258,7 @@ void MgShapes::copyShapesTo(MgShapes* dest) const
 
 bool MgShapes::bringToFront(int sid)
 {
-    I::iterator it = im->findPosition(sid);
+    I::iterator it = im->findPositionOfID(sid);
     
     if (it != im->shapes.end()) {
         MgShape* shape = *it;
@@ -256,6 +267,54 @@ bool MgShapes::bringToFront(int sid)
         return true;
     }
     
+    return false;
+}
+
+bool MgShapes::bringToBack(int sid)
+{
+    I::iterator it = im->findPositionOfID(sid);
+    
+    if (it != im->shapes.end()) {
+        MgShape* shape = *it;
+        im->shapes.erase(it);
+        im->shapes.push_front(shape);
+        return true;
+    }
+    
+    return false;
+}
+
+bool MgShapes::bringToIndex(int sid, int index)
+{
+    I::iterator it = im->findPositionOfID(sid);
+    
+    if (it != im->shapes.end()) {
+        MgShape* shape = *it;
+        im->shapes.erase(it);
+        it = im->findPositionOfIndex(index);
+        im->shapes.insert(it, shape);
+        return true;
+    }
+    
+    return false;
+}
+
+bool MgShapes::reorderShapes(int n, const int *ids)
+{
+    I::Container shapes;
+    std::set<int> newids;
+    
+    for (int i = 0; i < n; i++) {
+        const MgShape* sp = findShape(ids[i]);
+        if (sp) {
+            shapes.push_back((MgShape*)sp);
+            newids.insert(sp->getID());
+        }
+    }
+    if (!newids.empty() && newids.size() == im->shapes.size()) {
+        im->shapes = shapes;
+        return true;
+    }
     return false;
 }
 
@@ -343,12 +402,8 @@ int MgShapes::getShapeIndex(int sid) const
 
 const MgShape* MgShapes::getShapeAtIndex(int index) const
 {
-    int i = 0;
-    for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it, ++i) {
-        if (i == index)
-            return *it;
-    }
-    return NULL;
+    I::citerator it = im->findPositionOfIndex(index);
+    return it != im->shapes.end() ? *it : NULL;
 }
 
 const MgShape* MgShapes::findShapeByType(int type) const
