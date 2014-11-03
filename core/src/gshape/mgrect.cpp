@@ -166,8 +166,7 @@ void MgBaseRect::setCenter(const Point2d& pt)
 
 float MgBaseRect::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
-    return mgnear::linesHit(4, _points, true, pt, tol, 
-        res.nearpt, res.segment, &res.inside);
+    return linesHit(4, _points, true, pt, tol, res);
 }
 
 bool MgBaseRect::_hitTestBox(const Box2d& rect) const

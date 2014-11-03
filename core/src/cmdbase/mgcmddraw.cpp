@@ -51,6 +51,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
     m_step = 0;
     m_shape->shape()->clear();
     m_oneShapeEnd = !!sender->view->getOptionBool("drawOneShape", false);
+    sender->view->getSnap()->clearSnap(sender);
     
     if (s) {
         if (s->readBool("fixedlen", false)) {
@@ -230,6 +231,13 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
     }
     
     return pt;
+}
+
+void MgCommandDraw::ignoreStartPoint(const MgMotion* sender, int handle)
+{
+    if (handle >= 0 && handle < dynshape()->shape()->getPointCount()) {
+        sender->view->getSnap()->setIgnoreStartPoint(dynshape()->shape()->getHandlePoint(handle));
+    }
 }
 
 int MgCommandDraw::getSnappedType(const MgMotion* sender) const

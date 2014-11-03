@@ -76,7 +76,7 @@ void GiCoreViewImpl::resetOptions()
     options.clear();
     
     setOptionBool("snapEnabled", true);
-    setOptionBool("snapVertext", true);
+    setOptionBool("snapVertex", true);
     setOptionBool("snapCenter", true);
     setOptionBool("snapMidPoint", true);
     setOptionBool("snapQuadrant", false);
@@ -915,7 +915,7 @@ int GiCoreView::getShapeCount(long doc)
 
 static void getUnlockedShapeCount_(const MgShape* sp, void* d)
 {
-    if (!sp->shapec()->getFlag(kMgLocked) && !sp->shapec()->getFlag(kMgHideContent)) {
+    if (!sp->shapec()->isLocked() && sp->shapec()->isVisible()) {
         int* n = (int*)d;
         *n = *n + 1;
     }
@@ -945,6 +945,9 @@ int GiCoreView::getSelectedShapeCount()
 
 int GiCoreView::getSelectedShapeID()
 {
+    if (isDrawingCommand()) {
+        return impl->getNewShapeID();
+    }
     const MgShape* shape = NULL;
     impl->cmds()->getSelection(impl, 1, &shape);
     return shape ? shape->getID() : 0;
@@ -1256,6 +1259,9 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
 bool GiCoreView::getShapeFlag(int sid, int bit)
 {
     const MgShape* shape = impl->doc()->findShape(sid);
+    if (!shape) {
+        impl->cmds()->getSelection(impl, 1, &shape);
+    }
     return shape && shape->shapec()->getFlag((MgShapeBit)bit);
 }
 
@@ -1264,10 +1270,24 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     const MgShape* shape = impl->doc()->findShape(sid);
     bool ret = false;
     
-    if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
-        MgShape *newsp = shape->cloneShape();
-        newsp->shape()->setFlag((MgShapeBit)bit, on);
-        ret = shape->getParent()->updateShape(shape, newsp);
+    if (sid == 0) {
+        const MgShape* shapes[20];
+        int n = impl->cmds()->getSelection(impl, 20, shapes);
+        
+        while (--n >= 0) {
+            shape = shapes[n];
+            if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+                MgShape *newsp = shape->cloneShape();
+                newsp->shape()->setFlag((MgShapeBit)bit, on);
+                ret = shape->getParent()->updateShape(shape, newsp) || ret;
+            }
+        }
+    } else {
+        if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+            MgShape *newsp = shape->cloneShape();
+            newsp->shape()->setFlag((MgShapeBit)bit, on);
+            ret = shape->getParent()->updateShape(shape, newsp);
+        }
     }
     if (ret) {
         impl->regenAll(true);

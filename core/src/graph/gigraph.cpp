@@ -224,7 +224,7 @@ GiColor GiGraphics::calcPenColor(const GiColor& color) const
     if (isGrayMode()) {
         unsigned char by = (unsigned char)(
             (77 * ret.r + 151 * ret.g + 28 * ret.b + 128) / 256);
-        ret.set(by, by, by);
+        ret.set(by, by, by, color.a);
     }
 
     return ret;
@@ -275,8 +275,8 @@ void GiGraphics::setMaxPenWidth(float pixels, float minw)
         pixels = m_impl->maxPenWidth;
     else if (pixels < minw)
         pixels = minw;
-    else if (pixels > 200)
-        pixels = 200;
+    else if (pixels > 1024)
+        pixels = 1024;
     
     m_impl->maxPenWidth = pixels;
     m_impl->minPenWidth = minw;

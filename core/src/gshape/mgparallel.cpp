@@ -119,8 +119,7 @@ bool MgParallel::_rotateHandlePoint(int index, const Point2d& pt)
 
 float MgParallel::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
-    return mgnear::linesHit(4, _points, true, pt, tol, 
-        res.nearpt, res.segment, &res.inside);
+    return linesHit(4, _points, true, pt, tol, res);
 }
 
 bool MgParallel::_hitTestBox(const Box2d& rect) const

@@ -37,7 +37,7 @@ typedef enum {
 
 //! 图形特征点类型
 typedef enum {
-    kMgHandleVertext,   //!< 顶点
+    kMgHandleVertex,   //!< 顶点
     kMgHandleCenter,    //!< 圆心
     kMgHandleMidPoint,  //!< 中点
     kMgHandleQuadrant,  //!< 象限点
@@ -52,7 +52,14 @@ struct MgHitResult {
     bool inside;    //!< 是否在闭合图形内部
     bool contained; //!< 是否包含在捕捉盒子中
     float dist;     //!< 给定的外部点到最近点的距离，仅在图形列表的hitTest中有效
-    MgHitResult() : segment(-1), inside(false), contained(false), dist(_FLT_MAX) {}
+    int mask;       //!< 允许捕捉类型位(1<<kMgHandleVertex)顶点|(1<<kMgHandleOutside)线上点
+    int ignoreHandle;   //!< 不捕捉的顶点序号
+    
+    MgHitResult() : segment(-1), inside(false), contained(false), dist(_FLT_MAX), mask(-1), ignoreHandle(-1) {}
+    bool snapVertexEnabled() const { return !!(mask & (1<<kMgHandleVertex)); }
+    bool snapEdgeEnabled() const { return !!(mask & (1<<kMgHandleOutside)); }
+    void disnableSnapVertex() { mask &= ~(1<<kMgHandleVertex); }
+    void disnableSnapEdge() { mask &= ~(1<<kMgHandleOutside); }
 };
 
 //! 矢量图形基类
@@ -200,6 +207,19 @@ public:
     //! 设置拥有者图形对象
     virtual void setOwner(MgObject* owner) {}
     
+    //! 子类型，由具体图形类解释含义
+    virtual int getSubType() const { return 0; }
+    
+    //! 返回是否可见
+    bool isVisible() const { return !getFlag(kMgHideContent); }
+    
+    //! 返回是否锁定
+    bool isLocked() const { return getFlag(kMgLocked); }
+    
+    //! 计算点到折线或多边形的最近距离
+    static float linesHit(int n, const Point2d* points, bool closed,
+                          const Point2d& pt, float tol, MgHitResult& res);
+    
 protected:
     Box2d   _extent;
     union {
@@ -235,7 +255,7 @@ protected:
     bool _setHandlePoint(int index, const Point2d& pt, float tol);
     bool _setHandlePoint2(int index, const Point2d& pt, float tol, int& data);
     bool _isHandleFixed(int) const { return false; }
-    int _getHandleType(int) const { return kMgHandleVertext; }
+    int _getHandleType(int) const { return kMgHandleVertex; }
     bool _offset(const Vector2d& vec, int segment);
     bool _rotateHandlePoint(int index, const Point2d& pt);
     bool _draw(int, GiGraphics&, const GiContext&, int) const { return false; }

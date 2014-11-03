@@ -17,6 +17,7 @@
 #include "mgshapet.h"
 #include "cmdbasic.h"
 #include "mglayer.h"
+#include "mgcomposite.h"
 #include "mglog.h"
 #include <map>
 
@@ -133,7 +134,12 @@ public:
     bool shapeWillAdded(MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeWillAdded(motion(), shape); }
     bool shapeWillDeleted(const MgShape* shape) {
-        return !cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape); }
+        if (!cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape)) {
+            CALL_VIEW(deviceView()->shapeWillDelete(shape->getID()));
+            return true;
+        }
+        return false;
+    }
     bool shapeCanRotated(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanRotated(motion(), shape); }
     bool shapeCanTransform(const MgShape* shape) {
@@ -141,6 +147,10 @@ public:
     bool shapeCanUnlock(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
+        if (!shape->shapec()->isKindOf(MgGroup::Type())
+            || ((const MgGroup*)shape->shapec())->hasInsertionPoint()) {
+            return false;
+        }
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     bool shapeCanMovedHandle(const MgShape* shape, int index) {
         return (!cmds() || (getOptionBool(index < 0 ? "canMoveShape" : "canMoveHandle", true)
@@ -184,7 +194,6 @@ public:
         hideContextActions();
         bool ret = (shape && shape->getParent()
                     && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgLocked)
                     && !shape->shapec()->getFlag(kMgNoDel));
         if (ret) {
             int sid = shape->getID();

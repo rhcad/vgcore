@@ -82,10 +82,10 @@ struct MgSelection {
     virtual bool addSelection(const MgMotion* sender, int shapeID) = 0;
     
     //! 删除当前图形的选中的顶点
-    virtual bool deleteVertext(const MgMotion* sender) = 0;
+    virtual bool deleteVertex(const MgMotion* sender) = 0;
     
     //! 在当前位置插入一个顶点
-    virtual bool insertVertext(const MgMotion* sender) = 0;
+    virtual bool insertVertex(const MgMotion* sender) = 0;
     
     //! 切换当前图形是否闭合
     virtual bool switchClosed(const MgMotion* sender) = 0;

@@ -7,6 +7,9 @@
 #define TOUCHVG_COMPOSITE_SHAPE_H_
 
 #include "mgshapes.h"
+#ifndef SWIG
+#include <string>
+#endif
 
 //! 复合图形基类
 /*! \ingroup CORE_SHAPE
@@ -78,10 +81,22 @@ public:
     //! 返回插入点
     Point2d getInsertionPoint() const { return _getPoint(1); }
     void setInsertionPoint(const Point2d& pt) { _setPoint(1, pt); }
+    bool hasInsertionPoint() const { return !_getPoint(1).isDegenerate(); }
     
     //! 返回子图形中心点
     Point2d getCenterPoint() const { return _getPoint(0); }
+    
+    //! 设置名称
+    void setName(const char* name);
+    
+    //! 查找指定名称的成组图形
+    static const MgShape* findGroup(const MgShapes* shapes, const char* name);
 
+#ifndef SWIG
+    virtual int getSubType() const { return hasInsertionPoint() ? 1 : 0; }
+    const char* getName() const { return _name.c_str(); }
+#endif
+    
 protected:
     void _copy(const MgGroup& src);
     bool _equals(const MgGroup& src) const;
@@ -103,9 +118,10 @@ protected:
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
     
-protected:
+private:
     Point2d     _insert;
     Box2d       _box;
+    std::string _name;
 };
 
 #endif // TOUCHVG_COMPOSITE_SHAPE_H_

@@ -27,7 +27,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
     bool isOpenLines = (shape && selState == kMgSelOneShape
                         && shape->shapec()->isKindOf(kMgShapeLines)
                         && !shape->shapec()->isClosed());
-    bool locked = shape && shape->shapec()->getFlag(kMgLocked);
+    bool locked = shape && shape->shapec()->isLocked();
     bool fixedLength = shape && shape->shapec()->getFlag(kMgFixedLength);
     
     switch (selState) {
@@ -62,7 +62,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             }
             if (selState == kMgSelOneShape && shape
                 && !shape->shapec()->getFlag(kMgRotateDisnable)
-                && !shape->shapec()->getFlag(kMgLocked)
+                && !shape->shapec()->isLocked()
                 && (shape->shapec()->isKindOf(kMgShapeParallel)
                     || shape->shapec()->isKindOf(kMgShapeBaseLines)
                     || shape->shapec()->isKindOf(kMgShapeComposite)) ) {
@@ -72,7 +72,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             
         case kMgSelVertexes:
             if ((isslines || isOpenLines)
-                && shape && !shape->shapec()->getFlag(kMgLocked)) {
+                && shape && !shape->shapec()->isLocked()) {
                 //actions[n++] = closed ? kMgActionOpened : kMgActionClosed;
                 actions[n++] = kMgActionAddVertex;
             }
@@ -85,7 +85,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             
         case kMgSelVertex:
             if ((isslines || isOpenLines)
-                && shape && !shape->shapec()->getFlag(kMgLocked)) {
+                && shape && !shape->shapec()->isLocked()) {
                 //actions[n++] = closed ? kMgActionOpened : kMgActionClosed;
                 actions[n++] = kMgActionDelVertex;
             }
@@ -107,8 +107,7 @@ bool MgCmdManagerImpl::showInSelect(const MgMotion* sender, int selState, const 
             actions[i] = arr.get(i);
         }
 
-        if (shape->shapec()->isKindOf(kMgShapeGroup)
-            && sender->view->shapeCanUngroup(shape)) {
+        if (sender->view->shapeCanUngroup(shape)) {
             actions[n++] = kMgActionUngroup;
         }
     }
@@ -186,11 +185,11 @@ bool MgCmdManagerImpl::doAction(const MgMotion* sender, int action)
             break;
             
         case kMgActionAddVertex:
-            ret = sel && sel->insertVertext(sender);
+            ret = sel && sel->insertVertex(sender);
             break;
             
         case kMgActionDelVertex:
-            ret = sel && sel->deleteVertext(sender);
+            ret = sel && sel->deleteVertex(sender);
             break;
             
         case kMgActionOverturn:

@@ -34,8 +34,8 @@ public:
     virtual bool ungroupSelection(const MgMotion* sender);
     virtual void resetSelection(const MgMotion* sender);
     virtual bool addSelection(const MgMotion* sender, int shapeID);
-    virtual bool deleteVertext(const MgMotion* sender);
-    virtual bool insertVertext(const MgMotion* sender);
+    virtual bool deleteVertex(const MgMotion* sender);
+    virtual bool insertVertex(const MgMotion* sender);
     virtual bool switchClosed(const MgMotion* sender);
     virtual bool isFixedLength(MgView* view);
     virtual bool setFixedLength(const MgMotion* sender, bool fixed);
