@@ -323,7 +323,7 @@ bool mglnrel::clipLine(Point2d& pt1, Point2d& pt2, const Box2d& _box)
             v = v2;
         if (v & kOutUp) {
             t = pt1.y;
-            x = pt1.x + ((double)pt2.x - pt1.x) * (box.ymax - t) / (pt2.y - y);
+            x = pt1.x + ((double)pt2.x - pt1.x) * (box.ymax - t) / (pt2.y - t);
             y = box.ymax;
         }
         else if (v & kOutBottom) {
