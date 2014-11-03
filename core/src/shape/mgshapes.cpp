@@ -483,7 +483,7 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
         const MgBaseShape* shape = (*it)->shapec();
         Box2d extent(shape->getExtent());
         
-        if ((filter || !shape->getFlag(kMgLocked))
+        if ((filter || (!shape->getFlag(kMgHideContent) && !shape->getFlag(kMgLocked)))
             && extent.isIntersect(limits)
             && (!filter || filter(*it, data)))
         {
