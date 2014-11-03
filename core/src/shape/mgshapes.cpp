@@ -483,7 +483,7 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
         const MgBaseShape* shape = (*it)->shapec();
         Box2d extent(shape->getExtent());
         
-        if ((filter || (!shape->getFlag(kMgHideContent) && !shape->getFlag(kMgLocked)))
+        if ((filter || (shape->isVisible() && !shape->isLocked()))
             && extent.isIntersect(limits)
             && (!filter || filter(*it, data)))
         {
@@ -528,8 +528,7 @@ int MgShapes::dyndraw(int mode, GiGraphics& gs, const GiContext *ctx,
                 }
             }
         }
-        if (sp && !sp->shapec()->getFlag(kMgHideContent)
-            && sp->shapec()->getExtent().isIntersect(clip)) {
+        if (sp && sp->shapec()->isVisible() && sp->shapec()->getExtent().isIntersect(clip)) {
             if (sp->draw(mode, gs, ctx, segment))
                 count++;
         }

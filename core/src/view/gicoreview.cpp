@@ -915,7 +915,7 @@ int GiCoreView::getShapeCount(long doc)
 
 static void getUnlockedShapeCount_(const MgShape* sp, void* d)
 {
-    if (!sp->shapec()->getFlag(kMgLocked) && !sp->shapec()->getFlag(kMgHideContent)) {
+    if (!sp->shapec()->isLocked() && sp->shapec()->isVisible()) {
         int* n = (int*)d;
         *n = *n + 1;
     }

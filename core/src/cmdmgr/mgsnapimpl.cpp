@@ -65,7 +65,7 @@ static int snapHV(const Point2d& basePt, Point2d& newPt, SnapItem arr[3])
 
 static bool skipShape(const int* ignoreids, const MgShape* sp)
 {
-    bool skip = (sp->shapec()->getFlag(kMgNoSnap) || sp->shapec()->getFlag(kMgHideContent));
+    bool skip = (sp->shapec()->getFlag(kMgNoSnap) || !sp->shapec()->isVisible());
     for (int t = 0; ignoreids[t] != 0 && !skip; t++) {
         skip = (ignoreids[t] == sp->getID());           // 跳过当前图形
     }

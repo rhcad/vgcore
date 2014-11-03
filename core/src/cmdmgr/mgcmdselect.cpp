@@ -695,14 +695,14 @@ bool MgCmdSelect::isSelectedByType(MgView* view, int type)
 bool MgCmdSelect::canTransform(const MgShape* shape, const MgMotion* sender)
 {
     return (shape && !shape->shapec()->getFlag(kMgFixedLength)
-            && !shape->shapec()->getFlag(kMgLocked)
+            && !shape->shapec()->isLocked()
             && sender->view->shapeCanTransform(shape));
 }
 
 bool MgCmdSelect::canRotate(const MgShape* shape, const MgMotion* sender)
 {
     return (shape && !shape->shapec()->getFlag(kMgRotateDisnable)
-            && !shape->shapec()->getFlag(kMgLocked)
+            && !shape->shapec()->isLocked()
             && sender->view->shapeCanRotated(shape));
 }
 
@@ -929,7 +929,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
         m_id = 0;
         m_hit.segment = -1;
         while (const MgShape* shape = it.getNext()) {
-            if (!shape->shapec()->getFlag(kMgHideContent)
+            if (shape->shapec()->isVisible()
                 && (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
                     : snap.contains(shape->shapec()->getExtent())))
             {
@@ -1051,8 +1051,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             const MgShape* oldsp = view->shapes()->findShape(m_clones[i]->getID());
             
             if (oldsp) {
-                m_clones[i]->shape()->setFlag(kMgHideContent,
-                                              oldsp->shapec()->getFlag(kMgHideContent));
+                m_clones[i]->shape()->setFlag(kMgHideContent, !oldsp->shapec()->isVisible());
             }
             if (addNewShapes) {
                 if (view->shapeWillAdded(m_clones[i])
@@ -1187,7 +1186,7 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
-            if (shape && !shape->shapec()->getFlag(kMgLocked)
+            if (shape && !shape->shapec()->isLocked()
                 && !shape->shapec()->getFlag(kMgNoDel)
                 && sender->view->removeShape(shape)) {
                 count++;
@@ -1440,7 +1439,7 @@ bool MgCmdSelect::setFixedLength(const MgMotion* sender, bool fixed)
 bool MgCmdSelect::isLocked(MgView* view)
 {
     const MgShape* shape = view->shapes()->findShape(m_id);
-    return shape && shape->shapec()->getFlag(kMgLocked);
+    return shape && shape->shapec()->isLocked();
 }
 
 bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
@@ -1449,7 +1448,7 @@ bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
     
     for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
         const MgShape* oldsp = sender->view->shapes()->findShape(*it);
-        if (oldsp && oldsp->shapec()->getFlag(kMgLocked) != locked) {
+        if (oldsp && oldsp->shapec()->isLocked() != locked) {
             if (locked || sender->view->shapeCanUnlock(oldsp)) {
                 MgShape* newsp = oldsp->cloneShape();
                 newsp->shape()->setFlag(kMgLocked, locked);

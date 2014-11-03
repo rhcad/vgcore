@@ -210,6 +210,12 @@ public:
     //! 子类型，由具体图形类解释含义
     virtual int getSubType() const { return 0; }
     
+    //! 返回是否可见
+    bool isVisible() const { return !getFlag(kMgHideContent); }
+    
+    //! 返回是否锁定
+    bool isLocked() const { return getFlag(kMgLocked); }
+    
     //! 计算点到折线或多边形的最近距离
     static float linesHit(int n, const Point2d* points, bool closed,
                           const Point2d& pt, float tol, MgHitResult& res);
