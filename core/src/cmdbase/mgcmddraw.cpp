@@ -188,6 +188,7 @@ bool MgCommandDraw::touchBegan(const MgMotion* sender)
 bool MgCommandDraw::touchMoved(const MgMotion* sender)
 {
     sender->view->redraw();
+    sender->view->shapeChanged(m_shape);
     return true;
 }
 

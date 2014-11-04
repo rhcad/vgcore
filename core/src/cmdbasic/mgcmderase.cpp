@@ -104,8 +104,9 @@ bool MgCmdErase::touchMoved(const MgMotion* sender)
     
     m_delIds.clear();
     while (const MgShape* shape = it.getNext()) {
-        if (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
-            : snap.contains(shape->shapec()->getExtent())) {
+        if ((isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
+             : snap.contains(shape->shapec()->getExtent()))
+             && shape->shapec()->isVisible() && !shape->shapec()->isLocked()) {
             m_delIds.push_back(shape->getID());
         }
     }
