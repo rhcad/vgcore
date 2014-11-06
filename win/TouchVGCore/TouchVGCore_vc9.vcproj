@@ -540,11 +540,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\src\gshape\mgbasesp.cpp"
+					RelativePath="..\..\core\src\gshape\mgarccross.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\core\src\gshape\mgarccross.cpp"
+					RelativePath="..\..\core\src\gshape\mgbasesp.cpp"
 					>
 				</File>
 				<File
@@ -604,6 +604,10 @@
 			>
 			<File
 				RelativePath="..\..\core\include\mglog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\core\include\mgstrcallback.h"
 				>
 			</File>
 			<File

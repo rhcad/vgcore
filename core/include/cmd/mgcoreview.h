@@ -6,6 +6,7 @@
 #define TOUCHVG_CORE_VIEW_INTERFACE_H
 
 #include "mgvector.h"
+#include "mgstrcallback.h"
 
 class GiContext;
 struct MgStorage;
@@ -18,15 +19,6 @@ struct MgFindImageCallback {
     virtual ~MgFindImageCallback() {}
     //! 找到一个图形ID对应的图像名称
     virtual void onFindImage(int sid, const char* name) = 0;
-};
-
-//! 获取字符串的回调接口，可避免JNI串泄露
-/*! \ingroup CORE_VIEW
-    \interface MgStringCallback
- */
-struct MgStringCallback {
-    virtual ~MgStringCallback() {}
-    virtual void onGetString(const char* text) = 0;
 };
 
 //! 内核视图接口

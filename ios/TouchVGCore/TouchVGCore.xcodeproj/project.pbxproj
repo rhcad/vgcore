@@ -59,6 +59,7 @@
 		02C332311999F48400C5F226 /* mgcomposite.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C332301999F48400C5F226 /* mgcomposite.h */; };
 		02C3324E199A10DF00C5F226 /* mgpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C3324D199A10DF00C5F226 /* mgpath.cpp */; };
 		02ED017C18F13E280060BE0A /* giplaying.h in Headers */ = {isa = PBXBuildFile; fileRef = 02ED017B18F13E280060BE0A /* giplaying.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		02F72BEC1A0B389C00878DE3 /* mgstrcallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F72BEB1A0B389C00878DE3 /* mgstrcallback.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		02FF196518A2F7DF00B15999 /* fitcurves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF196418A2F7DF00B15999 /* fitcurves.cpp */; };
 		AE20C4BC1866C5C600471A19 /* mgpnt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
 		AE20C4BD1866C5F000471A19 /* mgpnt.cpp in Headers */ = {isa = PBXBuildFile; fileRef = AE20C4BB1866C5C600471A19 /* mgpnt.cpp */; };
@@ -293,6 +294,7 @@
 		02C3324C199A10C500C5F226 /* mgpath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mgpath.h; sourceTree = "<group>"; };
 		02C3324D199A10DF00C5F226 /* mgpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpath.cpp; sourceTree = "<group>"; };
 		02ED017B18F13E280060BE0A /* giplaying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = giplaying.h; sourceTree = "<group>"; };
+		02F72BEB1A0B389C00878DE3 /* mgstrcallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mgstrcallback.h; sourceTree = "<group>"; };
 		02FF196418A2F7DF00B15999 /* fitcurves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitcurves.cpp; sourceTree = "<group>"; };
 		AE20C4BB1866C5C600471A19 /* mgpnt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mgpnt.cpp; sourceTree = "<group>"; };
 		AE20C4BF1866D28B00471A19 /* gicoreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gicoreview.h; sourceTree = "<group>"; };
@@ -607,6 +609,7 @@
 		AED36FF4186681DB00C0A778 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				02F72BEB1A0B389C00878DE3 /* mgstrcallback.h */,
 				AED3702E186681DB00C0A778 /* mglog.h */,
 				AED3702F186681DB00C0A778 /* mgvector.h */,
 				AED36FF5186681DB00C0A778 /* canvas */,
@@ -953,6 +956,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02F72BEC1A0B389C00878DE3 /* mgstrcallback.h in Headers */,
 				AE5A050619C7FBA2006AB564 /* mgdrawline.h in Headers */,
 				0224FF3419989AAC00895C27 /* mgobject.h in Headers */,
 				0224FF3B19989AAC00895C27 /* mgshapetype.h in Headers */,
