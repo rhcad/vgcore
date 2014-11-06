@@ -113,7 +113,7 @@ private:
         }
         return true;
     }
-    virtual void onShapeAdded(const MgMotion* sender, const MgShape* shape) {
+    virtual void onShapeAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
             (*it)->onShapeAdded(sender, shape);
         }

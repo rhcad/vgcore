@@ -121,6 +121,10 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
     m_showSel = true;
     m_selIds.clear();
     
+    m_id = getLockSelShape(sender, m_id);
+    m_handleIndex = getLockSelHandle(sender, m_handleIndex);
+    m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
+    
     if (s) {
         m_id = s->readInt("id", m_id);
         m_handleIndex = s->readInt("handleIndex", m_handleIndex);
@@ -128,9 +132,6 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_editMode = !!s->readInt("editMode", m_editMode);
     }
     
-    m_id = m_id ? m_id : getLockSelShape(sender, m_id);
-    m_handleIndex = m_handleIndex ? m_handleIndex : getLockSelHandle(sender, m_handleIndex);
-    m_rotateHandle = m_rotateHandle ? m_rotateHandle : getLockRotateHandle(sender, m_rotateHandle);
     m_canRotateHandle = !!sender->view->getOptionBool("canRotateHandle", true);
     m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
