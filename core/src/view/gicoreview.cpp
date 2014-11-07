@@ -99,17 +99,6 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("zoomShapeEnabled", true);
 }
 
-void GiCoreViewImpl::showMessage(const char* text)
-{
-    std::string str;
-
-    if (*text == '@') {
-        str = MgLocalized::getString(this, text + 1);
-        text = str.c_str();
-    }
-    CALL_VIEW(deviceView()->showMessage(text));
-}
-
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
 {
     Box2d selbox(box);
@@ -987,7 +976,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     }
     impl->regenAll(true);
     if (impl->curview && impl->cmds()) {
-        impl->getCmdSubject()->onDocLoaded(impl->motion());
+        impl->getCmdSubject()->onDocLoaded(impl->motion(), false);
     }
 
     return ret;

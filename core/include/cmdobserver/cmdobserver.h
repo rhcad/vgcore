@@ -22,7 +22,7 @@ struct CmdObserver {
     virtual ~CmdObserver() {}
     
     //! 图形文档内容加载后的通知，Undo/Redo也触发此通知
-    virtual void onDocLoaded(const MgMotion* sender) = 0;
+    virtual void onDocLoaded(const MgMotion* sender, bool forUndo) = 0;
 
     //! 进入选择命令时的通知
     virtual void onEnterSelectCommand(const MgMotion* sender) = 0;
@@ -100,7 +100,7 @@ public:
     CmdObserverDefault() {}
     virtual ~CmdObserverDefault() {}
 
-    virtual void onDocLoaded(const MgMotion* sender) {}
+    virtual void onDocLoaded(const MgMotion* sender, bool forUndo) {}
     virtual void onEnterSelectCommand(const MgMotion* sender) {}
     virtual void onUnloadCommands(MgCmdManager* sender) {}
     virtual bool selectActionsNeedHided(const MgMotion* sender) { return false; }

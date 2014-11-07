@@ -26,9 +26,9 @@ private:
             }
         }
     }
-    virtual void onDocLoaded(const MgMotion* sender) {
+    virtual void onDocLoaded(const MgMotion* sender, bool forUndo) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onDocLoaded(sender);
+            (*it)->onDocLoaded(sender, forUndo);
         }
     }
     virtual void onEnterSelectCommand(const MgMotion* sender) {
