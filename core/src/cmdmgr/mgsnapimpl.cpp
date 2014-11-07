@@ -444,7 +444,7 @@ static inline int getHandleMask(MgView* view)
 static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                        const MgShape* shape, int ignoreHd,
                        const int* ignoreids, SnapItem arr[3],
-                       Point2d* matchpt, const Point2d& ignoreStart)
+                       Point2d* matchpt, const Point2d& ignoreStart, bool startMustVertex)
 {
     if (!sender->view->getOptionBool("snapEnabled", true)
         || (shape && ignoreHd >= 0 &&
@@ -457,7 +457,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     Box2d wndbox(xf->getWndRectM());
     MgShapeIterator it(sender->view->shapes());
     
-    int handleMask = getHandleMask(sender->view);
+    int handleMask = startMustVertex ? (1 << kMgHandleVertex) : getHandleMask(sender->view);
     bool needNear = !!sender->view->getOptionBool("snapNear", true);
     bool needPerp = !!sender->view->getOptionBool("snapPerp", true);
     bool perpOut = !!sender->view->getOptionBool("perpOut", false);
@@ -482,6 +482,8 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
 Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt, const MgShape* shape,
                                     int hotHandle, int ignoreHd, const int* ignoreids)
 {
+    bool startMustVertex = (!shape && hotHandle == 1 && ignoreHd < 0
+                            && sender->view->getOptionBool("startMustVertex", false));
     const int ignoreids_tmp[2] = { shape ? shape->getID() : 0, 0 };
     if (!ignoreids) ignoreids = ignoreids_tmp;
     
@@ -490,7 +492,7 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     }
     _ptSnap = orgpt;   // 默认结果为当前触点位置
     
-    const float xytol = sender->displayMmToModel("snapPointTol", 4.f);
+    const float xytol = startMustVertex ? 1e5f : sender->displayMmToModel("snapPointTol", 4.f);
     const float xtol = sender->displayMmToModel("snapXTol", 1.f);
     SnapItem arr[3] = {         // 设置捕捉容差和捕捉初值
         SnapItem(_ptSnap, _ptSnap, xytol),                          // XY点捕捉
@@ -510,7 +512,7 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
                     && (hotHandle < 0 || (ignoreHd >= 0 && ignoreHd != hotHandle)));
     
     snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
-               arr, matchpt ? &pnt : NULL, _ignoreStart);         // 在所有图形中捕捉
+               arr, matchpt ? &pnt : NULL, _ignoreStart, startMustVertex);  // 在所有图形中捕捉
     checkResult(arr, hotHandle);
     
     return matchpt && pnt.x > -1e8f ? pnt : _ptSnap;    // 顶点匹配优先于用触点捕捉结果
