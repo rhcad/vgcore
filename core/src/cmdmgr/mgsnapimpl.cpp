@@ -4,12 +4,14 @@
 
 #include "mgcmdmgr_.h"
 #include "mgbasicsps.h"
+#include "mglog.h"
 
 class SnapItem {
 public:
     Point2d pt;             // 捕捉到的坐标
     Point2d base;           // 参考线基准点、原始点
     Point2d startpt;        // 垂线起始点
+    Point2d guildpt;        // 导向点，例如圆心
     float   maxdist;        // 最大容差
     float   dist;           // 捕捉距离
     int     type;           // 特征点类型
@@ -222,7 +224,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
                      Point2d* matchpt, const Point2d& ignoreStart)
 {
     if ((arr0.type >= kMgSnapGrid && arr0.type < kMgSnapNearPt)
-        || !shape || sp->shapec()->getPointCount() < 2) {
+        || sp->shapec()->getPointCount() < 2) {
         return;
     }
     
@@ -231,7 +233,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
     const float mind = sender->displayMmToModel(4.f);
     float minDist = ((arr0.type > 0 && arr0.type < kMgSnapNearPt) ?
                      (arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f)) : tolNear);
-    int d = matchpt ? shape->shapec()->getHandleCount() : 0;
+    int d = matchpt && shape ? shape->shapec()->getHandleCount() : 0;
     
     res.disnableSnapVertex();
     for (int i = sp->shapec()->getExtent().contains(ignoreStart) ?
@@ -287,12 +289,13 @@ static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgSh
     const MgEllipse* circle = (const MgEllipse*)spTarget->shapec();
     Point2d cen(circle->getCenter());
     float r = circle->getRadiusX();
+    bool ret = false;
     
     if (MgEllipse::isCircle(shape->shapec())) {
         
     } else {
-        Point2d pt1(shape->shapec()->getPoint(0));
-        Point2d pt2(shape->shapec()->getPoint(1));
+        Point2d pt1(shape->shapec()->getPoint(ignoreHd < 0 ? 0 : 1 - ignoreHd));
+        Point2d pt2(ignoreHd < 0 ? shape->shapec()->getPoint(1) : orgpt);
         Point2d perp, tanpt;
         float dist = mglnrel::ptToBeeline2(pt1, pt2, cen, perp);
         
@@ -301,25 +304,46 @@ static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgSh
                 pt1 = perp;
                 pt2 = cen;
                 MgEllipse::crossCircle(pt1, pt2, circle);
+                pt1 = pt1.distanceTo(perp) < pt2.distanceTo(perp) ? pt1 : pt2;
                 
                 arr0.dist = fabsf(dist - r);
-                arr0.base = perp;
-                arr0.pt = pt1.distanceTo(perp) < pt2.distanceTo(perp) ? pt1 : pt2;
+                arr0.base = c2 ? pt1 : perp;
+                arr0.pt = c2 ? perp : pt1;
                 arr0.type = kMgSnapTangent;
                 arr0.shapeid = spTarget->getID();
                 arr0.handleIndex = -1;
                 arr0.handleIndexSrc = -1;
-                if (matchpt && c2) {
-                    *matchpt = orgpt - (arr0.pt - perp);
-                } else if (matchpt) {
-                    *matchpt = orgpt + (arr0.pt - perp);
+                
+                if (matchpt) {
+                    *matchpt = orgpt + (arr0.pt - arr0.base);
+                }
+                ret = true;
+            } else if (!c2 && ignoreHd < 2) {
+                if (mgEquals(pt1.distanceTo(cen), r)) {
+                    tanpt = pt1;
+                    dist = mglnrel::ptToBeeline2(tanpt, tanpt + (cen - pt1).perpVector(), orgpt, perp);
+                } else if (mgcurv::crossTwoCircles(tanpt, pt2, (pt1 + cen)/2,
+                                                   pt1.distanceTo(cen)/2, cen, r) > 0) {
+                    tanpt = tanpt.distanceTo(perp) < pt2.distanceTo(perp) ? tanpt : pt2;
+                    dist = mglnrel::ptToBeeline2(pt1, tanpt, orgpt, perp);
+                }
+                if (arr0.dist > dist) {
+                    arr0.dist = dist;
+                    arr0.base = tanpt;
+                    arr0.pt = perp;
+                    arr0.type = kMgSnapTangent;
+                    arr0.shapeid = spTarget->getID();
+                    arr0.handleIndex = -1;
+                    arr0.handleIndexSrc = ignoreHd;
+                    arr0.startpt = pt1;
+                    arr0.guildpt = cen;
+                    ret = true;
                 }
             }
-            return true;
         }
     }
     
-    return false;
+    return ret;
 }
 
 static void snapGrid(const MgMotion*, const Point2d& orgpt,
@@ -431,8 +455,9 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
                     arr0.shapeid = sp1->getID();
                     arr0.handleIndex = sp2->getID();
                     arr0.handleIndexSrc = d - 1;
-                    if (matchpt)
+                    if (matchpt) {
                         *matchpt = orgpt + (ptcross - ptd);
+                    }
                     ret = sp2->getID();
                 }
             }
@@ -585,6 +610,7 @@ void MgCmdManagerImpl::checkResult(SnapItem arr[3], int hotHandle)
         _snapHandle = arr[0].handleIndex;
         _snapHandleSrc = arr[0].handleIndexSrc;
         _startpt = arr[0].startpt;
+        _guildpt = arr[0].guildpt;
         if (_snapHandleSrc < 0 && (_snapType[0] == kMgSnapNearPt || _snapType[0] == kMgSnapPoint)) {
             _snapHandleSrc = hotHandle;
         }
@@ -717,6 +743,13 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
             if (_snapType[0] == kMgSnapPerp || _snapType[0] == kMgSnapPerpNear) {
                 ret = gs->drawCircle(&ctx, _snapBase[0], r);
                 drawPerpMark(sender, gs, ctx);
+            } else if (_snapType[0] == kMgSnapTangent && _snapHandleSrc >= 0) {
+                ret = gs->drawCircle(&ctx, _snapBase[0], r);
+                GiContext ctxl(0, GiColor(0, 255, 0, 200), GiContext::kDashLine);
+                gs->drawLine(&ctxl, _snapBase[0], _guildpt);
+                drawPerpMark(gs, GiContext(-2, GiColor(255, 255, 0, 200)), _startpt, _ptSnap,
+                             _snapBase[0], _guildpt, displayMmToModel(2.4f, gs));
+                gs->drawHandle(_snapBase[0], kGiHandleTangent);
             } else {
                 ret = gs->drawCircle(&ctx, _ptSnap, r);
                 
