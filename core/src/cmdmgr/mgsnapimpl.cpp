@@ -269,6 +269,59 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
     }
 }
 
+static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgShape* shape,
+                        int ignoreHd, const MgShape* spTarget, SnapItem& arr0, Point2d* matchpt)
+{
+    const bool c1 = MgEllipse::isCircle(spTarget->shapec());
+    const bool c2 = MgEllipse::isCircle(shape->shapec());
+    const bool l1 = spTarget->shapec()->isKindOf(MgLine::Type());
+    const bool l2 = shape->shapec()->isKindOf(MgLine::Type());
+    
+    if (!((c1 || c2) && (c1 || l1) && (c2 || l2))) {
+        return false;
+    }
+    if (l1 && c2) {
+        mgSwap(spTarget, shape);
+    }
+    
+    const MgEllipse* circle = (const MgEllipse*)spTarget->shapec();
+    Point2d cen(circle->getCenter());
+    float r = circle->getRadiusX();
+    
+    if (MgEllipse::isCircle(shape->shapec())) {
+        
+    } else {
+        Point2d pt1(shape->shapec()->getPoint(0));
+        Point2d pt2(shape->shapec()->getPoint(1));
+        Point2d perp, tanpt;
+        float dist = mglnrel::ptToBeeline2(pt1, pt2, cen, perp);
+        
+        if (fabsf(dist - r) < arr0.dist) {
+            if (matchpt || ignoreHd < 0) {
+                pt1 = perp;
+                pt2 = cen;
+                MgEllipse::crossCircle(pt1, pt2, circle);
+                
+                arr0.dist = fabsf(dist - r);
+                arr0.base = perp;
+                arr0.pt = pt1.distanceTo(perp) < pt2.distanceTo(perp) ? pt1 : pt2;
+                arr0.type = kMgSnapTangent;
+                arr0.shapeid = spTarget->getID();
+                arr0.handleIndex = -1;
+                arr0.handleIndexSrc = -1;
+                if (matchpt && c2) {
+                    *matchpt = orgpt - (arr0.pt - perp);
+                } else if (matchpt) {
+                    *matchpt = orgpt + (arr0.pt - perp);
+                }
+            }
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 static void snapGrid(const MgMotion*, const Point2d& orgpt,
                      const MgShape* shape, int ignoreHd,
                      const MgShape* sp, SnapItem arr[3], Point2d* matchpt)
@@ -393,35 +446,38 @@ static void snapShape(const MgMotion* sender, const Point2d& orgpt,
                       float minBox, const Box2d& snapbox, const Box2d& wndbox,
                       int handleMask, bool needNear, float tolNear,
                       bool needPerp, bool perpOut, const Tol& tolPerp,
-                      bool needCross, const Box2d& nearBox, bool needGrid,
-                      const MgShape* sp, const MgShape* shape, int ignoreHd,
+                      bool needTangent, bool needCross, const Box2d& nearBox, bool needGrid,
+                      const MgShape* spTarget, const MgShape* shape, int ignoreHd,
                       const int* ignoreids, SnapItem arr[3],
                       Point2d* matchpt, const Point2d& ignoreStart)
 {
-    if (skipShape(ignoreids, sp) || sp == shape) {
+    if (skipShape(ignoreids, spTarget) || spTarget == shape) {
         return;
     }
     
-    Box2d extent(sp->shapec()->getExtent());
+    Box2d extent(spTarget->shapec()->getExtent());
     int b = 0;
     
-    if (sp->shapec()->getPointCount() > 1
+    if (spTarget->shapec()->getPointCount() > 1
         && extent.width() < minBox && extent.height() < minBox) { // 图形太小就跳过
         return;
     }
     if (extent.isIntersect(wndbox)) {
         b |= (handleMask && snapHandle(sender, orgpt, handleMask, shape, ignoreHd,
-                                       sp, arr[0], matchpt));
-        b |= (needPerp && snapPerp(sender, orgpt, tolPerp, shape, sp,
+                                       spTarget, arr[0], matchpt));
+        b |= (needPerp && snapPerp(sender, orgpt, tolPerp, shape, spTarget,
                                    arr[0], perpOut, nearBox));
         b |= (needCross && snapCross(sender, orgpt, ignoreids, ignoreHd,
-                                     shape, sp, arr[0], matchpt));
+                                     shape, spTarget, arr[0], matchpt));
+        b |= (needTangent && shape && snapTangent(sender, orgpt, shape, ignoreHd,
+                                                  spTarget, arr[0], matchpt));
         if (!b && needNear) {
-            snapNear(sender, orgpt, shape, ignoreHd, tolNear, sp, arr[0], matchpt, ignoreStart);
+            snapNear(sender, orgpt, shape, ignoreHd, tolNear,
+                     spTarget, arr[0], matchpt, ignoreStart);
         }
     }
     if (!b && needGrid && extent.isIntersect(snapbox)) {
-        snapGrid(sender, orgpt, shape, ignoreHd, sp, arr, matchpt);
+        snapGrid(sender, orgpt, shape, ignoreHd, spTarget, arr, matchpt);
     }
 }
 
@@ -461,6 +517,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     bool needNear = !!sender->view->getOptionBool("snapNear", true);
     bool needPerp = !!sender->view->getOptionBool("snapPerp", true);
     bool perpOut = !!sender->view->getOptionBool("perpOut", false);
+    bool needTangent = !!sender->view->getOptionBool("snapTangent", false);
     bool needCross = !!sender->view->getOptionBool("snapCross", true);
     float tolNear = sender->displayMmToModel("snapNearTol", 3.f);
     Tol tolPerp(sender->displayMmToModel(1));
@@ -470,11 +527,11 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     if (shape) {
         wndbox.unionWith(shape->shapec()->getExtent().inflate(arr[0].dist));
     }
-    while (const MgShape* sp = it.getNext()) {
+    while (const MgShape* spTarget = it.getNext()) {
         snapShape(sender, orgpt, xf->displayToModel(2, true), snapbox, wndbox,
                   handleMask, needNear, tolNear, needPerp, perpOut, tolPerp,
-                  needCross, nearBox, needGrid,
-                  sp, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
+                  needTangent, needCross, nearBox, needGrid,
+                  spTarget, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
     }
 }
 
@@ -597,6 +654,7 @@ static GiHandleTypes snapTypeToHandleType(int snapType)
         case kMgSnapMidPoint: return kGiHandleMidPoint;
         case kMgSnapQuadrant: return kGiHandleQuadrant;
         case kMgSnapIntersect: return kGiHandleIntersect;
+        case kMgSnapTangent: return kGiHandleTangent;
         case kMgSnapNearPt: return kGiHandleNear;
         default: return kGiHandleVertex;
     }
@@ -663,7 +721,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
                 ret = gs->drawCircle(&ctx, _ptSnap, r);
                 
                 GiHandleTypes handleType = snapTypeToHandleType(_snapType[0]);
-                const char* names[] = { "@nodept", "@centerpt", "@midpt", "@quadpt", "@crosspt" };
+                const char* names[] = { "@nodept", "@centerpt", "@midpt", "@quadpt", "@tanpt", "@crosspt" };
                 if (handleType >= kGiHandleNode && handleType - kGiHandleNode < 5) {
                     gs->drawTextAt(names[handleType - kGiHandleNode], _ptSnap, 3.f);
                 }

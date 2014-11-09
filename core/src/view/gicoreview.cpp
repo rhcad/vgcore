@@ -83,6 +83,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("snapNear", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
+    setOptionBool("snapTangent", false);
     setOptionBool("snapCross", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);

@@ -27,6 +27,7 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleCenter,        //!< 圆心
     kGiHandleMidPoint,      //!< 中点
     kGiHandleQuadrant,      //!< 象限点
+    kGiHandleTangent,       //!< 切点
     kGiHandleIntersect,     //!< 交点
     kGiHandleNear,          //!< 最近点
     kGiHandleCustom = 20,   //!< 应用自定义
