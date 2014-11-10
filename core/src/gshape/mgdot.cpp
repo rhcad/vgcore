@@ -44,7 +44,7 @@ bool MgDot::_equals(const MgDot& src) const
 
 void MgDot::_update()
 {
-    _extent.set(_point, minTol().equalPoint(), 0.f);
+    _extent.set(_point, 0.1f, 0.f);
     __super::_update();
 }
 

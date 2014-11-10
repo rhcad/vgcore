@@ -22,7 +22,8 @@ public:
     SnapItem() {}
     SnapItem(const Point2d& _pt, const Point2d& _base, float _dist, int _type = 0,
         int _shapeid = 0, int _handleIndex = -1, int _handleIndexSrc = -1)
-        : pt(_pt), base(_base), maxdist(_dist), dist(_dist), type(_type), shapeid(_shapeid)
+        : pt(_pt), base(_base), startpt(Point2d::kInvalid()), guildpt(Point2d::kInvalid())
+        , maxdist(_dist), dist(_dist), type(_type), shapeid(_shapeid)
         , handleIndex(_handleIndex), handleIndexSrc(_handleIndexSrc) {}
 };
 
@@ -301,17 +302,17 @@ static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgSh
         
         if (fabsf(dist - r) < arr0.dist) {
             if (matchpt || ignoreHd < 0) {
-                pt1 = perp;
+                tanpt = perp;
                 pt2 = cen;
-                MgEllipse::crossCircle(pt1, pt2, circle);
-                pt1 = pt1.distanceTo(perp) < pt2.distanceTo(perp) ? pt1 : pt2;
+                MgEllipse::crossCircle(tanpt, pt2, circle);
+                tanpt = tanpt.distanceTo(perp) < pt2.distanceTo(perp) ? tanpt : pt2;
                 
                 arr0.dist = fabsf(dist - r);
-                arr0.base = c2 ? pt1 : perp;
-                arr0.pt = c2 ? perp : pt1;
+                arr0.base = c2 ? tanpt : perp;
+                arr0.pt = c2 ? perp : tanpt;
                 arr0.type = kMgSnapTangent;
                 arr0.shapeid = spTarget->getID();
-                arr0.handleIndex = -1;
+                arr0.handleIndex = c2 ? 0 : -1;
                 arr0.handleIndexSrc = -1;
                 
                 if (matchpt) {
@@ -319,7 +320,7 @@ static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgSh
                 }
                 ret = true;
             } else if (!c2 && ignoreHd < 2) {
-                if (mgEquals(pt1.distanceTo(cen), r)) {
+                if (fabsf(pt1.distanceTo(cen) - r) < r * 1e-4f) {
                     tanpt = pt1;
                     dist = mglnrel::ptToBeeline2(tanpt, tanpt + (cen - pt1).perpVector(), orgpt, perp);
                 } else if (mgcurv::crossTwoCircles(tanpt, pt2, (pt1 + cen)/2,

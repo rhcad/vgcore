@@ -94,6 +94,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
     setOptionBool("canMoveHandle", true);
+    setOptionBool("canBoxSel", true);
     setOptionInt("lockSelShape", 0);
     setOptionInt("lockSelHandle", 0);
     setOptionInt("lockRotateHandle", 0);

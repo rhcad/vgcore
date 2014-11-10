@@ -627,7 +627,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         m_handleIndex = hitTestHandles(shape, m_hit.nearpt, sender);
     }
     
-    if (m_clones.empty()) {
+    if (m_clones.empty() && sender->view->getOptionBool("canBoxSel", true)) {
         m_boxsel = true;
     }
     m_boxHandle = 99;
