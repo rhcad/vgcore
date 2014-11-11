@@ -11,11 +11,6 @@
 #include "mgpnt.h"
 #include "mgdblpt.h"
 
-#if !defined(NAN) && defined(_WIN32)
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#endif
-
 typedef struct {
     point_t pts[4];
     const point_t& operator[](int i) const { return pts[i]; }
@@ -89,7 +84,7 @@ static void FitCurve_(FitCubicCallback fc, void* data, const PtArr &d, int nPts,
     int         first = 0;
     int         last = nPts - 1;
     int         oldlast;
-    const Point2d ptbuf[4] = { Point2d(NAN, NAN) };
+    const Point2d ptbuf[4] = { Point2d::kInvalid() };
     
     tHat1 = ComputeLeftTangent(d, first);
     while (tHat1.isDegenerate() && first < last)

@@ -26,9 +26,9 @@ private:
             }
         }
     }
-    virtual void onDocLoaded(const MgMotion* sender) {
+    virtual void onDocLoaded(const MgMotion* sender, bool forUndo) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onDocLoaded(sender);
+            (*it)->onDocLoaded(sender, forUndo);
         }
     }
     virtual void onEnterSelectCommand(const MgMotion* sender) {
@@ -113,7 +113,7 @@ private:
         }
         return true;
     }
-    virtual void onShapeAdded(const MgMotion* sender, const MgShape* shape) {
+    virtual void onShapeAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
             (*it)->onShapeAdded(sender, shape);
         }

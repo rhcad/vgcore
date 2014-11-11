@@ -57,7 +57,7 @@ void MgCmdArc3P::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
 {
     if (s) {
-        _decimal = s->readFloat("decimal", _decimal);
+        _decimal = s->readInt("decimal", _decimal);
     }
     return MgCmdArc3P::initialize(sender, s);
 }

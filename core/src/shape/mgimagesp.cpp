@@ -22,7 +22,7 @@ void MgImageShape::setName(const char* name)
 {
     int len = sizeof(_name) - 1;
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
-    strncpy_s(_name, sizeof(_name), name, len);
+    strncpy_s(_name, sizeof(_name), name, len + 1);
 #else
     strncpy(_name, name, len);
 #endif

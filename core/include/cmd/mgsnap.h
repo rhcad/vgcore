@@ -24,7 +24,7 @@ typedef enum {
     kMgSnapMidPoint,    //!< 中点
     kMgSnapQuadrant,    //!< 象限点
     kMgSnapOutPoint,    //!< 线外点
-    kMgSnapReserved,
+    kMgSnapTangent,     //!< 切点
     kMgSnapIntersect,   //!< 交点
     kMgSnapPerp,        //!< 垂足
     kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点

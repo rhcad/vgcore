@@ -83,6 +83,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("snapNear", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
+    setOptionBool("snapTangent", false);
     setOptionBool("snapCross", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
@@ -93,21 +94,12 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
     setOptionBool("canMoveHandle", true);
+    setOptionBool("canBoxSel", true);
     setOptionInt("lockSelShape", 0);
     setOptionInt("lockSelHandle", 0);
     setOptionInt("lockRotateHandle", 0);
     setOptionBool("zoomShapeEnabled", true);
-}
-
-void GiCoreViewImpl::showMessage(const char* text)
-{
-    std::string str;
-
-    if (*text == '@') {
-        str = MgLocalized::getString(this, text + 1);
-        text = str.c_str();
-    }
-    CALL_VIEW(deviceView()->showMessage(text));
+    setOptionBool("notClickSelectInDrawCmd", false);
 }
 
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
@@ -987,7 +979,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     }
     impl->regenAll(true);
     if (impl->curview && impl->cmds()) {
-        impl->getCmdSubject()->onDocLoaded(impl->motion());
+        impl->getCmdSubject()->onDocLoaded(impl->motion(), false);
     }
 
     return ret;

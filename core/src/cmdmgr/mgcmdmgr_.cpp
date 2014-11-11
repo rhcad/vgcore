@@ -166,7 +166,7 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     if (oldname != _cmdname) {
         sender->view->commandChanged();
     }
-    sender->view->redraw(false);
+    sender->view->redraw();
     
     return ret;
 }

@@ -55,7 +55,7 @@ protected:
     virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
     
 private:
-    float   _decimal;
+    int     _decimal;
 };
 
 //! 切线圆弧绘图命令类

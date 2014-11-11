@@ -77,6 +77,7 @@
     <ClInclude Include="..\..\core\include\gshape\mgsplines.h" />
     <ClInclude Include="..\..\core\include\jsonstorage\mgjsonstorage.h" />
     <ClInclude Include="..\..\core\include\mglog.h" />
+    <ClInclude Include="..\..\core\include\mgstrcallback.h" />
     <ClInclude Include="..\..\core\include\mgvector.h" />
     <ClInclude Include="..\..\core\include\record\recordshapes.h" />
     <ClInclude Include="..\..\core\include\shapedoc\mglayer.h" />

@@ -185,7 +185,9 @@ public:
     bool shapeClicked(int sid, int tag, float x, float y) {
         return CALL_VIEW2(deviceView()->shapeClicked(sid, tag, x, y), false);
     }
-    void showMessage(const char* text);
+    void showMessage(const char* text) {
+        CALL_VIEW(deviceView()->showMessage(text));
+    }
     void getLocalizedString(const char* name, MgStringCallback* result) {
         CALL_VIEW(deviceView()->getLocalizedString(name, result));
     }
@@ -232,7 +234,7 @@ public:
                 selbox.xmin, selbox.ymin, selbox.width(), selbox.height()), false);
     }
     
-    void shapeAdded(const MgShape* sp) {
+    void shapeAdded(MgShape* sp) {
         getCmdSubject()->onShapeAdded(motion(), sp);
         regenAppend(sp->getID());
     }

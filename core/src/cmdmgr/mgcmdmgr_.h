@@ -94,6 +94,7 @@ private:
     Point2d         _ignoreStart;
     Point2d         _ptSnap;
     Point2d         _startpt;
+    Point2d         _guildpt;
     Point2d         _snapBase[2];
     int             _snapType[2];
     int             _snapShapeId;
