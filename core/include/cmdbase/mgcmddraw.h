@@ -42,7 +42,7 @@ protected:
     bool _initialize(int shapeType, const MgMotion* sender, MgStorage* s);
     bool _click(const MgMotion* sender);
     virtual int getMaxStep() { return 3; }
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
 
 private:
     virtual bool isDrawingCommand() { return true; }

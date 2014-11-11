@@ -42,7 +42,7 @@ bool MgCmdDrawCircle3P::draw(const MgMotion* sender, GiGraphics* gs)
     return MgCommandDraw::draw(sender, gs);
 }
 
-void MgCmdDrawCircle3P::setStepPoint(int step, const Point2d& pt)
+void MgCmdDrawCircle3P::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     MgEllipse* c = (MgEllipse*)dynshape()->shape();
     

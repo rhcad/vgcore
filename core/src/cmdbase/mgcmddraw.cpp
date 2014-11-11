@@ -245,7 +245,7 @@ int MgCommandDraw::getSnappedType(const MgMotion* sender) const
     return sender->view->getSnap()->getSnappedType();
 }
 
-void MgCommandDraw::setStepPoint(int step, const Point2d& pt)
+void MgCommandDraw::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     if (step > 0) {
         dynshape()->shape()->setHandlePoint(step, pt, 0);
@@ -260,10 +260,10 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
         for (int i = dynshape()->shape()->getPointCount() - 1; i >= 0; i--) {
             dynshape()->shape()->setPoint(i, pnt);
         }
-        setStepPoint(0, pnt);
+        setStepPoint(sender, 0, pnt);
     }
     else {
-        setStepPoint(m_step, snapPoint(sender));
+        setStepPoint(sender, m_step, snapPoint(sender));
     }
     dynshape()->shape()->update();
 
@@ -273,7 +273,7 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
 bool MgCommandDraw::touchMovedStep(const MgMotion* sender)
 {
     if (sender->dragging()) {
-        setStepPoint(m_step, snapPoint(sender));
+        setStepPoint(sender, m_step, snapPoint(sender));
         dynshape()->shape()->update();
     }
     return MgCommandDraw::touchMoved(sender);
@@ -284,7 +284,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     Point2d pnt(snapPoint(sender));
     Tol tol(sender->displayMmToModel(2.f));
     
-    setStepPoint(m_step, pnt);
+    setStepPoint(sender, m_step, pnt);
     dynshape()->shape()->update();
     
     if (!pnt.isEqualTo(dynshape()->shape()->getPoint(m_step - 1), tol)) {
