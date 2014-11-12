@@ -87,10 +87,7 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
         int n = 0;
         
         for (; i != delIds.end(); ++i) {
-            const MgShape* shape = s->findShape(*i);
-            if (shape && sender->view->removeShape(shape)) {
-                n++;
-            }
+            n += sender->view->removeShape(s->findShape(*i));
         }
         if (n > 0) {
             sender->view->regenAll(true);

@@ -192,15 +192,16 @@ public:
         CALL_VIEW(deviceView()->getLocalizedString(name, result));
     }
     
-    bool removeShape(const MgShape* shape) {
+    int removeShape(const MgShape* shape) {
         hideContextActions();
-        bool ret = (shape && shape->getParent()
-                    && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgNoDel));
-        if (ret) {
+        int ret = 0;
+
+        if (shape && shape->getParent()
+            && shape->getParent()->findShape(shape->getID()) == shape
+            && !shape->shapec()->getFlag(kMgNoDel)) {
             int sid = shape->getID();
-            getCmdSubject()->onShapeDeleted(motion(), shape);
-            ret = shape->getParent()->removeShape(shape->getID());
+            ret = getCmdSubject()->onShapeDeleted(motion(), shape);
+            ret += shape->getParent()->removeShape(shape->getID()) ? 1 : 0;
             CALL_VIEW(deviceView()->shapeDeleted(sid));
         }
         return ret;

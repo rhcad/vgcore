@@ -51,7 +51,8 @@ private:
     MgCmdSelect();
     virtual void release() { delete this; }
     virtual bool cancel(const MgMotion* sender);
-    virtual bool initialize(const MgMotion* sender, MgStorage* s);
+    virtual int getSelectedIDs(MgView* view, int* ids, int count);
+    virtual bool initializeWithSelection(const MgMotion* sender, MgStorage* s, const int* ids);
     virtual bool backStep(const MgMotion* sender);
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
     virtual bool click(const MgMotion* sender);

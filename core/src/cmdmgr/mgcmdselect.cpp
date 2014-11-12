@@ -20,8 +20,43 @@
 #define ENABLE_DRAG_SELBOX
 #endif
 
+int MgCmdSelect::getSelectedIDs(MgView* view, int* ids, int count)
+{
+    int i = 0;
+    for (std::vector<int>::const_iterator it = m_selIds.begin(); it != m_selIds.end() && i < count; ++it) {
+        ids[i++] = *it;
+    }
+    if (i == 0 && count > 0 && getSelection(view, 0, NULL) > 0) {
+        ids[i++] = m_id;
+    }
+    return i;
+}
+
+static void findUnlockedShapeFilter(const MgShape* sp, void* data)
+{
+    std::pair<int, int> *p = (std::pair<int, int> *)data;
+    if (sp->shapec()->isVisible() && !sp->shapec()->isLocked()) {
+        p->first = sp->getID();
+        p->second++;
+    }
+}
+
 int MgCmdSelect::getSelection(MgView* view, int count, const MgShape** shapes)
 {
+    if (m_selIds.empty()) {
+        m_id = view->getOptionInt("lockSelShape", m_id);
+        if (!m_id) {
+            std::pair<int, int> data(0, 0);
+            view->shapes()->traverseByType(0, findUnlockedShapeFilter, &data);
+            if (data.second == 1) {
+                m_id = data.first;
+            }
+        }
+        if (m_id) {
+            m_selIds.push_back(m_id);
+        }
+    }
+    
     int i, ret = 0;
     int maxCount = (int)(m_clones.empty() ? m_selIds.size() : m_clones.size());
     
@@ -110,18 +145,16 @@ int MgCmdSelect::getLockRotateHandle(const MgMotion* sender, int defValue) const
     return ret == 0 ? defValue : ret;
 }
 
-bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
+bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, const int* ids)
 {
     m_boxsel = false;
-    m_id = 0;
     m_hit.segment = -1;
     m_handleIndex = 0;
     m_rotateHandle = 0;
     m_editMode = false;
     m_showSel = true;
-    m_selIds.clear();
     
-    m_id = getLockSelShape(sender, m_id);
+    m_id = getLockSelShape(sender, 0);
     m_handleIndex = getLockSelHandle(sender, m_handleIndex);
     m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
     
@@ -130,6 +163,15 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_handleIndex = s->readInt("handleIndex", m_handleIndex);
         m_rotateHandle = s->readInt("rotateHandle", m_rotateHandle);
         m_editMode = !!s->readInt("editMode", m_editMode);
+    }
+    m_selIds.clear();
+    if (m_id) {
+        m_selIds.push_back(m_id);
+    } else {
+        while (*ids) {
+            m_selIds.push_back(*ids++);
+        }
+        m_id = m_selIds.empty() ? 0 : m_selIds.front();
     }
     
     m_canRotateHandle = !!sender->view->getOptionBool("canRotateHandle", true);
@@ -145,7 +187,9 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         sender->view->redraw();
         selectionChanged(sender->view);
         if (shape->shapec()->isKindOf(MgComposite::Type())
-            && ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0) {
+            && (   (s && s->readBool("doubleClick", false))
+                || ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0))
+        {
             return doubleClick(sender);
         }
         longPress(sender);
@@ -1188,9 +1232,8 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
             if (shape && !shape->shapec()->isLocked()
-                && !shape->shapec()->getFlag(kMgNoDel)
-                && sender->view->removeShape(shape)) {
-                count++;
+                && !shape->shapec()->getFlag(kMgNoDel)) {
+                count += sender->view->removeShape(shape);
             }
         }
         
@@ -1265,9 +1308,7 @@ bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
                     const MgGroup* group = (const MgGroup*)oldsp->shapec();
                     
                     group->shapes()->copyShapesTo(oldsp->getParent());
-                    if (sender->view->removeShape(oldsp)) {
-                        count++;
-                    }
+                    count += sender->view->removeShape(oldsp);
                 }
             }
         }

@@ -79,7 +79,7 @@ struct MgView
     virtual bool shapeWillAdded(MgShape* shape) = 0;            //!< 通知将添加图形
     virtual void shapeAdded(MgShape* shape) = 0;                //!< 通知已添加图形，由视图重新构建显示
     virtual bool shapeWillDeleted(const MgShape* shape) = 0;    //!< 通知将删除图形
-    virtual bool removeShape(const MgShape* shape) = 0;         //!< 删除图形
+    virtual int removeShape(const MgShape* shape) = 0;          //!< 删除图形
     virtual bool shapeCanRotated(const MgShape* shape) = 0;     //!< 通知是否能旋转图形
     virtual bool shapeCanTransform(const MgShape* shape) = 0;   //!< 通知是否能对图形变形
     virtual bool shapeCanUnlock(const MgShape* shape) = 0;      //!< 通知是否能对图形解锁

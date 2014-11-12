@@ -30,6 +30,7 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleTangent,       //!< 切点
     kGiHandleIntersect,     //!< 交点
     kGiHandleNear,          //!< 最近点
+    kGiHandlePivot,         //!< 变形中心
     kGiHandleCustom = 20,   //!< 应用自定义
 };
 

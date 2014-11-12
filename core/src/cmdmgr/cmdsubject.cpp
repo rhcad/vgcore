@@ -126,10 +126,12 @@ private:
         }
         return true;
     }
-    virtual void onShapeDeleted(const MgMotion* sender, const MgShape* shape) {
+    virtual int onShapeDeleted(const MgMotion* sender, const MgShape* shape) {
+        int n = 0;
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onShapeDeleted(sender, shape);
+            n += (*it)->onShapeDeleted(sender, shape);
         }
+        return n;
     }
     virtual bool onShapeCanRotated(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {

@@ -73,7 +73,7 @@ struct CmdObserver {
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) = 0;    //!< 通知将添加图形
     virtual void onShapeAdded(const MgMotion* sender, MgShape* sp) = 0;        //!< 通知已添加图形
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) = 0;  //!< 通知将删除图形
-    virtual void onShapeDeleted(const MgMotion* sender, const MgShape* sp) = 0;      //!< 通知已删除图形
+    virtual int onShapeDeleted(const MgMotion* sender, const MgShape* sp) = 0;       //!< 通知已删除图形
     virtual bool onShapeCanRotated(const MgMotion* sender, const MgShape* sp) = 0;   //!< 通知是否能旋转图形
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* sp) = 0; //!< 通知是否能对图形变形
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) = 0;    //!< 通知是否能对图形解锁
@@ -113,7 +113,7 @@ public:
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* sp) { return true; }
     virtual void onShapeAdded(const MgMotion* sender, MgShape* sp) {}
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* sp) { return true; }
-    virtual void onShapeDeleted(const MgMotion* sender, const MgShape* sp) {}
+    virtual int onShapeDeleted(const MgMotion* sender, const MgShape* sp) { return 0; }
     virtual bool onShapeCanRotated(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* sp) { return true; }
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* sp) { return true; }
