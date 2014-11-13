@@ -178,14 +178,16 @@ bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, 
     m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
-    const MgShape* sp = getShape(sender->view->getNewShapeID(), sender);
+    const MgShape* sp = m_id ? NULL : getShape(sender->view->getNewShapeID(), sender);
     const MgShape* shape = ((sp && sp->shapec()->isKindOf(MgComposite::Type())) || !m_id
                             ? sp : getShape(m_id, sender));
     if (shape) {
-        m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
-        m_id = shape->getID();
-        sender->view->redraw();
+        if (!m_id) {
+            m_selIds.push_back(shape->getID());     // 选中最新绘制的图形
+            m_id = shape->getID();
+        }
         selectionChanged(sender->view);
+        sender->view->redraw();
         if (shape->shapec()->isKindOf(MgComposite::Type())
             && (   (s && s->readBool("doubleClick", false))
                 || ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0))
