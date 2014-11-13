@@ -351,7 +351,7 @@ int MgPathShape::exportSVGPath(const MgPath& path, char* buf, int size)
     std::string str(ss.str());
     size = mgMin(size, (int)str.size());
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
-    strncpy_s(buf, size, str.c_str(), size + 1);
+    strncpy_s(buf, size, str.c_str(), size);
 #else
     strncpy(buf, str.c_str(), size);
 #endif
