@@ -17,6 +17,7 @@
 #include "mgshapet.h"
 #include "cmdbasic.h"
 #include "mglayer.h"
+#include "mgcomposite.h"
 #include "mglog.h"
 #include <map>
 
@@ -133,7 +134,12 @@ public:
     bool shapeWillAdded(MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeWillAdded(motion(), shape); }
     bool shapeWillDeleted(const MgShape* shape) {
-        return !cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape); }
+        if (!cmds() || getCmdSubject()->onShapeWillDeleted(motion(), shape)) {
+            CALL_VIEW(deviceView()->shapeWillDelete(shape->getID()));
+            return true;
+        }
+        return false;
+    }
     bool shapeCanRotated(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanRotated(motion(), shape); }
     bool shapeCanTransform(const MgShape* shape) {
@@ -141,6 +147,10 @@ public:
     bool shapeCanUnlock(const MgShape* shape) {
         return !cmds() || getCmdSubject()->onShapeCanUnlock(motion(), shape); }
     bool shapeCanUngroup(const MgShape* shape) {
+        if (!shape->shapec()->isKindOf(MgGroup::Type())
+            || ((const MgGroup*)shape->shapec())->hasInsertionPoint()) {
+            return false;
+        }
         return !cmds() || getCmdSubject()->onShapeCanUngroup(motion(), shape); }
     bool shapeCanMovedHandle(const MgShape* shape, int index) {
         return (!cmds() || (getOptionBool(index < 0 ? "canMoveShape" : "canMoveHandle", true)
@@ -175,21 +185,23 @@ public:
     bool shapeClicked(int sid, int tag, float x, float y) {
         return CALL_VIEW2(deviceView()->shapeClicked(sid, tag, x, y), false);
     }
-    void showMessage(const char* text);
+    void showMessage(const char* text) {
+        CALL_VIEW(deviceView()->showMessage(text));
+    }
     void getLocalizedString(const char* name, MgStringCallback* result) {
         CALL_VIEW(deviceView()->getLocalizedString(name, result));
     }
     
-    bool removeShape(const MgShape* shape) {
+    int removeShape(const MgShape* shape) {
         hideContextActions();
-        bool ret = (shape && shape->getParent()
-                    && shape->getParent()->findShape(shape->getID()) == shape
-                    && !shape->shapec()->getFlag(kMgLocked)
-                    && !shape->shapec()->getFlag(kMgNoDel));
-        if (ret) {
+        int ret = 0;
+
+        if (shape && shape->getParent()
+            && shape->getParent()->findShape(shape->getID()) == shape
+            && !shape->shapec()->getFlag(kMgNoDel)) {
             int sid = shape->getID();
-            getCmdSubject()->onShapeDeleted(motion(), shape);
-            ret = shape->getParent()->removeShape(shape->getID());
+            ret = getCmdSubject()->onShapeDeleted(motion(), shape);
+            ret += shape->getParent()->removeShape(shape->getID()) ? 1 : 0;
             CALL_VIEW(deviceView()->shapeDeleted(sid));
         }
         return ret;
@@ -223,7 +235,7 @@ public:
                 selbox.xmin, selbox.ymin, selbox.width(), selbox.height()), false);
     }
     
-    void shapeAdded(const MgShape* sp) {
+    void shapeAdded(MgShape* sp) {
         getCmdSubject()->onShapeAdded(motion(), sp);
         regenAppend(sp->getID());
     }

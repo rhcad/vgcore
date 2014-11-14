@@ -27,7 +27,7 @@ public:
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
 
 protected:
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
     virtual void drawArcHandle(const MgMotion* sender, GiGraphics* gs);
     
 protected:
@@ -41,17 +41,21 @@ protected:
 class MgCmdArcCSE : public MgCmdArc3P
 {
 public:
-    MgCmdArcCSE(const char* name = Name()) : MgCmdArc3P(name) {}
+    MgCmdArcCSE(const char* name = Name()) : MgCmdArc3P(name), _decimal(0) {}
 #ifndef SWIG
     static const char* Name() { return "arc_cse"; }
     static MgCommand* Create() { return new MgCmdArcCSE; }
 #endif
     virtual void release() { delete this; }
+    virtual bool initialize(const MgMotion* sender, MgStorage* s);
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
     virtual bool click(const MgMotion* sender);
 
 protected:
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
+    
+private:
+    int     _decimal;
 };
 
 //! 切线圆弧绘图命令类
@@ -68,7 +72,7 @@ public:
 #endif
     virtual void release() { delete this; }
 protected:
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
 };
 
 #endif // TOUCHVG_CMD_DRAW_ARC_H_

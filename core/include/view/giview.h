@@ -45,7 +45,8 @@ public:
     virtual void contentChanged() {}        //!< 图形数据改变的通知
     virtual void dynamicChanged() {}        //!< 图形动态拖拉改变的通知
     virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
-    virtual void shapeDeleted(int sid) {}   //!< 删除图形的通知
+    virtual void shapeWillDelete(int sid) {}        //!< 图形将删除的通知
+    virtual void shapeDeleted(int sid) {}           //!< 删除图形的通知
     virtual bool shapeDblClick(int type, int sid) { return false; } //!< 通知图形双击编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮

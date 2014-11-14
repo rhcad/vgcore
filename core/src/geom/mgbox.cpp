@@ -108,9 +108,9 @@ Box2d& Box2d::intersectWith(const Box2d& r1, const Box2d& r2)
 
 Box2d& Box2d::unionWith(const Box2d& r1, const Box2d& r2)
 {
-    if (r2.isEmptyMinus())
+    if (r2.isEmpty(Tol::gTol(), false))
         return set(r1, true);
-    if (r1.isEmptyMinus())
+    if (r1.isEmpty(Tol::gTol(), false))
         return set(r2, true);
     return set(
         mgMin(r1.xmin, r2.xmin),

@@ -3,6 +3,7 @@
 
 #include "mgdrawarc.h"
 #include "mgbasicsps.h"
+#include "mgstorage.h"
 
 // MgCmdArc3P
 //
@@ -35,7 +36,7 @@ bool MgCmdArc3P::draw(const MgMotion* sender, GiGraphics* gs)
     return MgCommandDraw::draw(sender, gs);
 }
 
-void MgCmdArc3P::setStepPoint(int step, const Point2d& pt)
+void MgCmdArc3P::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     MgArc* arc = (MgArc*)dynshape()->shape();
 
@@ -51,6 +52,14 @@ void MgCmdArc3P::setStepPoint(int step, const Point2d& pt)
         _points[2] = pt;
         arc->setStartMidEnd(_points[0], _points[1], pt);
     }
+}
+
+bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
+{
+    if (s) {
+        _decimal = s->readInt("decimal", _decimal);
+    }
+    return MgCmdArc3P::initialize(sender, s);
 }
 
 bool MgCmdArcCSE::draw(const MgMotion* sender, GiGraphics* gs)
@@ -81,7 +90,7 @@ bool MgCmdArcCSE::click(const MgMotion* sender)
     return true;
 }
 
-void MgCmdArcCSE::setStepPoint(int step, const Point2d& pt)
+void MgCmdArcCSE::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     MgArc* arc = (MgArc*)dynshape()->shape();
 
@@ -106,13 +115,13 @@ void MgCmdArcCSE::setStepPoint(int step, const Point2d& pt)
     }
     else if (step == 2) {
         arc->setCenterStartEnd(_points[0], _points[1], pt);
-        float angle = mgbase::roundReal(arc->getSweepAngle() * _M_R2D, 0) * _M_D2R;
+        float angle = mgbase::roundReal(arc->getSweepAngle() * _M_R2D, _decimal) * _M_D2R;
         arc->setCenterRadius(arc->getCenter(), arc->getRadius(), arc->getStartAngle(), angle);
         _points[2] = arc->getEndPoint();    // 记下终点
     }
 }
 
-void MgCmdArcTan::setStepPoint(int step, const Point2d& pt)
+void MgCmdArcTan::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     MgArc* arc = (MgArc*)dynshape()->shape();
 

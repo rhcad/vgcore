@@ -24,7 +24,7 @@ typedef enum {
     kMgSnapMidPoint,    //!< 中点
     kMgSnapQuadrant,    //!< 象限点
     kMgSnapOutPoint,    //!< 线外点
-    kMgSnapReserved,
+    kMgSnapTangent,     //!< 切点
     kMgSnapIntersect,   //!< 交点
     kMgSnapPerp,        //!< 垂足
     kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点
@@ -53,6 +53,9 @@ struct MgSnap {
     //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const = 0;
     
+    //! 为当前捕捉设置上一线段的坐标，以避免与上一点重合
+    virtual void setIgnoreStartPoint(const Point2d& pt) = 0;
+    
     //! 根据当前点捕捉新的坐标
     virtual Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt) {
         return snapPoint(sender, orignPt, NULL, -1);
@@ -60,8 +63,7 @@ struct MgSnap {
     
 #ifndef SWIG
     //! 根据当前点捕捉新的坐标
-    virtual Point2d snapPoint(const MgMotion* sender, 
-                              const Point2d& orignPt, const MgShape* shape,
+    virtual Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt, const MgShape* shape,
                               int hotHandle, int ignoreHandle = -1, const int* ignoreids = NULL) = 0;
     
     //! 得到捕捉到的图形、控制点序号、源图形上匹配的控制点序号

@@ -74,7 +74,7 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
     MgShapeIterator it(s);
     
     while (const MgShape* shape = it.getNext()) {
-        if (!shape->shapec()->getFlag(kMgLocked)
+        if (!shape->shapec()->isLocked()
             && !shape->shapec()->getFlag(kMgNoDel)
             && shape->shapec()->hitTestBox(snap)) {
             delIds.push_back(shape->getID());
@@ -87,10 +87,7 @@ void MgCmdManagerImpl::eraseWnd(const MgMotion* sender)
         int n = 0;
         
         for (; i != delIds.end(); ++i) {
-            const MgShape* shape = s->findShape(*i);
-            if (shape && sender->view->removeShape(shape)) {
-                n++;
-            }
+            n += sender->view->removeShape(s->findShape(*i));
         }
         if (n > 0) {
             sender->view->regenAll(true);
@@ -105,7 +102,7 @@ static int s_useFinger = -1;
 
 float MgCmdManagerImpl::displayMmToModel(float mm, GiGraphics* gs) const
 {
-    return gs->xf().displayToModel(s_useFinger ? mm : mm / 2.f, true);
+    return gs->xf().displayToModel(s_useFinger ? mm : mm * 0.7f, true);
 }
 
 float MgCmdManagerImpl::displayMmToModel(float mm, const MgMotion* sender) const
@@ -113,5 +110,5 @@ float MgCmdManagerImpl::displayMmToModel(float mm, const MgMotion* sender) const
     if (s_useFinger < 0) {
         s_useFinger = sender->view->useFinger() ? 1 : 0;
     }
-    return sender->view->xform()->displayToModel(s_useFinger ? mm : mm / 2.f, true);
+    return sender->view->xform()->displayToModel(s_useFinger ? mm : mm * 0.7f, true);
 }

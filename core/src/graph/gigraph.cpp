@@ -224,7 +224,7 @@ GiColor GiGraphics::calcPenColor(const GiColor& color) const
     if (isGrayMode()) {
         unsigned char by = (unsigned char)(
             (77 * ret.r + 151 * ret.g + 28 * ret.b + 128) / 256);
-        ret.set(by, by, by);
+        ret.set(by, by, by, color.a);
     }
 
     return ret;
@@ -275,8 +275,8 @@ void GiGraphics::setMaxPenWidth(float pixels, float minw)
         pixels = m_impl->maxPenWidth;
     else if (pixels < minw)
         pixels = minw;
-    else if (pixels > 200)
-        pixels = 200;
+    else if (pixels > 1024)
+        pixels = 1024;
     
     m_impl->maxPenWidth = pixels;
     m_impl->minPenWidth = minw;
@@ -1315,12 +1315,14 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool mode
     return false;
 }
 
-bool GiGraphics::drawTextAt(const char* text, const Point2d& pnt, float h, int align)
+bool GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align)
 {
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * xf().modelToDisplay());
         h *= xf().getWorldToDisplayY(false);
-        return m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align) > 0;
+        GiContext ctx;
+        ctx.setFillARGB(argb ? argb : 0xFF000000);
+        return setBrush(&ctx) && m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align) > 0;
     }
     return false;
 }

@@ -44,7 +44,7 @@ public:
     virtual bool draw(const MgMotion* sender, GiGraphics* gs);
     
 protected:
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
     virtual void drawHandles(const MgMotion* sender, GiGraphics* gs);
     
 protected:

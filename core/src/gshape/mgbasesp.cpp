@@ -174,6 +174,15 @@ bool MgBaseShape::_load(MgShapeFactory* factory, MgStorage* s)
     return true;
 }
 
+float MgBaseShape::linesHit(int n, const Point2d* points, bool closed,
+                            const Point2d& pt, float tol, MgHitResult& res)
+{
+    int flags = ( (res.snapVertexEnabled() ? (1 << mglnrel::kPtAtVertex) : 0)
+                 |(res.snapEdgeEnabled() ? (1 << mglnrel::kPtOnEdge) : 0) );
+    return mgnear::linesHit(n, points, closed, pt, tol, res.nearpt, res.segment,
+                            &res.inside, (int*)0, flags, res.ignoreHandle);
+}
+
 bool MgBaseShape::getFlag(MgShapeBit bit) const
 {
     return (_flags & (1 << bit)) != 0;

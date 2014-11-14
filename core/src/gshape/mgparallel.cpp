@@ -57,8 +57,7 @@ void MgParallel::_update()
 
 void MgParallel::_transform(const Matrix2d& mat)
 {
-    for (int i = 0; i < 4; i++)
-        _points[i] *= mat;
+    mat.transformPoints(4, _points);
     __super::_transform(mat);
 }
 
@@ -120,8 +119,7 @@ bool MgParallel::_rotateHandlePoint(int index, const Point2d& pt)
 
 float MgParallel::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
-    return mgnear::linesHit(4, _points, true, pt, tol, 
-        res.nearpt, res.segment, &res.inside);
+    return linesHit(4, _points, true, pt, tol, res);
 }
 
 bool MgParallel::_hitTestBox(const Box2d& rect) const

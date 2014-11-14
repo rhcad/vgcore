@@ -76,13 +76,14 @@ void GiCoreViewImpl::resetOptions()
     options.clear();
     
     setOptionBool("snapEnabled", true);
-    setOptionBool("snapVertext", true);
+    setOptionBool("snapVertex", true);
     setOptionBool("snapCenter", true);
     setOptionBool("snapMidPoint", true);
     setOptionBool("snapQuadrant", false);
     setOptionBool("snapNear", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
+    setOptionBool("snapTangent", false);
     setOptionBool("snapCross", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
@@ -93,21 +94,12 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
     setOptionBool("canMoveHandle", true);
+    setOptionBool("canBoxSel", true);
     setOptionInt("lockSelShape", 0);
     setOptionInt("lockSelHandle", 0);
     setOptionInt("lockRotateHandle", 0);
     setOptionBool("zoomShapeEnabled", true);
-}
-
-void GiCoreViewImpl::showMessage(const char* text)
-{
-    std::string str;
-
-    if (*text == '@') {
-        str = MgLocalized::getString(this, text + 1);
-        text = str.c_str();
-    }
-    CALL_VIEW(deviceView()->showMessage(text));
+    setOptionBool("notClickSelectInDrawCmd", false);
 }
 
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
@@ -635,9 +627,10 @@ int GiCoreView::dynDraw(long hShapes, long hGs, GiCanvas* canvas)
 {
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
-
-    if (hShapes && gs && gs->beginPaint(canvas)) {
+    
+    if (hShapes && gs && impl->curview && gs->beginPaint(canvas)) {
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+        impl->curview->dyndraw(*gs);
         n = MgShapes::fromHandle(hShapes)->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1);
         gs->endPaint();
     }
@@ -650,9 +643,10 @@ int GiCoreView::dynDraw(const mgvector<long>& shapes, long hGs, GiCanvas* canvas
     int n = -1;
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
-    if (gs && gs->beginPaint(canvas)) {
+    if (gs && impl->curview && gs->beginPaint(canvas)) {
         n = 0;
         mgCopy(impl->motion()->d2mgs, impl->cmds()->displayMmToModel(1, gs));
+        impl->curview->dyndraw(*gs);
         for (int i = 0; i < shapes.count(); i++) {
             MgShapes* sp = MgShapes::fromHandle(shapes.get(i));
             n += sp ? sp->dyndraw(isZooming() ? 2 : 0, *gs, NULL, -1) : 0;
@@ -729,7 +723,9 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
         
         impl->motion()->point.set(x, y);
-        movePointInView(impl->motion()->point, aview->xform()->getWndRect().deflate(5));
+        
+        Box2d limits(aview->xform()->getWorldLimits().intersectWith(aview->xform()->getWndRectW()));
+        movePointInView(impl->motion()->point, limits.deflate(1) * aview->xform()->worldToDisplay());
         
         impl->motion()->pointM = impl->motion()->point * aview->xform()->displayToModel();
         impl->motion()->point2 = impl->motion()->point;
@@ -911,7 +907,7 @@ int GiCoreView::getShapeCount(long doc)
 
 static void getUnlockedShapeCount_(const MgShape* sp, void* d)
 {
-    if (!sp->shapec()->getFlag(kMgLocked) && !sp->shapec()->getFlag(kMgHideContent)) {
+    if (!sp->shapec()->isLocked() && sp->shapec()->isVisible()) {
         int* n = (int*)d;
         *n = *n + 1;
     }
@@ -941,6 +937,9 @@ int GiCoreView::getSelectedShapeCount()
 
 int GiCoreView::getSelectedShapeID()
 {
+    if (isDrawingCommand()) {
+        return impl->getNewShapeID();
+    }
     const MgShape* shape = NULL;
     impl->cmds()->getSelection(impl, 1, &shape);
     return shape ? shape->getID() : 0;
@@ -980,7 +979,7 @@ bool GiCoreView::loadShapes(MgStorage* s, bool readOnly)
     }
     impl->regenAll(true);
     if (impl->curview && impl->cmds()) {
-        impl->getCmdSubject()->onDocLoaded(impl->motion());
+        impl->getCmdSubject()->onDocLoaded(impl->motion(), false);
     }
 
     return ret;
@@ -1252,6 +1251,9 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
 bool GiCoreView::getShapeFlag(int sid, int bit)
 {
     const MgShape* shape = impl->doc()->findShape(sid);
+    if (!shape) {
+        impl->cmds()->getSelection(impl, 1, &shape);
+    }
     return shape && shape->shapec()->getFlag((MgShapeBit)bit);
 }
 
@@ -1260,10 +1262,24 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     const MgShape* shape = impl->doc()->findShape(sid);
     bool ret = false;
     
-    if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
-        MgShape *newsp = shape->cloneShape();
-        newsp->shape()->setFlag((MgShapeBit)bit, on);
-        ret = shape->getParent()->updateShape(shape, newsp);
+    if (sid == 0) {
+        const MgShape* shapes[20];
+        int n = impl->cmds()->getSelection(impl, 20, shapes);
+        
+        while (--n >= 0) {
+            shape = shapes[n];
+            if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+                MgShape *newsp = shape->cloneShape();
+                newsp->shape()->setFlag((MgShapeBit)bit, on);
+                ret = shape->getParent()->updateShape(shape, newsp) || ret;
+            }
+        }
+    } else {
+        if (shape && on != shape->shapec()->getFlag((MgShapeBit)bit)) {
+            MgShape *newsp = shape->cloneShape();
+            newsp->shape()->setFlag((MgShapeBit)bit, on);
+            ret = shape->getParent()->updateShape(shape, newsp);
+        }
     }
     if (ret) {
         impl->regenAll(true);
@@ -1386,6 +1402,17 @@ bool GiCoreView::getViewModelBox(mgvector<float>& box)
     bool ret = box.count() == 4 && impl->curview;
     if (ret) {
         Box2d rect(impl->xform()->getWndRectM());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::getModelBox(mgvector<float>& box)
+{
+    bool ret = box.count() == 4;
+    if (ret) {
+        Box2d rect(impl->doc()->getExtent());
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
     }

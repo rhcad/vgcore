@@ -18,6 +18,9 @@ class Point2d
 public:
     float   x;      //!< X坐标分量
     float   y;      //!< Y坐标分量
+    
+    //! 无效点
+    static const Point2d kInvalid();
 
     //! 原点(0,0)
     static const Point2d kOrigin() { return Point2d(); }

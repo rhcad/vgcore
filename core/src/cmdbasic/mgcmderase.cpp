@@ -68,9 +68,16 @@ bool MgCmdErase::click(const MgMotion* sender)
 {
     const MgShape* shape = hitTest(sender);
     if (shape && sender->view->shapeWillDeleted(shape)) {
-        if (sender->view->removeShape(shape)) {
+        int count = sender->view->removeShape(shape);
+        if (count > 0) {
             sender->view->regenAll(true);
-            sender->view->showMessage("@shape1_deleted");
+            if (count == 1) {
+                sender->view->showMessage("@shape1_deleted");
+            } else {
+                char buf[31];
+                MgLocalized::formatString(buf, sizeof(buf), sender->view, "@shape_n_deleted", count);
+                sender->view->showMessage(buf);
+            }
         }
     }
     
@@ -104,8 +111,9 @@ bool MgCmdErase::touchMoved(const MgMotion* sender)
     
     m_delIds.clear();
     while (const MgShape* shape = it.getNext()) {
-        if (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
-            : snap.contains(shape->shapec()->getExtent())) {
+        if ((isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
+             : snap.contains(shape->shapec()->getExtent()))
+             && shape->shapec()->isVisible() && !shape->shapec()->isLocked()) {
             m_delIds.push_back(shape->getID());
         }
     }
@@ -124,10 +132,7 @@ bool MgCmdErase::touchEnded(const MgMotion* sender)
         std::vector<int>::iterator it = m_delIds.begin();
         
         for (; it != m_delIds.end(); ++it) {
-            const MgShape* shape = s->findShape(*it);
-            if (shape && sender->view->removeShape(shape)) {
-                count++;
-            }
+            count += sender->view->removeShape(s->findShape(*it));
         }
         if (count > 0) {
             sender->view->regenAll(true);

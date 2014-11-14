@@ -31,7 +31,7 @@ Point2d MgDiamond::_getHandlePoint(int index) const
 
 int MgDiamond::_getHandleType(int index) const
 {
-    return index < 4 ? kMgHandleVertext : kMgHandleMidPoint;
+    return index < 4 ? kMgHandleVertex : kMgHandleMidPoint;
 }
 
 bool MgDiamond::_isHandleFixed(int index) const
@@ -81,8 +81,7 @@ float MgDiamond::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
     Point2d pts[] = { _getHandlePoint(0), _getHandlePoint(1),
         _getHandlePoint(2), _getHandlePoint(3) };
-    return mgnear::linesHit(4, pts, true, pt, tol, 
-        res.nearpt, res.segment, &res.inside);
+    return linesHit(4, pts, true, pt, tol, res);
 }
 
 bool MgDiamond::_hitTestBox(const Box2d& rect) const

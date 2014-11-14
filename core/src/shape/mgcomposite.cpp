@@ -216,7 +216,7 @@ void MgComposite::_output(MgPath& path) const
 
 MG_IMPLEMENT_CREATE(MgGroup)
 
-MgGroup::MgGroup()
+MgGroup::MgGroup() : _insert(Point2d::kInvalid())
 {
 }
 
@@ -245,12 +245,13 @@ void MgGroup::_copy(const MgGroup& src)
 {
     __super::_copy(src);
     _insert = src._insert;
+    _name = src._name;
     _box = _shapes->getExtent();
 }
 
 bool MgGroup::_equals(const MgGroup& src) const
 {
-    return (_insert == src._insert && __super::_equals(src));
+    return (_insert == src._insert && _name == src._name && __super::_equals(src));
 }
 
 void MgGroup::_update()
@@ -271,6 +272,7 @@ void MgGroup::_clear()
 {
     _insert = Point2d::kOrigin();
     _box.empty();
+    _name.clear();
     __super::_clear();
 }
 
@@ -316,7 +318,7 @@ bool MgGroup::_isHandleFixed(int index) const
 
 int MgGroup::_getHandleType(int index) const
 {
-    return index == 0 ? kMgHandleNoSnap : kMgHandleVertext;
+    return index == 0 ? kMgHandleNoSnap : kMgHandleVertex;
 }
 
 bool MgGroup::_offset(const Vector2d& vec, int segment)
@@ -353,15 +355,27 @@ bool MgGroup::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment)
 
 bool MgGroup::_save(MgStorage* s) const
 {
-    s->writeFloat("x", _insert.x);
-    s->writeFloat("y", _insert.y);
+    if (!_insert.isDegenerate()) {
+        s->writeFloat("x", _insert.x);
+        s->writeFloat("y", _insert.y);
+        if (!_name.empty()) {
+            s->writeString("name", _name.c_str());
+        }
+    }
     return __super::_save(s) && _shapes->save(s);
 }
 
 bool MgGroup::_load(MgShapeFactory* factory, MgStorage* s)
 {
     bool ret = __super::_load(factory, s) && _shapes->load(factory, s) > 0;
+    int len = s->readString("name");
+    
     _insert.set(s->readFloat("x", _insert.x), s->readFloat("y", _insert.y));
+    _name.resize(len);
+    if (len > 0 && ret) {
+        ret = s->readString("name", &_name[0], len) == len;
+    }
+    
     return ret;
 }
 
@@ -371,4 +385,23 @@ bool MgGroup::addShapeToGroup(const MgShape* shape)
         return shape->getParent()->moveShapeTo(shape->getID(), _shapes);
     }
     return shape && _shapes->addShape(*shape);
+}
+
+void MgGroup::setName(const char* name)
+{
+    _name = name ? name : "";
+}
+
+const MgShape* MgGroup::findGroup(const MgShapes* shapes, const char* name)
+{
+    MgShapeIterator it(shapes);
+    
+    while (const MgShape* sp = it.getNext()) {
+        if (sp->shapec()->isKindOf(Type())) {
+            if (((const MgGroup*)sp->shapec())->_name == name) {
+                return sp;
+            }
+        }
+    }
+    return NULL;
 }

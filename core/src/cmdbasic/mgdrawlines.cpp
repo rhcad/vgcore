@@ -73,6 +73,8 @@ bool MgCmdDrawLines::touchBegan(const MgMotion* sender)
 
 bool MgCmdDrawLines::touchMoved(const MgMotion* sender)
 {
+    ignoreStartPoint(sender, m_index - 1);
+    
     Point2d pnt(snapPoint(sender));
     dynshape()->shape()->setPoint(m_index, pnt);
     

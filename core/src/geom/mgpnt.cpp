@@ -4,6 +4,13 @@
 
 #include "mgpnt.h"
 
+#if !defined(NAN) && defined(_WIN32)
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
+#endif
+
+const Point2d Point2d::kInvalid() { return Point2d(NAN, NAN); }
+
 Point2d Point2d::rulerPoint(const Point2d& dir, float yoff) const
 {
     float len = distanceTo(dir);

@@ -20,8 +20,43 @@
 #define ENABLE_DRAG_SELBOX
 #endif
 
+int MgCmdSelect::getSelectedIDs(MgView* view, int* ids, int count)
+{
+    int i = 0;
+    for (std::vector<int>::const_iterator it = m_selIds.begin(); it != m_selIds.end() && i < count; ++it) {
+        ids[i++] = *it;
+    }
+    if (i == 0 && count > 0 && getSelection(view, 0, NULL) > 0) {
+        ids[i++] = m_id;
+    }
+    return i;
+}
+
+static void findUnlockedShapeFilter(const MgShape* sp, void* data)
+{
+    std::pair<int, int> *p = (std::pair<int, int> *)data;
+    if (sp->shapec()->isVisible() && !sp->shapec()->isLocked()) {
+        p->first = sp->getID();
+        p->second++;
+    }
+}
+
 int MgCmdSelect::getSelection(MgView* view, int count, const MgShape** shapes)
 {
+    if (m_selIds.empty()) {
+        m_id = view->getOptionInt("lockSelShape", m_id);
+        if (!m_id) {
+            std::pair<int, int> data(0, 0);
+            view->shapes()->traverseByType(0, findUnlockedShapeFilter, &data);
+            if (data.second == 1) {
+                m_id = data.first;
+            }
+        }
+        if (m_id) {
+            m_selIds.push_back(m_id);
+        }
+    }
+    
     int i, ret = 0;
     int maxCount = (int)(m_clones.empty() ? m_selIds.size() : m_clones.size());
     
@@ -110,16 +145,18 @@ int MgCmdSelect::getLockRotateHandle(const MgMotion* sender, int defValue) const
     return ret == 0 ? defValue : ret;
 }
 
-bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
+bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, const int* ids)
 {
     m_boxsel = false;
-    m_id = 0;
     m_hit.segment = -1;
     m_handleIndex = 0;
     m_rotateHandle = 0;
     m_editMode = false;
     m_showSel = true;
-    m_selIds.clear();
+    
+    m_id = getLockSelShape(sender, 0);
+    m_handleIndex = getLockSelHandle(sender, m_handleIndex);
+    m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
     
     if (s) {
         m_id = s->readInt("id", m_id);
@@ -127,24 +164,34 @@ bool MgCmdSelect::initialize(const MgMotion* sender, MgStorage* s)
         m_rotateHandle = s->readInt("rotateHandle", m_rotateHandle);
         m_editMode = !!s->readInt("editMode", m_editMode);
     }
+    m_selIds.clear();
+    if (m_id) {
+        m_selIds.push_back(m_id);
+    } else {
+        while (*ids) {
+            m_selIds.push_back(*ids++);
+        }
+        m_id = m_selIds.empty() ? 0 : m_selIds.front();
+    }
     
-    m_id = getLockSelShape(sender, m_id);
-    m_handleIndex = getLockSelHandle(sender, m_handleIndex);
-    m_rotateHandle = getLockRotateHandle(sender, m_rotateHandle);
     m_canRotateHandle = !!sender->view->getOptionBool("canRotateHandle", true);
     m_editMode = (m_editMode || m_handleIndex > 0) && !m_rotateHandle;
     sender->view->getCmdSubject()->onEnterSelectCommand(sender);
     
-    const MgShape* sp = getShape(sender->view->getNewShapeID(), sender);
+    const MgShape* sp = m_id ? NULL : getShape(sender->view->getNewShapeID(), sender);
     const MgShape* shape = ((sp && sp->shapec()->isKindOf(MgComposite::Type())) || !m_id
                             ? sp : getShape(m_id, sender));
     if (shape) {
-        m_selIds.push_back(shape->getID());         // 选中最新绘制的图形
-        m_id = shape->getID();
-        sender->view->redraw();
+        if (!m_id) {
+            m_selIds.push_back(shape->getID());     // 选中最新绘制的图形
+            m_id = shape->getID();
+        }
         selectionChanged(sender->view);
+        sender->view->redraw();
         if (shape->shapec()->isKindOf(MgComposite::Type())
-            && ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0) {
+            && (   (s && s->readBool("doubleClick", false))
+                || ((MgComposite*)shape->shapec())->shapes()->getShapeCount() == 0))
+        {
             return doubleClick(sender);
         }
         longPress(sender);
@@ -311,7 +358,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             
             GiHandleTypes imageType;
             switch (shape->shapec()->getHandleType(i)) {
-                case kMgHandleVertext: imageType = kGiHandleNode; break;
+                case kMgHandleVertex: imageType = kGiHandleNode; break;
                 case kMgHandleCenter: imageType = kGiHandleCenter; break;
                 case kMgHandleMidPoint: imageType = kGiHandleMidPoint; break;
                 case kMgHandleQuadrant: imageType = kGiHandleQuadrant; break;
@@ -626,7 +673,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         m_handleIndex = hitTestHandles(shape, m_hit.nearpt, sender);
     }
     
-    if (m_clones.empty()) {
+    if (m_clones.empty() && sender->view->getOptionBool("canBoxSel", true)) {
         m_boxsel = true;
     }
     m_boxHandle = 99;
@@ -695,14 +742,14 @@ bool MgCmdSelect::isSelectedByType(MgView* view, int type)
 bool MgCmdSelect::canTransform(const MgShape* shape, const MgMotion* sender)
 {
     return (shape && !shape->shapec()->getFlag(kMgFixedLength)
-            && !shape->shapec()->getFlag(kMgLocked)
+            && !shape->shapec()->isLocked()
             && sender->view->shapeCanTransform(shape));
 }
 
 bool MgCmdSelect::canRotate(const MgShape* shape, const MgMotion* sender)
 {
     return (shape && !shape->shapec()->getFlag(kMgRotateDisnable)
-            && !shape->shapec()->getFlag(kMgLocked)
+            && !shape->shapec()->isLocked()
             && sender->view->shapeCanRotated(shape));
 }
 
@@ -922,17 +969,25 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
     if (m_clones.empty() && m_boxsel) {    // 没有选中图形时就滑动多选
         Box2d snap(sender->startPtM, sender->pointM);
         MgShapeIterator it(sender->view->shapes());
+        float mindist = _FLT_MAX;
+        MgHitResult res;
         
         m_selIds.clear();
         m_id = 0;
         m_hit.segment = -1;
         while (const MgShape* shape = it.getNext()) {
-            if (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
-                : snap.contains(shape->shapec()->getExtent())) {
-                if (!shape->shapec()->getFlag(kMgLocked) ||
-                    !shape->shapec()->getFlag(kMgNoAction)) {
-                    m_selIds.push_back(shape->getID());
+            if (shape->shapec()->isVisible()
+                && (isIntersectMode(sender) ? shape->shapec()->hitTestBox(snap)
+                    : snap.contains(shape->shapec()->getExtent())))
+            {
+                float dist = shape->shapec()->hitTest(snap.center(), mindist, res);
+                if (mindist > dist - _MGZERO
+                    || (mindist < dist + _MGZERO && snap.contains(shape->shapec()->getExtent()))) {
+                    mindist = dist;
                     m_id = shape->getID();
+                    m_selIds.insert(m_selIds.begin(), shape->getID());
+                } else {
+                    m_selIds.push_back(shape->getID());
                 }
             }
         }
@@ -1043,8 +1098,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             const MgShape* oldsp = view->shapes()->findShape(m_clones[i]->getID());
             
             if (oldsp) {
-                m_clones[i]->shape()->setFlag(kMgHideContent,
-                                              oldsp->shapec()->getFlag(kMgHideContent));
+                m_clones[i]->shape()->setFlag(kMgHideContent, !oldsp->shapec()->isVisible());
             }
             if (addNewShapes) {
                 if (view->shapeWillAdded(m_clones[i])
@@ -1179,10 +1233,9 @@ bool MgCmdSelect::deleteSelection(const MgMotion* sender)
 
         for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
             shape = sender->view->shapes()->findShape(*it);
-            if (shape && !shape->shapec()->getFlag(kMgLocked)
-                && !shape->shapec()->getFlag(kMgNoDel)
-                && sender->view->removeShape(shape)) {
-                count++;
+            if (shape && !shape->shapec()->isLocked()
+                && !shape->shapec()->getFlag(kMgNoDel)) {
+                count += sender->view->removeShape(shape);
             }
         }
         
@@ -1257,9 +1310,7 @@ bool MgCmdSelect::ungroupSelection(const MgMotion* sender)
                     const MgGroup* group = (const MgGroup*)oldsp->shapec();
                     
                     group->shapes()->copyShapesTo(oldsp->getParent());
-                    if (sender->view->removeShape(oldsp)) {
-                        count++;
-                    }
+                    count += sender->view->removeShape(oldsp);
                 }
             }
         }
@@ -1321,7 +1372,7 @@ bool MgCmdSelect::addSelection(const MgMotion* sender, int shapeID)
     return shape != NULL;
 }
 
-bool MgCmdSelect::deleteVertext(const MgMotion* sender)
+bool MgCmdSelect::deleteVertex(const MgMotion* sender)
 {
     const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
     bool ret = false;
@@ -1350,7 +1401,7 @@ bool MgCmdSelect::deleteVertext(const MgMotion* sender)
     return ret;
 }
 
-bool MgCmdSelect::insertVertext(const MgMotion* sender)
+bool MgCmdSelect::insertVertex(const MgMotion* sender)
 {
     const MgShape* oldsp = sender->view->shapes()->findShape(m_id);
     bool ret = false;
@@ -1432,7 +1483,7 @@ bool MgCmdSelect::setFixedLength(const MgMotion* sender, bool fixed)
 bool MgCmdSelect::isLocked(MgView* view)
 {
     const MgShape* shape = view->shapes()->findShape(m_id);
-    return shape && shape->shapec()->getFlag(kMgLocked);
+    return shape && shape->shapec()->isLocked();
 }
 
 bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
@@ -1441,7 +1492,7 @@ bool MgCmdSelect::setLocked(const MgMotion* sender, bool locked)
     
     for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
         const MgShape* oldsp = sender->view->shapes()->findShape(*it);
-        if (oldsp && oldsp->shapec()->getFlag(kMgLocked) != locked) {
+        if (oldsp && oldsp->shapec()->isLocked() != locked) {
             if (locked || sender->view->shapeCanUnlock(oldsp)) {
                 MgShape* newsp = oldsp->cloneShape();
                 newsp->shape()->setFlag(kMgLocked, locked);

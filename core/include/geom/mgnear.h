@@ -121,11 +121,14 @@ static float quadSplinesHit(int n, const Point2d* knots, bool closed,
     \param[out] segment 最近点所在线段的序号，[0,n-2]，闭合时为[0,n-1]，负数表示失败
     \param[out] inside 是否点中多边形内部
     \param[out] hitType 点击类型，见 MgPtInAreaRet
+    \param[in] flags 允许检测的位，{1<<PtInAreaRet}
+    \param[in] ignoreVertex 不捕捉的顶点序号
     \return 给定的点到最近点的距离，失败时为极大数
 */
 static float linesHit(int n, const Point2d* points, bool closed,
                       const Point2d& pt, float tol, Point2d& nearpt, int& segment,
-                      bool* inside = (bool*)0, int* hitType = (int*)0);
+                      bool* inside = (bool*)0, int* hitType = (int*)0,
+                      int flags = -1, int ignoreVertex = -1);
 
 //! 计算点到圆角矩形的最近距离
 /*!

@@ -74,6 +74,10 @@ bool GcBaseView::twoFingersMove(const MgMotion& motion)
     return true;
 }
 
+void GcBaseView::dyndraw(GiGraphics&)
+{
+}
+
 // GcGraphView
 //
 

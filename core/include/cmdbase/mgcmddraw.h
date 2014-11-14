@@ -26,6 +26,9 @@ public:
     //! 返回新图形的类型，供其他语言重载使用
     virtual int getShapeType() { return m_shape ? m_shape->shapec()->getType() : 0; }
     
+    //! 为当前捕捉设置上一线段的坐标，以避免与上一点重合
+    void ignoreStartPoint(const MgMotion* sender, int handle);
+    
     //! 返回当前捕捉结果类型, >=kMgSnapGrid
     int getSnappedType(const MgMotion* sender) const;
     
@@ -39,7 +42,7 @@ protected:
     bool _initialize(int shapeType, const MgMotion* sender, MgStorage* s);
     bool _click(const MgMotion* sender);
     virtual int getMaxStep() { return 3; }
-    virtual void setStepPoint(int step, const Point2d& pt);
+    virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
 
 private:
     virtual bool isDrawingCommand() { return true; }

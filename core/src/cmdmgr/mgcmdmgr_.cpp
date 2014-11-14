@@ -120,8 +120,18 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     else if (strcmp(name, "@last") == 0) {
         name = getCommandName();
     }
+    
+    MgCommand* cmd = getCommand();
+    int ids[100+1];
+    int n = cmd ? cmd->getSelectedIDs(sender->view, ids, 100) : 0;
+    
+    if (n == 0 && (_cmdname.empty() || _cmdname != "select")) {
+        cmd = findCommand("select");
+        n = cmd ? cmd->getSelectedIDs(sender->view, ids, 100) : 0;
+    }
+    ids[n] = 0;
 
-    MgCommand* cmd = findCommand(name);
+    cmd = findCommand(name);
     if (!cmd) {
         cmd = sender->view->getCmdSubject()->createCommand(sender, name);
         if (cmd) {
@@ -130,24 +140,31 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
         }
     }
     
-    if (strcmp(name, "erase") == 0 && _cmdname == "select") {   // 在选择命令中点橡皮擦
-        MgSelection *sel = getSelection();
-        if (sel && sel->deleteSelection(sender)) {      // 直接删除选中的图形
-            return false;                               // 不切换到橡皮擦命令
+    if (strcmp(name, "erase") == 0 && n > 0) {                  // 在选择命令中点橡皮擦
+        MgCommand* cmdsel = findCommand("select");
+        if (cmdsel && cmdsel->initializeWithSelection(sender, s, ids)
+            && getSelection()->deleteSelection(sender)) {       // 直接删除选中的图形
+            return false;                                       // 不切换到橡皮擦命令
         }
     }
     
     cancel(sender);
     
     bool ret = false;
-    std::string oldname(_cmdname);
+    const std::string oldname(_cmdname);
     
     if (cmd) {
         _cmdname = cmd->getName();
         
-        ret = cmd->initialize(sender, s);
+        ret = cmd->initializeWithSelection(sender, s, ids);
         if (!ret) {
-            _cmdname = oldname;
+            cmd = findCommand("select");
+            if (cmd && _cmdname != cmd->getName()) {
+                cmd->initializeWithSelection(sender, s, ids);
+                _cmdname = cmd->getName();
+            } else {
+                _cmdname = oldname;
+            }
         }
         else if (cmd->isDrawingCommand()) {
             _drawcmd = _cmdname;
@@ -166,7 +183,7 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     if (oldname != _cmdname) {
         sender->view->commandChanged();
     }
-    sender->view->redraw(false);
+    sender->view->redraw();
     
     return ret;
 }

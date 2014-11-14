@@ -17,24 +17,22 @@ bool MgShape::draw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) 
     if (shapec()->isKindOf(6)) { // MgComposite
         tmpctx = ctx ? *ctx : GiContext(0, GiColor(), GiContext::kNullLine);
     }
-    else {
-        if (ctx) {
-            float addw = ctx->getLineWidth();
-
-            if (addw < -0.1f) {
-                tmpctx.setExtraWidth(-addw);
-            } else if (addw > 0.1f) {                               // 传入正数表示像素宽度
-                tmpctx.setLineWidth(-addw, ctx->isAutoScale());     // 换成新的像素宽度
-            }
+    else if (ctx) {
+        float addw = ctx->getLineWidth();
+        
+        if (addw < -0.1f) {
+            tmpctx.setExtraWidth(-addw);
+        } else if (addw > 0.1f) {                               // 传入正数表示像素宽度
+            tmpctx.setLineWidth(-addw, ctx->isAutoScale());     // 换成新的像素宽度
         }
-
-        if (ctx && ctx->getLineColor().a > 0) {
+        
+        if (ctx->getLineColor().a > 0) {
             tmpctx.setLineColor(ctx->getLineColor());
         }
-        if (ctx && !ctx->isNullLine()) {
+        if (!ctx->isNullLine()) {
             tmpctx.setLineStyle(ctx->getLineStyle());
         }
-        if (ctx && ctx->hasFillColor()) {
+        if (ctx->hasFillColor()) {
             tmpctx.setFillColor(ctx->getFillColor());
         }
     }

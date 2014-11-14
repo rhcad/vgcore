@@ -437,6 +437,9 @@
     <ClInclude Include="..\..\core\include\shape\mgbasicsps.h">
       <Filter>Header Files\shape</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\core\include\mgstrcallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\core\src\shapedoc\mglayer.cpp">

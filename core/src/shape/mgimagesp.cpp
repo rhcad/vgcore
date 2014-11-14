@@ -40,7 +40,7 @@ bool MgImageShape::_draw(int, GiGraphics& gs, const GiContext& ctx, int) const
     Vector2d vec((_points[1] - _points[0]) * gs.xf().modelToWorld());
     bool ret = false;
     
-    if (!getFlag(kMgHideContent)) {
+    if (isVisible()) {
         ret = (gs.rawImage(_name, rect.center().x, rect.center().y,
                            rect.width(), rect.height(), vec.angle2())
                || drawBox(gs, ctx));

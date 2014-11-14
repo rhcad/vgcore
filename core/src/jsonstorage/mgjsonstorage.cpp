@@ -458,7 +458,7 @@ int MgJsonStorage::Impl::readString(const char* name, char* value, int count)
             if (value) {
                 ret = ret < count ? ret : count;
 #if defined(_MSC_VER) && _MSC_VER >= 1400 // VC8
-                strncpy_s(value, count, item.GetString(), ret);
+                strncpy_s(value, count + 1, item.GetString(), ret);
 #else
                 strncpy(value, item.GetString(), ret);
 #endif
