@@ -367,7 +367,15 @@ public:
     bool drawHandle(const Point2d& pnt, int type, float angle = 0, bool modelUnit = true);
     
     //! 在给定模型坐标位置显示指定像素高的单行文本
-    bool drawTextAt(const char* text, const Point2d& pnt, float h, int align = 1);
+    /*!
+        \param argb 文字颜色，0则为黑色
+        \param text 要显示的文字内容
+        \param pnt 文字对齐位置，模型坐标
+        \param h 文字高度，点单位
+        \param align 水平对齐方式，0-左对齐，1-居中，2-右对齐
+        \return 是否显示成功
+     */
+    bool drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align = 1);
 
     //! 在显示适配类的 beginPaint() 中调用
     bool beginPaint(GiCanvas* canvas, const RECT_2D& clipBox = RECT_2D());
