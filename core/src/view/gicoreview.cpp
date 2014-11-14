@@ -1408,6 +1408,17 @@ bool GiCoreView::getViewModelBox(mgvector<float>& box)
     return ret;
 }
 
+bool GiCoreView::getModelBox(mgvector<float>& box)
+{
+    bool ret = box.count() == 4;
+    if (ret) {
+        Box2d rect(impl->doc()->getExtent());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)
 {
     bool ret = box.count() == 4 && impl->curview;

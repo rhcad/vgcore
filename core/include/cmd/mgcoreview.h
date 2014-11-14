@@ -170,6 +170,9 @@ struct MgCoreView {
     
     //! 返回当前视图区域的模型坐标范围，模型坐标(left, top, right, bottom)
     virtual bool getViewModelBox(mgvector<float>& box) = 0;
+
+    //! 返回后端文档的模型坐标范围，模型坐标(left, top, right, bottom)
+    virtual bool getModelBox(mgvector<float>& box) = 0;
     
     //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;
