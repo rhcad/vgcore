@@ -424,6 +424,7 @@ Box2d mgnear::bezierBox4(const Point2d& pt1, const Point2d& pt2,
                          const Point2d& pt3, const Point2d& pt4)
 {
     Box2d bbox(pt1, pt4);
+    int flag = 0;
 
     // find the zero point for x and y in the derivatives
     Point2d ts = computeCubicFirstDerivativeRoots(pt1.x, pt2.x, pt3.x, pt4.x);
@@ -431,22 +432,30 @@ Box2d mgnear::bezierBox4(const Point2d& pt1, const Point2d& pt2,
         float x = computeCubicBaseValue(ts.x, pt1.x, pt2.x, pt3.x, pt4.x);
         if (x < bbox.xmin) bbox.xmin = x;
         if (x > bbox.xmax) bbox.xmax = x;
+        flag |= 1;
     }
     if (ts.y>=0 && ts.y<=1) {
         float x = computeCubicBaseValue(ts.y, pt1.x, pt2.x, pt3.x, pt4.x);
         if (x < bbox.xmin) bbox.xmin = x;
         if (x > bbox.xmax) bbox.xmax = x;
+        flag |= 2;
     }
     ts = computeCubicFirstDerivativeRoots(pt1.y, pt2.y, pt3.y, pt4.y);
     if (ts.x>=0 && ts.x<=1) {
         float y = computeCubicBaseValue(ts.x, pt1.y, pt2.y, pt3.y, pt4.y);
         if (y < bbox.ymin) bbox.ymin = y;
         if (y > bbox.ymax) bbox.ymax = y;
+        flag |= 4;
     }
     if (ts.y>=0 && ts.y<=1) {
         float y = computeCubicBaseValue(ts.y, pt1.y, pt2.y, pt3.y, pt4.y);
         if (y < bbox.ymin) bbox.ymin = y;
         if (y > bbox.ymax) bbox.ymax = y;
+        flag |= 8;
+    }
+    if (!flag) {
+        bbox.unionWith(pt2);
+        bbox.unionWith(pt3);
     }
 
     return bbox;
