@@ -41,6 +41,9 @@ struct GiColor
 
     static GiColor White() { return GiColor(255, 255, 255); }
     static GiColor Black() { return GiColor(0, 0, 0); }
+    static GiColor Blue() { return GiColor(0, 0, 255); }
+    static GiColor Red() { return GiColor(255, 0, 0); }
+    static GiColor Green() { return GiColor(0, 255, 0); }
     static GiColor Invalid() { return GiColor(0, 0, 0, 0); }
 
     int getARGB() const
