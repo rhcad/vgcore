@@ -296,7 +296,7 @@ bool MgGroup::_hitTestBox(const Box2d& rect) const
 
 int MgGroup::_getHandleCount() const
 {
-    return 2;
+    return hasInsertionPoint() ? 2 : 0;
 }
 
 Point2d MgGroup::_getHandlePoint(int index) const
@@ -338,17 +338,14 @@ bool MgGroup::_offset(const Vector2d& vec, int segment)
 bool MgGroup::_draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const
 {
     const MgShape* sp = _shapes->findShape(segment);
-    if (sp) {
-        if (mode > 0) {
-            Point2d cen(_box.center());
-            GiContext ctxln(0, GiColor(0, 126, 0, 128), GiContext::kDotLine);
-            
-            if (_insert != cen) {
-                gs.drawLine(&ctxln, _insert, cen);
-            }
-            gs.drawRect(&ctxln, _box);
+    if (sp && mode > 0) {
+        Point2d cen(_box.center());
+        GiContext ctxln(0, GiColor(0, 126, 0, 128), GiContext::kDotLine);
+        
+        if (_insert != cen) {
+            gs.drawLine(&ctxln, _insert, cen);
         }
-        return sp->draw(mode, gs, ctx.isNullLine() ? NULL : &ctx, -1);
+        gs.drawRect(&ctxln, _box);
     }
     return __super::_draw(mode, gs, ctx, segment);
 }

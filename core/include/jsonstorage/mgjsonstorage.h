@@ -95,6 +95,7 @@ public:
 #ifndef SWIG
     static bool parseInt(const char* str, int& value);
     static bool parseFloat(const char* str, float& value);
+    static bool parseFloat(const char* str, double& value);
 #endif
 
 private:

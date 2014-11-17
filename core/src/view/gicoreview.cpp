@@ -732,7 +732,7 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
         impl->motion()->point2M = impl->motion()->pointM;
 
         if (state <= kGiGestureBegan) {
-            impl->motion()->velocity.set(0, 0);
+            impl->motion()->velocity.set(0.f, 0.f);
             impl->motion()->startPt = impl->motion()->point;
             impl->motion()->startPtM = impl->motion()->pointM;
             impl->motion()->lastPt = impl->motion()->point;
@@ -776,7 +776,7 @@ bool GiCoreView::twoFingersMove(GiView* view, GiGestureState state,
         impl->motion()->d2m = impl->cmds()->displayMmToModel(1, impl->motion());
 
         if (state <= kGiGestureBegan) {
-            impl->motion()->velocity.set(0, 0);
+            impl->motion()->velocity.set(0.f, 0.f);
             impl->motion()->startPt = impl->motion()->point;
             impl->motion()->startPtM = impl->motion()->pointM;
             impl->motion()->lastPt = impl->motion()->point;
