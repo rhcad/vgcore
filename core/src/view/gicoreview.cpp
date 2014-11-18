@@ -83,7 +83,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("snapNear", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
-    setOptionBool("snapTangent", false);
+    setOptionBool("snapTangent", true);
     setOptionBool("snapCross", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
@@ -752,6 +752,9 @@ bool GiCoreView::onGesture(GiView* view, GiGestureType type,
 
         impl->motion()->lastPt = impl->motion()->point;
         impl->motion()->lastPtM = impl->motion()->pointM;
+        if (state >= kGiGestureEnded) {
+            impl->motion()->gestureState = kMgGesturePossible;
+        }
     }
 
     return ret;
@@ -796,6 +799,9 @@ bool GiCoreView::twoFingersMove(GiView* view, GiGestureState state,
 
         impl->motion()->lastPt = impl->motion()->point;
         impl->motion()->lastPtM = impl->motion()->pointM;
+        if (state >= kGiGestureEnded) {
+            impl->motion()->gestureState = kMgGesturePossible;
+        }
     }
 
     return ret;

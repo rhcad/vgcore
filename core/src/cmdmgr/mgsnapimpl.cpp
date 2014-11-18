@@ -300,12 +300,10 @@ static bool snapTangent(const MgMotion* sender, const Point2d& orgpt, const MgSh
         Point2d perp, tanpt;
         float dist = mglnrel::ptToBeeline2(pt1, pt2, cen, perp);
         
-        if (fabsf(dist - r) < arr0.dist) {
+        if (fabsf(dist - r) < arr0.dist
+            && (shape->shapec()->getSubType() || mglnrel::isBetweenLine3(pt1, pt2, perp))) {
             if (matchpt || ignoreHd < 0) {
-                tanpt = perp;
-                pt2 = cen;
-                MgEllipse::crossCircle(tanpt, pt2, circle);
-                tanpt = tanpt.distanceTo(perp) < pt2.distanceTo(perp) ? tanpt : pt2;
+                tanpt = cen.rulerPoint(perp, r, 0);
                 
                 arr0.dist = fabsf(dist - r);
                 arr0.base = c2 ? tanpt : perp;
@@ -543,7 +541,7 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     bool needNear = !!sender->view->getOptionBool("snapNear", true);
     bool needPerp = !!sender->view->getOptionBool("snapPerp", true);
     bool perpOut = !!sender->view->getOptionBool("perpOut", false);
-    bool needTangent = !!sender->view->getOptionBool("snapTangent", false);
+    bool needTangent = !!sender->view->getOptionBool("snapTangent", true);
     bool needCross = !!sender->view->getOptionBool("snapCross", true);
     float tolNear = sender->displayMmToModel("snapNearTol", 3.f);
     Tol tolPerp(sender->displayMmToModel(1));
