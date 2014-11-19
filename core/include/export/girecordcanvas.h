@@ -46,7 +46,7 @@ private:
     virtual bool drawHandle(float x, float y, int type, float angle);
     virtual bool drawBitmap(const char* name, float xc, float yc,
                             float w, float h, float angle);
-    virtual float drawTextAt(const char* text, float x, float y, float h, int align);
+    virtual float drawTextAt(const char* text, float x, float y, float h, int align, float angle);
     
 private:
     const Matrix2d d2w() const;

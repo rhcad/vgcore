@@ -5,6 +5,8 @@
 #include "testcanvas.h"
 #include "gicanvas.h"
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
 static bool s_inited = false;
 static bool s_randStyle = false;
@@ -40,6 +42,8 @@ void TestCanvas::test(GiCanvas* canvas, int bits, int n, bool randStyle)
         testLine(canvas, n * 2);
     if (bits & kTextAt)
         testTextAt(canvas, n);
+    if (bits & kRotateText)
+        testRotateText(canvas, n);
     if (bits & kEllipse)
         testEllipse(canvas, n * 2);
     if (bits & kQuadBezier)
@@ -319,22 +323,67 @@ void TestCanvas::testHandle(GiCanvas* canvas, int n)
 void TestCanvas::testTextAt(GiCanvas* canvas, int n)
 {
     float w, h, y;
-    const char* text = "汉fjl123 Abc@汉字";
+    char text[] = "汉fj1A?c@000";
+    int pos = (int)strlen(text) - 2;
+    
     canvas->setBrush(0x88000000 | randInt(0, 0xFFFFFF), 0);
     
     canvas->drawLine(0, 50, 1000, 50);
-    for (h = 5, y = 50; h < 80; y += h, h += 10) {
-        w = canvas->drawTextAt(text, 500, y, h, 2);
+    for (h = 5, y = 50; h < 50; y += h, h += 8) {
+        text[pos]   = (char)((int)h / 10 + '0');
+        text[pos+1] = (char)((int)h % 10 + '0');
+        w = canvas->drawTextAt(text, 500, y, h, 2, 0);
         canvas->drawRect(500 - w, y, w, h, true, false);
     }
-    canvas->drawLine(0, 400, 1000, 400);
-    for (h = 5, y = 400; h < 120; y += h, h += 10) {
-        w = canvas->drawTextAt(text, 50, y, h, 0);
+    canvas->drawLine(0, y, 1000, y);
+    for (; h < 100; y += h, h += 10) {
+        text[pos]   = (char)((int)h / 10 + '0');
+        text[pos+1] = (char)((int)h % 10 + '0');
+        w = canvas->drawTextAt(text, 50, y, h, 0, 0);
         canvas->drawRect(50, y, w, h, true, false);
     }
-    text = "f?？abcdefghijklmnop汉字qrstuvwxyz";
-    for (; h < (float)n; y += h, h += 10) {
-        w = canvas->drawTextAt(text, 50, y, h, 0);
-        canvas->drawRect(50, y, w, h, true, false);
+    canvas->drawLine(500, y, 500, y + 1500);
+    for (; h < (float)n * 2; y += h, h += 20) {
+        text[pos-1] = (char)((int)h / 100 + '0');
+        text[pos]   = (char)((int)h / 10 % 10 + '0');
+        text[pos+1] = (char)((int)h % 10 + '0');
+        w = canvas->drawTextAt(text, 500, y, h, 1, 0);
+        canvas->drawRect(500 - w / 2, y, w, h, true, false);
+    }
+}
+
+void TestCanvas::testRotateText(GiCanvas* canvas, int n)
+{
+    float h = 20, x = 300, y = 250;
+    char text[] = "汉fj12 Ac@000";
+    int pos = (int)strlen(text) - 2;
+    
+    canvas->drawLine(0, y, 1000, y);
+    canvas->drawLine(x, 0, x, 1000);
+    for (int i = 0; i <= n / 6; i++, h += 2) {
+        float a = (float)i * 0.174533f;
+        int deg = (int)(a * 57.29578f + 0.5f);
+        text[pos-1] = (char)(deg / 100 + '0');
+        text[pos]   = (char)(deg / 10 % 10 + '0');
+        text[pos+1] = (char)(deg % 10 + '0');
+        
+        canvas->setBrush(0x88000000 | randInt(0, 0xFFFFFF), 0);
+        canvas->drawTextAt(text, x, y, h, 0, a);
+    }
+    
+    h = 10, x = 500, y = 600;
+    canvas->drawLine(0, y, 1000, y);
+    canvas->drawLine(x, 0, x, 1000);
+    canvas->drawEllipse(x - 300, y - 300, 600, 600, true, false);
+    canvas->setBrush(0x880000ff, 0);
+    
+    for (int j = 0; j <= 20; j++, h += 2) {
+        float a = (float)j * 0.174533f;
+        int deg = (int)(a * 57.29578f + 0.5f);
+        text[pos-1] = (char)(deg / 100 + '0');
+        text[pos]   = (char)(deg / 10 % 10 + '0');
+        text[pos+1] = (char)(deg % 10 + '0');
+        
+        canvas->drawTextAt(text, x + 300 * cosf(-a), y + 300 * sinf(-a), h, 2, a);
     }
 }

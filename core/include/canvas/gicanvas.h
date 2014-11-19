@@ -128,9 +128,11 @@ public:
         \param y Y of horizontal alignment position.
         \param h Text height in point(or pixel) unit.
         \param align Horizontal alignment type, 0-left, 1-center, 2-right alignment.
+        \param angle Rotate angle in radians, it's positive direction is CCW
+                in the world coordinate system.
         \return Actual display width.
      */
-    virtual float drawTextAt(const char* text, float x, float y, float h, int align) = 0;
+    virtual float drawTextAt(const char* text, float x, float y, float h, int align, float angle) = 0;
     
 #ifndef SWIG
     //! Clear the cached bitmap for re-drawing on desktop PC.
