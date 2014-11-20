@@ -57,6 +57,15 @@ public:
     static GiGraphics* fromHandle(long h) { GiGraphics* p; *(long*)&p = h; return p; }  //!< 转为对象
     long toHandle() const { long h; *(const GiGraphics**)&h = this; return h; }                     //!< 得到句柄
 
+    enum {  //!< for drawTextAt(..align..)
+        kAlignLeft      = 0,
+        kAlignCenter    = 1,
+        kAlignRight     = 2,
+        kAlignTop       = 0,
+        kAlignBottom    = 0x10,
+        kAlignVCenter   = 0x20,
+    };
+    
 public:
     //! 复制指定对象到本对象
     void copy(const GiGraphics& src);

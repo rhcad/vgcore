@@ -332,14 +332,14 @@ void TestCanvas::testTextAt(GiCanvas* canvas, int n)
     for (h = 5, y = 50; h < 50; y += h, h += 8) {
         text[pos]   = (char)((int)h / 10 + '0');
         text[pos+1] = (char)((int)h % 10 + '0');
-        w = canvas->drawTextAt(text, 500, y, h, 2, 0);
+        w = canvas->drawTextAt(text, 500, y, h, GiCanvas::kAlignRight, 0);
         canvas->drawRect(500 - w, y, w, h, true, false);
     }
     canvas->drawLine(0, y, 1000, y);
     for (; h < 100; y += h, h += 10) {
         text[pos]   = (char)((int)h / 10 + '0');
         text[pos+1] = (char)((int)h % 10 + '0');
-        w = canvas->drawTextAt(text, 50, y, h, 0, 0);
+        w = canvas->drawTextAt(text, 50, y, h, GiCanvas::kAlignLeft, 0);
         canvas->drawRect(50, y, w, h, true, false);
     }
     canvas->drawLine(500, y, 500, y + 1500);
@@ -347,20 +347,21 @@ void TestCanvas::testTextAt(GiCanvas* canvas, int n)
         text[pos-1] = (char)((int)h / 100 + '0');
         text[pos]   = (char)((int)h / 10 % 10 + '0');
         text[pos+1] = (char)((int)h % 10 + '0');
-        w = canvas->drawTextAt(text, 500, y, h, 1, 0);
+        w = canvas->drawTextAt(text, 500, y, h, GiCanvas::kAlignCenter, 0);
         canvas->drawRect(500 - w / 2, y, w, h, true, false);
     }
 }
 
 void TestCanvas::testRotateText(GiCanvas* canvas, int n)
 {
-    float h = 20, x = 300, y = 250;
+    float h = 20, x = 300, y = 220;
     char text[] = "汉fj12 Ac@000";
     int pos = (int)strlen(text) - 2;
+    int i;
     
     canvas->drawLine(0, y, 1000, y);
     canvas->drawLine(x, 0, x, 1000);
-    for (int i = 0; i <= n / 6; i++, h += 2) {
+    for (i = 0; i <= n / 8; i++, h += 2) {
         float a = (float)i * 0.174533f;
         int deg = (int)(a * 57.29578f + 0.5f);
         text[pos-1] = (char)(deg / 100 + '0');
@@ -368,7 +369,7 @@ void TestCanvas::testRotateText(GiCanvas* canvas, int n)
         text[pos+1] = (char)(deg % 10 + '0');
         
         canvas->setBrush(0x88000000 | randInt(0, 0xFFFFFF), 0);
-        canvas->drawTextAt(text, x, y, h, 0, a);
+        canvas->drawTextAt(text, x, y, h, GiCanvas::kAlignLeft, a);
     }
     
     h = 10, x = 500, y = 600;
@@ -377,13 +378,29 @@ void TestCanvas::testRotateText(GiCanvas* canvas, int n)
     canvas->drawEllipse(x - 300, y - 300, 600, 600, true, false);
     canvas->setBrush(0x880000ff, 0);
     
-    for (int j = 0; j <= 20; j++, h += 2) {
-        float a = (float)j * 0.174533f;
+    for (i = 0; i <= 20; i++, h += 2) {
+        float a = (float)i * 0.174533f;
         int deg = (int)(a * 57.29578f + 0.5f);
         text[pos-1] = (char)(deg / 100 + '0');
         text[pos]   = (char)(deg / 10 % 10 + '0');
         text[pos+1] = (char)(deg % 10 + '0');
         
-        canvas->drawTextAt(text, x + 300 * cosf(-a), y + 300 * sinf(-a), h, 2, a);
+        canvas->drawTextAt(text, x + 300 * cosf(-a), y + 300 * sinf(-a), h, GiCanvas::kAlignRight, a);
+    }
+    
+    h = 10, x = 700, y = 800;
+    canvas->drawLine(0, y, 1000, y);
+    canvas->drawLine(x, 0, x, 1000);
+    canvas->drawEllipse(x - 300, y - 300, 600, 600, true, false);
+    canvas->setBrush(0x8800ff00, 0);
+    
+    for (i = 0; i <= 35; i++, h++) {
+        float a = (float)i * 0.174533f;
+        int deg = (int)(a * 57.29578f + 0.5f);
+        text[pos-1] = (char)(deg / 100 + '0');
+        text[pos]   = (char)(deg / 10 % 10 + '0');
+        text[pos+1] = (char)(deg % 10 + '0');
+        
+        canvas->drawTextAt(text, x + 300 * cosf(-a), y + 300 * sinf(-a), h, GiCanvas::kAlignRight|GiCanvas::kAlignVCenter, a);
     }
 }

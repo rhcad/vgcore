@@ -1327,7 +1327,7 @@ bool GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, floa
         
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
-        return setBrush(&ctx) && m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align, angle) > 0;
+        return setBrush(&ctx) && m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) > 0;
     }
     return false;
 }
