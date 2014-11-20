@@ -59,7 +59,7 @@ bool MgGrid::_setHandlePoint(int index, const Point2d& pt, float tol)
     float cy = fabsf(pt.y - getPoint(3).y);
     cx = mgIsZero(cx) ? cx : mgMax(cx, tol / 3.f);
     cy = mgIsZero(cy) ? cy : mgMax(cy, tol / 3.f);
-    cx = (float)( (int)(mgMax(cx, cy) * 100) / 10 ) * 0.1f;
+    cx = mgbase::roundReal(mgMax(cx, cy), 1);
     m_cell.set(cx, cx);
     
     return true;

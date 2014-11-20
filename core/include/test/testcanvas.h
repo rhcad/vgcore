@@ -23,6 +23,7 @@ struct TestCanvas {
         kClipPath       = 0x100,
         kHandle         = 0x200,
         kDynCurves      = 0x400,
+        kRotateText     = 0x800,
         kClearPolygon   = 0x80|0x40|0x02,
     };
     static void initRand();
@@ -41,6 +42,7 @@ struct TestCanvas {
     static void testHandle(GiCanvas* canvas, int n);
     static void testDynCurves(GiCanvas* canvas);
     static void testTextAt(GiCanvas* canvas, int n);
+    static void testRotateText(GiCanvas* canvas, int n);
 };
 
 #endif // TOUCHVG_TESTCANVAS_H

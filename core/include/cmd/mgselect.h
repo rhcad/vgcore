@@ -21,6 +21,20 @@ typedef enum {
     kMgSelDraw,         //!< 在绘图命令中
 } MgSelState;
 
+//! 显示开关，用于"selectDrawFlags"配置项
+typedef enum {
+    kMgSelDrawDragLine      = 1<<1,     //!< 拖动提示的参考线
+    kMgSelDrawDragDot       = 1<<2,     //!< 拖动的终点
+    kMgSelDrawGroupBorder   = 1<<3,     //!< 成组图形的外框
+    kMgSelDrawActionBorder  = 1<<4,     //!< 上下文按钮包络框
+    kMgSelDrawSelBorder     = 1<<5,     //!< 选择集包络框
+    kMgSelDrawBlueShape     = 1<<6,     //!< 蓝色显示选中的图形
+    kMgSelDrawHandle        = 1<<7,     //!< 控制点
+    
+    kMgSelDrawXformBox      = 1<<16,    //!< 矩形变形框
+    kMgSelDrawNearPt        = 1<<17,    //!< 最近点
+} MgSelDrawFlags;
+
 //! 选择集接口
 /*! \ingroup CORE_COMMAND
     \interface MgSelection

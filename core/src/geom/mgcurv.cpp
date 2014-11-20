@@ -529,6 +529,15 @@ int mgcurv::crossLineCircle(Point2d& pt1, Point2d& pt2, const Point2d& a,
         return 0;
     }
     
+    Point2d perp;
+    float dist = mglnrel::ptToBeeline2(a, b, c, perp);
+    
+    if (fabsf(dist - r) < r * 1e-3f) {
+        pt1 = c.rulerPoint(perp, r, 0);
+        pt2 = pt1;
+        return 1;
+    }
+    
     point_t p1, p2;
     point_t a1(a.x - c.x, a.y - c.y);
     point_t b1(b.x - c.x, b.y - c.y);

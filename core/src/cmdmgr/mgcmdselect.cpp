@@ -16,10 +16,6 @@
 #include "mglog.h"
 #include "mgstorage.h"
 
-#if defined(_WIN32) && !defined(ENABLE_DRAG_SELBOX)
-#define ENABLE_DRAG_SELBOX
-#endif
-
 int MgCmdSelect::getSelectedIDs(MgView* view, int* ids, int count)
 {
     int i = 0;
@@ -231,16 +227,15 @@ bool MgCmdSelect::backStep(const MgMotion* sender)
 bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
 {
     std::vector<const MgShape*> selection;
-    const std::vector<const MgShape*>& shapes = (m_clones.empty() ? selection :
-                                                 (std::vector<const MgShape*>&)m_clones);
+    const std::vector<const MgShape*>& shapes = (m_clones.empty() ? selection : (std::vector<const MgShape*>&)m_clones);
     std::vector<const MgShape*>::const_iterator it;
     Point2d pnt;
     GiContext ctxhd(0, GiColor(128, 128, 64, 172), 
                     GiContext::kSolidLine, GiColor(172, 172, 172, 64));
     float radius = sender->displayMmToModel(sender->view->useFinger() ? 1.f : 3.f, gs);
     float r2x = radius * 2.5f;
-    bool rorate = (!isEditMode(sender->view)
-        && m_boxHandle >= 8 && m_boxHandle < 12);
+    int flags = sender->view->getOptionInt("selectDrawFlags", 0xFF);
+    bool rorate = (!isEditMode(sender->view) && m_boxHandle >= 8 && m_boxHandle < 12);
     
     // 从 m_selIds 得到临时图形数组 selection
     for (sel_iterator its = m_selIds.begin(); its != m_selIds.end(); ++its) {
@@ -254,7 +249,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     }
     
     if (!m_showSel || (!m_clones.empty() && !isCloneDrag(sender))) {
-        if (m_showSel && !rorate) {                 // 拖动提示的参考线
+        if (m_showSel && !rorate && (flags & kMgSelDrawDragLine)) { // 拖动提示的参考线
             GiContext ctxshap(-1.05f, GiColor(0, 0, 255, 32), GiContext::kDotLine);
             gs->drawLine(&ctxshap, m_ptStart, m_ptSnap);
         }
@@ -263,10 +258,10 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     // 外部动态改变图形属性时，或拖动时
     if (!m_showSel || !m_clones.empty()) {
         for (it = shapes.begin(); it != shapes.end(); ++it) {
-            (*it)->draw(m_showSel ? 2 : 0, *gs, NULL, -1);  // 原样显示
+            (*it)->draw(m_showSel ? 2 : 0, *gs, NULL, -1);          // 原样显示
         }
     }
-    else if (m_clones.empty()) {                    // 蓝色显示选中的图形
+    else if (m_clones.empty() && (flags & kMgSelDrawBlueShape)) {   // 蓝色显示选中的图形
         float w = 0.5f * gs->xf().getWorldToDisplayY();
         GiContext ctx(-w, GiColor(0, 0, 255, 48));
         bool old = gs->setPhaseEnabled(true);
@@ -277,7 +272,8 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         gs->setPhaseEnabled(old);
     }
     
-    if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)) {
+    if (sender->view->shapes()->getOwner()->isKindOf(kMgShapeComposite)
+        && (flags & kMgSelDrawGroupBorder)) {
         GiContext ctxshap(0, GiColor(0, 0, 255, 64), GiContext::kDotLine);
         Box2d rect(sender->view->shapes()->getExtent());
         rect.inflate(sender->displayMmToModel(2.f));
@@ -290,7 +286,8 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                           GiColor(0, 0, 255, 24));
         gs->drawRect(&ctxshap, Box2d(sender->startPtM, sender->pointM));
     }
-    else if (sender->view->isContextActionsVisible() && !selection.empty()) {
+    else if (sender->view->isContextActionsVisible()
+             && !selection.empty() && (flags & kMgSelDrawActionBorder)) {
         Box2d selbox(getBoundingBox(sender));
         GiContext ctxshap(0, GiColor(0, 0, 255, 80), GiContext::kDashLine);  // 蓝色虚线包络框
         gs->drawRect(&ctxshap, selbox);
@@ -298,22 +295,20 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     else if (!selection.empty() && m_showSel
              && (selection.size() > 1 || !isEditMode(sender->view))) {
         Box2d selbox(getBoundingBox(sender));
+        bool xform = !!(flags & kMgSelDrawXformBox);
         
-        if (!selbox.isEmpty()) {
+        if (!selbox.isEmpty() && (flags & kMgSelDrawSelBorder)) {
             GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
             gs->drawRect(&ctxshap, selbox);
         }
         if (m_clones.empty() && !shapes.empty()) {
-#ifdef ENABLE_DRAG_SELBOX
-            for (int i = canTransform(shapes.front(), sender) ? 7 : -1; i >= 0; i--) {
+            for (int i = xform && canTransform(shapes.front(), sender) ? 7 : -1; i >= 0; i--) {
                 mgnear::getRectHandle(selbox, i, pnt);
                 gs->drawHandle(pnt, 0);
             }
-            for (int j = canRotate(shapes.front(), sender) ? 1 : -1;
-                j >= 0; j--) {
+            for (int j = xform && canRotate(shapes.front(), sender) ? 1 : -1; j >= 0; j--) {
                 mgnear::getRectHandle(selbox, j == 0 ? 7 : 5, pnt);
-                pnt = pnt.rulerPoint(selbox.center(),
-                                     -sender->displayMmToModel(10.f), 0);
+                pnt = pnt.rulerPoint(selbox.center(), -sender->displayMmToModel(10.f), 0);
                 
                 float w = -1.f * gs->xf().getWorldToDisplayY(false);
                 float r = pnt.distanceTo(selbox.center());
@@ -326,7 +321,6 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 
                 gs->drawHandle(pnt, 0);
             }
-#endif // ENABLE_DRAG_SELBOX
         }
         else if (!selbox.isEmpty()) {   // 正在拖动临时图形
             if (rorate) {               // 旋转提示的参考线
@@ -334,7 +328,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
                 gs->drawLine(&ctxshap, selbox.center(), m_ptSnap);
             }
-            else {
+            else if (flags & kMgSelDrawDragDot) {
                 gs->drawHandle(m_ptSnap, kGiHandleVertex);
             }
         }
@@ -368,18 +362,18 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 gs->drawHandle(pnt, imageType);
         }
         
-        if ((m_handleIndex > 0 || m_rotateHandle > 0)) {
+        if ((m_handleIndex > 0 || m_rotateHandle > 0) && (flags & kMgSelDrawHandle)) {
             int t = m_rotateHandle > 0 ? m_rotateHandle - 1 : m_handleIndex - 1;
             pnt = shape->shapec()->getHandlePoint(t);
             gs->drawHandle(pnt, m_rotateHandle > 0 ? kGiHandleRotate : kGiHandleHotVertex);
         }
-        if (m_insertPt && !m_clones.empty()) {  // 在临时图形上显示新插入顶点
+        if (m_insertPt && !m_clones.empty()) {      // 在临时图形上显示新插入顶点
             GiContext insertctx(ctxhd);
             insertctx.setFillColor(GiColor(255, 0, 0, 64));
             gs->drawHandle(m_hit.nearpt, kGiHandleHotVertex);
         }
     }
-    if (shapes.size() == 1 && m_clones.empty()
+    if (shapes.size() == 1 && m_clones.empty() && (flags & kMgSelDrawNearPt)
         && m_hit.nearpt.distanceTo(pnt) > r2x * 2) {
         gs->drawCircle(&ctxhd, m_hit.nearpt, radius / 2);  // 显示线上的最近点，以便用户插入新点
     }
@@ -759,9 +753,10 @@ bool MgCmdSelect::isDragRectCorner(const MgMotion* sender, Matrix2d& mat)
     m_ptSnap = sender->pointM;
     mat = Matrix2d::kIdentity();
     
-#ifdef ENABLE_DRAG_SELBOX
-    if (isEditMode(sender->view) || m_selIds.empty() || m_boxsel)
+    if (isEditMode(sender->view) || m_selIds.empty() || m_boxsel
+        || !(sender->view->getOptionInt("selectDrawFlags", 0xFF) & kMgSelDrawXformBox)) {
         return false;
+    }
     
     Box2d selbox(getBoundingBox(sender));
     if (selbox.isEmpty())
@@ -812,7 +807,6 @@ bool MgCmdSelect::isDragRectCorner(const MgMotion* sender, Matrix2d& mat)
         m_ptSnap = selbox.center().polarPoint(angle + (pnt - selbox.center()).angle2(),
                                               sender->pointM.distanceTo(selbox.center()));
     }
-#endif // ENABLE_DRAG_SELBOX
     
     return m_boxHandle < 10;
 }
@@ -1561,7 +1555,7 @@ bool MgCmdSelect::overturnPolygon(const MgMotion* sender)
             return false;
         Point2d cen(rect.center());
         
-        newsp->shape()->transform(Matrix2d::mirroring(cen, Vector2d(0, 1)));
+        newsp->shape()->transform(Matrix2d::mirroring(cen, Vector2d(0.f, 1.f)));
         newsp->shape()->update();
         oldsp->getParent()->updateShape(newsp);
         

@@ -1290,7 +1290,7 @@ bool GiGraphics::rawText(const char* text, float x, float y, float h, int align)
 {
     if (m_impl->canvas && text && !m_impl->stopping
         && !isnan(x) && !isnan(y)) {
-        m_impl->canvas->drawTextAt(text, x, y, h, align);
+        m_impl->canvas->drawTextAt(text, x, y, h, align, 0);
         return true;
     }
     return false;
@@ -1315,14 +1315,19 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool mode
     return false;
 }
 
-bool GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align)
+bool GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align, float angle)
 {
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * xf().modelToDisplay());
         h *= xf().getWorldToDisplayY(false);
+        
+        if (!mgIsZero(angle)) {
+            angle = (Vector2d::angledVector(angle, 1) * xf().modelToWorld()).angle2();
+        }
+        
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
-        return setBrush(&ctx) && m_impl->canvas->drawTextAt(text, ptd.x, ptd.y + h, h, align) > 0;
+        return setBrush(&ctx) && m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) > 0;
     }
     return false;
 }

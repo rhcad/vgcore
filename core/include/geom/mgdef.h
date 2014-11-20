@@ -118,7 +118,7 @@ template<class _T> inline _T mgSquare(_T x, _T y)
     \ingroup GEOMAPI
     \see mgbase::roundReal
 */
-inline int mgRound(float d)
+template<class _T> inline int mgRound(_T d)
 {
     return d < 0 ? -(int)(-d + 0.5f) : (int)(d + 0.5f);
 }

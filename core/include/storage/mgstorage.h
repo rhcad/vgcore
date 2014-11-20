@@ -36,21 +36,27 @@ struct MgStorage
     virtual bool readBool(const char* name, bool defvalue) = 0;
     //! 给定字段名称(常量)，取出一个浮点数的值
     virtual float readFloat(const char* name, float defvalue) = 0;
+    //! 给定字段名称(常量)，取出一个浮点数的值
+    virtual double readDouble(const char* name, double defvalue) = 0;
 
     //! 添加一个给定字段名称(常量)的布尔值
     virtual void writeBool(const char* name, bool value) = 0;
     //! 添加一个给定字段名称(常量)的浮点数的值
     virtual void writeFloat(const char* name, float value) = 0;
+    //! 添加一个给定字段名称(常量)的浮点数的值
+    virtual void writeDouble(const char* name, double value) = 0;
     //! 添加一个给定字段名称(常量)的字符串内容(有零结束符)
     virtual void writeString(const char* name, const char* value) = 0;
     
 #ifndef SWIG
     //! 给定字段名称(常量)，取出浮点数数组. 传入缓冲为空时返回所需个数
     virtual int readFloatArray(const char* name, float* values, int count, bool report = true) = 0;
+    virtual int readDoubleArray(const char* name, double* values, int count, bool report = true) = 0;
     //! 给定字段名称(常量)，取出字符串内容，不含零结束符. 传入缓冲为空时返回所需字符个数
     virtual int readString(const char* name, char* value, int count) = 0;
     //! 添加一个给定字段名称(常量)的浮点数数组
     virtual void writeFloatArray(const char* name, const float* values, int count) = 0;
+    virtual void writeDoubleArray(const char* name, const double* values, int count) = 0;
     //! 给定字段名称(常量)，取出整数数组. 传入缓冲为空时返回所需个数
     virtual int readIntArray(const char* name, int* values, int count, bool report = true) = 0;
     //! 添加一个给定字段名称(常量)的整数数组

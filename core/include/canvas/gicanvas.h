@@ -24,6 +24,15 @@ public:
         kLineCapButt    = 0x10000,
         kLineCapRound   = 0x20000,
         kLineCapSquare  = 0x40000,
+        
+        kAlignLeft      = 0,
+        kAlignCenter    = 1,
+        kAlignRight     = 2,
+        kAlignHorz      = 0xF,
+        kAlignTop       = 0,
+        kAlignBottom    = 0x10,
+        kAlignVCenter   = 0x20,
+        kAlignVert      = 0xF0,
     };
     
     //! Set attributes of the current pen to stroke edges.
@@ -127,10 +136,12 @@ public:
         \param x X of horizontal alignment position.
         \param y Y of horizontal alignment position.
         \param h Text height in point(or pixel) unit.
-        \param align Horizontal alignment type, 0-left, 1-center, 2-right alignment.
+        \param align alignment type, kAlignLeft|kAlignTop.
+        \param angle Rotate angle in radians, it's positive direction is CCW
+                in the world coordinate system.
         \return Actual display width.
      */
-    virtual float drawTextAt(const char* text, float x, float y, float h, int align) = 0;
+    virtual float drawTextAt(const char* text, float x, float y, float h, int align, float angle) = 0;
     
 #ifndef SWIG
     //! Clear the cached bitmap for re-drawing on desktop PC.

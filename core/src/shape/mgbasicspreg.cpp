@@ -158,7 +158,7 @@ static bool drawGrid(const MgGrid& sp, int, GiGraphics& gs, const GiContext& ctx
     int nx = (int)(sp.getWidth() / cell.x + _MGZERO);
     int ny = (int)(sp.getHeight() / cell.y + _MGZERO);
     Box2d rect(sp.getPoint(3), sp.getPoint(3)
-               + Vector2d((float)(cell.x * nx), (float)(cell.y * ny)));
+               + Vector2d(cell.x * (float)nx, cell.y * (float)ny));
     
     float w = gs.calcPenWidth(ctx.getLineWidth(), ctx.isAutoScale()) / -2.f;
     GiContext ctxgrid(w, ctx.getLineColor());

@@ -214,7 +214,7 @@ bool GiSvgCanvas::drawBitmap(const char*, float, float, float, float, float)
     return false;
 }
 
-float GiSvgCanvas::drawTextAt(const char* text, float x, float y, float, int)
+float GiSvgCanvas::drawTextAt(const char* text, float x, float y, float, int, float)
 {
     *im->doc << Text(Point(x, y), text, im->getBrush(true));
     return 0;

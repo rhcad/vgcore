@@ -258,7 +258,7 @@ MgPath& MgPath::addSVGPath(const char* s)
 {
     char item[64];
     char cmd = 0;
-	float args[10];
+	float args[10] = { 0, 0, 0, 0, 0, 0 };
 	int nargs = 0;
 	int rargs = 0;
     

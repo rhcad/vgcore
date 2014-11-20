@@ -57,6 +57,15 @@ public:
     static GiGraphics* fromHandle(long h) { GiGraphics* p; *(long*)&p = h; return p; }  //!< 转为对象
     long toHandle() const { long h; *(const GiGraphics**)&h = this; return h; }                     //!< 得到句柄
 
+    enum {  //!< for drawTextAt(..align..)
+        kAlignLeft      = 0,
+        kAlignCenter    = 1,
+        kAlignRight     = 2,
+        kAlignTop       = 0,
+        kAlignBottom    = 0x10,
+        kAlignVCenter   = 0x20,
+    };
+    
 public:
     //! 复制指定对象到本对象
     void copy(const GiGraphics& src);
@@ -373,9 +382,10 @@ public:
         \param pnt 文字对齐位置，模型坐标
         \param h 文字高度，点单位
         \param align 水平对齐方式，0-左对齐，1-居中，2-右对齐
+        \param angle 文字角度，弧度，以模型坐标系的X正方形为0度，模型坐标系的逆时针方向为角度正方向
         \return 是否显示成功
      */
-    bool drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align = 1);
+    bool drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align = 1, float angle = 0);
 
     //! 在显示适配类的 beginPaint() 中调用
     bool beginPaint(GiCanvas* canvas, const RECT_2D& clipBox = RECT_2D());
