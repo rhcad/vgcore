@@ -100,6 +100,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionInt("lockRotateHandle", 0);
     setOptionBool("zoomShapeEnabled", true);
     setOptionBool("notClickSelectInDrawCmd", false);
+    setOptionInt("selectDrawFlags", 0xFF);
 }
 
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)

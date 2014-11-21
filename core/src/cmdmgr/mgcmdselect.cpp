@@ -298,7 +298,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         bool xform = !!(flags & kMgSelDrawXformBox);
         
         if (!selbox.isEmpty() && (flags & kMgSelDrawSelBorder)) {
-            GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
+            GiContext ctxshap(0, GiColor(0, 0, 255, 48), GiContext::kDashLine);
             gs->drawRect(&ctxshap, selbox);
         }
         if (m_clones.empty() && !shapes.empty()) {
@@ -1509,7 +1509,8 @@ bool MgCmdSelect::isEditMode(MgView* view)
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         return true;
     }
-    return (m_editMode || m_shapeEdited) && m_selIds.size() == 1;
+    const MgShape* sp = view->shapes()->findShape(m_id);
+    return (m_editMode || m_shapeEdited) && m_selIds.size() == 1 && sp && !sp->shapec()->isLocked();
 }
 
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)

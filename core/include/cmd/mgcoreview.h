@@ -38,6 +38,7 @@ struct MgCoreView {
         kMgNoClone,         //!< 禁止克隆
         kMgHideContent,     //!< 隐藏内容
         kMgNoDel,           //!< 禁止删除
+        kMgCanSelLocked,    //!< 允许选中，即使锁定
     };
     
     virtual ~MgCoreView() {}
