@@ -1006,7 +1006,7 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
     if (aview) {
         aview->submitBackXform();
     }
-    if (ret) {
+    if (ret && impl->cmds()) {
         impl->submitDynamicShapes(aview);
     }
     return ret;
@@ -1017,21 +1017,30 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
     MgCommand* cmd = getCommand();
     MgShapes* shapes = drawing->getBackShapes(true);
     
+    mgCopy(motion()->d2mgs, cmds()->displayMmToModel(1, v->frontGraph()));
     if (cmd) {
         if (!cmd->gatherShapes(motion(), shapes)) {
             GiRecordCanvas canvas(shapes, v->xform(), cmd->isDrawingCommand() ? 0 : -1);
             if (v->frontGraph()->beginPaint(&canvas)) {
-                mgCopy(motion()->d2mgs, cmds()->displayMmToModel(1, v->frontGraph()));
                 cmd->draw(motion(), v->frontGraph());
+                if (!cmd->isDrawingCommand() && !isCommand("select")) {
+                    getCmdSubject()->drawInSelectCommand(motion(), NULL, -1, v->frontGraph());
+                }
                 if (cmd->isDrawingCommand()) {
                     getCmdSubject()->drawInShapeCommand(motion(), cmd, v->frontGraph());
                 }
                 v->frontGraph()->endPaint();
             }
         }
-        drawing->submitBackShapes();
-        giAtomicIncrement(&drawCount);
+    } else {
+        GiRecordCanvas canvas(shapes, v->xform(), -1);
+        if (v->frontGraph()->beginPaint(&canvas)) {
+            getCmdSubject()->drawInSelectCommand(motion(), NULL, -1, v->frontGraph());
+            v->frontGraph()->endPaint();
+        }
     }
+    drawing->submitBackShapes();
+    giAtomicIncrement(&drawCount);
 }
 
 void GiCoreView::clear()
