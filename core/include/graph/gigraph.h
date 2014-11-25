@@ -380,12 +380,12 @@ public:
         \param argb 文字颜色，0则为黑色
         \param text 要显示的文字内容
         \param pnt 文字对齐位置，模型坐标
-        \param h 文字高度，点单位
+        \param h 文字高度，毫米单位
         \param align 水平对齐方式，0-左对齐，1-居中，2-右对齐
         \param angle 文字角度，弧度，以模型坐标系的X正方形为0度，模型坐标系的逆时针方向为角度正方向
-        \return 是否显示成功
+        \return 实际显示宽度，毫米
      */
-    bool drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align = 1, float angle = 0);
+    float drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align = 1, float angle = 0);
 
     //! 在显示适配类的 beginPaint() 中调用
     bool beginPaint(GiCanvas* canvas, const RECT_2D& clipBox = RECT_2D());
@@ -413,7 +413,7 @@ public:
     bool rawBezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y);
     bool rawQuadTo(float cpx, float cpy, float x, float y);
     bool rawClosePath();
-    bool rawText(const char* text, float x, float y, float h, int align = 1);
+    float rawText(const char* text, float x, float y, float h, int align = 1);
     bool rawImage(const char* name, float xc, float yc, float w, float h, float angle);
     bool beginShape(int type, int sid, int version, float x, float y, float w, float h);
     void endShape(int type, int sid, float x, float y);
