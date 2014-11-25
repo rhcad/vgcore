@@ -167,6 +167,9 @@ public:
     //! 输出路径
     virtual void output(MgPath& path) const = 0;
     
+    //! 返回路径
+    MgPath getPath() const { MgPath p; output(p); return p; }
+    
     //! 保存图形
     virtual bool save(MgStorage* s) const;
     

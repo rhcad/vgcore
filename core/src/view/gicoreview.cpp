@@ -1405,9 +1405,7 @@ int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
     if (sp && sp->shapec()->isKindOf(MgPathShape::Type())) {
         ret = ((const MgPathShape*)sp->shapec())->exportSVGPath(buf, size);
     } else if (sp) {
-        MgPath path;
-        sp->shapec()->output(path);
-        ret = MgPathShape::exportSVGPath(path, buf, size);
+        ret = MgPathShape::exportSVGPath(sp->shapec()->getPath(), buf, size);
     }
     
     return ret;
