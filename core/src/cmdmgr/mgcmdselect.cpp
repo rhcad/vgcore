@@ -1066,6 +1066,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     bool changed = false;
     const bool cloned = !m_clones.empty();
     size_t i;
+    Tol tol(view->xform()->displayToModel(1.f, true));
     
     if (apply) {
         apply = false;
@@ -1108,6 +1109,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             }
             else {
                 if (oldsp && !oldsp->equals(*m_clones[i])
+                    && !m_clones[i]->shapec()->getExtent().isEmpty(tol)
                     && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     view->shapeChanged(m_clones[i]);
