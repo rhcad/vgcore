@@ -90,6 +90,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("canRotateHandle", true);
     setOptionFloat("snapPointTol", 4.f);
     setOptionFloat("snapNearTol", 3.f);
+    setOptionInt("snapRoundCell", 2);
     
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
@@ -924,6 +925,21 @@ int GiCoreView::getUnlockedShapeCount(int type)
 {
     int n = 0;
     impl->shapes()->traverseByType(type, getUnlockedShapeCount_, &n);
+    return n;
+}
+
+static void getVisibleShapeCount_(const MgShape* sp, void* d)
+{
+    if (sp->shapec()->isVisible()) {
+        int* n = (int*)d;
+        *n = *n + 1;
+    }
+}
+
+int GiCoreView::getVisibleShapeCount(int type)
+{
+    int n = 0;
+    impl->shapes()->traverseByType(type, getVisibleShapeCount_, &n);
     return n;
 }
 

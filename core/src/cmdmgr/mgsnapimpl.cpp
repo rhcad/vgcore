@@ -591,8 +591,17 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
                arr, matchpt ? &pnt : NULL, _ignoreStart, startMustVertex);  // 在所有图形中捕捉
     checkResult(arr, hotHandle);
+    pnt = matchpt && pnt.x > -1e8f ? pnt : _ptSnap; // 顶点匹配优先于用触点捕捉结果
     
-    return matchpt && pnt.x > -1e8f ? pnt : _ptSnap;    // 顶点匹配优先于用触点捕捉结果
+    if (arr[0].type == kMgSnapNone) {
+        int decimal = sender->view->getOptionInt("snapRoundCell", 2);
+        float mm = sender->displayMmToModel(1);
+        
+        pnt.x = mgbase::roundReal(pnt.x / mm, decimal) * mm;
+        pnt.y = mgbase::roundReal(pnt.y / mm, decimal) * mm;
+    }
+    
+    return pnt;
 }
 
 void MgCmdManagerImpl::checkResult(SnapItem arr[3], int hotHandle)
