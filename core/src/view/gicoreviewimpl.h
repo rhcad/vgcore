@@ -162,7 +162,7 @@ public:
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
     bool shapeDblClick(const MgShape* shape) {
-        return CALL_VIEW2(deviceView()->shapeDblClick(shape->getType(), shape->getID()), false);
+        return CALL_VIEW2(deviceView()->shapeDblClick(shape->shapec()->getType(), shape->getID()), false);
     }
     
     MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {

@@ -1040,7 +1040,7 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
             if (v->frontGraph()->beginPaint(&canvas)) {
                 cmd->draw(motion(), v->frontGraph());
                 if (!cmd->isDrawingCommand() && !isCommand("select")) {
-                    getCmdSubject()->drawInSelectCommand(motion(), NULL, -1, v->frontGraph());
+                    getCmdSubject()->drawInSelectCommand(motion(), cmd->getShape(motion()), -1, v->frontGraph());
                 }
                 if (cmd->isDrawingCommand()) {
                     getCmdSubject()->drawInShapeCommand(motion(), cmd, v->frontGraph());

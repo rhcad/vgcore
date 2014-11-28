@@ -28,26 +28,10 @@ int MgCmdSelect::getSelectedIDs(MgView* view, int* ids, int count)
     return i;
 }
 
-static void findUnlockedShapeFilter(const MgShape* sp, void* data)
-{
-    std::pair<int, int> *p = (std::pair<int, int> *)data;
-    if (sp->shapec()->isVisible() && !sp->shapec()->isLocked()) {
-        p->first = sp->getID();
-        p->second++;
-    }
-}
-
 int MgCmdSelect::getSelection(MgView* view, int count, const MgShape** shapes)
 {
     if (m_selIds.empty()) {
         m_id = view->getOptionInt("lockSelShape", m_id);
-        if (!m_id) {
-            std::pair<int, int> data(0, 0);
-            view->shapes()->traverseByType(0, findUnlockedShapeFilter, &data);
-            if (data.second == 1) {
-                m_id = data.first;
-            }
-        }
         if (m_id) {
             m_selIds.push_back(m_id);
         }
@@ -1066,7 +1050,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     bool changed = false;
     const bool cloned = !m_clones.empty();
     size_t i;
-    Tol tol(view->xform()->displayToModel(1.f, true));
+    Tol tol(view->xform()->displayToModel(0.5f, true));
     
     if (apply) {
         apply = false;
