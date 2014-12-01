@@ -50,7 +50,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
     sender->view->setNewShapeID(0);
     m_step = 0;
     m_shape->shape()->clear();
-    m_oneShapeEnd = !!sender->view->getOptionBool("drawOneShape", false);
+    m_flags = (m_flags & ~1) | (sender->view->getOptionBool("drawOneShape", false) ? 1 : 0);
     sender->view->getSnap()->clearSnap(sender);
     
     if (s) {
@@ -72,8 +72,20 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
         if (s->readInt("lineStyle", -10) > -10) {
             ctx.setLineStyle(s->readInt("lineStyle", 0));
         }
+        if (s->readInt("lineAlpha", -10) > -10) {
+            ctx.setLineAlpha(s->readInt("lineAlpha", 0));
+        }
+        if (s->readInt("lineRGB", 0) != 0) {
+            int value = s->readInt("lineRGB", 0);
+            ctx.setLineColor((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF);
+        }
+        if (s->readInt("lineARGB", 0) != 0) {
+            int value = s->readInt("lineARGB", 0);
+            ctx.setLineColor((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF, (value >> 24) & 0xFF);
+        }
     }
     m_shape->setContext(ctx);
+    m_flags = (m_flags & ~2) | (sender->view->context() && ctx != *sender->view->context() ? 2 : 0);
     
     int n = s ? s->readFloatArray("points", NULL, 0) : 0;
     if (n > 1) {
@@ -115,10 +127,10 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
             sender->view->setNewShapeID(newsp->getID());
         }
     }
-    if (m_shape && sender->view->context()) {
+    if (m_shape && sender->view->context() && (m_flags & 2) == 0) {
         m_shape->setContext(*sender->view->context());
     }
-    if (m_oneShapeEnd) {
+    if (m_flags & 1) {
         sender->view->toSelectCommand();
     }
     

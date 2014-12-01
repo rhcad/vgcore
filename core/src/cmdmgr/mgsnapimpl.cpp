@@ -183,13 +183,12 @@ static bool snapPerp(const MgMotion* sender, const Point2d& orgpt, const Tol& to
                         pt2 = arr0.pt;
                         int n = MgEllipse::crossCircle(pt1, pt2, sp2->shapec());
                         if (n < 0) {
-                            MgPath path1, path2;
+                            MgPath path1;
                             
                             path1.moveTo(pt1);
                             path1.lineTo(pt1 + (pt2 - pt1) * 2.f);
                             
-                            sp2->shapec()->output(path2);
-                            path1.crossWithPath(path2, Box2d(orgpt, 1e10f, 0), arr0.pt);
+                            path1.crossWithPath(sp2->shapec()->getPath(), Box2d(orgpt, 1e10f, 0), arr0.pt);
                         } else if (n > 0) {
                             arr0.pt = pt2.distanceTo(orgpt) < pt1.distanceTo(orgpt) ? pt2 : pt1;
                         }
@@ -423,8 +422,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
             continue;
         }
         
-        MgPath path1;
-        sp1->shapec()->output(path1);
+        MgPath path1(sp1->shapec()->getPath());
         
         while (const MgShape* sp2 = it.getNext()) {
             if (skipShape(ignoreids, sp2) || sp2 == shape || sp2 == sp1
@@ -436,9 +434,7 @@ static bool snapCross(const MgMotion* sender, const Point2d& orgpt,
             int n = MgEllipse::crossCircle(pt1, pt2, sp1->shapec(), sp2->shapec(), orgpt);
             
             if (n < 0) {
-                MgPath path2;
-                sp2->shapec()->output(path2);
-                n = path1.crossWithPath(path2, snapbox, ptcross) ? 1 : 0;
+                n = path1.crossWithPath(sp2->shapec()->getPath(), snapbox, ptcross) ? 1 : 0;
             } else if (n > 0) {
                 ptcross = pt2.distanceTo(ptd) < pt1.distanceTo(ptd) ? pt2 : pt1;
                 n = snapbox.contains(ptcross) ? 1 : 0;
@@ -595,8 +591,17 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     snapPoints(sender, orgpt, shape, ignoreHd < 0 ? hotHandle : ignoreHd, ignoreids,
                arr, matchpt ? &pnt : NULL, _ignoreStart, startMustVertex);  // 在所有图形中捕捉
     checkResult(arr, hotHandle);
+    pnt = matchpt && pnt.x > -1e8f ? pnt : _ptSnap; // 顶点匹配优先于用触点捕捉结果
     
-    return matchpt && pnt.x > -1e8f ? pnt : _ptSnap;    // 顶点匹配优先于用触点捕捉结果
+    if (arr[0].type == kMgSnapNone) {
+        int decimal = sender->view->getOptionInt("snapRoundCell", 2);
+        float mm = sender->displayMmToModel(1);
+        
+        pnt.x = mgbase::roundReal(pnt.x / mm, decimal) * mm;
+        pnt.y = mgbase::roundReal(pnt.y / mm, decimal) * mm;
+    }
+    
+    return pnt;
 }
 
 void MgCmdManagerImpl::checkResult(SnapItem arr[3], int hotHandle)

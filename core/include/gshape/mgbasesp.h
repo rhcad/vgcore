@@ -33,6 +33,7 @@ typedef enum {
     kMgNoClone,         //!< 禁止克隆
     kMgHideContent,     //!< 隐藏内容
     kMgNoDel,           //!< 禁止删除
+    kMgCanSelLocked,    //!< 允许选中，即使锁定
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -166,6 +167,9 @@ public:
     //! 输出路径
     virtual void output(MgPath& path) const = 0;
     
+    //! 返回路径
+    MgPath getPath() const { MgPath p; output(p); return p; }
+    
     //! 保存图形
     virtual bool save(MgStorage* s) const;
     
@@ -235,6 +239,8 @@ protected:
             int _flagNoAction:1;
             int _flagNoClone:1;
             int _flagHide:1;
+            int _flagNoDel:1;
+            int _flagCanSelLocked:1;
         } _bits;
     };
     long _changeCount;

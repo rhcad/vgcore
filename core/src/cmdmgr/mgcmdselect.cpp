@@ -28,26 +28,10 @@ int MgCmdSelect::getSelectedIDs(MgView* view, int* ids, int count)
     return i;
 }
 
-static void findUnlockedShapeFilter(const MgShape* sp, void* data)
-{
-    std::pair<int, int> *p = (std::pair<int, int> *)data;
-    if (sp->shapec()->isVisible() && !sp->shapec()->isLocked()) {
-        p->first = sp->getID();
-        p->second++;
-    }
-}
-
 int MgCmdSelect::getSelection(MgView* view, int count, const MgShape** shapes)
 {
     if (m_selIds.empty()) {
         m_id = view->getOptionInt("lockSelShape", m_id);
-        if (!m_id) {
-            std::pair<int, int> data(0, 0);
-            view->shapes()->traverseByType(0, findUnlockedShapeFilter, &data);
-            if (data.second == 1) {
-                m_id = data.first;
-            }
-        }
         if (m_id) {
             m_selIds.push_back(m_id);
         }
@@ -298,7 +282,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         bool xform = !!(flags & kMgSelDrawXformBox);
         
         if (!selbox.isEmpty() && (flags & kMgSelDrawSelBorder)) {
-            GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
+            GiContext ctxshap(0, GiColor(0, 0, 255, 48), GiContext::kDashLine);
             gs->drawRect(&ctxshap, selbox);
         }
         if (m_clones.empty() && !shapes.empty()) {
@@ -1066,6 +1050,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     bool changed = false;
     const bool cloned = !m_clones.empty();
     size_t i;
+    Tol tol(view->xform()->displayToModel(0.5f, true));
     
     if (apply) {
         apply = false;
@@ -1108,6 +1093,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             }
             else {
                 if (oldsp && !oldsp->equals(*m_clones[i])
+                    && !m_clones[i]->shapec()->getExtent().isEmpty(tol)
                     && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     view->shapeChanged(m_clones[i]);
@@ -1509,7 +1495,8 @@ bool MgCmdSelect::isEditMode(MgView* view)
     if (owner && owner->isKindOf(kMgShapeComposite)) {
         return true;
     }
-    return (m_editMode || m_shapeEdited) && m_selIds.size() == 1;
+    const MgShape* sp = view->shapes()->findShape(m_id);
+    return (m_editMode || m_shapeEdited) && m_selIds.size() == 1 && sp && !sp->shapec()->isLocked();
 }
 
 bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)

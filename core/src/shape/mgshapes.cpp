@@ -473,6 +473,11 @@ Box2d MgShapes::getExtent() const
     return extent;
 }
 
+static bool isVisibleAndLocked(const MgBaseShape* shape)
+{
+    return (shape->isVisible() && (!shape->isLocked() || shape->getFlag(kMgCanSelLocked)));
+}
+
 const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
                                  Filter filter, void* data) const
 {
@@ -483,7 +488,7 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
         const MgBaseShape* shape = (*it)->shapec();
         Box2d extent(shape->getExtent());
         
-        if ((filter || (shape->isVisible() && !shape->isLocked()))
+        if ((filter || isVisibleAndLocked(shape))
             && extent.isIntersect(limits)
             && (!filter || filter(*it, data)))
         {

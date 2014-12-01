@@ -144,6 +144,7 @@ public:
     int getShapeCount();
     int getShapeCount(long doc);
     int getUnlockedShapeCount(int type = 0);
+    int getVisibleShapeCount(int type = 0);
     long getChangeCount();
     long getDrawCount() const;
     int getSelectedShapeCount();

@@ -4,6 +4,8 @@
 #include "mgdrawarc.h"
 #include "mgbasicsps.h"
 #include "mgstorage.h"
+#include "mglocal.h"
+#include <sstream>
 
 // MgCmdArc3P
 //
@@ -62,11 +64,26 @@ bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
     return MgCmdArc3P::initialize(sender, s);
 }
 
+float MgCmdArcCSE::drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr)
+{
+    std::stringstream ss;
+    
+    Point2d pt(sender->pointM + Vector2d(0, sender->displayMmToModel(15.f)));
+    pt.y = mgMin(pt.y, sender->view->xform()->getWndRectM().ymax);
+    
+    ss << mgbase::roundReal(mgbase::rad2Deg(angle), 2) << MgLocalized::getString(sender->view, "degrees");
+    if (stdstr) {
+        *((std::string*)stdstr) = ss.str();
+    }
+    return gs ? gs->drawTextAt(GiColor::Red().getARGB(), ss.str().c_str(), pt, 3.5f) : 0.f;
+}
+
 bool MgCmdArcCSE::draw(const MgMotion* sender, GiGraphics* gs)
 {
     if (m_step == 2 && sender->dragging()) {    // 画弧时显示圆心与终端连线
         GiContext ctx(0, GiColor(0, 126, 0, 64), GiContext::kDotLine);
         gs->drawLine(&ctx, _points[0], _points[2]);
+        drawAngleText(sender, gs, fabsf(((MgArc*)dynshape()->shape())->getSweepAngle()));
     }
     if (_points[0] != _points[1]) {
         gs->drawHandle(_points[0], kGiHandleCenter);

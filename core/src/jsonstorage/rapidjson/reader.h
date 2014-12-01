@@ -501,6 +501,19 @@ private:
 		if (s.Peek() == '0') {
 			i = 0;
 			s.Take();
+            if (s.Peek() == 'x' || s.Peek() == 'X') {
+                s.Take();
+                while ((s.Peek() >= '0' && s.Peek() <= '9')
+                       || (s.Peek() >= 'a' && s.Peek() <= 'f')
+                       || (s.Peek() >= 'A' && s.Peek() <= 'F')) {
+                    if (s.Peek() >= '0' && s.Peek() <= '9')
+                        i = i * 16 + (s.Take() - '0');
+                    else if (s.Peek() >= 'a' && s.Peek() <= 'f')
+                        i = i * 16 + (s.Take() - 'a' + 10);
+                    else
+                        i = i * 16 + (s.Take() - 'A' + 10);
+                }
+            }
 		}
 		else if (s.Peek() >= '1' && s.Peek() <= '9') {
 			i = s.Take() - '0';

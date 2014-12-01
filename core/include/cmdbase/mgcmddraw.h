@@ -74,7 +74,7 @@ protected:
     int         m_step;
 private:
     MgShape*    m_shape;
-    bool        m_oneShapeEnd;
+    int         m_flags;
     static Point2d m_lastSnapped[2];
 };
 

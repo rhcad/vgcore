@@ -90,6 +90,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("canRotateHandle", true);
     setOptionFloat("snapPointTol", 4.f);
     setOptionFloat("snapNearTol", 3.f);
+    setOptionInt("snapRoundCell", 2);
     
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
@@ -100,6 +101,7 @@ void GiCoreViewImpl::resetOptions()
     setOptionInt("lockRotateHandle", 0);
     setOptionBool("zoomShapeEnabled", true);
     setOptionBool("notClickSelectInDrawCmd", false);
+    setOptionInt("selectDrawFlags", 0xFF);
 }
 
 void GiCoreViewImpl::calcContextButtonPosition(mgvector<float>& pos, int n, const Box2d& box)
@@ -926,6 +928,21 @@ int GiCoreView::getUnlockedShapeCount(int type)
     return n;
 }
 
+static void getVisibleShapeCount_(const MgShape* sp, void* d)
+{
+    if (sp->shapec()->isVisible()) {
+        int* n = (int*)d;
+        *n = *n + 1;
+    }
+}
+
+int GiCoreView::getVisibleShapeCount(int type)
+{
+    int n = 0;
+    impl->shapes()->traverseByType(type, getVisibleShapeCount_, &n);
+    return n;
+}
+
 long GiCoreView::getChangeCount()
 {
     return impl->changeCount;
@@ -1005,7 +1022,7 @@ bool GiCoreView::submitDynamicShapes(GiView* view)
     if (aview) {
         aview->submitBackXform();
     }
-    if (ret) {
+    if (ret && impl->cmds()) {
         impl->submitDynamicShapes(aview);
     }
     return ret;
@@ -1016,21 +1033,30 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
     MgCommand* cmd = getCommand();
     MgShapes* shapes = drawing->getBackShapes(true);
     
+    mgCopy(motion()->d2mgs, cmds()->displayMmToModel(1, v->frontGraph()));
     if (cmd) {
         if (!cmd->gatherShapes(motion(), shapes)) {
             GiRecordCanvas canvas(shapes, v->xform(), cmd->isDrawingCommand() ? 0 : -1);
             if (v->frontGraph()->beginPaint(&canvas)) {
-                mgCopy(motion()->d2mgs, cmds()->displayMmToModel(1, v->frontGraph()));
                 cmd->draw(motion(), v->frontGraph());
+                if (!cmd->isDrawingCommand() && !isCommand("select")) {
+                    getCmdSubject()->drawInSelectCommand(motion(), cmd->getShape(motion()), -1, v->frontGraph());
+                }
                 if (cmd->isDrawingCommand()) {
                     getCmdSubject()->drawInShapeCommand(motion(), cmd, v->frontGraph());
                 }
                 v->frontGraph()->endPaint();
             }
         }
-        drawing->submitBackShapes();
-        giAtomicIncrement(&drawCount);
+    } else {
+        GiRecordCanvas canvas(shapes, v->xform(), -1);
+        if (v->frontGraph()->beginPaint(&canvas)) {
+            getCmdSubject()->drawInSelectCommand(motion(), NULL, -1, v->frontGraph());
+            v->frontGraph()->endPaint();
+        }
     }
+    drawing->submitBackShapes();
+    giAtomicIncrement(&drawCount);
 }
 
 void GiCoreView::clear()
@@ -1395,9 +1421,7 @@ int GiCoreView::exportSVGPath(long shapes, int sid, char* buf, int size)
     if (sp && sp->shapec()->isKindOf(MgPathShape::Type())) {
         ret = ((const MgPathShape*)sp->shapec())->exportSVGPath(buf, size);
     } else if (sp) {
-        MgPath path;
-        sp->shapec()->output(path);
-        ret = MgPathShape::exportSVGPath(path, buf, size);
+        ret = MgPathShape::exportSVGPath(sp->shapec()->getPath(), buf, size);
     }
     
     return ret;
