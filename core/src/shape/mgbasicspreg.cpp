@@ -192,7 +192,8 @@ static bool drawGrid(const MgGrid& sp, int, GiGraphics& gs, const GiContext& ctx
     return ret > 0;
 }
 
-bool MgShape::drawShape(const MgBaseShape& sp, int mode, GiGraphics& gs, const GiContext& ctx, int segment)
+bool MgShape::drawShape(const MgShapes* shapes, const MgBaseShape& sp, int mode,
+                        GiGraphics& gs, const GiContext& ctx, int segment)
 {
     switch (sp.getType()) {
         case kMgShapeGrid:
@@ -220,6 +221,6 @@ bool MgShape::drawShape(const MgBaseShape& sp, int mode, GiGraphics& gs, const G
         case kMgShapePath:
             return drawPath((MgPathShape&)sp, mode, gs, ctx, segment);
         default:
-            return sp.draw(mode, gs, ctx, segment);
+            return sp.draw2(shapes, mode, gs, ctx, segment);
     }
 }

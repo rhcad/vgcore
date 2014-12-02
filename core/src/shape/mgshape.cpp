@@ -45,7 +45,7 @@ bool MgShape::draw(int mode, GiGraphics& gs, const GiContext *ctx, int segment) 
     if (gs.beginShape(shapec()->getType(), getID(),
                       (int)shapec()->getChangeCount(),
                       rect.xmin, rect.ymin, rect.width(), rect.height())) {
-        ret = drawShape(*shapec(), mode, gs, tmpctx, segment);
+        ret = drawShape(getParent(), *shapec(), mode, gs, tmpctx, segment);
         gs.endShape(shapec()->getType(), getID(), rect.xmin, rect.ymin);
     }
     return ret;

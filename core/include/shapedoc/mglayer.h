@@ -38,7 +38,7 @@ public:
     virtual void release();
     virtual bool equals(const MgObject& src) const;
     virtual int getType() const { return Type(); }
-    virtual bool isKindOf(int type) const { return type == Type(); }
+    virtual bool isKindOf(int type) const { return type == Type() || type == MgShapes::Type(); }
     
 protected:
     MgLayer(MgShapeDoc* doc, int index);

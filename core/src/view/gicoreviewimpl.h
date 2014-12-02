@@ -85,7 +85,7 @@ public:
     
     std::map<int, MgShape* (*)()>   _shapeCreators;
     
-    typedef enum { kOptBool, kOptInt, kOptFloat } OPT_TYPE;
+    typedef enum { kOptBool, kOptInt, kOptFloat, kOptStr } OPT_TYPE;
     typedef std::pair<OPT_TYPE, std::string> OPT_VALUE;
     typedef std::map<std::string, OPT_VALUE> OPT_MAP;
     OPT_MAP         options;
@@ -314,6 +314,8 @@ public:
     void setOptionBool(const char* name, bool value);
     void setOptionInt(const char* name, int value);
     void setOptionFloat(const char* name, float value);
+    const char* getOptionString(const char* name);
+    void setOptionString(const char* name, const char* text);
     OPT_MAP& getOptions() { return options; }
     void resetOptions();
     
