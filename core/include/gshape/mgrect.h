@@ -52,6 +52,9 @@ public:
     //! 设置四个角点
     void setRect4P(const Point2d points[4]);
     
+    //! 给定两个相邻角点的位置进行几何变形
+    bool transformWith2P(const Point2d& pt1, int i1, const Point2d& pt2, int i2);
+    
     //! 设置中心点
     void setCenter(const Point2d& pt);
     
