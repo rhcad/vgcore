@@ -74,6 +74,10 @@ bool GcBaseView::twoFingersMove(const MgMotion& motion)
     return true;
 }
 
+void GcBaseView::draw(GiGraphics&)
+{
+}
+
 void GcBaseView::dyndraw(GiGraphics&)
 {
 }
@@ -87,4 +91,29 @@ GcGraphView::GcGraphView(MgView* mgview, GiView *view) : GcBaseView(mgview, view
 
 GcGraphView::~GcGraphView()
 {
+}
+
+void GcGraphView::draw(GiGraphics& gs)
+{
+    Box2d rect(gs.xf().getWndRectW());
+    GiContext ctx(0, GiColor(127, 127, 127, 24), GiContext::kSolidLine, GiColor(127, 127, 127, 80));
+    int gridType = cmdView()->getOptionInt("showGrid", 0);
+    
+    if (gridType == 1) {
+        for (float x = rect.xmin - 10; x < rect.xmax + 10; x += 10) {
+            gs.drawLine(&ctx, Point2d(x, rect.ymin), Point2d(x, rect.ymax), false);
+        }
+        for (float y = rect.ymin - 10; y < rect.ymax + 10; y += 10) {
+            gs.drawLine(&ctx, Point2d(rect.xmin, y), Point2d(rect.xmax, y), false);
+        }
+    }
+    else if (gridType == 2) {
+        for (float x = rect.xmin - 10; x < rect.xmax + 10; x += 10) {
+            for (float y = rect.ymin - 10; y < rect.ymax + 10; y += 10) {
+                gs.drawCircle(&ctx, Point2d(x, y), 0.2f, false);
+            }
+        }
+    }
+    
+    GcBaseView::draw(gs);
 }

@@ -599,6 +599,9 @@ int GiCoreView::drawAll(const mgvector<long>& docs, long hGs,
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
     if (gs && gs->beginPaint(canvas)) {
+        if (impl->curview) {
+            impl->curview->draw(*gs);
+        }
         n = 0;
         for (int i = 0; i < docs.count(); i++) {
             MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
