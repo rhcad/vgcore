@@ -95,9 +95,12 @@ GcGraphView::~GcGraphView()
 
 void GcGraphView::draw(GiGraphics& gs)
 {
-    Box2d rect(gs.xf().getWndRectW());
-    GiContext ctx(0, GiColor(127, 127, 127, 24), GiContext::kSolidLine, GiColor(127, 127, 127, 80));
     int gridType = cmdView()->getOptionInt("showGrid", 0);
+    if (gridType < 1 || gridType > 2 || gs.xf().getViewScale() < 0.2f)
+        return;
+    
+    Box2d rect(gs.xf().getWndRectW());
+    GiContext ctx(0, GiColor(127, 127, 127, gridType == 2 ? 48 : 24));
     
     if (gridType == 1) {
         for (float x = rect.xmin - 10; x < rect.xmax + 10; x += 10) {
@@ -110,7 +113,8 @@ void GcGraphView::draw(GiGraphics& gs)
     else if (gridType == 2) {
         for (float x = rect.xmin - 10; x < rect.xmax + 10; x += 10) {
             for (float y = rect.ymin - 10; y < rect.ymax + 10; y += 10) {
-                gs.drawCircle(&ctx, Point2d(x, y), 0.2f, false);
+                gs.drawLine(&ctx, Point2d(x, y - 0.5f), Point2d(x, y + 0.5f), false);
+                gs.drawLine(&ctx, Point2d(x - 0.5f, y), Point2d(x + 0.5f, y), false);
             }
         }
     }

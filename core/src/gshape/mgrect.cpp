@@ -246,15 +246,9 @@ static inline bool isBeside(int i1, int i2)
 
 bool MgBaseRect::transformWith2P(const Point2d& pt1, int i1, const Point2d& pt2, int i2)
 {
-    bool ret = (isBeside(mgMin(i1, i2), mgMax(i1, i2))
-                && _points[i1] != _points[i2]
-                && pt1 != pt2 && !pt1.isDegenerate() && !pt2.isDegenerate());
+    bool ret = (isBeside(mgMin(i1, i2), mgMax(i1, i2)) && pt1 != pt2);
     if (ret) {
-        Point2d old1(_points[i1]), old2(_points[i2]);
-        Matrix2d mat(Matrix2d::translation(pt1 - old1)
-                     * Matrix2d::scaling(pt2.distanceTo(pt1) / old2.distanceTo(old1), pt1)
-                     * Matrix2d::rotation((pt2 - pt1).angle2() - (old2 - old1).angle2(), pt1));
-        transform(mat);
+        transform(Matrix2d::transformWith2P(_points[i1], _points[i2], pt1, pt2));
     }
     
     return ret;

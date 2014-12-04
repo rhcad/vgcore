@@ -472,7 +472,13 @@ Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
                                    (int)ignoreids.size() - 1);
     
     MgSnap* snap = sender->cmds()->getSnap();
-    Point2d pt(snap->snapPoint(sender, sender->pointM, shape, m_handleIndex - 1,
+    Point2d orgpt(sender->pointM);
+    
+    if (m_handleIndex > 0 && shape
+        && shape->shapec()->getHandlePoint(m_handleIndex - 1).distanceTo(orgpt) < sender->displayMmToModel(2.f)) {
+        orgpt = shape->shapec()->getHandlePoint(m_handleIndex - 1);
+    }
+    Point2d pt(snap->snapPoint(sender, orgpt, shape, m_handleIndex - 1,
                                m_rotateHandle - 1, (const int*)&ignoreids.front()));
     if (!sender->dragging() && snap->getSnappedType() >= kMgSnapPoint) {
         subject->onPointSnapped(sender, shape);

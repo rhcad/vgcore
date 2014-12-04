@@ -163,7 +163,8 @@ bool MgShapes::updateShape(MgShape* shape, bool force)
         I::iterator it = im->findPositionOfID(shape->getID());
         if (it != im->shapes.end()) {
             shape->shape()->update();
-            shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount() + 1);
+            shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount()
+                                             + ((*it)->equals(*shape) ? 0 : 1));
             (*it)->release();
             *it = shape;
             shape->setParent(this, shape->getID());
