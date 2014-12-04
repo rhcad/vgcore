@@ -326,6 +326,9 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         int n = (getLockSelHandle(sender, 0) > 0 || getLockRotateHandle(sender, 0) > 0
                  ? 0 : shape->shapec()->getHandleCount());
         
+        if (shape->shapec()->getFlag(kMgFixedSize)) {
+            n = mgMin(n, shape->shapec()->getPointCount());
+        }
         for (int i = 0; i < n; i++) {
             if (i == m_handleIndex - 1 || i == m_rotateHandle - 1
                 || shape->shapec()->isHandleFixed(i)
@@ -433,7 +436,7 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
 int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
                                 const MgMotion* sender, float tolmm)
 {
-    if (!shape) {
+    if (!shape || shape->shapec()->getFlag(kMgFixedSize)) {
         return 0;
     }
     
@@ -744,7 +747,8 @@ bool MgCmdSelect::isDragRectCorner(const MgMotion* sender, Matrix2d& mat)
     mat = Matrix2d::kIdentity();
     
     if (isEditMode(sender->view) || m_selIds.empty() || m_boxsel
-        || !(sender->view->getOptionInt("selectDrawFlags", 0xFF) & kMgSelDrawXformBox)) {
+        || !(sender->view->getOptionInt("selectDrawFlags", 0xFF) & kMgSelDrawXformBox)
+        || (!m_clones.empty() && m_clones.front()->shapec()->getFlag(kMgFixedSize))) {
         return false;
     }
     
@@ -899,14 +903,15 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     }
                 }
             }
-            else if (m_handleIndex > 0 && isEditMode(sender->view)) { // 拖动顶点
+            else if (m_handleIndex > 0 && isEditMode(sender->view)
+                     && !shape->getFlag(kMgFixedSize)) {    // 拖动顶点
                 if (sender->view->shapeCanMovedHandle(m_clones[i], m_handleIndex - 1)) {
                     float tol = sender->displayMmToModel(3.f);
                     Point2d pt(snapPoint(sender, m_clones[i]));
                     shape->setHandlePoint2(m_handleIndex - 1, pt, tol, _dragData);
                 }
             }
-            else if (dragCorner) {                          // 拖动变形框的特定点
+            else if (dragCorner && !shape->getFlag(kMgFixedSize)) { // 拖动变形框的特定点
                 shape->transform(mat);
             }
             else if (sender->view->shapeCanMovedHandle(m_clones[i], -1)) { // 拖动整个图形
