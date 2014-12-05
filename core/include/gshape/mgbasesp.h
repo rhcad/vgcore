@@ -164,6 +164,11 @@ public:
     //! 显示图形（mode：0-正常显示，1-选中显示，2-拖动显示）
     virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const = 0;
     
+    //! 可查询上级图形列表对象的图形显示重载方法
+    virtual bool draw2(const MgObject* owner, int mode, GiGraphics& gs, const GiContext& ctx, int segment) const {
+        return draw(mode, gs, ctx, segment) && owner;
+    }
+    
     //! 输出路径
     virtual void output(MgPath& path) const = 0;
     

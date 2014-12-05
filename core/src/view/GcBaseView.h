@@ -36,6 +36,7 @@ public:
     
     virtual bool onGesture(const MgMotion& motion);                 //!< 传递单指触摸手势消息
     virtual bool twoFingersMove(const MgMotion& motion);            //!< 传递双指移动手势(可放缩旋转)
+    virtual void draw(GiGraphics& gs);                              //!< 绘制额外的静态图形
     virtual void dyndraw(GiGraphics& gs);                           //!< 绘制额外的动态图形
 
 private:

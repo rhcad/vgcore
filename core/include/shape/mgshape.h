@@ -81,7 +81,8 @@ public:
     virtual bool isKindOf(int type) const;
 
     //! 显示内部图形
-    static bool drawShape(const MgBaseShape& sp, int mode, GiGraphics& gs, const GiContext& ctx, int segment);
+    static bool drawShape(const MgShapes* shapes, const MgBaseShape& sp, int mode,
+                          GiGraphics& gs, const GiContext& ctx, int segment);
 
 protected:
     virtual ~MgShape() {}

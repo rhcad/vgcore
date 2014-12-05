@@ -5,6 +5,7 @@
 #include "mgcmdmgr_.h"
 #include "cmdsubject.h"
 #include <vector>
+#include <string>
 
 class CmdSubjectImpl : public CmdSubject
 {
@@ -15,37 +16,54 @@ private:
     virtual void registerObserver(CmdObserver* observer) {
         if (observer) {
             unregisterObserver(observer);
-            _arr.push_back(observer);
+            _arr.push_back(Observer(observer, ""));
         }
     }
     virtual void unregisterObserver(CmdObserver* observer) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (*it == observer) {
+            if (it->first == observer) {
                 _arr.erase(it);
                 break;
             }
         }
     }
+    virtual bool registerNamedObserver(const char* name, CmdObserver* observer) {
+        bool ret = observer && name && *name && !findNamedObserver(name);
+        if (ret) {
+            unregisterObserver(observer);
+            _arr.push_back(Observer(observer, name));
+        }
+        return ret;
+    }
+    virtual CmdObserver* findNamedObserver(const char* name) {
+        for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
+            if (it->second == name) {
+                return it->first;
+            }
+        }
+        return NULL;
+    }
+    
     virtual void onDocLoaded(const MgMotion* sender, bool forUndo) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onDocLoaded(sender, forUndo);
+            it->first->onDocLoaded(sender, forUndo);
         }
     }
     virtual void onEnterSelectCommand(const MgMotion* sender) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onEnterSelectCommand(sender);
+            it->first->onEnterSelectCommand(sender);
         }
     }
     virtual void onUnloadCommands(MgCmdManager* sender) {
         Observers arr(_arr);
         _arr.clear();
         for (Iterator it = arr.begin(); it != arr.end(); ++it) {
-            (*it)->onUnloadCommands(sender);
+            it->first->onUnloadCommands(sender);
         }
     }
     virtual bool selectActionsNeedHided(const MgMotion* sender) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if ((*it)->selectActionsNeedHided(sender)) {
+            if (it->first->selectActionsNeedHided(sender)) {
                 return true;
             }
         }
@@ -54,20 +72,20 @@ private:
     virtual int addShapeActions(const MgMotion* sender,
         mgvector<int>& actions, int n, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            n = (*it)->addShapeActions(sender, actions, n, shape);
+            n = it->first->addShapeActions(sender, actions, n, shape);
         }
         return n;
     }
     virtual bool doAction(const MgMotion* sender, int action) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if ((*it)->doAction(sender, action))
+            if (it->first->doAction(sender, action))
                 return true;
         }
         return false;
     }
     virtual bool doEndAction(const MgMotion* sender, int action) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if ((*it)->doEndAction(sender, action))
+            if (it->first->doEndAction(sender, action))
                 return true;
         }
         return false;
@@ -75,13 +93,13 @@ private:
     virtual void drawInShapeCommand(const MgMotion* sender, 
         MgCommand* cmd, GiGraphics* gs) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->drawInShapeCommand(sender, cmd, gs);
+            it->first->drawInShapeCommand(sender, cmd, gs);
         }
     }
     virtual void drawInSelectCommand(const MgMotion* sender, 
         const MgShape* shape, int handleIndex, GiGraphics* gs) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->drawInSelectCommand(sender, shape, handleIndex, gs);
+            it->first->drawInSelectCommand(sender, shape, handleIndex, gs);
         }
     }
     virtual void onSelectTouchEnded(const MgMotion* sender, int shapeid,
@@ -89,25 +107,25 @@ private:
         int count, const int* ids)
     {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onSelectTouchEnded(sender, shapeid, 
+            it->first->onSelectTouchEnded(sender, shapeid, 
                 handleIndex, snapid, snapHandle, count, ids);
         }
     }
     virtual void onGatherSnapIgnoredID(const MgMotion* sender, const MgShape* sp,
                                        int* ids, int& i, int n) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onGatherSnapIgnoredID(sender, sp, ids, i, n);
+            it->first->onGatherSnapIgnoredID(sender, sp, ids, i, n);
         }
     }
 
     virtual void onSelectionChanged(const MgMotion* sender) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onSelectionChanged(sender);
+            it->first->onSelectionChanged(sender);
         }
     }
     virtual bool onShapeWillAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeWillAdded(sender, shape)) {
+            if (!it->first->onShapeWillAdded(sender, shape)) {
                 return false;
             }
         }
@@ -115,12 +133,12 @@ private:
     }
     virtual void onShapeAdded(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onShapeAdded(sender, shape);
+            it->first->onShapeAdded(sender, shape);
         }
     }
     virtual bool onShapeWillDeleted(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeWillDeleted(sender, shape)) {
+            if (!it->first->onShapeWillDeleted(sender, shape)) {
                 return false;
             }
         }
@@ -129,13 +147,13 @@ private:
     virtual int onShapeDeleted(const MgMotion* sender, const MgShape* shape) {
         int n = 0;
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            n += (*it)->onShapeDeleted(sender, shape);
+            n += it->first->onShapeDeleted(sender, shape);
         }
         return n;
     }
     virtual bool onShapeCanRotated(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeCanRotated(sender, shape)) {
+            if (!it->first->onShapeCanRotated(sender, shape)) {
                 return false;
             }
         }
@@ -143,7 +161,7 @@ private:
     }
     virtual bool onShapeCanTransform(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeCanTransform(sender, shape)) {
+            if (!it->first->onShapeCanTransform(sender, shape)) {
                 return false;
             }
         }
@@ -151,7 +169,7 @@ private:
     }
     virtual bool onShapeCanUnlock(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeCanUnlock(sender, shape)) {
+            if (!it->first->onShapeCanUnlock(sender, shape)) {
                 return false;
             }
         }
@@ -159,7 +177,7 @@ private:
     }
     virtual bool onShapeCanUngroup(const MgMotion* sender, const MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeCanUngroup(sender, shape)) {
+            if (!it->first->onShapeCanUngroup(sender, shape)) {
                 return false;
             }
         }
@@ -167,7 +185,7 @@ private:
     }
     virtual bool onShapeCanMovedHandle(const MgMotion* sender, const MgShape* sp, int index) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeCanMovedHandle(sender, sp, index)) {
+            if (!it->first->onShapeCanMovedHandle(sender, sp, index)) {
                 return false;
             }
         }
@@ -175,12 +193,12 @@ private:
     }
     virtual void onShapeMoved(const MgMotion* sender, MgShape* shape, int segment) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onShapeMoved(sender, shape, segment);
+            it->first->onShapeMoved(sender, shape, segment);
         }
     }
     virtual bool onShapeWillChanged(const MgMotion* sender, MgShape* sp, const MgShape* oldsp) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onShapeWillChanged(sender, sp, oldsp)) {
+            if (!it->first->onShapeWillChanged(sender, sp, oldsp)) {
                 return false;
             }
         }
@@ -188,14 +206,14 @@ private:
     }
     virtual void onShapeChanged(const MgMotion* sender, MgShape* shape) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onShapeChanged(sender, shape);
+            it->first->onShapeChanged(sender, shape);
         }
     }
 
     virtual MgBaseShape* createShape(const MgMotion* sender, int type) {
         MgBaseShape* sp = (MgBaseShape*)0;
         for (Iterator it = _arr.begin(); !sp && it != _arr.end(); ++it) {
-            sp = (*it)->createShape(sender, type);
+            sp = it->first->createShape(sender, type);
         }
         return sp;
     }
@@ -203,14 +221,14 @@ private:
     virtual MgCommand* createCommand(const MgMotion* sender, const char* name) {
         MgCommand* cmd = (MgCommand*)0;
         for (Iterator it = _arr.begin(); !cmd && it != _arr.end(); ++it) {
-            cmd = (*it)->createCommand(sender, name);
+            cmd = it->first->createCommand(sender, name);
         }
         return cmd;
     }
     
     virtual bool onPreGesture(MgMotion* sender) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            if (!(*it)->onPreGesture(sender)) {
+            if (!it->first->onPreGesture(sender)) {
                 return false;
             }
         }
@@ -219,18 +237,19 @@ private:
     
     virtual void onPostGesture(const MgMotion* sender) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onPostGesture(sender);
+            it->first->onPostGesture(sender);
         }
     }
     
     virtual void onPointSnapped(const MgMotion* sender, const MgShape* sp) {
         for (Iterator it = _arr.begin(); it != _arr.end(); ++it) {
-            (*it)->onPointSnapped(sender, sp);
+            it->first->onPointSnapped(sender, sp);
         }
     }
 
 private:
-    typedef std::vector<CmdObserver*> Observers;
+    typedef std::pair<CmdObserver*, std::string> Observer;
+    typedef std::vector<Observer> Observers;
     typedef Observers::iterator Iterator;
     Observers _arr;
 };

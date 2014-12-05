@@ -329,6 +329,10 @@ public:
     */
     static Matrix2d shearing(float sx, float sy, 
         const Point2d& pnt = Point2d::kOrigin());
+    
+    //! 得到两个点同时移动后形成的变化矩阵
+    static Matrix2d transformWith2P(const Point2d& from1, const Point2d& from2,
+                                    const Point2d& to1, const Point2d& to2);
 };
 
 #endif // TOUCHVG_MATRIX_H_

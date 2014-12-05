@@ -91,7 +91,7 @@ struct MgView
     virtual bool shapeDblClick(const MgShape* shape) = 0;       //!< 通知图形双击编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮
-    virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    virtual bool shapeClicked(const MgShape* shape, float x, float y) = 0;
     virtual void showMessage(const char* text) = 0;             //!< 显示提示文字
     //! 得到本地化文字内容(可用封装函数 MgLocalized::getString)
     virtual void getLocalizedString(const char* name, MgStringCallback* result) = 0;
@@ -103,6 +103,7 @@ struct MgView
             const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0; //!< 注册命令
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
+    virtual const char* getOptionString(const char* name) = 0;  //!< 文本选项值
 #endif
     
     virtual bool getOptionBool(const char* name, bool defValue) = 0;     //!< 布尔选项值
@@ -111,6 +112,7 @@ struct MgView
     virtual void setOptionBool(const char* name, bool value) = 0;        //!< 设置布尔选项值
     virtual void setOptionInt(const char* name, int value) = 0;          //!< 设置整型选项值
     virtual void setOptionFloat(const char* name, float value) = 0;      //!< 设置浮点型选项值
+    virtual void setOptionString(const char* name, const char* text) = 0; //!< 设置文本选项值
 };
 
 //! 触摸动作参数

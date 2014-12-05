@@ -40,7 +40,7 @@ public:
     virtual void release() { delete this; }
     virtual bool equals(const MgObject& src) const;
     virtual int getType() const { return Type(); }
-    virtual bool isKindOf(int type) const { return type == Type(); }
+    virtual bool isKindOf(int type) const { return type == Type() || type == MgBaseShape::Type(); }
     
     virtual void clear() { _clear(); MgBaseShape::_clear(); }
     virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;

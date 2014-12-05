@@ -599,6 +599,9 @@ int GiCoreView::drawAll(const mgvector<long>& docs, long hGs,
     GiGraphics* gs = GiGraphics::fromHandle(hGs);
     
     if (gs && gs->beginPaint(canvas)) {
+        if (impl->curview) {
+            impl->curview->draw(*gs);
+        }
         n = 0;
         for (int i = 0; i < docs.count(); i++) {
             MgShapeDoc* doc = MgShapeDoc::fromHandle(docs.get(i));
@@ -1663,6 +1666,17 @@ void GiCoreViewImpl::setOptionFloat(const char* name, float value)
     options[std::string(name)] = OPT_VALUE(kOptFloat, ss.str());
 }
 
+const char* GiCoreViewImpl::getOptionString(const char* name)
+{
+    OPT_MAP::const_iterator kv = options.find(std::string(name));
+    return kv != options.end() ? kv->second.second.c_str() : "";
+}
+
+void GiCoreViewImpl::setOptionString(const char* name, const char* text)
+{
+    options[std::string(name)] = OPT_VALUE(kOptStr, text ? text : "");
+}
+
 void GiCoreView::setOptionBool(const char* name, bool value)
 {
     if (!name || !*name) {
@@ -1690,6 +1704,15 @@ void GiCoreView::setOptionFloat(const char* name, float value)
     }
 }
 
+void GiCoreView::setOptionString(const char* name, const char* value)
+{
+    if (!name || !*name) {
+        impl->resetOptions();
+    } else {
+        impl->setOptionString(name, value);
+    }
+}
+
 void GiCoreView::traverseOptions(MgOptionCallback* c)
 {
     GiCoreViewImpl::OPT_MAP::const_iterator kv = impl->getOptions().begin();
@@ -1705,6 +1728,9 @@ void GiCoreView::traverseOptions(MgOptionCallback* c)
                 break;
             case GiCoreViewImpl::kOptFloat:
                 c->onGetOptionFloat(name.c_str(), impl->getOptionFloat(name.c_str(), 0));
+                break;
+            case GiCoreViewImpl::kOptStr:
+                c->onGetOptionString(name.c_str(), impl->getOptionString(name.c_str()));
                 break;
             default:
                 break;

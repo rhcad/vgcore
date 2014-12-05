@@ -47,10 +47,10 @@ public:
     virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
     virtual void shapeWillDelete(int sid) {}        //!< 图形将删除的通知
     virtual void shapeDeleted(int sid) {}           //!< 删除图形的通知
-    virtual bool shapeDblClick(int type, int sid) { return false; } //!< 通知图形双击编辑
+    virtual bool shapeDblClick(int type, int sid, int tag) { return false; } //!< 通知图形双击编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮
-    virtual bool shapeClicked(int sid, int tag, float x, float y) { return false; }
+    virtual bool shapeClicked(int type, int sid, int tag, float x, float y) { return false; }
     virtual void showMessage(const char* text) {}   //!< 显示提示文字
     //! 得到本地化文字内容
     virtual void getLocalizedString(const char* name, MgStringCallback* result) {}

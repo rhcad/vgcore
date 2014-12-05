@@ -129,8 +129,11 @@ bool MgCmdManagerImpl::doAction(const MgMotion* sender, int action)
 {
     MgView* view = sender->view;
     MgSelection *sel = getSelection();
-    bool ret = false;
+    bool ret = sender->view->getCmdSubject()->doAction(sender, action);
     
+    if (ret) {
+        action = -action;
+    }
     switch (action) {
         case kMgActionSelAll:
             ret = sel && sel->selectAll(sender);
@@ -197,8 +200,9 @@ bool MgCmdManagerImpl::doAction(const MgMotion* sender, int action)
             break;
             
         default: {
-            ret = sender->view->getCmdSubject()->doAction(sender, action);
             MgCommand* cmd = getCommand();
+            
+            action = action < 0 ? -action : action;
             ret = ret || (cmd && cmd->doContextAction(sender, action));
             
             if (!ret && cmd && !cmd->isDrawingCommand()) {

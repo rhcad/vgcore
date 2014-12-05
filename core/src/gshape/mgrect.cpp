@@ -239,6 +239,21 @@ bool MgBaseRect::_setHandlePoint(int index, const Point2d& pt, float)
     return true;
 }
 
+static inline bool isBeside(int i1, int i2)
+{
+    return ((0 == i1 && 1 == i2) || (1 == i1 && 2 == i2) || (2 == i1 && 3 == i2) || (0 == i1 && 3 == i2));
+}
+
+bool MgBaseRect::transformWith2P(const Point2d& pt1, int i1, const Point2d& pt2, int i2)
+{
+    bool ret = (isBeside(mgMin(i1, i2), mgMax(i1, i2)) && pt1 != pt2);
+    if (ret) {
+        transform(Matrix2d::transformWith2P(_points[i1], _points[i2], pt1, pt2));
+    }
+    
+    return ret;
+}
+
 bool MgBaseRect::_save(MgStorage* s) const
 {
     bool ret = __super::_save(s);

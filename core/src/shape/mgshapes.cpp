@@ -163,7 +163,8 @@ bool MgShapes::updateShape(MgShape* shape, bool force)
         I::iterator it = im->findPositionOfID(shape->getID());
         if (it != im->shapes.end()) {
             shape->shape()->update();
-            shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount() + 1);
+            shape->shape()->resetChangeCount((*it)->shapec()->getChangeCount()
+                                             + ((*it)->equals(*shape) ? 0 : 1));
             (*it)->release();
             *it = shape;
             shape->setParent(this, shape->getID());
@@ -483,7 +484,7 @@ const MgShape* MgShapes::hitTest(const Box2d& limits, MgHitResult& res,
 {
     const MgShape* retshape = NULL;
     
-    res.dist = limits.width();
+    res.dist = limits.width() > 1e4f ? limits.width() : limits.width() * 20.f;
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         const MgBaseShape* shape = (*it)->shapec();
         Box2d extent(shape->getExtent());

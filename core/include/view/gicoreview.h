@@ -22,6 +22,7 @@ struct MgOptionCallback {
     virtual void onGetOptionBool(const char* name, bool value) = 0;     //!< 布尔选项值
     virtual void onGetOptionInt(const char* name, int value) = 0;       //!< 整型选项值
     virtual void onGetOptionFloat(const char* name, float value) = 0;   //!< 浮点型选项值
+    virtual void onGetOptionString(const char* name, const char* text) = 0; //!< 文本选项值
 };
 
 //! 内核视图分发器类
@@ -102,6 +103,7 @@ public:
     void setOptionBool(const char* name, bool value);               //!< 设置或清除布尔选项值
     void setOptionInt(const char* name, int value);                 //!< 设置或清除整型选项值
     void setOptionFloat(const char* name, float value);             //!< 设置或清除浮点型选项值
+    void setOptionString(const char* name, const char* value);      //!< 设置或清除文本选项值
     
 // MgCoreView
 #ifndef SWIG

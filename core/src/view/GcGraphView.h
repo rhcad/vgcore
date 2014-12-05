@@ -15,6 +15,8 @@ class GcGraphView : public GcBaseView
 public:
     GcGraphView(MgView* mgview, GiView *view);
     virtual ~GcGraphView();
+    
+    virtual void draw(GiGraphics& gs);
 };
 
 #endif // TOUCHVG_CORE_MAINVIEW_H

@@ -326,6 +326,9 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         int n = (getLockSelHandle(sender, 0) > 0 || getLockRotateHandle(sender, 0) > 0
                  ? 0 : shape->shapec()->getHandleCount());
         
+        if (shape->shapec()->getFlag(kMgFixedSize)) {
+            n = mgMin(n, shape->shapec()->getPointCount());
+        }
         for (int i = 0; i < n; i++) {
             if (i == m_handleIndex - 1 || i == m_rotateHandle - 1
                 || shape->shapec()->isHandleFixed(i)
@@ -433,7 +436,7 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
 int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
                                 const MgMotion* sender, float tolmm)
 {
-    if (!shape) {
+    if (!shape || shape->shapec()->getFlag(kMgFixedSize)) {
         return 0;
     }
     
@@ -472,7 +475,13 @@ Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
                                    (int)ignoreids.size() - 1);
     
     MgSnap* snap = sender->cmds()->getSnap();
-    Point2d pt(snap->snapPoint(sender, sender->pointM, shape, m_handleIndex - 1,
+    Point2d orgpt(sender->pointM);
+    
+    if (m_handleIndex > 0 && shape
+        && shape->shapec()->getHandlePoint(m_handleIndex - 1).distanceTo(orgpt) < sender->displayMmToModel(2.f)) {
+        orgpt = shape->shapec()->getHandlePoint(m_handleIndex - 1);
+    }
+    Point2d pt(snap->snapPoint(sender, orgpt, shape, m_handleIndex - 1,
                                m_rotateHandle - 1, (const int*)&ignoreids.front()));
     if (!sender->dragging() && snap->getSnappedType() >= kMgSnapPoint) {
         subject->onPointSnapped(sender, shape);
@@ -544,10 +553,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
     sender->view->redraw();
     
     if (shape && m_selIds.size() == 1
-        && (shape->shapec()->isKindOf(kMgShapeImage)
-            || shape->shapec()->isKindOf(kMgShapeComposite))
-        && sender->view->shapeClicked(shape->getID(), shape->getTag(),
-                                      sender->point.x, sender->point.y))
+        && sender->view->shapeClicked(shape, sender->point.x, sender->point.y))
     {
         return true;
     }
@@ -738,7 +744,8 @@ bool MgCmdSelect::isDragRectCorner(const MgMotion* sender, Matrix2d& mat)
     mat = Matrix2d::kIdentity();
     
     if (isEditMode(sender->view) || m_selIds.empty() || m_boxsel
-        || !(sender->view->getOptionInt("selectDrawFlags", 0xFF) & kMgSelDrawXformBox)) {
+        || !(sender->view->getOptionInt("selectDrawFlags", 0xFF) & kMgSelDrawXformBox)
+        || (!m_clones.empty() && m_clones.front()->shapec()->getFlag(kMgFixedSize))) {
         return false;
     }
     
@@ -893,14 +900,15 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                     }
                 }
             }
-            else if (m_handleIndex > 0 && isEditMode(sender->view)) { // 拖动顶点
+            else if (m_handleIndex > 0 && isEditMode(sender->view)
+                     && !shape->getFlag(kMgFixedSize)) {    // 拖动顶点
                 if (sender->view->shapeCanMovedHandle(m_clones[i], m_handleIndex - 1)) {
                     float tol = sender->displayMmToModel(3.f);
                     Point2d pt(snapPoint(sender, m_clones[i]));
                     shape->setHandlePoint2(m_handleIndex - 1, pt, tol, _dragData);
                 }
             }
-            else if (dragCorner) {                          // 拖动变形框的特定点
+            else if (dragCorner && !shape->getFlag(kMgFixedSize)) { // 拖动变形框的特定点
                 shape->transform(mat);
             }
             else if (sender->view->shapeCanMovedHandle(m_clones[i], -1)) { // 拖动整个图形
@@ -1050,7 +1058,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
     bool changed = false;
     const bool cloned = !m_clones.empty();
     size_t i;
-    Tol tol(view->xform()->displayToModel(0.5f, true));
+    Tol tol(1e-4f);
     
     if (apply) {
         apply = false;
@@ -1093,7 +1101,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             }
             else {
                 if (oldsp && !oldsp->equals(*m_clones[i])
-                    && !m_clones[i]->shapec()->getExtent().isEmpty(tol)
+                    && (oldsp->shapec()->getPointCount() < 1 || !m_clones[i]->shapec()->getExtent().isEmpty(tol))
                     && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     view->shapeChanged(m_clones[i]);
