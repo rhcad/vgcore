@@ -91,7 +91,7 @@ struct MgView
     virtual bool shapeDblClick(const MgShape* shape) = 0;       //!< 通知图形双击编辑
     
     //! 图形点击的通知，返回false继续显示上下文按钮
-    virtual bool shapeClicked(int sid, int tag, float x, float y) = 0;
+    virtual bool shapeClicked(const MgShape* shape, float x, float y) = 0;
     virtual void showMessage(const char* text) = 0;             //!< 显示提示文字
     //! 得到本地化文字内容(可用封装函数 MgLocalized::getString)
     virtual void getLocalizedString(const char* name, MgStringCallback* result) = 0;

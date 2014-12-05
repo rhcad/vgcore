@@ -553,10 +553,7 @@ bool MgCmdSelect::click(const MgMotion* sender)
     sender->view->redraw();
     
     if (shape && m_selIds.size() == 1
-        && (shape->shapec()->isKindOf(kMgShapeImage)
-            || shape->shapec()->isKindOf(kMgShapeComposite))
-        && sender->view->shapeClicked(shape->getID(), shape->getTag(),
-                                      sender->point.x, sender->point.y))
+        && sender->view->shapeClicked(shape, sender->point.x, sender->point.y))
     {
         return true;
     }

@@ -162,7 +162,8 @@ public:
     void shapeChanged(MgShape* shape) {
         getCmdSubject()->onShapeChanged(motion(), shape); }
     bool shapeDblClick(const MgShape* shape) {
-        return CALL_VIEW2(deviceView()->shapeDblClick(shape->shapec()->getType(), shape->getID()), false);
+        return CALL_VIEW2(deviceView()->shapeDblClick(shape->shapec()->getType(), shape->getID(),
+                                                      shape->getTag()), false);
     }
     
     MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) {
@@ -182,8 +183,9 @@ public:
     void dynamicChanged() {
         CALL_VIEW(deviceView()->dynamicChanged());
     }
-    bool shapeClicked(int sid, int tag, float x, float y) {
-        return CALL_VIEW2(deviceView()->shapeClicked(sid, tag, x, y), false);
+    bool shapeClicked(const MgShape* shape, float x, float y) {
+        return CALL_VIEW2(deviceView()->shapeClicked(shape->shapec()->getType(), shape->getID(),
+                                                     shape->getTag(), x, y), false);
     }
     void showMessage(const char* text) {
         CALL_VIEW(deviceView()->showMessage(text));
