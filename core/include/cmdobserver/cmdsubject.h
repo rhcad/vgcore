@@ -15,6 +15,11 @@ struct CmdSubject : public CmdObserver {
     virtual void registerObserver(CmdObserver* observer) = 0;
     //! 注销观察者
     virtual void unregisterObserver(CmdObserver* observer) = 0;
+    
+    //! 注册命名观察者
+    virtual bool registerNamedObserver(const char* name, CmdObserver* observer) = 0;
+    //! 查找命名观察者
+    virtual CmdObserver* findNamedObserver(const char* name) = 0;
 };
 
 #endif // TOUCHVG_CMDSUBJECT_H_
