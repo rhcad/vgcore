@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+//! Double typed point
 struct point_t {
     double x, y;
 

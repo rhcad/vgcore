@@ -354,6 +354,7 @@ private:
 // DrawLocker
 //
 
+//! Helper class to avoid to call regenAll/redraw repeatedly.
 class DrawLocker
 {
     GiCoreViewImpl* _impl;

@@ -210,6 +210,19 @@ static bool cross2Line(
     Point2d& ptCross, const Tol& tolVec = Tol::gTol());
 
 #ifndef SWIG
+//! 求两条线段的交点
+/*!
+    \param[in] a 第一条线段的起点
+    \param[in] b 第一条线段的终点
+    \param[in] c 第二条线段的起点
+    \param[in] d 第二条线段的终点
+    \param[out] v1 交点在第一条线段上的参数，如果为NULL则忽略该参数
+    \param[out] v2 交点在第二条线段上的参数，如果为NULL则忽略该参数
+    \return 是否有交点
+*/
+static bool cross2LineV(const Point2d& a, const Point2d& b, const Point2d& c, const Point2d& d,
+                        float* v1 = (float*)0, float* v2 = (float*)0);
+
 //! 求线段和直线的交点
 /*!
     \param[in] a 线段的起点

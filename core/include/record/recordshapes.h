@@ -13,6 +13,7 @@ class MgShapes;
 class MgShape;
 struct MgShapeFactory;
 
+//! Helper class for recording shapes.
 class MgRecordShapes
 {
 public:

@@ -99,6 +99,13 @@ bool MgShape::save(MgStorage* s) const
     s->writeUInt("lineColor", c.b | (c.g << 8) | (c.r << 16) | (c.a << 24));
     c = context().getFillColor();
     s->writeUInt("fillColor", c.b | (c.g << 8) | (c.r << 16) | (c.a << 24));
+    
+    if (context().getStartArrayHead()) {
+        s->writeInt("startArrayHead", context().getStartArrayHead());
+    }
+    if (context().getEndArrayHead()) {
+        s->writeInt("endArrayHead", context().getEndArrayHead());
+    }
 
     return shapec()->save(s);
 }
@@ -112,6 +119,8 @@ bool MgShape::load(MgShapeFactory* factory, MgStorage* s)
     ctx.setLineWidth(s->readFloat("lineWidth", 0), true);
     ctx.setLineColor(GiColor(s->readInt("lineColor", 0xFF000000), true));
     ctx.setFillColor(GiColor(s->readInt("fillColor", 0), true));
+    ctx.setStartArrayHead(s->readInt("startArrayHead", 0));
+    ctx.setEndArrayHead(s->readInt("endArrayHead", 0));
     setContext(ctx);
 
     bool ret = shape()->load(factory, s);

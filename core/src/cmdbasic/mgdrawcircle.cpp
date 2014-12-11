@@ -7,22 +7,20 @@
 
 bool MgCmdDrawCircle::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgEllipse::Type(), sender, s);
+    _initialize(MgEllipse::Type(), sender);
     
-    MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
-    rect->setSquare(true);
+    ((MgBaseRect*)dynshape()->shape())->setSquare(true);
     
-    return ret;
+    return _initialize(0, sender, s);
 }
 
 bool MgCmdDrawCircle3P::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgEllipse::Type(), sender, s);
+    _initialize(MgEllipse::Type(), sender);
     
-    MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
-    rect->setSquare(true);
+    ((MgBaseRect*)dynshape()->shape())->setSquare(true);
     
-    return ret;
+    return _initialize(0, sender, s);
 }
 
 void MgCmdDrawCircle3P::drawHandles(const MgMotion* sender, GiGraphics* gs)

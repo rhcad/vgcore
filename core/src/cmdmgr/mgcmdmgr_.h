@@ -12,7 +12,7 @@
 #include <map>
 #include <string>
 
-class SnapItem;
+struct SnapItem;
 class CmdSubjectImpl;
 
 //! 命令管理器实现类

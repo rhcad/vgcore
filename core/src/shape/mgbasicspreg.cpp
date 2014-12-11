@@ -195,6 +195,14 @@ static bool drawGrid(const MgGrid& sp, int, GiGraphics& gs, const GiContext& ctx
 bool MgShape::drawShape(const MgShapes* shapes, const MgBaseShape& sp, int mode,
                         GiGraphics& gs, const GiContext& ctx, int segment)
 {
+    if (ctx.hasArrayHead() && sp.getType() != kMgShapePath) {
+        MgPath path;
+        sp.output(path);
+        if (path.getCount() > 0) {
+            return gs.drawPath(&ctx, path, mode == 0);
+        }
+    }
+    
     switch (sp.getType()) {
         case kMgShapeGrid:
             return drawGrid((MgGrid&)sp, mode, gs, ctx, segment);

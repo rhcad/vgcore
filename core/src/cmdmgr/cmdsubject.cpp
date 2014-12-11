@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 
+//! CmdSubject 的实现类
 class CmdSubjectImpl : public CmdSubject
 {
 public:

@@ -1006,14 +1006,30 @@ bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count, const Point2d*
     return rawEndPath(ctx, closed);
 }
 
-bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, 
-                          bool fill, bool modelUnit)
+bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, bool modelUnit)
+{
+    if (ctx && ctx->hasArrayHead() && path.getSubPathCount() == 1 && !path.isClosed()) {
+        MgPath pathw(path);
+        GiContext ctx2(*ctx);
+        
+        pathw.transform(S2D(xf(), modelUnit));
+        
+        ctx2.setNoFillColor();
+        ctx2.setStartArrayHead(0);
+        ctx2.setEndArrayHead(0);
+        
+        return drawPathWithArrayHead(ctx2, pathw, ctx->getStartArrayHead(), ctx->getEndArrayHead());
+    }
+    
+    return drawPath(ctx, path, fill, S2D(xf(), modelUnit));
+}
+
+bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, const Matrix2d& matD)
 {
     int n = path.getCount();
     if (n == 0 || isStopping())
         return false;
-
-    Matrix2d matD(S2D(xf(), modelUnit));
+    
     const Point2d* pts = path.getPoints();
     const char* types = path.getTypes();
     Point2d ends, cp1, cp2;
@@ -1059,6 +1075,67 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path,
     }
 
     return rawEndPath(ctx, fill);
+}
+
+//! 箭头图案
+static const struct {
+    bool        fill;
+    float       xoffset;
+    const char  *types;
+} _arrayHeads[] = {
+    { true, 1.87f,  "M1.87 0L3 1.2 0 0 3 -1.2Z" },
+    { false, 0,     "M3 1.2L0 0 3 -1.2" },
+    { false, 0,     "M0 1.5L0 -1.5" },
+    { false, 0,     "M1.5 -1.5L-1.5 1.5" },
+    { true, 0.8f,   "M0.8 0A0.8 0.8 0 0 0 -0.8 0A0.8 0.8 0 0 0 0.8 0Z" },
+    { false, 0.8f,  "M0.8 0A0.8 0.8 0 0 0 -0.8 0A0.8 0.8 0 0 0 0.8 0Z" },
+};
+
+bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int startArray, int endArray)
+{
+    Point2d startpt(path.getStartPoint()), endpt(path.getEndPoint());
+    float px = calcPenWidth(ctx.getLineWidth(), ctx.isAutoScale());
+    float scale = 0.8f * xf().getWorldToDisplayX() * (1 + (px - 1) / 2);
+    
+    if (startArray > 0 && startArray <= GiContext::kArrowOpenedCircle) {
+        float xoffset = _arrayHeads[startArray - 1].xoffset * scale;
+        path.trimStart(startpt, xoffset + px / 2);
+        
+        Matrix2d mat(Matrix2d::translation(startpt.asVector()));
+        mat *= Matrix2d::rotation((mgIsZero(xoffset) ? path.getStartTangent() : path.getStartPoint() - startpt).angle2(), startpt);
+        mat *= Matrix2d::scaling(scale, startpt);
+        
+        MgPath headPath(_arrayHeads[startArray - 1].types);
+        headPath.transform(mat);
+        
+        GiContext ctxhead(ctx);
+        if (_arrayHeads[startArray - 1].fill) {
+            ctxhead.setFillColor(ctxhead.getLineColor());
+            ctxhead.setNullLine();
+        }
+        drawPath(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+    }
+    if (endArray > 0 && endArray <= GiContext::kArrowOpenedCircle) {
+        float xoffset = _arrayHeads[endArray - 1].xoffset * scale;
+        path.reverse().trimStart(endpt, xoffset + px / 2);
+        
+        Matrix2d mat(Matrix2d::translation(endpt.asVector()));
+        mat *= Matrix2d::rotation((mgIsZero(xoffset) ? path.getStartTangent() : endpt - path.getStartPoint()).angle2(), endpt);
+        mat *= Matrix2d::scaling(scale, endpt);
+        
+        MgPath headPath(_arrayHeads[endArray - 1].types);
+        headPath.transform(mat);
+        path.reverse();
+        
+        GiContext ctxhead(ctx);
+        if (_arrayHeads[endArray - 1].fill) {
+            ctxhead.setFillColor(ctxhead.getLineColor());
+            ctxhead.setNullLine();
+        }
+        drawPath(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+    }
+    
+    return drawPath(&ctx, path, false, Matrix2d::kIdentity());
 }
 
 bool GiGraphics::setPen(const GiContext* ctx)

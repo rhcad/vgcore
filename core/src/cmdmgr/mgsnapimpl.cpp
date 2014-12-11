@@ -6,18 +6,18 @@
 #include "mgbasicsps.h"
 #include "mglog.h"
 
-class SnapItem {
-public:
-    Point2d pt;             // 捕捉到的坐标
-    Point2d base;           // 参考线基准点、原始点
-    Point2d startpt;        // 垂线起始点
-    Point2d guildpt;        // 导向点，例如圆心
-    float   maxdist;        // 最大容差
-    float   dist;           // 捕捉距离
-    int     type;           // 特征点类型
-    int     shapeid;        // 捕捉到的图形
-    int     handleIndex;    // 捕捉到控制点序号，最近点和垂足则为边号，交点则为另一图形的ID
-    int     handleIndexSrc; // 待确定位置的源图形上的控制点序号，与handleIndex点匹配
+//! 捕捉结果
+struct SnapItem {
+    Point2d pt;             //!< 捕捉到的坐标
+    Point2d base;           //!< 参考线基准点、原始点
+    Point2d startpt;        //!< 垂线起始点
+    Point2d guildpt;        //!< 导向点，例如圆心
+    float   maxdist;        //!< 最大容差
+    float   dist;           //!< 捕捉距离
+    int     type;           //!< 特征点类型
+    int     shapeid;        //!< 捕捉到的图形
+    int     handleIndex;    //!< 捕捉到控制点序号，最近点和垂足则为边号，交点则为另一图形的ID
+    int     handleIndexSrc; //!< 待确定位置的源图形上的控制点序号，与handleIndex点匹配
     
     SnapItem() {}
     SnapItem(const Point2d& _pt, const Point2d& _base, float _dist, int _type = 0,
@@ -82,7 +82,7 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
     bool ignored = sp->shapec()->isKindOf(MgSplines::Type()); // 除自由曲线外
     int n = ignored ? 0 : sp->shapec()->getHandleCount();
     bool dragHandle = (!shape || shape->getID() == 0    // 正画的图形:末点动
-                       || orgpt == shape->shapec()->getHandlePoint(ignoreHd)    // 拖已有图形的点
+                       || (ignoreHd >= 0 && orgpt == shape->shapec()->getHandlePoint(ignoreHd)) // 拖已有图形的点
                        || n == 1);                      // 点可定位
     bool handleFound = false;
     
@@ -233,7 +233,7 @@ static void snapNear(const MgMotion* sender, const Point2d& orgpt,
     const float mind = sender->displayMmToModel(4.f);
     float minDist = ((arr0.type > 0 && arr0.type < kMgSnapNearPt) ?
                      (arr0.dist - (arr0.type == kMgSnapNearPt ? mind : 0.f)) : tolNear);
-    int d = matchpt && shape ? shape->shapec()->getHandleCount() : 0;
+    int d = matchpt ? shape->shapec()->getHandleCount() : 0;
     
     res.disnableSnapVertex();
     for (int i = sp->shapec()->getExtent().contains(ignoreStart) ?
@@ -543,12 +543,13 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
     Tol tolPerp(sender->displayMmToModel(1));
     bool needGrid = !!sender->view->getOptionBool("snapGrid", true);
     Box2d nearBox(orgpt, needNear ? tolNear : 0.f, 0);
+    float minBox = xf->displayToModel(2, true);
     
     if (shape) {
         wndbox.unionWith(shape->shapec()->getExtent().inflate(arr[0].dist));
     }
     while (const MgShape* spTarget = it.getNext()) {
-        snapShape(sender, orgpt, xf->displayToModel(2, true), snapbox, wndbox,
+        snapShape(sender, orgpt, minBox, snapbox, wndbox,
                   handleMask, needNear, tolNear, needPerp, perpOut, tolPerp,
                   needTangent, needCross, nearBox, needGrid,
                   spTarget, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
@@ -566,6 +567,9 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     
     if (!shape || hotHandle >= shape->shapec()->getHandleCount()) {
         hotHandle = -1;         // 对hotHandle进行越界检查
+    }
+    if (!shape || ignoreHd >= shape->shapec()->getHandleCount()) {
+        ignoreHd = -1;          // 对ignoreHd进行越界检查
     }
     _ptSnap = orgpt;   // 默认结果为当前触点位置
     
@@ -760,7 +764,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
                 
                 GiHandleTypes handleType = snapTypeToHandleType(_snapType[0]);
                 const char* names[] = { "@nodept", "@centerpt", "@midpt", "@quadpt", "@tanpt", "@crosspt" };
-                if (handleType >= kGiHandleNode && handleType - kGiHandleNode < 5) {
+                if (handleType >= kGiHandleNode && handleType - kGiHandleNode < 6) {
                     gs->drawTextAt(sender->view->getOptionInt("snapTextARGB", 0),
                                    names[handleType - kGiHandleNode],
                                    _ptSnap + Vector2d(0, sender->displayMmToModel(12.f)), 3.f);
