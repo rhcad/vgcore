@@ -319,6 +319,10 @@ void MgPath::startFigure()
 
 bool MgPath::moveTo(const Point2d& point, bool rel)
 {
+    if (!m_data->types.empty() && m_data->types.back() == kMgMoveTo) {
+        m_data->points.pop_back();
+        m_data->types.pop_back();
+    }
     m_data->points.push_back(rel ? point + getEndPoint() : point);
     m_data->types.push_back(kMgMoveTo);
     m_data->beginIndex = getSize(m_data->points) - 1;
@@ -669,6 +673,7 @@ bool MgPath::scanSegments(MgSegmentCallback& c) const
             switch (type) {
                 case kMgMoveTo:
                     pts[0] = m_data->points[i];
+                    c.beginSubPath();
                     break;
                     
                 case kMgLineTo:
@@ -728,6 +733,7 @@ bool MgPath::scanSegments(MgSegmentCallback& c) const
                     break;
             }
         }
+        c.endSubPath(isClosed());
     }
     
     return ret;

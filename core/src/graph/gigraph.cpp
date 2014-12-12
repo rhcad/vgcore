@@ -1021,10 +1021,10 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, b
         return drawPathWithArrayHead(ctx2, pathw, ctx->getStartArrayHead(), ctx->getEndArrayHead());
     }
     
-    return drawPath(ctx, path, fill, S2D(xf(), modelUnit));
+    return drawPath_(ctx, path, fill, S2D(xf(), modelUnit));
 }
 
-bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, const Matrix2d& matD)
+bool GiGraphics::drawPath_(const GiContext* ctx, const MgPath& path, bool fill, const Matrix2d& matD)
 {
     int n = path.getCount();
     if (n == 0 || isStopping())
@@ -1033,27 +1033,28 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, c
     const Point2d* pts = path.getPoints();
     const char* types = path.getTypes();
     Point2d ends, cp1, cp2;
+    bool matsame = matD.isIdentity();
 
     rawBeginPath();
 
     for (int i = 0; i < n; i++) {
         switch (types[i] & ~kMgCloseFigure) {
         case kMgMoveTo:
-            ends = pts[i] * matD;
+            ends = matsame ? pts[i] : (pts[i] * matD);
             rawMoveTo(ends.x, ends.y);
             break;
 
         case kMgLineTo:
-            ends = pts[i] * matD;
+            ends = matsame ? pts[i] : (pts[i] * matD);
             rawLineTo(ends.x, ends.y);
             break;
 
         case kMgBezierTo:
             if (i + 2 >= n)
                 return false;
-            cp1 = pts[i] * matD;
-            cp2 = pts[i+1] * matD;
-            ends = pts[i+2] * matD;
+            cp1 = matsame ? pts[i] : (pts[i] * matD);
+            cp2 = matsame ? pts[i+1] : (pts[i+1] * matD);
+            ends = matsame ? pts[i+2] : (pts[i+2] * matD);
             rawBezierTo(cp1.x, cp1.y, cp2.x, cp2.y, ends.x, ends.y);
             i += 2;
             break;
@@ -1061,8 +1062,8 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, c
         case kMgQuadTo:
             if (i + 1 >= n)
                 return false;
-            cp1 = pts[i] * matD;
-            ends = pts[i+1] * matD;
+            cp1 = matsame ? pts[i] : (pts[i] * matD);
+            ends = matsame ? pts[i+1] : (pts[i+1] * matD);
             rawQuadTo(cp1.x, cp1.y, ends.x, ends.y);
             i++;
             break;
@@ -1102,7 +1103,8 @@ bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int s
         path.trimStart(startpt, xoffset + px / 2);
         
         Matrix2d mat(Matrix2d::translation(startpt.asVector()));
-        mat *= Matrix2d::rotation((mgIsZero(xoffset) ? path.getStartTangent() : path.getStartPoint() - startpt).angle2(), startpt);
+        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : path.getStartPoint() - startpt);
+        mat *= Matrix2d::rotation(vec.angle2(), startpt);
         mat *= Matrix2d::scaling(scale, startpt);
         
         MgPath headPath(_arrayHeads[startArray - 1].types);
@@ -1113,14 +1115,15 @@ bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int s
             ctxhead.setFillColor(ctxhead.getLineColor());
             ctxhead.setNullLine();
         }
-        drawPath(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+        drawPath_(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
     }
     if (endArray > 0 && endArray <= GiContext::kArrowOpenedCircle) {
         float xoffset = _arrayHeads[endArray - 1].xoffset * scale;
         path.reverse().trimStart(endpt, xoffset + px / 2);
         
         Matrix2d mat(Matrix2d::translation(endpt.asVector()));
-        mat *= Matrix2d::rotation((mgIsZero(xoffset) ? path.getStartTangent() : endpt - path.getStartPoint()).angle2(), endpt);
+        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : endpt - path.getStartPoint());
+        mat *= Matrix2d::rotation(vec.angle2(), endpt);
         mat *= Matrix2d::scaling(scale, endpt);
         
         MgPath headPath(_arrayHeads[endArray - 1].types);
@@ -1132,10 +1135,10 @@ bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int s
             ctxhead.setFillColor(ctxhead.getLineColor());
             ctxhead.setNullLine();
         }
-        drawPath(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+        drawPath_(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
     }
     
-    return drawPath(&ctx, path, false, Matrix2d::kIdentity());
+    return drawPath_(&ctx, path, false, Matrix2d::kIdentity());
 }
 
 bool GiGraphics::setPen(const GiContext* ctx)

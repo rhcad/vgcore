@@ -46,6 +46,9 @@ static bool bezierIsStraight(const Point2d* pts);
 //! 返回一个三次贝塞尔曲线段的长度
 static float lengthOfBezier(const Point2d* pts);
 
+//! 返回三次贝塞尔曲线段从起点开始的指定弧长处的点参数，范围为[0,1]
+static float bezierPointLengthFromStart(const Point2d* pts, float len);
+
 #ifndef SWIG
 //! 计算曲线起点附近的外部点到三次贝塞尔曲线段相距指定距离的曲线点和参数
 static bool bezierPointDistantFromPoint(const Point2d* pts, float dist, const Point2d& pt,

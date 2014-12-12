@@ -120,6 +120,8 @@ public:
     //! 遍历路径段的回调接口
     struct MgSegmentCallback {
         virtual ~MgSegmentCallback() {}
+        virtual void beginSubPath() {}
+        virtual void endSubPath(bool closed) {}
         virtual bool processLine(int startIndex, int &endIndex, const Point2d& startpt, const Point2d& endpt) = 0;
         virtual bool processBezier(int startIndex, int &endIndex, const Point2d* pts) = 0;
     };

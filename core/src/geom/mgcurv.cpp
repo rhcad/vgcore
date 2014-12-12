@@ -146,6 +146,31 @@ float mgcurv::lengthOfBezier(const Point2d* pts)
     return (float)(z2 * sum);
 }
 
+static float bezierPointLength_(const Point2d* pts, float len, float a, float b, Point2d* bsub)
+{
+    float t = (a + b) * 0.5f;
+    
+    if (b - a > 0.005f) {
+        mgcurv::splitBezier(pts, t, bsub, bsub + 4);
+        
+        float s = mgcurv::lengthOfBezier(bsub);
+        if (s > len + 1e-4f) {
+            return bezierPointLength_(pts, len, a, t, bsub);
+        }
+        if (s < len - 1e-4f) {
+            return bezierPointLength_(pts, len, t, b, bsub);
+        }
+    }
+    
+    return t;
+}
+
+float mgcurv::bezierPointLengthFromStart(const Point2d* pts, float len)
+{
+    Point2d bsub[8];
+    return bezierPointLength_(pts, len, 0.f, 1.f, bsub);
+}
+
 bool mgcurv::bezierPointDistantFromPoint(const Point2d* pts, float dist, const Point2d& pt,
                                          Point2d &result, float &tRes)
 {
