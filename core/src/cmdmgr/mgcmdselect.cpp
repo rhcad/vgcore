@@ -889,6 +889,11 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 if (center != m_ptStart && m_handleIndex != m_rotateHandle
                     && sender->view->shapeCanMovedHandle(m_clones[i], -1)) {
                     float angle = (m_ptStart - center).angleTo2(pointM - center);
+                    float stepAngle = sender->view->getOptionFloat("rotateStepAngle", 1);
+                    
+                    if (sender->view->getSnap()->getSnappedType() == kMgSnapNone) {
+                        angle = mgbase::roundReal(angle * _M_R2D / stepAngle, 0) * _M_D2R * stepAngle;
+                    }
                     shape->transform(Matrix2d::rotation(angle, center));
                     
                     Point2d fromPt, toPt;
@@ -1599,7 +1604,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
             Matrix2d mat (Matrix2d::translation(sender->pointM - sender->startPtM));    // 平移起点
             
             if ((m_editMode || shape->isKindOf(kMgShapeImage))
-                && !shape->getFlag(kMgFixedLength)) {       // 比例放缩
+                && !shape->getFlag(kMgFixedLength) && !shape->getFlag(kMgFixedSize)) {  // 比例放缩
                 
                 float a = fabsf(a0) / _M_PI_2;              // [0,2]
                 if (!canRotate(basesp, sender) && fabsf(a - floorf(a + 0.5f)) < 0.3f) {

@@ -121,6 +121,19 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
     shape = shape ? shape : m_shape;
     MgShape* newsp = NULL;
     
+    if (sender->view->getOptionBool("newShapeFixedlen", false)) {
+        shape->shape()->setFlag(kMgFixedLength, true);
+    }
+    if (sender->view->getOptionBool("newShapeFixedsize", false)) {
+        shape->shape()->setFlag(kMgFixedSize, true);
+    }
+    if (sender->view->getOptionBool("newShapeLocked", false)) {
+        shape->shape()->setFlag(kMgLocked, true);
+    }
+    if (sender->view->getOptionBool("newShapeHiden", false)) {
+        shape->shape()->setFlag(kMgHideContent, true);
+    }
+    
     if (sender->view->shapeWillAdded(shape)) {
         newsp = sender->view->shapes()->addShape(*shape);
         if (shape == m_shape) {

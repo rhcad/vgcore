@@ -1096,7 +1096,7 @@ bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int s
 {
     Point2d startpt(path.getStartPoint()), endpt(path.getEndPoint());
     float px = calcPenWidth(ctx.getLineWidth(), ctx.isAutoScale());
-    float scale = 0.8f * xf().getWorldToDisplayX() * (1 + (px - 1) / 2);
+    float scale = 0.5f * xf().getWorldToDisplayX() * (1 + mgMax(0.f, (px - 4.f) / 5));
     
     if (startArray > 0 && startArray <= GiContext::kArrowOpenedCircle) {
         float xoffset = _arrayHeads[startArray - 1].xoffset * scale;
@@ -1122,7 +1122,7 @@ bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int s
         path.reverse().trimStart(endpt, xoffset + px / 2);
         
         Matrix2d mat(Matrix2d::translation(endpt.asVector()));
-        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : endpt - path.getStartPoint());
+        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : path.getEndPoint() - endpt);
         mat *= Matrix2d::rotation(vec.angle2(), endpt);
         mat *= Matrix2d::scaling(scale, endpt);
         
@@ -1400,7 +1400,8 @@ float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, flo
     
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * xf().modelToDisplay());
-        h *= xf().getWorldToDisplayY(false);
+        float w2d = xf().getWorldToDisplayY(h < 0);
+        h = fabsf(h) * w2d;
         
         if (!mgIsZero(angle)) {
             angle = (Vector2d::angledVector(angle, 1) * xf().modelToWorld()).angle2();
@@ -1409,7 +1410,7 @@ float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, flo
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
         if (setBrush(&ctx)) {
-            ret = m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) / xf().getWorldToDisplayY(false);
+            ret = m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) / w2d;
         }
     }
     
