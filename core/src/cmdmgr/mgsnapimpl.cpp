@@ -779,7 +779,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
             if (_snapType[0] > 0) {
                 if (_snapBase[0] == _ptSnap) {
                     if (_snapType[0] == kMgSnapGridX) {
-                        Vector2d vec(0, displayMmToModel(15.f, gs));
+                        Vector2d vec(0, displayMmToModel(12.f, gs));
                         ret = gs->drawLine(&ctxcross, _ptSnap - vec, _ptSnap + vec);
                         gs->drawCircle(&ctx, _snapBase[0], displayMmToModel(4.f, gs));
                     }
@@ -792,7 +792,7 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
             if (_snapType[1] > 0) {
                 if (_snapBase[1] == _ptSnap) {
                     if (_snapType[1] == kMgSnapGridY) {
-                        Vector2d vec(displayMmToModel(15.f, gs), 0);
+                        Vector2d vec(displayMmToModel(12.f, gs), 0);
                         ret = gs->drawLine(&ctxcross, _ptSnap - vec, _ptSnap + vec);
                         gs->drawCircle(&ctx, _snapBase[1], displayMmToModel(4.f, gs));
                     }
