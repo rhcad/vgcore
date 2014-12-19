@@ -44,6 +44,7 @@ public:
     virtual void selectionChanged() {}      //!< 选择集改变的通知
     virtual void contentChanged() {}        //!< 图形数据改变的通知
     virtual void dynamicChanged() {}        //!< 图形动态拖拉改变的通知
+    virtual void zoomChanged() {}           //!< 放缩改变的通知
     virtual void viewChanged(GiView* oldview) {}    //!< 当前视图改变的通知
     virtual void shapeWillDelete(int sid) {}        //!< 图形将删除的通知
     virtual void shapeDeleted(int sid) {}           //!< 删除图形的通知

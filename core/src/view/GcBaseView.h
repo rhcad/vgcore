@@ -28,6 +28,7 @@ public:
     
     void submitBackXform() { _gsFront.copy(_gsBack); }              //!< 应用后端坐标系对象到前端
     void copyGs(GiGraphics* gs) { gs->copy(_gsBack); }              //!< 复制坐标系参数
+    void checkZoomTimes();                                          //!< 检查放缩改变与否
     
     GiGraphics* frontGraph() { return &_gsFront; }                  //!< 得到前端图形显示对象
     GiTransform* xform() { return &_gsBack._xf(); }                 //!< 得到后端坐标系对象
@@ -48,6 +49,7 @@ private:
     float       _lastScale;
     bool        _zooming;
     bool        _zoomEnabled;
+    long        _zoomTimes;
 };
 
 #endif // TOUCHVG_CORE_BASEVIEW_H

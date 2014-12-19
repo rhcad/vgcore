@@ -19,7 +19,7 @@ SOURCES   =$(wildcard *.cpp) \
            $(wildcard ../graph/*.cpp) \
            $(wildcard ../gshape/*.cpp) \
            $(wildcard ../shape/*.cpp) \
-                      ../cmdbase/mgcmddraw.cpp
+           $(wildcard ../cmdbase/*.cpp)
 
 include $(ROOTDIR)/core/mk/config.mk
 include $(ROOTDIR)/core/mk/Makefile.swig
