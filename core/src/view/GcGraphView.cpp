@@ -95,7 +95,7 @@ GcGraphView::~GcGraphView()
 
 void GcGraphView::draw(GiGraphics& gs)
 {
-    int gridType = 1;//cmdView()->getOptionInt("showGrid", 0);
+    int gridType = cmdView()->getOptionInt("showGrid", 0);
     if (gridType < 1 || gridType > 2 || gs.xf().getViewScale() < 0.05f)
         return;
     
