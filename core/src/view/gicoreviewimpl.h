@@ -262,15 +262,19 @@ public:
             CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
-                    if (_gcdoc->getView(i) != curview && !zooming)
+                    if (_gcdoc->getView(i) != curview && !zooming) {
                         _gcdoc->getView(i)->deviceView()->regenAll(changed);
+                    }
+                    _gcdoc->getView(i)->checkZoomTimes();
                 }
                 CALL_VIEW(deviceView()->contentChanged());
             }
             else {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
-                    if (_gcdoc->getView(i) != curview && !zooming)
+                    if (_gcdoc->getView(i) != curview && !zooming) {
                         _gcdoc->getView(i)->deviceView()->redraw(changed);
+                    }
+                    _gcdoc->getView(i)->checkZoomTimes();
                 }
             }
         }
@@ -354,6 +358,7 @@ private:
 // DrawLocker
 //
 
+//! Helper class to avoid to call regenAll/redraw repeatedly.
 class DrawLocker
 {
     GiCoreViewImpl* _impl;

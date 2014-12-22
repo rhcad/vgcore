@@ -250,10 +250,34 @@ bool mglnrel::cross2Line(
         return false;
     }
     
-    ptCross.x = (1 - u) * a.x + u * b.x;
-    ptCross.y = (1 - u) * a.y + u * b.y;
+    ptCross = (1 - u) * a + u * b;
     
     return true;
+}
+
+bool mglnrel::cross2LineV(const Point2d& a, const Point2d& b, const Point2d& c,
+                          const Point2d& d, float* v1, float* v2)
+{
+    float denom = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
+    
+    if (mgIsZero(denom)) {
+        return false;
+    }
+    
+    float u = (a.y - c.y) * (d.x - c.x) - (a.x - c.x) * (d.y - c.y);
+    u /= denom;
+    
+    float v = (a.y - c.y) * (b.x - a.x) - (a.x - c.x) * (b.y - a.y);
+    v /= denom;
+    
+    if (v1) {
+        *v1 = u;
+    }
+    if (v2) {
+        *v2 = v;
+    }
+    
+    return !(u < 0 || u > 1 || v < 0 || v > 1);
 }
 
 bool mglnrel::crossLineBeeline(

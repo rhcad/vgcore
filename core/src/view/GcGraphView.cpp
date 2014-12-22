@@ -95,19 +95,25 @@ GcGraphView::~GcGraphView()
 
 void GcGraphView::draw(GiGraphics& gs)
 {
-    int gridType = cmdView()->getOptionInt("showGrid", 0);
-    if (gridType < 1 || gridType > 2 || gs.xf().getViewScale() < 0.2f)
+    int gridType = 1;//cmdView()->getOptionInt("showGrid", 0);
+    if (gridType < 1 || gridType > 2 || gs.xf().getViewScale() < 0.05f)
         return;
     
     Box2d rect(gs.xf().getWndRectW());
-    GiContext ctx(0, GiColor(127, 127, 127, gridType == 2 ? 48 : 24));
+    GiContext ctx(0, GiColor(127, 127, 127, gridType == 2 ? 48 : 20));
     
     if (gridType == 1) {
-        for (float x = rect.xmin - 10; x < rect.xmax + 10; x += 10) {
-            gs.drawLine(&ctx, Point2d(x, rect.ymin), Point2d(x, rect.ymax), false);
+        GiContext ctx5(0, GiColor(127, 127, 127, 48));
+        float x = mgbase::roundReal(rect.xmin, -1) - 10;
+        float y = mgbase::roundReal(rect.ymin, -1) - 10;
+        int i = mgRound(x) / 10;
+        
+        for (; x < rect.xmax + 10; x += 10) {
+            gs.drawLine(i++ % 5 ? &ctx : &ctx5, Point2d(x, rect.ymin), Point2d(x, rect.ymax), false);
         }
-        for (float y = rect.ymin - 10; y < rect.ymax + 10; y += 10) {
-            gs.drawLine(&ctx, Point2d(rect.xmin, y), Point2d(rect.xmax, y), false);
+        i = mgRound(y) / 10;
+        for (; y < rect.ymax + 10; y += 10) {
+            gs.drawLine(i++ % 5 ? &ctx : &ctx5, Point2d(rect.xmin, y), Point2d(rect.xmax, y), false);
         }
     }
     else if (gridType == 2) {

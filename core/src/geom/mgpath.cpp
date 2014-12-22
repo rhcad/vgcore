@@ -5,6 +5,7 @@
 #include "mgpath.h"
 #include "mgcurv.h"
 #include <vector>
+#include <list>
 
 // 返回STL数组(vector)变量的元素个数
 template<class T> inline static int getSize(T& arr)
@@ -13,7 +14,7 @@ template<class T> inline static int getSize(T& arr)
 }
 
 //! MgPath的内部数据类
-class MgPathImpl
+struct MgPathImpl
 {
 public:
     std::vector<Point2d>    points;         //!< 每个节点的坐标
@@ -25,6 +26,13 @@ MgPath::MgPath()
 {
     m_data = new MgPathImpl();
     m_data->beginIndex = -1;
+}
+
+MgPath::MgPath(const char* svgd)
+{
+    m_data = new MgPathImpl();
+    m_data->beginIndex = -1;
+    addSVGPath(svgd);
 }
 
 MgPath::MgPath(const MgPath& src)
@@ -41,6 +49,20 @@ MgPath::MgPath(const MgPath& src)
     m_data->beginIndex = src.m_data->beginIndex;
 }
 
+static inline char convertNodeType(char c)
+{
+    switch (c) {
+        case 'm': return (char)kMgMoveTo;
+        case 'l': return (char)kMgLineTo;
+        case 'c': return (char)kMgBezierTo;
+        case 'q': return (char)kMgQuadTo;
+        case 'L': return (char)(kMgLineTo|kMgCloseFigure);
+        case 'C': return (char)(kMgBezierTo|kMgCloseFigure);
+        case 'Q': return (char)(kMgQuadTo|kMgCloseFigure);
+        default: return c;
+    }
+}
+
 MgPath::MgPath(int count, const Point2d* points, const char* types)
 {
     m_data = new MgPathImpl();
@@ -51,7 +73,7 @@ MgPath::MgPath(int count, const Point2d* points, const char* types)
         m_data->types.reserve(count);
         for (int i = 0; i < count; i++) {
             m_data->points.push_back(points[i]);
-            m_data->types.push_back(types[i]);
+            m_data->types.push_back(convertNodeType(types[i]));
         }
     }
 }
@@ -95,6 +117,40 @@ MgPath& MgPath::append(const MgPath& src)
     return *this;
 }
 
+MgPath& MgPath::reverse()
+{
+    if (getSubPathCount() > 1) {
+        MgPath subpath;
+        std::list<MgPath> paths;
+        
+        for (size_t i = 0; i < m_data->types.size(); i++) {
+            if (m_data->types[i] == kMgMoveTo && subpath.getCount() > 0) {
+                paths.push_back(subpath);
+                subpath.clear();
+            }
+            subpath.m_data->types.push_back(m_data->types[i]);
+            subpath.m_data->points.push_back(m_data->points[i]);
+        }
+        if (subpath.getCount() > 0) {
+            paths.push_back(subpath);
+        }
+        
+        clear();
+        for (std::list<MgPath>::reverse_iterator it = paths.rbegin(); it != paths.rend(); ++it) {
+            append(it->reverse());
+        }
+    } else {
+        for (int i = 0, j = getCount() - 1; i < j; i++, j--) {
+            if (i > 0) {
+                mgSwap(m_data->types[i], m_data->types[j]);
+            }
+            mgSwap(m_data->points[i], m_data->points[j]);
+        }
+    }
+    
+    return *this;
+}
+
 void MgPath::setPath(int count, const Point2d* points, const char* types)
 {
     if (getCount() != count) {
@@ -104,7 +160,7 @@ void MgPath::setPath(int count, const Point2d* points, const char* types)
             m_data->types.reserve(count);
             for (int i = 0; i < count; i++) {
                 m_data->points.push_back(points[i]);
-                m_data->types.push_back(types[i]);
+                m_data->types.push_back(convertNodeType(types[i]));
             }
         }
     } else {
@@ -124,7 +180,7 @@ void MgPath::setPath(int count, const Point2d* points, const int* types)
             m_data->types.reserve(count);
             for (int i = 0; i < count; i++) {
                 m_data->points.push_back(points[i]);
-                m_data->types.push_back((char)types[i]);
+                m_data->types.push_back(convertNodeType((char)types[i]));
             }
         }
     } else {
@@ -138,6 +194,17 @@ void MgPath::setPath(int count, const Point2d* points, const int* types)
 int MgPath::getCount() const
 {
     return getSize(m_data->points);
+}
+
+int MgPath::getSubPathCount() const
+{
+    int ret = 0;
+    
+    for (std::vector<char>::const_iterator it = m_data->types.begin(); it != m_data->types.end(); ++it) {
+        if (*it == kMgMoveTo)
+            ret++;
+    }
+    return ret;
 }
 
 Point2d MgPath::getStartPoint() const
@@ -210,11 +277,25 @@ bool MgPath::isLines() const
     return true;
 }
 
+bool MgPath::isCurve() const
+{
+    int n = getCount();
+    
+    if (n < 2 || getNodeType(0) != kMgMoveTo) {
+        return false;
+    }
+    for (int i = 1; i < n; i++) {
+        if ((getNodeType(i) & (kMgBezierTo|kMgQuadTo)) == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool MgPath::isClosed() const
 {
     int n = getCount();
-    return n > 2 && ((getNodeType(n - 1) & kMgCloseFigure)
-                     || getEndPoint() == getStartPoint());
+    return n > 2 && (getNodeType(n - 1) & kMgCloseFigure);
 }
 
 void MgPath::clear()
@@ -238,6 +319,10 @@ void MgPath::startFigure()
 
 bool MgPath::moveTo(const Point2d& point, bool rel)
 {
+    if (!m_data->types.empty() && m_data->types.back() == kMgMoveTo) {
+        m_data->points.pop_back();
+        m_data->types.pop_back();
+    }
     m_data->points.push_back(rel ? point + getEndPoint() : point);
     m_data->types.push_back(kMgMoveTo);
     m_data->beginIndex = getSize(m_data->points) - 1;
@@ -471,7 +556,7 @@ bool MgPath::closeFigure()
     return ret;
 }
 
-static int AngleToBezier(Point2d* pts, float radius)
+static int angleToBezier_(Point2d* pts, float radius)
 {
     const Vector2d vec1 (pts[1] - pts[0]);      // 第一条边
     const Vector2d vec2 (pts[2] - pts[1]);      // 第二条边
@@ -521,7 +606,7 @@ bool MgPath::genericRoundLines(int count, const Point2d* points,
         ptsBzr[0] = points[count - 1];
         ptsBzr[1] = points[0];
         ptsBzr[2] = points[1];
-        nBzrCnt = AngleToBezier(ptsBzr, radius);
+        nBzrCnt = angleToBezier_(ptsBzr, radius);
         if (nBzrCnt < 4) {
             this->moveTo(points[0]);
         }
@@ -538,7 +623,7 @@ bool MgPath::genericRoundLines(int count, const Point2d* points,
         ptsBzr[0] = points[i - 1];
         ptsBzr[1] = points[i];
         ptsBzr[2] = points[(i + 1) % count];
-        nBzrCnt = AngleToBezier(ptsBzr, radius);
+        nBzrCnt = angleToBezier_(ptsBzr, radius);
         if (nBzrCnt < 4) {
             this->lineTo(points[i]);
         }
@@ -556,36 +641,276 @@ bool MgPath::genericRoundLines(int count, const Point2d* points,
     return true;
 }
 
+bool MgPath::scanSegments(MgSegmentCallback& c) const
+{
+    bool ret = true;
+    
+    if (getSubPathCount() > 1) {
+        MgPath subpath;
+        std::list<MgPath> paths;
+        
+        for (size_t i = 0; i < m_data->types.size(); i++) {
+            if (m_data->types[i] == kMgMoveTo && subpath.getCount() > 0) {
+                paths.push_back(subpath);
+                subpath.clear();
+            }
+            subpath.m_data->types.push_back(m_data->types[i]);
+            subpath.m_data->points.push_back(m_data->points[i]);
+        }
+        if (subpath.getCount() > 0) {
+            paths.push_back(subpath);
+        }
+        
+        for (std::list<MgPath>::reverse_iterator it = paths.rbegin(); ret && it != paths.rend(); ++it) {
+            ret = it->scanSegments(c);
+        }
+    } else {
+        Point2d pts[4];
+        int i, startIndex = 0, type = 0;
+        
+        for (i = 0; i < getCount() && ret; startIndex = ++i - 1) {
+            type = m_data->types[i] & ~kMgCloseFigure;
+            switch (type) {
+                case kMgMoveTo:
+                    pts[0] = m_data->points[i];
+                    c.beginSubPath();
+                    break;
+                    
+                case kMgLineTo:
+                    pts[1] = m_data->points[i];
+                    ret = c.processLine(startIndex, i, pts[0], pts[1]);
+                    pts[0] = pts[1];
+                    break;
+                    
+                case kMgBezierTo:
+                    if (i + 2 >= getCount())
+                        return false;
+                    pts[1] = m_data->points[i++];
+                    pts[2] = m_data->points[i++];
+                    pts[3] = m_data->points[i];
+                    ret = c.processBezier(startIndex, i, pts);
+                    pts[0] = pts[3];
+                    break;
+                    
+                case kMgQuadTo:
+                    if (i + 1 >= getCount())
+                        return false;
+                    pts[2] = m_data->points[i++];
+                    pts[3] = m_data->points[i];
+                    pts[1] = (pts[0] + pts[2] * 2) / 3;
+                    pts[2] = (pts[3] + pts[2] * 2) / 3;
+                    ret = c.processBezier(startIndex, i, pts);
+                    pts[0] = pts[3];
+                    break;
+                    
+                default:
+                    return false;
+            }
+        }
+        if (isClosed()) {
+            i = 0;
+            switch (type) {
+                case kMgLineTo:
+                    ret = c.processLine(startIndex, i, pts[0], m_data->points[0]);
+                    break;
+                    
+                case kMgBezierTo:
+                    pts[1] = 2 * pts[0] + (- m_data->points[getCount() - 2]);
+                    pts[3] = m_data->points[0];
+                    pts[2] = 2 * pts[3] + (- m_data->points[1]);
+                    ret = c.processBezier(startIndex, i, pts);
+                    break;
+                    
+                case kMgQuadTo:
+                    pts[3] = m_data->points[0];
+                    pts[2] = 2 * pts[3] + (- m_data->points[1]);
+                    pts[1] = (pts[0] + pts[2] * 2) / 3;
+                    pts[2] = (pts[3] + pts[2] * 2) / 3;
+                    ret = c.processBezier(startIndex, i, pts);
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        c.endSubPath(isClosed());
+    }
+    
+    return ret;
+}
+
+//! The callback class for getLength()
+struct MgPathLengthCallback : MgPath::MgSegmentCallback {
+    float length;
+    
+    MgPathLengthCallback() : length(0) {}
+    
+    virtual bool processLine(int, int&, const Point2d& startpt, const Point2d& endpt) {
+        length += startpt.distanceTo(endpt);
+        return true;
+    }
+    virtual bool processBezier(int, int&, const Point2d* pts) {
+        length += mgcurv::lengthOfBezier(pts);
+        return true;
+    }
+};
+
+float MgPath::getLength() const
+{
+    MgPathLengthCallback c;
+    scanSegments(c);
+    return c.length;
+}
+
+//! The callback class for trimStart()
+struct MgPathTrimCallback : MgPath::MgSegmentCallback {
+    MgPathImpl  *p;
+    float       dist;
+    Point2d     pt;
+    
+    MgPathTrimCallback(MgPathImpl *p, float dist, const Point2d& pt) : p(p), dist(dist), pt(pt) {}
+    
+    virtual bool processLine(int startIndex, int &endIndex, const Point2d& startpt, const Point2d& endpt) {
+        if (pt.distanceTo(endpt) <= dist) {
+            p->points[startIndex] = endpt;
+            p->points.erase(p->points.begin() + endIndex);
+            p->types.erase(p->types.begin() + endIndex);
+            --endIndex;
+        } else {
+            p->points[startIndex] = pt.rulerPoint(endpt, dist, 0);
+            return false;
+        }
+        return true;
+    }
+    
+    virtual bool processBezier(int startIndex, int &endIndex, const Point2d* pts) {
+        float t = 0;
+        Point2d nearpt;
+        
+        if (!mgcurv::bezierPointDistantFromPoint(pts, dist, pt, nearpt, t) || t > 0.99f) {
+            p->points[startIndex] = pts[3];
+            for (int j = startIndex; j < endIndex; j++) {
+                p->points.erase(p->points.begin() + (startIndex + 1));
+                p->types.erase(p->types.begin() + (startIndex + 1));
+            }
+            endIndex = startIndex;
+        } else {
+            Point2d r[4], s[4];
+            mgcurv::splitBezier(pts, t, r, s);
+            p->points[startIndex] = s[0];
+            if (endIndex - startIndex == 2) {
+                p->points.insert(p->points.begin() + (startIndex + 1), s[1]);
+                p->types.insert(p->types.begin() + (startIndex + 1), kMgBezierTo);
+            } else {
+                p->points[startIndex + 1] = s[1];
+            }
+            p->points[startIndex + 2] = s[2];
+            p->points[startIndex + 3] = s[3];
+            p->types[startIndex + 2]   = kMgBezierTo;
+            p->types[startIndex + 3]   = kMgBezierTo;
+            return false;
+        }
+        
+        return true;
+    }
+};
+
+bool MgPath::trimStart(const Point2d& pt, float dist)
+{
+    if (getCount() < 2 || getNodeType(0) != kMgMoveTo || isClosed()
+        || dist < _MGZERO || getSubPathCount() != 1) {
+        return false;
+    }
+    
+    MgPathTrimCallback c(m_data, dist, pt);
+    scanSegments(c);
+    
+    return true;
+}
+
 #include "mglnrel.h"
+
+//! The callback class for getLength()
+struct MgPathCrossCallback : MgPath::MgSegmentCallback {
+    const Box2d     &box;
+    Point2d         &crosspt;
+    Point2d         a, b;
+    
+    Point2d         tmpcross;
+    float           mindist;
+    float           dist;
+    
+    MgPathCrossCallback(const Box2d &box, Point2d &crosspt)
+        : box(box), crosspt(crosspt), mindist(_FLT_MAX) {}
+    
+    virtual bool processLine(int, int&, const Point2d& startpt, const Point2d& endpt) {
+        if (box.contains(Box2d(startpt, endpt))
+            && mglnrel::cross2Line(startpt, endpt, a, b, tmpcross)) {
+            dist = tmpcross.distanceTo(box.center());
+            if (mindist > dist) {
+                mindist = dist;
+                crosspt = tmpcross;
+            }
+        }
+        return true;
+    }
+    
+    virtual bool processBezier(int, int&, const Point2d* pts) {
+        float t = 0;
+        
+        if (box.contains(Box2d(4, pts))
+            && mgcurv::bezierIntersectionWithLine(pts, a, b, t)) {
+            mgcurv::fitBezier(pts, t, tmpcross);
+            dist = tmpcross.distanceTo(box.center());
+            if (mindist > dist) {
+                mindist = dist;
+                crosspt = tmpcross;
+            }
+        }
+        return true;
+    }
+
+    MgPathCrossCallback(const MgPathCrossCallback&);
+    MgPathCrossCallback& operator=(const MgPathCrossCallback&);
+};
 
 bool MgPath::crossWithPath(const MgPath& p, const Box2d& box, Point2d& ptCross) const
 {
+    MgPathCrossCallback cc(box, ptCross);
+    
     if (isLine() && p.isLine()) {
         return (mglnrel::cross2Line(getPoint(0), getPoint(1),
                                     p.getPoint(0), p.getPoint(1), ptCross)
                 && box.contains(ptCross));
     }
     if (isLines() && p.isLines()) {
-        Point2d tmpcross;
-        float mindist = _FLT_MAX;
-        
         for (int m = getCount() - (isClosed() ? 0 : 1), i = 0; i < m; i++) {
             Point2d a(getPoint(i)), b(getPoint(i + 1));
             
             for (int n = p.getCount() - (p.isClosed() ? 0 : 1), j = 0; j < n; j++) {
                 Point2d c(p.getPoint(j)), d(p.getPoint(j + 1));
                 
-                if (mglnrel::cross2Line(a, b, c, d, tmpcross)
-                    && box.contains(tmpcross)) {
-                    float dist = tmpcross.distanceTo(box.center());
-                    if (mindist > dist) {
-                        mindist = dist;
-                        ptCross = tmpcross;
+                if (mglnrel::cross2Line(a, b, c, d, cc.tmpcross)
+                    && box.contains(cc.tmpcross)) {
+                    float dist = cc.tmpcross.distanceTo(box.center());
+                    if (cc.mindist > dist) {
+                        cc.mindist = dist;
+                        ptCross = cc.tmpcross;
                     }
                 }
             }
         }
-        return mindist < box.width();
     }
-    return false;
+    else if (isLine() && p.getSubPathCount() == 1) {
+        cc.a = getPoint(0);
+        cc.b = getPoint(1);
+        p.scanSegments(cc);
+    }
+    else if (p.isLine() && getSubPathCount() == 1) {
+        cc.a = p.getPoint(0);
+        cc.b = p.getPoint(1);
+        scanSegments(cc);
+    }
+    
+    return cc.mindist < box.width();
 }

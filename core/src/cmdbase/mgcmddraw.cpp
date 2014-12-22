@@ -83,6 +83,12 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
             int value = s->readInt("lineARGB", 0);
             ctx.setLineColor((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF, (value >> 24) & 0xFF);
         }
+        if (s->readInt("startArrayHead", -10) > -10) {
+            ctx.setStartArrayHead(s->readInt("startArrayHead", 0));
+        }
+        if (s->readInt("endArrayHead", -10) > -10) {
+            ctx.setEndArrayHead(s->readInt("endArrayHead", 0));
+        }
     }
     m_shape->setContext(ctx);
     m_flags = (m_flags & ~2) | (sender->view->context() && ctx != *sender->view->context() ? 2 : 0);
@@ -114,6 +120,19 @@ MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
 {
     shape = shape ? shape : m_shape;
     MgShape* newsp = NULL;
+    
+    if (sender->view->getOptionBool("newShapeFixedlen", false)) {
+        shape->shape()->setFlag(kMgFixedLength, true);
+    }
+    if (sender->view->getOptionBool("newShapeFixedsize", false)) {
+        shape->shape()->setFlag(kMgFixedSize, true);
+    }
+    if (sender->view->getOptionBool("newShapeLocked", false)) {
+        shape->shape()->setFlag(kMgLocked, true);
+    }
+    if (sender->view->getOptionBool("newShapeHiden", false)) {
+        shape->shape()->setFlag(kMgHideContent, true);
+    }
     
     if (sender->view->shapeWillAdded(shape)) {
         newsp = sender->view->shapes()->addShape(*shape);
@@ -231,12 +250,11 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
                                  bool firstStep, int handle)
 {
     MgSnap *snap = sender->view->getSnap();
-    Point2d pt(snap->snapPoint(sender, orignPt,
-                               firstStep ? NULL : m_shape, handle));
+    Point2d pt(snap->snapPoint(sender, orignPt, firstStep ? NULL : m_shape, handle));
     
     if ( (firstStep || !sender->dragging())
         && snap->getSnappedType() >= kMgSnapPoint) {
-        sender->view->getCmdSubject()->onPointSnapped(sender, dynshape());
+        sender->view->getCmdSubject()->onPointSnapped(sender, m_shape);
     }
     if (firstStep || snap->getSnappedType() >= kMgSnapPoint) {
         m_lastSnapped[0] = pt;
@@ -248,8 +266,8 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
 
 void MgCommandDraw::ignoreStartPoint(const MgMotion* sender, int handle)
 {
-    if (handle >= 0 && handle < dynshape()->shape()->getPointCount()) {
-        sender->view->getSnap()->setIgnoreStartPoint(dynshape()->shape()->getHandlePoint(handle));
+    if (handle >= 0 && handle < m_shape->shape()->getPointCount()) {
+        sender->view->getSnap()->setIgnoreStartPoint(m_shape->shape()->getHandlePoint(handle));
     }
 }
 
@@ -261,7 +279,7 @@ int MgCommandDraw::getSnappedType(const MgMotion* sender) const
 void MgCommandDraw::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     if (step > 0) {
-        dynshape()->shape()->setHandlePoint(step, pt, 0);
+        m_shape->shape()->setHandlePoint(step, pt, 0);
     }
 }
 
@@ -270,15 +288,15 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
     if (0 == m_step) {
         m_step = 1;
         Point2d pnt(snapPoint(sender, true));
-        for (int i = dynshape()->shape()->getPointCount() - 1; i >= 0; i--) {
-            dynshape()->shape()->setPoint(i, pnt);
+        for (int i = m_shape->shape()->getPointCount() - 1; i >= 0; i--) {
+            m_shape->shape()->setPoint(i, pnt);
         }
         setStepPoint(sender, 0, pnt);
     }
     else {
         setStepPoint(sender, m_step, snapPoint(sender));
     }
-    dynshape()->shape()->update();
+    m_shape->shape()->update();
 
     return MgCommandDraw::touchBegan(sender);
 }
@@ -287,7 +305,7 @@ bool MgCommandDraw::touchMovedStep(const MgMotion* sender)
 {
     if (sender->dragging()) {
         setStepPoint(sender, m_step, snapPoint(sender));
-        dynshape()->shape()->update();
+        m_shape->shape()->update();
     }
     return MgCommandDraw::touchMoved(sender);
 }
@@ -298,13 +316,13 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     Tol tol(sender->displayMmToModel(2.f));
     
     setStepPoint(sender, m_step, pnt);
-    dynshape()->shape()->update();
+    m_shape->shape()->update();
     
-    if (!pnt.isEqualTo(dynshape()->shape()->getPoint(m_step - 1), tol)) {
+    if (!pnt.isEqualTo(m_shape->shape()->getPoint(m_step - 1), tol)) {
         m_step++;
         if (m_step >= getMaxStep()) {
             m_step = 0;
-            if (!dynshape()->shape()->getExtent().isEmpty(tol, false)) {
+            if (!m_shape->shape()->getExtent().isEmpty(tol, false)) {
                 addShape(sender);
             }
         }
@@ -319,6 +337,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
 #include "mglocal.h"
 #include "mgcoreview.h"
 
+//! Callback class to convert text to std::string.
 struct LocStringCallback : MgStringCallback {
     std::string result;
     virtual void onGetString(const char* text) { if (text) result = text; }

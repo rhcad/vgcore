@@ -11,6 +11,7 @@
 #include "mgspfactory.h"
 #include <algorithm>
 
+//! 可并行播放的图形数据类
 struct GiPlayShapes
 {
     GiPlaying*      playing;

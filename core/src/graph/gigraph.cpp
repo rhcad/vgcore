@@ -1006,38 +1006,55 @@ bool GiGraphics::drawQuadSplines(const GiContext* ctx, int count, const Point2d*
     return rawEndPath(ctx, closed);
 }
 
-bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, 
-                          bool fill, bool modelUnit)
+bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path, bool fill, bool modelUnit)
+{
+    if (ctx && ctx->hasArrayHead() && path.getSubPathCount() == 1 && !path.isClosed()) {
+        MgPath pathw(path);
+        GiContext ctx2(*ctx);
+        
+        pathw.transform(S2D(xf(), modelUnit));
+        
+        ctx2.setNoFillColor();
+        ctx2.setStartArrayHead(0);
+        ctx2.setEndArrayHead(0);
+        
+        return drawPathWithArrayHead(ctx2, pathw, ctx->getStartArrayHead(), ctx->getEndArrayHead());
+    }
+    
+    return drawPath_(ctx, path, fill, S2D(xf(), modelUnit));
+}
+
+bool GiGraphics::drawPath_(const GiContext* ctx, const MgPath& path, bool fill, const Matrix2d& matD)
 {
     int n = path.getCount();
     if (n == 0 || isStopping())
         return false;
-
-    Matrix2d matD(S2D(xf(), modelUnit));
+    
     const Point2d* pts = path.getPoints();
     const char* types = path.getTypes();
     Point2d ends, cp1, cp2;
+    bool matsame = matD.isIdentity();
 
     rawBeginPath();
 
     for (int i = 0; i < n; i++) {
         switch (types[i] & ~kMgCloseFigure) {
         case kMgMoveTo:
-            ends = pts[i] * matD;
+            ends = matsame ? pts[i] : (pts[i] * matD);
             rawMoveTo(ends.x, ends.y);
             break;
 
         case kMgLineTo:
-            ends = pts[i] * matD;
+            ends = matsame ? pts[i] : (pts[i] * matD);
             rawLineTo(ends.x, ends.y);
             break;
 
         case kMgBezierTo:
             if (i + 2 >= n)
                 return false;
-            cp1 = pts[i] * matD;
-            cp2 = pts[i+1] * matD;
-            ends = pts[i+2] * matD;
+            cp1 = matsame ? pts[i] : (pts[i] * matD);
+            cp2 = matsame ? pts[i+1] : (pts[i+1] * matD);
+            ends = matsame ? pts[i+2] : (pts[i+2] * matD);
             rawBezierTo(cp1.x, cp1.y, cp2.x, cp2.y, ends.x, ends.y);
             i += 2;
             break;
@@ -1045,8 +1062,8 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path,
         case kMgQuadTo:
             if (i + 1 >= n)
                 return false;
-            cp1 = pts[i] * matD;
-            ends = pts[i+1] * matD;
+            cp1 = matsame ? pts[i] : (pts[i] * matD);
+            ends = matsame ? pts[i+1] : (pts[i+1] * matD);
             rawQuadTo(cp1.x, cp1.y, ends.x, ends.y);
             i++;
             break;
@@ -1059,6 +1076,69 @@ bool GiGraphics::drawPath(const GiContext* ctx, const MgPath& path,
     }
 
     return rawEndPath(ctx, fill);
+}
+
+//! 箭头图案
+static const struct {
+    bool        fill;
+    float       xoffset;
+    const char  *types;
+} _arrayHeads[] = {
+    { true, 1.87f,  "M1.87 0L3 1.2 0 0 3 -1.2Z" },
+    { false, 0,     "M3 1.2L0 0 3 -1.2" },
+    { false, 0,     "M0 1.5L0 -1.5" },
+    { false, 0,     "M1.5 -1.5L-1.5 1.5" },
+    { true, 0.8f,   "M0.8 0A0.8 0.8 0 0 0 -0.8 0A0.8 0.8 0 0 0 0.8 0Z" },
+    { false, 0.8f,  "M0.8 0A0.8 0.8 0 0 0 -0.8 0A0.8 0.8 0 0 0 0.8 0Z" },
+};
+
+bool GiGraphics::drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int startArray, int endArray)
+{
+    Point2d startpt(path.getStartPoint()), endpt(path.getEndPoint());
+    float px = calcPenWidth(ctx.getLineWidth(), ctx.isAutoScale());
+    float scale = 0.5f * xf().getWorldToDisplayX() * (1 + mgMax(0.f, (px - 4.f) / 5));
+    
+    if (startArray > 0 && startArray <= GiContext::kArrowOpenedCircle) {
+        float xoffset = _arrayHeads[startArray - 1].xoffset * scale;
+        path.trimStart(startpt, xoffset + px / 2);
+        
+        Matrix2d mat(Matrix2d::translation(startpt.asVector()));
+        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : path.getStartPoint() - startpt);
+        mat *= Matrix2d::rotation(vec.angle2(), startpt);
+        mat *= Matrix2d::scaling(scale, startpt);
+        
+        MgPath headPath(_arrayHeads[startArray - 1].types);
+        headPath.transform(mat);
+        
+        GiContext ctxhead(ctx);
+        if (_arrayHeads[startArray - 1].fill) {
+            ctxhead.setFillColor(ctxhead.getLineColor());
+            ctxhead.setNullLine();
+        }
+        drawPath_(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+    }
+    if (endArray > 0 && endArray <= GiContext::kArrowOpenedCircle) {
+        float xoffset = _arrayHeads[endArray - 1].xoffset * scale;
+        path.reverse().trimStart(endpt, xoffset + px / 2);
+        
+        Matrix2d mat(Matrix2d::translation(endpt.asVector()));
+        Vector2d vec(mgIsZero(xoffset) ? path.getStartTangent() : path.getEndPoint() - endpt);
+        mat *= Matrix2d::rotation(vec.angle2(), endpt);
+        mat *= Matrix2d::scaling(scale, endpt);
+        
+        MgPath headPath(_arrayHeads[endArray - 1].types);
+        headPath.transform(mat);
+        path.reverse();
+        
+        GiContext ctxhead(ctx);
+        if (_arrayHeads[endArray - 1].fill) {
+            ctxhead.setFillColor(ctxhead.getLineColor());
+            ctxhead.setNullLine();
+        }
+        drawPath_(&ctxhead, headPath, ctxhead.hasFillColor(), Matrix2d::kIdentity());
+    }
+    
+    return drawPath_(&ctx, path, false, Matrix2d::kIdentity());
 }
 
 bool GiGraphics::setPen(const GiContext* ctx)
@@ -1320,7 +1400,8 @@ float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, flo
     
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
         Point2d ptd(pnt * xf().modelToDisplay());
-        h *= xf().getWorldToDisplayY(false);
+        float w2d = xf().getWorldToDisplayY(h < 0);
+        h = fabsf(h) * w2d;
         
         if (!mgIsZero(angle)) {
             angle = (Vector2d::angledVector(angle, 1) * xf().modelToWorld()).angle2();
@@ -1329,7 +1410,7 @@ float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, flo
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
         if (setBrush(&ctx)) {
-            ret = m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) / xf().getWorldToDisplayY(false);
+            ret = m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) / w2d;
         }
     }
     

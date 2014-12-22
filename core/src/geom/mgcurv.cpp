@@ -6,6 +6,7 @@
 #include "mgbase.h"
 #include "mglnrel.h"
 #include "mgdblpt.h"
+#include "mglnrel.h"
 
 void mgcurv::quadBezierToCubic(const Point2d quad[3], Point2d cubic[4])
 {
@@ -70,29 +71,160 @@ void mgcurv::splitBezier(const Point2d* pts, float t, Point2d* pts1, Point2d* pt
     p8 = (1 - t) * p5 + t * p6;
     p9 = (1 - t) * p6 + t * p7;
     p10 = (1 - t) * p8 + t * p9;
+    pts2[0] = p10;
 }
 
-float mgcurv::lengthOfBezier(const Point2d* pts, float tol)
+bool mgcurv::bezierIsStraight(const Point2d* pts)
 {
-    float   polyLen = 0.0f;
-    float   chordLen = pts[0].distanceTo(pts[3]);
-    float   retLen, errLen;
-    unsigned n;
-    
-    for (n = 0; n < 3; ++n)
-        polyLen += pts[n].distanceTo(pts[n + 1]);
-    
-    errLen = polyLen - chordLen;
-    
-    if (errLen > tol) {
-        Point2d left[4], right[4];
-        splitBezier (pts, 0.5f, left, right);
-        retLen = lengthOfBezier(left, tol) + lengthOfBezier(right, tol);
-    } else {
-        retLen = 0.5f * (polyLen + chordLen);
+    return mglnrel::isColinear(pts[0], pts[3], pts[1]) || mglnrel::isColinear(pts[0], pts[3], pts[2]);
+}
+
+// lengthOfBezier, bezierPointDistantFromPoint and bezierIntersectionWithLine are modified
+// from WDBezierSegment.m of Inkpad with the Mozilla Public License. Copyright (c) 2009-2013 Steve Sprang
+
+static double base3(double t, double p1, double p2, double p3, double p4)
+{
+    double t1 = -3.0*p1 + 9.0*p2 - 9.0*p3 + 3.0*p4;
+    double t2 = t*t1 + 6.0*p1 - 12.0*p2 + 6.0*p3;
+    return t*t2 - 3.0*p1 + 3.0*p2;
+}
+
+static double cubicF(double t, const Point2d* pts)
+{
+    double xbase = base3(t, pts[0].x, pts[1].x, pts[2].x, pts[3].x);
+    double ybase = base3(t, pts[0].y, pts[1].y, pts[2].y, pts[3].y);
+    return mgHypot(xbase, ybase);
+}
+
+// Gauss quadrature for cubic Bezier curves http://processingjs.nihongoresources.com/bezierinfo/
+float mgcurv::lengthOfBezier(const Point2d* pts)
+{
+    if (bezierIsStraight(pts)) {
+        return pts[0].distanceTo(pts[3]);
     }
     
-    return retLen;
+    double  z2 = 0.5;
+    double  sum = 0.0f;
+    
+    // Legendre-Gauss abscissae (xi values, defined at i=n as the roots of the nth order Legendre polynomial Pn(x))
+    static double Tvalues[] = {
+        -0.06405689286260562997910028570913709, 0.06405689286260562997910028570913709,
+        -0.19111886747361631067043674647720763, 0.19111886747361631067043674647720763,
+        -0.31504267969616339684080230654217302, 0.31504267969616339684080230654217302,
+        -0.43379350762604512725673089335032273, 0.43379350762604512725673089335032273,
+        -0.54542147138883956269950203932239674, 0.54542147138883956269950203932239674,
+        -0.64809365193697554552443307329667732, 0.64809365193697554552443307329667732,
+        -0.74012419157855435791759646235732361, 0.74012419157855435791759646235732361,
+        -0.82000198597390294708020519465208053, 0.82000198597390294708020519465208053,
+        -0.88641552700440107148693869021371938, 0.88641552700440107148693869021371938,
+        -0.93827455200273279789513480864115990, 0.93827455200273279789513480864115990,
+        -0.97472855597130947380435372906504198, 0.97472855597130947380435372906504198,
+        -0.99518721999702131064680088456952944, 0.99518721999702131064680088456952944
+    };
+    
+    // Legendre-Gauss weights (wi values, defined by a function linked to in the Bezier primer article)
+    static double Cvalues[] = {
+        0.12793819534675215932040259758650790, 0.12793819534675215932040259758650790,
+        0.12583745634682830250028473528800532, 0.12583745634682830250028473528800532,
+        0.12167047292780339140527701147220795, 0.12167047292780339140527701147220795,
+        0.11550566805372559919806718653489951, 0.11550566805372559919806718653489951,
+        0.10744427011596563437123563744535204, 0.10744427011596563437123563744535204,
+        0.09761865210411388438238589060347294, 0.09761865210411388438238589060347294,
+        0.08619016153195327434310968328645685, 0.08619016153195327434310968328645685,
+        0.07334648141108029983925575834291521, 0.07334648141108029983925575834291521,
+        0.05929858491543678333801636881617014, 0.05929858491543678333801636881617014,
+        0.04427743881741980774835454326421313, 0.04427743881741980774835454326421313,
+        0.02853138862893366337059042336932179, 0.02853138862893366337059042336932179,
+        0.01234122979998720018302016399047715, 0.01234122979998720018302016399047715
+    };
+    
+    for (int i = 0; i < 24; i++) {
+        double corrected_t = z2 * Tvalues[i] + z2;
+        sum += Cvalues[i] * cubicF(corrected_t, pts);
+    }
+    
+    return (float)(z2 * sum);
+}
+
+static float bezierPointLength_(const Point2d* pts, float len, float a, float b, Point2d* bsub)
+{
+    float t = (a + b) * 0.5f;
+    
+    if (b - a > 0.005f) {
+        mgcurv::splitBezier(pts, t, bsub, bsub + 4);
+        
+        float s = mgcurv::lengthOfBezier(bsub);
+        if (s > len + 1e-4f) {
+            return bezierPointLength_(pts, len, a, t, bsub);
+        }
+        if (s < len - 1e-4f) {
+            return bezierPointLength_(pts, len, t, b, bsub);
+        }
+    }
+    
+    return t;
+}
+
+float mgcurv::bezierPointLengthFromStart(const Point2d* pts, float len)
+{
+    Point2d bsub[8];
+    return bezierPointLength_(pts, len, 0.f, 1.f, bsub);
+}
+
+bool mgcurv::bezierPointDistantFromPoint(const Point2d* pts, float dist, const Point2d& pt,
+                                         Point2d &result, float &tRes)
+{
+    Point2d     current, last = pts[0];
+    float       start = 0.0f, end = 1.0f, step = 0.1f;
+    
+    for (float t = start + step; t < (end + step); t += step) {
+        fitBezier(pts, t, current);
+        
+        if (current.distanceTo(pt) >= dist) {
+            start = (t - step); // back up one iteration
+            end = t;
+            
+            // it's between the last and current point, let's get more precise
+            step = 0.0001f;
+            
+            for (float t = start; t < (end + step); t += step) {
+                fitBezier(pts, t, current);
+                
+                if (current.distanceTo(pt) >= dist) {
+                    tRes = t - (step / 2);
+                    fitBezier(pts, tRes, result);
+                    return true;
+                }
+            }
+        }
+        
+        last = current;
+    }
+    
+    return false;
+}
+
+bool mgcurv::bezierIntersectionWithLine(const Point2d* pts, const Point2d& a, const Point2d& b, float &tIntersect)
+{
+    if (!Box2d(4, pts).isIntersect(Box2d(a, b))) {
+        return false;
+    }
+    
+    float       r, delta = 0.01f;
+    Point2d     current, last = pts[0];
+    
+    for (float t = 0; t < (1.0f + delta); t += delta) {
+        fitBezier(pts, t, current);
+                
+        if (mglnrel::cross2LineV(last, current, a, b, &r)) {
+            tIntersect = mgMax(mgMin((t - delta) + delta * r, 1.f), 0.f);
+            return true;
+        }
+        
+        last = current;
+    }
+    
+    return false;
 }
 
 void mgcurv::ellipse90ToBezier(
@@ -783,6 +915,7 @@ void mgcurv::cubicSplineToBezier(
     points[3] = knots[i2];
 }
 
+//! The helper class for FitCurve()
 struct FitCurveHelper {
     int index;
     int knotCount;

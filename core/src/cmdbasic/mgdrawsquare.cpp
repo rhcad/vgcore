@@ -7,10 +7,9 @@
 
 bool MgCmdDrawSquare::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgRect::Type(), sender, s);
+    _initialize(MgRect::Type(), sender);
     
-    MgBaseRect* rect = (MgBaseRect*)dynshape()->shape();
-    rect->setSquare(true);
+    ((MgBaseRect*)dynshape()->shape())->setSquare(true);
     
-    return ret;
+    return _initialize(0, sender, s);
 }

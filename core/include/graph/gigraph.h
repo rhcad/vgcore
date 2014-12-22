@@ -380,7 +380,7 @@ public:
         \param argb 文字颜色，0则为黑色
         \param text 要显示的文字内容
         \param pnt 文字对齐位置，模型坐标
-        \param h 文字高度，毫米单位
+        \param h 文字高度，毫米单位，小于零时跟随显示比例变化
         \param align 水平对齐方式，0-左对齐，1-居中，2-右对齐
         \param angle 文字角度，弧度，以模型坐标系的X正方形为0度，模型坐标系的逆时针方向为角度正方向
         \return 实际显示宽度，毫米
@@ -424,6 +424,8 @@ private:
     bool setBrush(const GiContext* ctx);
     bool _drawPolygon(const GiContext* ctx, int count, const Point2d* points,
                       bool m2d, bool fill, bool edge, bool modelUnit);
+    bool drawPathWithArrayHead(const GiContext& ctx, MgPath& path, int startArray, int endArray);
+    bool drawPath_(const GiContext* ctx, const MgPath& path, bool fill, const Matrix2d& matD);
 
 private:
     GiGraphics& operator=(const GiGraphics&);

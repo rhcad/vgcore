@@ -45,7 +45,6 @@ public:
 #ifndef SWIG
     static const char* Name() { return "arc_cse"; }
     static MgCommand* Create() { return new MgCmdArcCSE; }
-    static float drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr = NULL);
 #endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);

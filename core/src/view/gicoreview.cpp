@@ -24,7 +24,7 @@ float GiCoreViewImpl::_factor = 1.0f;   // 屏幕放大系数，Android高清屏
 //
 
 GcBaseView::GcBaseView(MgView* mgview, GiView *view)
-    : _mgview(mgview), _view(view), _zooming(false), _zoomEnabled(true)
+    : _mgview(mgview), _view(view), _zooming(false), _zoomEnabled(true), _zoomTimes(0)
 {
     mgview->document()->addView(this);
     LOGD("View %p created", this);
@@ -1151,6 +1151,14 @@ int GiCoreView::exportSVG(GiView* view, const char* filename) {
     releaseDoc(doc);
     releaseGraphics(hGs);
     return n;
+}
+
+void GcBaseView::checkZoomTimes()
+{
+    if (_zoomTimes != xform()->getZoomTimes()) {
+        _zoomTimes = xform()->getZoomTimes();
+        _view->zoomChanged();
+    }
 }
 
 bool GiCoreView::zoomToInitial()

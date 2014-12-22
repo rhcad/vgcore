@@ -7,9 +7,9 @@
 
 bool MgCmdDrawPolygon::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgLines::Type(), sender, s);
-    if (ret) {
-        ((MgBaseLines*)dynshape()->shape())->setClosed(true);
-    }
-    return ret;
+    _initialize(MgLines::Type(), sender);
+    
+    ((MgBaseLines*)dynshape()->shape())->setClosed(true);
+    
+    return _initialize(0, sender, s);
 }

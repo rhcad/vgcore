@@ -18,7 +18,7 @@
 #define isnan(x) ((x)!=(x))
 #endif
 
-const float _MGZERO    = 1e-5f;     //!< 定义可以视为零的极小数
+const float _MGZERO    = 2e-6f;     //!< 定义可以视为零的极小数
 
 // 定义常用的数学常数
 const float _M_E       = 2.71828182845904523536028747135266f;      //!< e

@@ -133,6 +133,7 @@ bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, 
     m_rotateHandle = 0;
     m_editMode = false;
     m_showSel = true;
+    m_rotateAngle = 0.f;
     
     m_id = getLockSelShape(sender, 0);
     m_handleIndex = getLockSelHandle(sender, m_handleIndex);
@@ -219,7 +220,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     float radius = sender->displayMmToModel(sender->view->useFinger() ? 1.f : 3.f, gs);
     float r2x = radius * 2.5f;
     int flags = sender->view->getOptionInt("selectDrawFlags", 0xFF);
-    bool rorate = (!isEditMode(sender->view) && m_boxHandle >= 8 && m_boxHandle < 12);
+    bool boxrorate = (!isEditMode(sender->view) && m_boxHandle >= 8 && m_boxHandle < 12);
     
     // 从 m_selIds 得到临时图形数组 selection
     for (sel_iterator its = m_selIds.begin(); its != m_selIds.end(); ++its) {
@@ -233,10 +234,13 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     }
     
     if (!m_showSel || (!m_clones.empty() && !isCloneDrag(sender))) {
-        if (m_showSel && !rorate && (flags & kMgSelDrawDragLine)) { // 拖动提示的参考线
+        if (m_showSel && !boxrorate && (flags & kMgSelDrawDragLine)) { // 拖动提示的参考线
             GiContext ctxshap(-1.05f, GiColor(0, 0, 255, 32), GiContext::kDotLine);
             gs->drawLine(&ctxshap, m_ptStart, m_ptSnap);
         }
+    }
+    if (!mgIsZero(m_rotateAngle)) {                 // 显示旋转角度
+        drawAngleText(sender, gs, fabsf(m_rotateAngle));
     }
     
     // 外部动态改变图形属性时，或拖动时
@@ -307,7 +311,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             }
         }
         else if (!selbox.isEmpty()) {   // 正在拖动临时图形
-            if (rorate) {               // 旋转提示的参考线
+            if (boxrorate) {            // 旋转提示的参考线
                 gs->drawHandle(selbox.center(), kGiHandleVertex);
                 GiContext ctxshap(0, GiColor(0, 0, 255, 128), GiContext::kDashLine);
                 gs->drawLine(&ctxshap, selbox.center(), m_ptSnap);
@@ -855,6 +859,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             return true;
         }
     }
+    m_rotateAngle = 0.f;
     
     Vector2d minsnap(1e8f, 1e8f);
     int snapindex = -1;
@@ -886,17 +891,22 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
             if (m_rotateHandle > 0 && canRotate(basesp, sender)) {
                 Point2d center(basesp->shapec()->getHandlePoint(m_rotateHandle - 1));
                 
-                if (center != m_ptStart && m_handleIndex != m_rotateHandle
-                    && sender->view->shapeCanMovedHandle(m_clones[i], -1)) {
-                    float angle = (m_ptStart - center).angleTo2(pointM - center);
-                    shape->transform(Matrix2d::rotation(angle, center));
+                if (center != m_ptStart && m_handleIndex != m_rotateHandle) {
+                    m_rotateAngle = (m_ptStart - center).angleTo2(pointM - center);
+                    float stepAngle = sender->view->getOptionFloat("rotateStepAngle", 1);
+                    
+                    if (sender->view->getSnap()->getSnappedType() == kMgSnapNone) {
+                        m_rotateAngle = mgbase::roundReal(m_rotateAngle * _M_R2D / stepAngle, 0) * _M_D2R * stepAngle;
+                    }
+                    shape->transform(Matrix2d::rotation(m_rotateAngle, center));
                     
                     Point2d fromPt, toPt;
                     snapPoint(sender, m_clones[i]);
                     
                     if (sender->cmds()->getSnap()->getSnappedPoint(fromPt, toPt) >= kMgSnapGrid) {
-                        angle = (fromPt - center).angleTo2(toPt - center);
-                        shape->transform(Matrix2d::rotation(angle, center));
+                        float anglefix = (fromPt - center).angleTo2(toPt - center);
+                        shape->transform(Matrix2d::rotation(anglefix, center));
+                        m_rotateAngle += anglefix;
                     }
                 }
             }
@@ -1011,6 +1021,7 @@ bool MgCmdSelect::touchEnded(const MgMotion* sender)
     m_insertPt = false;
     m_hit.nearpt = sender->pointM;
     m_boxHandle = 99;
+    m_rotateAngle = 0.f;
     
     if (isEditMode(sender->view) && m_handleIndex > 0
         && !getLockSelHandle(sender, 0)) {
@@ -1324,8 +1335,10 @@ bool MgCmdSelect::cloneSelection(const MgMotion* sender)
     
     if (!m_clones.empty()) {
         float dist = sender->displayMmToModel("cloneOffset", 10.f);
+        Vector2d vec(sender->displayMmToModel("cloneOffsetX", dist),
+                     sender->displayMmToModel("cloneOffsetY", -dist));
         for (size_t i = 0; i < m_clones.size(); i++) {
-            m_clones[i]->shape()->offset(Vector2d(dist, -dist), -1);
+            m_clones[i]->shape()->offset(vec, -1);
         }
     }
     
@@ -1599,7 +1612,7 @@ bool MgCmdSelect::twoFingersMove(const MgMotion* sender)
             Matrix2d mat (Matrix2d::translation(sender->pointM - sender->startPtM));    // 平移起点
             
             if ((m_editMode || shape->isKindOf(kMgShapeImage))
-                && !shape->getFlag(kMgFixedLength)) {       // 比例放缩
+                && !shape->getFlag(kMgFixedLength) && !shape->getFlag(kMgFixedSize)) {  // 比例放缩
                 
                 float a = fabsf(a0) / _M_PI_2;              // [0,2]
                 if (!canRotate(basesp, sender) && fabsf(a - floorf(a + 0.5f)) < 0.3f) {

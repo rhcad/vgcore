@@ -11,6 +11,7 @@
 #include "mgpnt.h"
 #include "mgdblpt.h"
 
+//! The bezier segment with four points.
 typedef struct {
     point_t pts[4];
     const point_t& operator[](int i) const { return pts[i]; }
@@ -23,6 +24,8 @@ typedef struct {
 } BezierCurve;
 
 typedef Point2d (*PtCallback)(void* data, int i);
+
+//! The wrapper class of multiple points.
 typedef struct _PtArr {
     const Point2d *d;
     PtCallback  c;

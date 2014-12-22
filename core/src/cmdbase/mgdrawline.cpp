@@ -7,9 +7,9 @@
 
 bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgLine::Type(), sender, s);
+    _initialize(MgLine::Type(), sender);
     
-    if (ret && s) {
+    if (s) {
         MgLine *line = (MgLine*)dynshape()->shape();
         
         line->setBeeline(false);
@@ -19,21 +19,25 @@ bool MgCmdDrawLine::initialize(const MgMotion* sender, MgStorage* s)
             line->setBeeline(true);
     }
     
-    return ret;
+    return _initialize(0, sender, s);
 }
 
 bool MgCmdDrawRayLine::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgLine::Type(), sender, s);
+    _initialize(MgLine::Type(), sender);
+    
     ((MgLine*)dynshape()->shape())->setRayline(true);
-    return ret;
+    
+    return _initialize(0, sender, s);
 }
 
 bool MgCmdDrawBeeLine::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgLine::Type(), sender, s);
+    _initialize(MgLine::Type(), sender);
+    
     ((MgLine*)dynshape()->shape())->setBeeline(true);
-    return ret;
+    
+    return _initialize(0, sender, s);
 }
 
 bool MgCmdDrawLine::backStep(const MgMotion* sender)
@@ -79,12 +83,13 @@ bool MgCmdDrawLine::touchEnded(const MgMotion* sender)
 
 bool MgCmdDrawDot::initialize(const MgMotion* sender, MgStorage* s)
 {
-    bool ret = _initialize(MgDot::Type(), sender, s);
+    _initialize(MgDot::Type(), sender);
     
     if (s) {
         ((MgDot*)dynshape()->shape())->setPointType(s->readInt("pttype", 0));
     }
-    return ret;
+    
+    return _initialize(0, sender, s);
 }
 
 bool MgCmdDrawDot::click(const MgMotion* sender)

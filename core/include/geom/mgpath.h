@@ -8,7 +8,7 @@
 
 #include "mgpnt.h"
 
-class MgPathImpl;
+struct MgPathImpl;
 class Box2d;
 
 //! 矢量路径节点类型
@@ -40,9 +40,12 @@ public:
     /*!
         \param count 节点个数
         \param points 节点坐标数组，元素个数为count
-        \param types 节点类型数组，元素个数为count，由 MgPathNode 值组成
+        \param types 节点类型数组，元素个数为count，由 MgPathNode 值组成；每个字符也可为 mlcqLCQ 之一，大写字符表示闭合
     */
     MgPath(int count, const Point2d* points, const char* types);
+    
+    //! 给定SVG的路径d串构造
+    MgPath(const char* svgd);
 
     //! 析构函数
     virtual ~MgPath();
@@ -55,6 +58,9 @@ public:
     
     //! 从SVG的路径d串解析
     MgPath& addSVGPath(const char* s);
+    
+    //! 路径反向
+    MgPath& reverse();
     
     //! 折线拐角圆角化
     /*!
@@ -69,6 +75,9 @@ public:
 
     //! 返回节点个数
     int getCount() const;
+    
+    //! 返回子路径(MoveTo)的个数
+    int getSubPathCount() const;
     
     //! 返回起始点
     Point2d getStartPoint() const;
@@ -85,11 +94,17 @@ public:
     //! 返回是否为线段
     bool isLine() const;
     
-    //! 返回是否为折线或多边形
+    //! 返回是否为线段、折线或多边形
     bool isLines() const;
+    
+    //! 返回是否每段都为曲线段
+    bool isCurve() const;
     
     //! 返回是否为闭合图形
     bool isClosed() const;
+    
+    //! 返回路径长度
+    float getLength() const;
 
 #ifndef SWIG
     //! 返回节点坐标数组
@@ -98,9 +113,20 @@ public:
     //! 返回节点类型数组，由 MgPathNode 值组成
     const char* getTypes() const;
     
-    //! 设置节点数据
+    //! 设置节点数据，types的每个字符由 MgPathNode 值组成或为 mlcqLCQ 之一
     void setPath(int count, const Point2d* points, const char* types);
     void setPath(int count, const Point2d* points, const int* types);
+    
+    //! 遍历路径段的回调接口
+    struct MgSegmentCallback {
+        virtual ~MgSegmentCallback() {}
+        virtual void beginSubPath() {}
+        virtual void endSubPath(bool closed) {}
+        virtual bool processLine(int startIndex, int &endIndex, const Point2d& startpt, const Point2d& endpt) = 0;
+        virtual bool processBezier(int startIndex, int &endIndex, const Point2d* pts) = 0;
+    };
+    //! 遍历路径段
+    bool scanSegments(MgSegmentCallback& c) const;
 #endif
     
     //! 返回节点类型，由 MgPathNode 值组成
@@ -208,6 +234,9 @@ public:
         \return 是否正确添加
     */
     bool closeFigure();
+    
+    //! 从起始方向去掉给定距离的段，即最终路径的起点与原起点的距离为dist
+    bool trimStart(const Point2d& pt, float dist);
     
     //! 求两个路径的交点
     bool crossWithPath(const MgPath& path, const Box2d& box, Point2d& ptCross) const;

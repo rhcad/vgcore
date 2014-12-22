@@ -25,6 +25,7 @@ public:
     virtual const MgShape* getShape(const MgMotion* sender) { return (MgShape*)0; }   //!< 当前临时图形
     virtual bool initializeWithSelection(const MgMotion* sender, MgStorage* s, const int* ids) { return initialize(sender, s); }
     virtual int getSelectedIDs(MgView* view, int* ids, int count) { return 0; }
+    static float drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr = NULL);
 #endif
     virtual void release() = 0;                                 //!< 销毁对象
     

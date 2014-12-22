@@ -98,6 +98,7 @@ private:
     Point2d                 m_ptStart;          // touchBegan捕捉点
     int                     m_handleIndex;      // 点中的是哪个控制点
     int                     m_rotateHandle;     // 旋转中心控制点
+    float                   m_rotateAngle;      // 旋转角度
     int                     m_boxHandle;        // 选中框的活动控制点序号
     bool                    m_editMode;         // 控制点修改模式
     bool                    m_insertPt;         // 是否可插入新点

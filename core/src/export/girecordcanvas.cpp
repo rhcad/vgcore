@@ -7,6 +7,7 @@
 #include "mgstorage.h"
 #include <string>
 
+//! The class for recording 'setPen'.
 struct CmdSetPen : public MgRecordShape::ICmd {
     int argb; float width; int style; float phase; float orgw;
     CmdSetPen() : argb(0xFF000000), width(0), style(0), phase(0), orgw(0) {}
@@ -46,6 +47,7 @@ struct CmdSetPen : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'setBrush'.
 struct CmdSetBrush : public MgRecordShape::ICmd {
     int argb; int style;
     CmdSetBrush() : argb(0) {}
@@ -75,6 +77,7 @@ struct CmdSetBrush : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'clearRect'.
 struct CmdClearRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec;
     CmdClearRect() {}
@@ -110,6 +113,7 @@ struct CmdClearRect : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+//! The class for recording 'clipRect'.
 struct CmdClipRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec;
     CmdClipRect() {}
@@ -144,6 +148,7 @@ struct CmdClipRect : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+//! The class for recording 'drawRect'.
 struct CmdDrawRect : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec; bool stroke; bool fill;
     CmdDrawRect() {}
@@ -185,6 +190,7 @@ struct CmdDrawRect : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+//! The class for recording 'drawLine'.
 struct CmdDrawLine : public MgRecordShape::ICmd {
     Point2d pt1; Point2d pt2;
     CmdDrawLine() {}
@@ -220,6 +226,7 @@ struct CmdDrawLine : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt1, pt2); }
 };
 
+//! The class for recording 'drawEllipse'.
 struct CmdDrawEllipse : public MgRecordShape::ICmd {
     Point2d pt; Vector2d vec; bool stroke; bool fill;
     CmdDrawEllipse() {}
@@ -261,6 +268,7 @@ struct CmdDrawEllipse : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+//! The class for recording 'beginPath'.
 struct CmdBeginPath : public MgRecordShape::ICmd {
     CmdBeginPath() {}
     
@@ -278,6 +286,7 @@ struct CmdBeginPath : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'moveTo'.
 struct CmdMoveTo : public MgRecordShape::ICmd {
     Point2d pt;
     CmdMoveTo() {}
@@ -307,6 +316,7 @@ struct CmdMoveTo : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
+//! The class for recording 'lineTo'.
 struct CmdLineTo : public MgRecordShape::ICmd {
     Point2d pt;
     CmdLineTo() {}
@@ -337,6 +347,7 @@ struct CmdLineTo : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
+//! The class for recording 'bezierTo'.
 struct CmdBezierTo : public MgRecordShape::ICmd {
     Point2d c1, c2, pt;
     CmdBezierTo() {}
@@ -378,6 +389,7 @@ struct CmdBezierTo : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, c1, c2, pt); }
 };
 
+//! The class for recording 'quadTo'.
 struct CmdQuadTo : public MgRecordShape::ICmd {
     Point2d cp, pt;
     CmdQuadTo() {}
@@ -414,6 +426,7 @@ struct CmdQuadTo : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(cp, pt); }
 };
 
+//! The class for recording 'closePath'.
 struct CmdClosePath : public MgRecordShape::ICmd {
     CmdClosePath() {}
     
@@ -431,6 +444,7 @@ struct CmdClosePath : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'drawPath'.
 struct CmdDrawPath : public MgRecordShape::ICmd {
     bool stroke; bool fill;
     CmdDrawPath() {}
@@ -460,6 +474,7 @@ struct CmdDrawPath : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'clipPath'.
 struct CmdClipPath : public MgRecordShape::ICmd {
     int t;
     CmdClipPath(int t = 0) : t(t) {}
@@ -498,6 +513,7 @@ struct CmdClipPath : public MgRecordShape::ICmd {
     }
 };
 
+//! The class for recording 'drawHandle'.
 struct CmdDrawHandle : public MgRecordShape::ICmd {
     Point2d pt; int t; float angle;
     CmdDrawHandle() : t(0), angle(0) {}
@@ -534,6 +550,7 @@ struct CmdDrawHandle : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, 1e-3f, 0); }
 };
 
+//! The class for recording 'drawBitmap'.
 struct CmdDrawBitmap : public MgRecordShape::ICmd {
     std::string name; Point2d pt; Vector2d vec; float angle;
     CmdDrawBitmap() : angle(0) {}
@@ -580,6 +597,7 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
 
+//! The class for recording 'drawTextAt'.
 struct CmdDrawTextAt : public MgRecordShape::ICmd {
     std::string text; Point2d pt; Vector2d vec; int align; float angle;
     CmdDrawTextAt() : align(0), angle(0) {}

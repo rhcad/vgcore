@@ -64,11 +64,11 @@ bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
     return MgCmdArc3P::initialize(sender, s);
 }
 
-float MgCmdArcCSE::drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr)
+float MgCommand::drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr)
 {
     std::stringstream ss;
     
-    Point2d pt(sender->pointM + Vector2d(0, sender->displayMmToModel(15.f)));
+    Point2d pt(sender->pointM + Vector2d(0, sender->displayMmToModel(12.f)));
     pt.y = mgMin(pt.y, sender->view->xform()->getWndRectM().ymax);
     
     ss << mgbase::roundReal(mgbase::rad2Deg(angle), 2) << MgLocalized::getString(sender->view, "degrees");

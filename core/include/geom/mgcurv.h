@@ -30,19 +30,34 @@ static void fitBezier(const Point2d* pts, float t, Point2d& fitpt);
     \see fitBezier
 */
 static void bezierTanget(const Point2d* pts, float t, Point2d& outpt);
-    
-//! 计算三次贝塞尔曲线段的参数点
+
+//! 分割一个三次贝塞尔曲线段
 /*!
     \param[in] pts 4个点的数组，为贝塞尔曲线段的控制点
     \param[in] t 要分割点的参数，范围为(0, 1)
-    \param[out] pts1 分割出的第一个贝塞尔曲线段，4个点的数组
-    \param[out] pts2 分割出的第二个贝塞尔曲线段，4个点的数组
+    \param[out] pts1 传入4个点的数组，填充分割出的第一个贝塞尔曲线段
+    \param[out] pts2 传入4个点的数组，填充分割出的第二个贝塞尔曲线段
 */
 static void splitBezier(const Point2d* pts, float t, Point2d* pts1, Point2d* pts2);
 
-//! 返回三次贝塞尔曲线段的长度
-static float lengthOfBezier(const Point2d* pts, float tol);
-    
+//! 返回一个三次贝塞尔曲线段是否为直线段
+static bool bezierIsStraight(const Point2d* pts);
+
+//! 返回一个三次贝塞尔曲线段的长度
+static float lengthOfBezier(const Point2d* pts);
+
+//! 返回三次贝塞尔曲线段从起点开始的指定弧长处的点参数，范围为[0,1]
+static float bezierPointLengthFromStart(const Point2d* pts, float len);
+
+#ifndef SWIG
+//! 计算曲线起点附近的外部点到三次贝塞尔曲线段相距指定距离的曲线点和参数
+static bool bezierPointDistantFromPoint(const Point2d* pts, float dist, const Point2d& pt,
+                                        Point2d &result, float &tRes);
+
+//! 计算曲线段与给定的直线段ab相交处的参数
+static bool bezierIntersectionWithLine(const Point2d* pts, const Point2d& a, const Point2d& b, float &tIntersect);
+#endif
+
 //! 用线上四点构成三次贝塞尔曲线段
 /*! 该贝塞尔曲线段的起点和终点为给定点，中间经过另外两个给定点，
     t=1/3过pt2, t=2/3过pt3。
