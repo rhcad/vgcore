@@ -1335,8 +1335,10 @@ bool MgCmdSelect::cloneSelection(const MgMotion* sender)
     
     if (!m_clones.empty()) {
         float dist = sender->displayMmToModel("cloneOffset", 10.f);
+        Vector2d vec(sender->displayMmToModel("cloneOffsetX", dist),
+                     sender->displayMmToModel("cloneOffsetY", -dist));
         for (size_t i = 0; i < m_clones.size(); i++) {
-            m_clones[i]->shape()->offset(Vector2d(dist, -dist), -1);
+            m_clones[i]->shape()->offset(vec, -1);
         }
     }
     

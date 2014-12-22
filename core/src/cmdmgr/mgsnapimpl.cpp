@@ -598,7 +598,7 @@ Point2d MgCmdManagerImpl::snapPoint(const MgMotion* sender, const Point2d& orgpt
     pnt = matchpt && pnt.x > -1e8f ? pnt : _ptSnap; // 顶点匹配优先于用触点捕捉结果
     
     if (arr[0].type == kMgSnapNone) {
-        int decimal = sender->view->getOptionInt("snapRoundCell", 2);
+        int decimal = sender->view->getOptionInt("snapRoundCell", 1);
         float mm = sender->displayMmToModel(1);
         
         pnt.x = mgbase::roundReal(pnt.x / mm, decimal) * mm;
