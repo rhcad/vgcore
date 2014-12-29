@@ -101,15 +101,31 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
         
         sender->view->setOptionBool("snapEnabled", false);
         n = s->readFloatArray("points", &buf[0].x, mgMin(n, 20*2)) / 2;
-        for (int i = 0; i < n; i += 2) {
-            tmpmotion.startPtM = buf[i];
-            tmpmotion.pointM = buf[i];
+        
+        if (s->readBool("multiMoved", false)) {
+            tmpmotion.pointM = buf[0];
+            tmpmotion.startPtM = tmpmotion.pointM;
+            tmpmotion.lastPtM = tmpmotion.pointM;
             touchBegan(&tmpmotion);
-            tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
-            touchMoved(&tmpmotion);
+            
+            for (int i = 1; i < n; i++) {
+                tmpmotion.pointM = buf[i];
+                touchMoved(&tmpmotion);
+                tmpmotion.lastPtM = tmpmotion.pointM;
+            }
             touchEnded(&tmpmotion);
-            m_shape->setContext(ctx);
+        } else {
+            for (int i = 0; i < n; i += 2) {
+                tmpmotion.startPtM = buf[i];
+                tmpmotion.pointM = buf[i];
+                touchBegan(&tmpmotion);
+                tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
+                touchMoved(&tmpmotion);
+                touchEnded(&tmpmotion);
+                m_shape->setContext(ctx);
+            }
         }
+        m_step = 0;
         sender->view->setOptionBool("snapEnabled", oldSnap);
     }
     
