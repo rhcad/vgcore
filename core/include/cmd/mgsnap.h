@@ -29,6 +29,7 @@ typedef enum {
     kMgSnapPerp,        //!< 垂足
     kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点
     kMgSnapNearPt,      //!< 线上最近点
+    kMgSnapExtendPt,    //!< 延长线上的点
 } MgSnapType;
 
 //! 图形特征点捕捉器接口
