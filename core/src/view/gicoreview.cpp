@@ -971,6 +971,34 @@ int GiCoreView::getSelectedShapeID()
     return shape ? shape->getID() : 0;
 }
 
+void GiCoreView::getSelectedShapeIDs(mgvector<int>& ids)
+{
+    if (isDrawingCommand()) {
+        ids.setSize(impl->getNewShapeID() ? 1 : 0);
+        if (ids.count() > 0) {
+            ids.set(0, impl->getNewShapeID());
+        }
+    } else {
+        const MgShape* shapes[100];
+        int n = impl->cmds()->getSelection(impl, 100, shapes);
+        
+        ids.setSize(n);
+        for (int i = 0; i < n && shapes[i]; i++) {
+            ids.set(i, shapes[i]->getID());
+        }
+    }
+}
+
+void GiCoreView::setSelectedShapeIDs(const mgvector<int>& ids)
+{
+    if (setCommand("select{'id':-1}") && ids.count() > 0) {
+        mgvector<int> ids2(ids.count() + 1);
+        for (int i = 0; i < ids.count(); i++)
+            ids2.set(i, ids.get(i));
+        impl->getCommand()->initializeWithSelection(impl->motion(), NULL, ids2.address());
+    }
+}
+
 int GiCoreView::getSelectedHandle()
 {
     MgSelection* sel = impl->cmds()->getSelection();

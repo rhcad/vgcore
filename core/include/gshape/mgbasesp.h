@@ -38,7 +38,7 @@ typedef enum {
 
 //! 图形特征点类型
 typedef enum {
-    kMgHandleVertex,   //!< 顶点
+    kMgHandleVertex,    //!< 顶点
     kMgHandleCenter,    //!< 圆心
     kMgHandleMidPoint,  //!< 中点
     kMgHandleQuadrant,  //!< 象限点

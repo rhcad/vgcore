@@ -29,6 +29,7 @@ typedef enum {
     kMgSnapPerp,        //!< 垂足
     kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点
     kMgSnapNearPt,      //!< 线上最近点
+    kMgSnapExtendPt,    //!< 延长线上的点
 } MgSnapType;
 
 //! 图形特征点捕捉器接口
@@ -52,6 +53,10 @@ struct MgSnap {
     
     //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const = 0;
+    
+    //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标、导向点
+    virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt,
+                                Point2d& startPt, Point2d& guildPt) const = 0;
     
     //! 为当前捕捉设置上一线段的坐标，以避免与上一点重合
     virtual void setIgnoreStartPoint(const Point2d& pt) = 0;

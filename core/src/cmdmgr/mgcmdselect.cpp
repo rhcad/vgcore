@@ -328,10 +328,10 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
             m_handleIndex > 0 || m_rotateHandle > 0))) {
         const MgShape* shape = shapes.front();
         int n = (getLockSelHandle(sender, 0) > 0 || getLockRotateHandle(sender, 0) > 0
-                 ? 0 : shape->shapec()->getHandleCount());
+                 ? 0 : shape->getHandleCount());
         
         if (shape->shapec()->getFlag(kMgFixedSize)) {
-            n = mgMin(n, shape->shapec()->getPointCount());
+            n = mgMin(n, shape->getPointCount());
         }
         for (int i = 0; i < n; i++) {
             if (i == m_handleIndex - 1 || i == m_rotateHandle - 1
@@ -339,10 +339,10 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 || !isEditMode(sender->view)) {
                 continue;
             }
-            pnt = shape->shapec()->getHandlePoint(i);
+            pnt = shape->getHandlePoint(i);
             
             GiHandleTypes imageType;
-            switch (shape->shapec()->getHandleType(i)) {
+            switch (shape->getHandleType(i)) {
                 case kMgHandleVertex: imageType = kGiHandleNode; break;
                 case kMgHandleCenter: imageType = kGiHandleCenter; break;
                 case kMgHandleMidPoint: imageType = kGiHandleMidPoint; break;
@@ -355,7 +355,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
         
         if ((m_handleIndex > 0 || m_rotateHandle > 0) && (flags & kMgSelDrawHandle)) {
             int t = m_rotateHandle > 0 ? m_rotateHandle - 1 : m_handleIndex - 1;
-            pnt = shape->shapec()->getHandlePoint(t);
+            pnt = shape->getHandlePoint(t);
             gs->drawHandle(pnt, m_rotateHandle > 0 ? kGiHandleRotate : kGiHandleHotVertex);
         }
         if (m_insertPt && !m_clones.empty()) {      // 在临时图形上显示新插入顶点
@@ -427,9 +427,9 @@ bool MgCmdSelect::canSelect(const MgShape* shape, const MgMotion* sender)
             return true;
         }
         if (d > limits.width() / 2) {
-            int n = isEditMode(sender->view) ? shape->shapec()->getHandleCount() : 0;
+            int n = isEditMode(sender->view) ? shape->getHandleCount() : 0;
             while (--n >= 0 && d > limits.width() / 2) {
-                d = shape->shapec()->getHandlePoint(n).distanceTo(sender->startPtM);
+                d = shape->getHandlePoint(n).distanceTo(sender->startPtM);
             }
         }
     }
@@ -447,10 +447,10 @@ int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
     int handleIndex = 0;
     float minDist = sender->displayMmToModel(tolmm);
     float nearDist = m_hit.nearpt.distanceTo(pointM);
-    int n = shape->shapec()->getHandleCount();
+    int n = shape->getHandleCount();
     
     for (int i = 0; i < n; i++) {
-        float d = pointM.distanceTo(shape->shapec()->getHandlePoint(i));
+        float d = pointM.distanceTo(shape->getHandlePoint(i));
         if (minDist > d && !shape->shapec()->isHandleFixed(i)) {
             minDist = d;
             handleIndex = i + 1;
@@ -482,8 +482,8 @@ Point2d MgCmdSelect::snapPoint(const MgMotion* sender, const MgShape* shape)
     Point2d orgpt(sender->pointM);
     
     if (m_handleIndex > 0 && shape
-        && shape->shapec()->getHandlePoint(m_handleIndex - 1).distanceTo(orgpt) < sender->displayMmToModel(2.f)) {
-        orgpt = shape->shapec()->getHandlePoint(m_handleIndex - 1);
+        && shape->getHandlePoint(m_handleIndex - 1).distanceTo(orgpt) < sender->displayMmToModel(2.f)) {
+        orgpt = shape->getHandlePoint(m_handleIndex - 1);
     }
     Point2d pt(snap->snapPoint(sender, orgpt, shape, m_handleIndex - 1,
                                m_rotateHandle - 1, (const int*)&ignoreids.front()));
@@ -676,7 +676,7 @@ bool MgCmdSelect::touchBegan(const MgMotion* sender)
         }
     }
     else if (shape) {
-        m_ptStart = shape->shape()->getHandlePoint(tmpindex - 1);
+        m_ptStart = shape->getHandlePoint(tmpindex - 1);
     }
     
     sender->view->redraw();
@@ -889,7 +889,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                 lines->insertPoint(m_hit.segment, m_hit.nearpt);    // 插入新顶点
             }
             if (m_rotateHandle > 0 && canRotate(basesp, sender)) {
-                Point2d center(basesp->shapec()->getHandlePoint(m_rotateHandle - 1));
+                Point2d center(basesp->getHandlePoint(m_rotateHandle - 1));
                 
                 if (center != m_ptStart && m_handleIndex != m_rotateHandle) {
                     m_rotateAngle = (m_ptStart - center).angleTo2(pointM - center);
@@ -1112,7 +1112,7 @@ bool MgCmdSelect::applyCloneShapes(MgView* view, bool apply, bool addNewShapes)
             }
             else {
                 if (oldsp && !oldsp->equals(*m_clones[i])
-                    && (oldsp->shapec()->getPointCount() < 1 || !m_clones[i]->shapec()->getExtent().isEmpty(tol))
+                    && (oldsp->getPointCount() < 1 || !m_clones[i]->shapec()->getExtent().isEmpty(tol))
                     && view->shapeWillChanged(m_clones[i], oldsp)
                     && view->shapes()->updateShape(m_clones[i])) {
                     view->shapeChanged(m_clones[i]);

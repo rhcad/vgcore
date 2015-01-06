@@ -103,6 +103,8 @@ struct MgCoreView {
     virtual int getSelectedShapeType() = 0;         //!< 返回选中的图形的类型, MgShapeType
     virtual int getSelectedShapeID() = 0;           //!< 返回当前选中的图形的ID，选中多个时只取第一个
     virtual int getSelectedHandle() = 0;            //!< 返回当前线性图形中当前控制点序号
+    virtual void getSelectedShapeIDs(mgvector<int>& ids) = 0;   //!< 返回当前选中的图形的ID
+    virtual void setSelectedShapeIDs(const mgvector<int>& ids) = 0; //!< 选中指定ID的图形
 
     virtual void clear() = 0;                       //!< 删除所有图形，包括锁定的图形
     virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;       //!< 从文件中加载

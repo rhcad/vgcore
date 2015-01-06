@@ -153,6 +153,8 @@ public:
     int getSelectedShapeType();
     int getSelectedShapeID();
     int getSelectedHandle();
+    void getSelectedShapeIDs(mgvector<int>& ids);
+    void setSelectedShapeIDs(const mgvector<int>& ids);
     void clear();
     bool loadFromFile(const char* vgfile, bool readOnly = false);
     bool saveToFile(long doc, const char* vgfile, bool pretty = false);

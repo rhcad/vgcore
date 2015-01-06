@@ -101,15 +101,31 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
         
         sender->view->setOptionBool("snapEnabled", false);
         n = s->readFloatArray("points", &buf[0].x, mgMin(n, 20*2)) / 2;
-        for (int i = 0; i < n; i += 2) {
-            tmpmotion.startPtM = buf[i];
-            tmpmotion.pointM = buf[i];
+        
+        if (s->readBool("multiMoved", false)) {
+            tmpmotion.pointM = buf[0];
+            tmpmotion.startPtM = tmpmotion.pointM;
+            tmpmotion.lastPtM = tmpmotion.pointM;
             touchBegan(&tmpmotion);
-            tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
-            touchMoved(&tmpmotion);
+            
+            for (int i = 1; i < n; i++) {
+                tmpmotion.pointM = buf[i];
+                touchMoved(&tmpmotion);
+                tmpmotion.lastPtM = tmpmotion.pointM;
+            }
             touchEnded(&tmpmotion);
-            m_shape->setContext(ctx);
+        } else {
+            for (int i = 0; i < n; i += 2) {
+                tmpmotion.startPtM = buf[i];
+                tmpmotion.pointM = buf[i];
+                touchBegan(&tmpmotion);
+                tmpmotion.pointM = buf[i + 1 < n ? i + 1 : i];
+                touchMoved(&tmpmotion);
+                touchEnded(&tmpmotion);
+                m_shape->setContext(ctx);
+            }
         }
+        m_step = 0;
         sender->view->setOptionBool("snapEnabled", oldSnap);
     }
     
@@ -174,7 +190,7 @@ bool MgCommandDraw::draw(const MgMotion* sender, GiGraphics* gs)
 
 bool MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
 {
-    if (m_step > 0 && m_shape && m_shape->shapec()->getPointCount() > 0) {
+    if (m_step > 0 && m_shape && m_shape->getPointCount() > 0) {
         shapes->addShape(*m_shape);
     }
     return false; // gather more shapes via draw()
@@ -266,8 +282,8 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
 
 void MgCommandDraw::ignoreStartPoint(const MgMotion* sender, int handle)
 {
-    if (handle >= 0 && handle < m_shape->shape()->getPointCount()) {
-        sender->view->getSnap()->setIgnoreStartPoint(m_shape->shape()->getHandlePoint(handle));
+    if (handle >= 0 && handle < m_shape->getPointCount()) {
+        sender->view->getSnap()->setIgnoreStartPoint(m_shape->getHandlePoint(handle));
     }
 }
 
@@ -288,7 +304,7 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
     if (0 == m_step) {
         m_step = 1;
         Point2d pnt(snapPoint(sender, true));
-        for (int i = m_shape->shape()->getPointCount() - 1; i >= 0; i--) {
+        for (int i = m_shape->getPointCount() - 1; i >= 0; i--) {
             m_shape->shape()->setPoint(i, pnt);
         }
         setStepPoint(sender, 0, pnt);
@@ -318,7 +334,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     setStepPoint(sender, m_step, pnt);
     m_shape->shape()->update();
     
-    if (!pnt.isEqualTo(m_shape->shape()->getPoint(m_step - 1), tol)) {
+    if (!pnt.isEqualTo(m_shape->getPoint(m_step - 1), tol)) {
         m_step++;
         if (m_step >= getMaxStep()) {
             m_step = 0;
