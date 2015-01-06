@@ -992,7 +992,10 @@ void GiCoreView::getSelectedShapeIDs(mgvector<int>& ids)
 void GiCoreView::setSelectedShapeIDs(const mgvector<int>& ids)
 {
     if (setCommand("select{'id':-1}") && ids.count() > 0) {
-        impl->getCommand()->initializeWithSelection(impl->motion(), NULL, ids.address());
+        mgvector<int> ids2(ids.count() + 1);
+        for (int i = 0; i < ids.count(); i++)
+            ids2.set(i, ids.get(i));
+        impl->getCommand()->initializeWithSelection(impl->motion(), NULL, ids2.address());
     }
 }
 
