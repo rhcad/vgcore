@@ -121,7 +121,7 @@ float mglnrel::ptToBeeline(const Point2d& a, const Point2d& b, const Point2d& pt
 }
 
 float mglnrel::ptToBeeline2(
-    const Point2d& a, const Point2d& b, const Point2d& pt, Point2d& ptPerp)
+    const Point2d& a, const Point2d& b, Point2d pt, Point2d& ptPerp)
 {
     if (a == b) {
         ptPerp = a;
@@ -145,7 +145,7 @@ float mglnrel::ptToBeeline2(
 }
 
 float mglnrel::ptToLine(
-    const Point2d& a, const Point2d& b, const Point2d& pt, Point2d& nearpt)
+    const Point2d& a, const Point2d& b, Point2d pt, Point2d& nearpt)
 {
     Point2d ptTemp;
     float dist = mglnrel::ptToBeeline2(a, b, pt, nearpt);

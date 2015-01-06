@@ -54,6 +54,10 @@ struct MgSnap {
     //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const = 0;
     
+    //! 得到捕捉到的特征点坐标和原始参考坐标、捕捉坐标、导向点
+    virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt,
+                                Point2d& startPt, Point2d& guildPt) const = 0;
+    
     //! 为当前捕捉设置上一线段的坐标，以避免与上一点重合
     virtual void setIgnoreStartPoint(const Point2d& pt) = 0;
     

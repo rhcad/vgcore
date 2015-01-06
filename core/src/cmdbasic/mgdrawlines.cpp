@@ -53,7 +53,7 @@ bool MgCmdDrawLines::touchBegan(const MgMotion* sender)
         dynshape()->shape()->setPoint(1, pnt);
     }
     else {
-        if (m_step >= dynshape()->shape()->getPointCount()) {
+        if (m_step >= dynshape()->getPointCount()) {
             if (m_step > 2) {
                 lines->addPoint(pnt);
                 m_step = mgMin(m_step, lines->getPointCount() - 1);
@@ -105,12 +105,12 @@ bool MgCmdDrawLines::touchEnded(const MgMotion* sender)
             m_step = 0;
             _lastClicked = false;
         }
-        else if (m_step <= dynshape()->shape()->getPointCount()) {
+        else if (m_step <= dynshape()->getPointCount()) {
             m_step++;
         }
     }
     else if (m_step > 1) {
-        if (m_step >= dynshape()->shape()->getPointCount()) {
+        if (m_step >= dynshape()->getPointCount()) {
             m_step--;
         }
         lines->removePoint(m_index);
@@ -138,19 +138,19 @@ bool MgCmdDrawLines::canAddPoint(const MgMotion* sender, const Point2d& pnt)
 {
     float distmin = sender->displayMmToModel(3.f);
     int maxIndex = ((MgBaseLines*)dynshape()->shape())->maxEdgeIndex();
-    Point2d prevPt(dynshape()->shape()->getPoint(m_index - 1));
+    Point2d prevPt(dynshape()->getPoint(m_index - 1));
     
     if (prevPt.distanceTo(pnt) < distmin) {
         return false;
     }
     if (m_index < maxIndex) {
-        if (dynshape()->shape()->getPoint(m_index + 1).distanceTo(pnt) < distmin) {
+        if (dynshape()->getPoint(m_index + 1).distanceTo(pnt) < distmin) {
             return false;
         }
     }
     if (dynshape()->shape()->isClosed() || m_index < maxIndex) {
-        int n = dynshape()->shape()->getPointCount();
-        Point2d nextPt(dynshape()->shape()->getPoint( (m_index + 1) % n) );
+        int n = dynshape()->getPointCount();
+        Point2d nextPt(dynshape()->getPoint( (m_index + 1) % n) );
         Point2d nearpt;
         
         if (mglnrel::ptToLine(prevPt, nextPt, pnt, nearpt)

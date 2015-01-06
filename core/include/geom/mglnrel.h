@@ -147,7 +147,7 @@ static float ptToBeeline(const Point2d& a, const Point2d& b, const Point2d& pt);
     \return 独立点到垂足的距离
 */
 static float ptToBeeline2(
-    const Point2d& a, const Point2d& b, const Point2d& pt, Point2d& ptPerp);
+    const Point2d& a, const Point2d& b, Point2d pt, Point2d& ptPerp);
 
 //! 计算点pt到线段ab的最近距离
 /*!
@@ -158,7 +158,7 @@ static float ptToBeeline2(
     \return 独立点到最近点的距离
 */
 static float ptToLine(
-    const Point2d& a, const Point2d& b, const Point2d& pt, Point2d& nearpt);
+    const Point2d& a, const Point2d& b, Point2d pt, Point2d& nearpt);
 
 //! 求两条直线(ax+by+c=0)的交点
 /*!

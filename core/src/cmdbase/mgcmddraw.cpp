@@ -190,7 +190,7 @@ bool MgCommandDraw::draw(const MgMotion* sender, GiGraphics* gs)
 
 bool MgCommandDraw::gatherShapes(const MgMotion* /*sender*/, MgShapes* shapes)
 {
-    if (m_step > 0 && m_shape && m_shape->shapec()->getPointCount() > 0) {
+    if (m_step > 0 && m_shape && m_shape->getPointCount() > 0) {
         shapes->addShape(*m_shape);
     }
     return false; // gather more shapes via draw()
@@ -282,8 +282,8 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
 
 void MgCommandDraw::ignoreStartPoint(const MgMotion* sender, int handle)
 {
-    if (handle >= 0 && handle < m_shape->shape()->getPointCount()) {
-        sender->view->getSnap()->setIgnoreStartPoint(m_shape->shape()->getHandlePoint(handle));
+    if (handle >= 0 && handle < m_shape->getPointCount()) {
+        sender->view->getSnap()->setIgnoreStartPoint(m_shape->getHandlePoint(handle));
     }
 }
 
@@ -304,7 +304,7 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
     if (0 == m_step) {
         m_step = 1;
         Point2d pnt(snapPoint(sender, true));
-        for (int i = m_shape->shape()->getPointCount() - 1; i >= 0; i--) {
+        for (int i = m_shape->getPointCount() - 1; i >= 0; i--) {
             m_shape->shape()->setPoint(i, pnt);
         }
         setStepPoint(sender, 0, pnt);
@@ -334,7 +334,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     setStepPoint(sender, m_step, pnt);
     m_shape->shape()->update();
     
-    if (!pnt.isEqualTo(m_shape->shape()->getPoint(m_step - 1), tol)) {
+    if (!pnt.isEqualTo(m_shape->getPoint(m_step - 1), tol)) {
         m_step++;
         if (m_step >= getMaxStep()) {
             m_step = 0;

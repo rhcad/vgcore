@@ -67,6 +67,8 @@ private:
         int hotHandle, int ignoreHandle = -1, const int* ignoreids = NULL);
     virtual int getSnappedType() const;
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const;
+    virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt,
+                                Point2d& startPt, Point2d& guildPt) const;
     virtual void setIgnoreStartPoint(const Point2d& pt);
     virtual bool getSnappedHandle(int& shapeid, int& handleIndex, int& handleIndexSrc) const;
     virtual void clearSnap(const MgMotion* sender);

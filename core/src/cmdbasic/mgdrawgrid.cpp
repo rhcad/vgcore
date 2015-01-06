@@ -13,7 +13,7 @@ bool MgCmdDrawGrid::initialize(const MgMotion* sender, MgStorage* s)
 bool MgCmdDrawGrid::draw(const MgMotion* sender, GiGraphics* gs)
 {
     if (getStep() == 2) {
-        gs->drawHandle(dynshape()->shape()->getHandlePoint(8), kGiHandleVertex);
+        gs->drawHandle(dynshape()->getHandlePoint(8), kGiHandleVertex);
     }
     return MgCmdDrawRect::draw(sender, gs);
 }
@@ -52,7 +52,7 @@ bool MgCmdDrawGrid::touchEnded(const MgMotion* sender)
         sender->view->toSelectCommand();
     }
     else {
-        dynshape()->shape()->setHandlePoint(8, dynshape()->shape()->getPoint(3), 0);
+        dynshape()->shape()->setHandlePoint(8, dynshape()->getPoint(3), 0);
         m_step = 2;
         sender->view->showMessage("@invalid_gridcell");
     }

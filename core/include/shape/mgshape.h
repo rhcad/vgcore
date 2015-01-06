@@ -83,6 +83,17 @@ public:
     //! 显示内部图形
     static bool drawShape(const MgShapes* shapes, const MgBaseShape& sp, int mode,
                           GiGraphics& gs, const GiContext& ctx, int segment);
+    
+    //! 返回顶点个数
+    virtual int getPointCount() const { return shapec()->getPointCount(); }
+    //! 返回指定序号的顶点
+    virtual Point2d getPoint(int index) const { return shapec()->getPoint(index); }
+    //! 返回控制点个数
+    int getHandleCount() const { return shapec()->getHandleCount(); }
+    //! 返回指定序号的控制点坐标
+    Point2d getHandlePoint(int index) const { return shapec()->getHandlePoint(index); }
+    //! 返回指定序号的控制点类型(MgHandleType)
+    int getHandleType(int index) const { return shapec()->getHandleType(index); }
 
 protected:
     virtual ~MgShape() {}

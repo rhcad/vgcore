@@ -494,7 +494,7 @@ bool MgPath::arcTo(const Point2d& point, bool rel)
                 startAngle, sweepAngle);
             if (n >= 4) {
                 ret = true;
-                for (int i = 0; i < n; i++) {
+                for (int i = 1; i < n; i++) {
                     m_data->points.push_back(pts[i]);
                     m_data->types.push_back(kMgBezierTo);
                 }
@@ -526,7 +526,7 @@ bool MgPath::arcTo(const Point2d& point, const Point2d& end, bool rel)
                 startAngle, sweepAngle);
             if (n >= 4) {
                 ret = true;
-                for (int i = 0; i < n; i++) {
+                for (int i = 1; i < n; i++) {
                     m_data->points.push_back(pts[i]);
                     m_data->types.push_back(kMgBezierTo);
                 }

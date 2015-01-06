@@ -28,8 +28,8 @@
     void Cls::clear() { _clear(); }                             \
     void Cls::clearCachedData() { _clearCachedData(); }         \
     int Cls::getPointCount() const { return _getPointCount(); } \
-    Point2d Cls::getPoint(int index) const { return _getPoint(index); }  \
-    void Cls::setPoint(int index, const Point2d& pt) { _setPoint(index, pt); }  \
+    Point2d Cls::getPoint(int index) const { return index < 0 ? Point2d() : _getPoint(index); }  \
+    void Cls::setPoint(int index, const Point2d& pt) { if (index >= 0) _setPoint(index, pt); }  \
     bool Cls::isClosed() const { return _isClosed(); }          \
     float Cls::hitTest(const Point2d& pt, float tol, MgHitResult& res) const \
         { return _hitTest(pt, tol, res); }                      \
@@ -43,13 +43,14 @@
         return _load(factory, s); }                             \
     int Cls::getHandleCount() const { return _getHandleCount(); }    \
     Point2d Cls::getHandlePoint(int index) const                \
-        { return _getHandlePoint(index); }                      \
+        { return index < 0 ? Point2d() : _getHandlePoint(index); }  \
     bool Cls::setHandlePoint2(int index, const Point2d& pt, float tol, int& data)   \
-        { return _setHandlePoint2(index, pt, tol, data); }      \
+        { return index >= 0 && _setHandlePoint2(index, pt, tol, data); }    \
     bool Cls::setHandlePoint(int index, const Point2d& pt, float tol)   \
-        { return _rotateHandlePoint(index, pt) || _setHandlePoint(index, pt, tol); } \
+        { return index >= 0 && (_rotateHandlePoint(index, pt) || _setHandlePoint(index, pt, tol)); } \
     bool Cls::isHandleFixed(int index) const { return _isHandleFixed(index); } \
-    int Cls::getHandleType(int index) const { return _getHandleType(index); } \
+    int Cls::getHandleType(int index) const                     \
+        { return index < 0 ? kMgHandleOutside : _getHandleType(index); } \
     bool Cls::offset(const Vector2d& vec, int segment)          \
         { return _offset(vec, segment); }
 

@@ -81,6 +81,9 @@ static float deg2Dms(float angle);
 */
 static float getMidAngle(float fromAngle, float toAngle);
 
+//! 求两个角度(不区分起始角度和终止角度)的角平分线角度, [0, 2PI)
+static float getMidAngle2(float angle1, float angle2);
+
 //! 求两个角度的夹角, [-PI, PI)
 /*! 函数计算从起始角度到终止角度按逆时针方向所转过角度，并转换到[-PI，PI)范围
     \param[in] fromAngle 起始角度，弧度

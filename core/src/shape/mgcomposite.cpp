@@ -29,13 +29,13 @@ void MgComposite::setOwner(MgObject* owner)
 int MgComposite::_getPointCount() const
 {
     const MgShape* sp = _shapes->getHeadShape();
-    return sp ? sp->shapec()->getPointCount() : 0;
+    return sp ? sp->getPointCount() : 0;
 }
 
 Point2d MgComposite::_getPoint(int index) const
 {
     const MgShape* sp = _shapes->getHeadShape();
-    return sp ? sp->shapec()->getPoint(index) : Point2d();
+    return sp ? sp->getPoint(index) : Point2d();
 }
 
 void MgComposite::_setPoint(int, const Point2d&)
@@ -48,7 +48,7 @@ int MgComposite::_getHandleCount() const
     MgShapeIterator it(_shapes);
     
     while (const MgShape* sp = it.getNext()) {
-        n += sp->shapec()->getHandleCount();
+        n += sp->getHandleCount();
     }
     
     return n;
@@ -60,9 +60,9 @@ Point2d MgComposite::_getHandlePoint(int index) const
     MgShapeIterator it(_shapes);
     
     while (const MgShape* sp = it.getNext()) {
-        int c = sp->shapec()->getHandleCount();
+        int c = sp->getHandleCount();
         if (index < n + c) {
-            return sp->shapec()->getHandlePoint(index - n);
+            return sp->getHandlePoint(index - n);
         }
         n += c;
     }
@@ -81,9 +81,9 @@ int MgComposite::_getHandleType(int index) const
     MgShapeIterator it(_shapes);
     
     while (const MgShape* sp = it.getNext()) {
-        int c = sp->shapec()->getHandleCount();
+        int c = sp->getHandleCount();
         if (index < n + c) {
-            return sp->shapec()->getHandleType(index - n);
+            return sp->getHandleType(index - n);
         }
         n += c;
     }
@@ -97,7 +97,7 @@ bool MgComposite::_isHandleFixed(int index) const
     MgShapeIterator it(_shapes);
     
     while (const MgShape* sp = it.getNext()) {
-        int c = sp->shapec()->getHandleCount();
+        int c = sp->getHandleCount();
         if (index < n + c) {
             return sp->shapec()->isHandleFixed(index - n);
         }

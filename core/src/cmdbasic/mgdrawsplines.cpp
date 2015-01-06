@@ -32,10 +32,10 @@ bool MgCmdDrawSplines::draw(const MgMotion* sender, GiGraphics* gs)
         GiContext ctx(0, GiColor(64, 128, 64, 172), GiContext::kSolidLine, GiColor(0, 64, 64, 128));
         float radius = sender->displayMmToModel(0.8f, gs);
         
-        for (int i = 1, n = dynshape()->shape()->getPointCount(); i < 6 && n >= i; i++) {
-            gs->drawCircle(&ctx, dynshape()->shape()->getPoint(n - i), radius);
+        for (int i = 1, n = dynshape()->getPointCount(); i < 6 && n >= i; i++) {
+            gs->drawCircle(&ctx, dynshape()->getPoint(n - i), radius);
         }
-        gs->drawCircle(&ctx, dynshape()->shape()->getPoint(0), radius * 1.5f);
+        gs->drawCircle(&ctx, dynshape()->getPoint(0), radius * 1.5f);
     }
     return MgCommandDraw::draw(sender, gs);
 }
@@ -47,7 +47,7 @@ bool MgCmdDrawSplines::touchBegan(const MgMotion* sender)
     
     if (m_step > 0 && !m_freehand) {
         m_step++;
-        if (m_step >= dynshape()->shape()->getPointCount()) {
+        if (m_step >= dynshape()->getPointCount()) {
             lines->addPoint(pnt);
             dynshape()->shape()->update();
         }
@@ -86,7 +86,7 @@ bool MgCmdDrawSplines::touchMoved(const MgMotion* sender)
         dynshape()->shape()->setPoint(m_step, pnt);
         if (m_step > 0 && canAddPoint(sender, false)) {
             m_step++;
-            if (m_step >= dynshape()->shape()->getPointCount()) {
+            if (m_step >= dynshape()->getPointCount()) {
                 lines->addPoint(pnt);
             }
         }
@@ -121,12 +121,12 @@ bool MgCmdDrawSplines::touchEnded(const MgMotion* sender)
         m_step = 0;
     }
     else {
-        float dist = lines->endPoint().distanceTo(dynshape()->shape()->getPoint(0));
+        float dist = lines->endPoint().distanceTo(dynshape()->getPoint(0));
 
         while (m_step > 1 && dist < sender->displayMmToModel(1.f)) {
             lines->setClosed(true);
             lines->removePoint(m_step--);
-            dist = lines->endPoint().distanceTo(dynshape()->shape()->getPoint(0));
+            dist = lines->endPoint().distanceTo(dynshape()->getPoint(0));
         }
         if (m_step > 1 && lines->isClosed()) {
             addShape(sender);
