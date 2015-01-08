@@ -125,7 +125,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
                 m_shape->setContext(ctx);
             }
         }
-        m_step = 0;
+        cancel(sender);
         sender->view->setOptionBool("snapEnabled", oldSnap);
     }
     

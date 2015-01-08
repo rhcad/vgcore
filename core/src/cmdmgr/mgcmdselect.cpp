@@ -323,7 +323,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
     }
     
     // 下面显示控制点. 此时仅选中一个图形、有活动控制点
-    if (shapes.size() == 1 && m_showSel
+    if (shapes.size() == 1 && m_showSel && (flags & kMgSelDrawHandle)
         && (isEditMode(sender->view) || (
             m_handleIndex > 0 || m_rotateHandle > 0))) {
         const MgShape* shape = shapes.front();
@@ -353,7 +353,7 @@ bool MgCmdSelect::draw(const MgMotion* sender, GiGraphics* gs)
                 gs->drawHandle(pnt, imageType);
         }
         
-        if ((m_handleIndex > 0 || m_rotateHandle > 0) && (flags & kMgSelDrawHandle)) {
+        if (m_handleIndex > 0 || m_rotateHandle > 0) {
             int t = m_rotateHandle > 0 ? m_rotateHandle - 1 : m_handleIndex - 1;
             pnt = shape->getHandlePoint(t);
             gs->drawHandle(pnt, m_rotateHandle > 0 ? kGiHandleRotate : kGiHandleHotVertex);

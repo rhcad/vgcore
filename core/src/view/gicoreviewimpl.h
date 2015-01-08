@@ -108,6 +108,7 @@ public:
     GiContext* context() const { return backDoc->context(); }
     GiTransform* xform() const { return CALL_VIEW2(xform(), NULL); }
     Matrix2d& modelTransform() const { return backDoc->modelTransform(); }
+    void* createRegenLocker();
     
     int getNewShapeID() { return _cmds->getNewShapeID(); }
     void setNewShapeID(int sid) { _cmds->setNewShapeID(sid); }
@@ -252,13 +253,11 @@ public:
     }
     
     void regenAll(bool changed) {
-        bool apply = regenPending || appendPending;
-        bool zooming = CALL_VIEW2(isZooming(), false);
-        
         if (regenPending >= 0) {
             regenPending += changed ? 100 : 1;
         }
-        if (apply) {
+        if (regenPending < 0) {
+            bool zooming = CALL_VIEW2(isZooming(), false);
             CALL_VIEW(deviceView()->regenAll(changed));
             if (changed) {
                 for (int i = 0; i < _gcdoc->getViewCount(); i++) {
@@ -281,18 +280,15 @@ public:
     }
     
     void regenAppend(int sid, long playh = 0) {
-        bool apply = regenPending || appendPending;
-        
         if (appendPending >= 0 && sid) {
             if (appendPending == 0 || appendPending == sid) {
                 appendPending = sid;
             }
             else if (appendPending > 0 && appendPending != sid) {
-                regenAll(true);
+                regenPending += 100;
             }
         }
-        sid = sid ? sid : (int)appendPending;
-        if (apply && sid) {
+        if (appendPending < 0 && sid) {
             CALL_VIEW(deviceView()->regenAppend(sid, playh));
             for (int i = 0; i < _gcdoc->getViewCount(); i++) {
                 if (_gcdoc->getView(i) != curview)

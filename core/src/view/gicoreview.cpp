@@ -1358,6 +1358,16 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     return ret;
 }
 
+MgRegenLocker::~MgRegenLocker()
+{
+    delete (DrawLocker *)obj;
+}
+
+void* GiCoreViewImpl::createRegenLocker()
+{
+    return new DrawLocker(this);
+}
+
 int GiCoreView::addImageShape(const char* name, float width, float height)
 {
     DrawLocker locker(impl);

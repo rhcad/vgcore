@@ -41,6 +41,7 @@ struct MgView
     
 #ifndef SWIG
     virtual GcShapeDoc* document() const = 0;                   //!< 返回内核的内部文档对象
+    virtual void* createRegenLocker() = 0;                      //!< 为 MgRegenLocker 创建内部对象
 #endif
     virtual MgMotion* motion() = 0;                             //!< 返回当前动作参数
     virtual MgCmdManager* cmds() const = 0;                     //!< 返回命令管理器对象
@@ -113,6 +114,16 @@ struct MgView
     virtual void setOptionInt(const char* name, int value) = 0;          //!< 设置整型选项值
     virtual void setOptionFloat(const char* name, float value) = 0;      //!< 设置浮点型选项值
     virtual void setOptionString(const char* name, const char* text) = 0; //!< 设置文本选项值
+};
+
+//! 避免重复触发 regenAll/redraw 的辅助类
+class MgRegenLocker
+{
+public:
+    MgRegenLocker(MgView* view) : obj(view->createRegenLocker()) {}
+    ~MgRegenLocker();
+private:
+    void* obj;
 };
 
 //! 触摸动作参数
