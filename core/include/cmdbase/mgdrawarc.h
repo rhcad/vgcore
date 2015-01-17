@@ -56,6 +56,7 @@ protected:
     
 private:
     int     _decimal;
+    float   _radius;
 };
 
 //! 切线圆弧绘图命令类

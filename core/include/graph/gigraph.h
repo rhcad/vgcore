@@ -13,6 +13,7 @@
 #ifndef SWIG
 class GiGraphicsImpl;
 class GiCanvas;
+struct GiTextWidthCallback;
 #endif
 
 enum GiHandleTypes {        //!< 符号类型
@@ -64,6 +65,7 @@ public:
         kAlignTop       = 0,
         kAlignBottom    = 0x10,
         kAlignVCenter   = 0x20,
+        kAlignHVCenter  = kAlignCenter|kAlignVCenter,
     };
     
 public:
@@ -417,6 +419,7 @@ public:
     bool rawImage(const char* name, float xc, float yc, float w, float h, float angle);
     bool beginShape(int type, int sid, int version, float x, float y, float w, float h);
     void endShape(int type, int sid, float x, float y);
+    float drawTextAt(GiTextWidthCallback* c, int argb, const char* text, const Point2d& pnt, float h, int align = 1, float angle = 0);
 #endif
     
 private:

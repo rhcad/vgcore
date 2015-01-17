@@ -5,6 +5,16 @@
 #ifndef TOUCHVG_CORE_GICANVAS_H
 #define TOUCHVG_CORE_GICANVAS_H
 
+#ifndef SWIG
+//! Callback interface for receiving actual width result of drawTextAt().
+struct GiTextWidthCallback {
+    virtual ~GiTextWidthCallback() {}
+    virtual void addRefTextWidth() {}
+    virtual void releaseTextWidth() {}
+    virtual void drawTextEnded(GiTextWidthCallback *c, float width) = 0;
+};
+#endif
+
 //! Canvas callback interface device-dependent.
 /*! Implement a derived class with a graphics library which may be device-dependent.
     The default unit of its drawing functions is the point (usually equal to the pixel).
@@ -144,6 +154,12 @@ public:
     virtual float drawTextAt(const char* text, float x, float y, float h, int align, float angle) = 0;
     
 #ifndef SWIG
+    virtual float drawTextAt(GiTextWidthCallback* c, const char* text, float x, float y, float h, int align, float angle) {
+        float w = drawTextAt(text, x, y, h, align, angle);
+        if (c) c->drawTextEnded(c, w);
+        return w;
+    }
+    
     //! Clear the cached bitmap for re-drawing on desktop PC.
     virtual void clearCachedBitmap(bool clearAll = false) {}
 #endif

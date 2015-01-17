@@ -58,6 +58,7 @@ void MgCmdArc3P::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 
 bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
 {
+    _radius = 0;
     if (s) {
         _decimal = s->readInt("decimal", _decimal);
     }
@@ -66,16 +67,22 @@ bool MgCmdArcCSE::initialize(const MgMotion* sender, MgStorage* s)
 
 float MgCommand::drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr)
 {
-    std::stringstream ss;
-    
     Point2d pt(sender->pointM + Vector2d(0, sender->displayMmToModel(12.f)));
     pt.y = mgMin(pt.y, sender->view->xform()->getWndRectM().ymax);
+    return drawAngleText(sender->view, gs, angle, pt, 1, stdstr, NULL);
+}
+
+float MgCommand::drawAngleText(MgView* view, GiGraphics* gs, float angle,
+                               const Point2d& pt, int align, void* stdstr, GiTextWidthCallback* c)
+{
+    std::stringstream ss;
+    int decimal = view->getOptionInt("degreeDecimal", 1);
     
-    ss << mgbase::roundReal(mgbase::rad2Deg(angle), 2) << MgLocalized::getString(sender->view, "degrees");
+    ss << mgbase::roundReal(mgbase::rad2Deg(angle), decimal) << MgLocalized::getString(view, "degrees");
     if (stdstr) {
         *((std::string*)stdstr) = ss.str();
     }
-    return gs ? gs->drawTextAt(GiColor::Red().getARGB(), ss.str().c_str(), pt, 3.5f) : 0.f;
+    return gs ? gs->drawTextAt(c, GiColor::Red().getARGB(), ss.str().c_str(), pt, 3.5f, align) : 0.f;
 }
 
 bool MgCmdArcCSE::draw(const MgMotion* sender, GiGraphics* gs)
@@ -98,11 +105,17 @@ bool MgCmdArcCSE::draw(const MgMotion* sender, GiGraphics* gs)
 bool MgCmdArcCSE::click(const MgMotion* sender)
 {
     Point2d pt(snapPoint(sender));
+    MgArc* arc = (MgArc*)dynshape()->shape();
     
-    _points[1] += pt - _points[0];  // 半径不变
-    _points[2] += pt - _points[0];  // 半径不变
-    _points[0] = pt;                // 定圆心
-    sender->view->redraw();
+    if (_points[1] != _points[2] || m_step > 1) {
+        _points[1] += pt - _points[0];  // 半径不变
+        _points[2] += pt - _points[0];  // 半径不变
+        _points[0] = pt;                // 定圆心
+        _points[2] = 2 * _points[0] - _points[1].asVector();    // 保持不同
+        arc->offset(pt - arc->getCenter(), -1);
+        m_step = 0;
+        sender->view->redraw();
+    }
     
     return true;
 }
@@ -116,24 +129,24 @@ void MgCmdArcCSE::setStepPoint(const MgMotion*, int step, const Point2d& pt)
             _points[0] = pt;                // 记下圆心
             arc->offset(pt - arc->getCenter(), -1);
         } else {                            // 设置起始方向
-            float r = _points[0].distanceTo(_points[2]);
-            _points[1] = _points[0].rulerPoint(pt, r, 0);
+            _points[1] = _points[0].rulerPoint(pt, _radius, 0);
             if (_points[1] == _points[2]) {
-                _points[2] = _points[0].rulerPoint(pt, -r, 0);  // 保持不同
+                _points[2] = _points[0].rulerPoint(pt, -_radius, 0);    // 保持不同
             }
             arc->setCenterStartEnd(_points[0], _points[1]); // 初始转角为0
             m_step = 2;
         }
     }
     else if (step == 1) {
-        _points[1] = pt;            // 记下起点
-        _points[2] = pt;            // 起点与终点重合
+        _points[1] = pt;                    // 记下起点
+        _points[2] = pt;                    // 起点与终点重合
         arc->setCenterStartEnd(_points[0], _points[1]); // 初始转角为0
+        _radius = arc->getRadius();
     }
     else if (step == 2) {
         arc->setCenterStartEnd(_points[0], _points[1], pt);
         float angle = mgbase::roundReal(arc->getSweepAngle() * _M_R2D, _decimal) * _M_D2R;
-        arc->setCenterRadius(arc->getCenter(), arc->getRadius(), arc->getStartAngle(), angle);
+        arc->setCenterRadius(arc->getCenter(), _radius, arc->getStartAngle(), angle);
         _points[2] = arc->getEndPoint();    // 记下终点
     }
 }

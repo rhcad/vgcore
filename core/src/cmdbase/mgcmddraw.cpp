@@ -334,7 +334,7 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     setStepPoint(sender, m_step, pnt);
     m_shape->shape()->update();
     
-    if (!pnt.isEqualTo(m_shape->getPoint(m_step - 1), tol)) {
+    if (isStepPointAccepted(sender, pnt)) {
         m_step++;
         if (m_step >= getMaxStep()) {
             m_step = 0;
@@ -345,6 +345,11 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     }
 
     return MgCommandDraw::touchEnded(sender);
+}
+
+bool MgCommandDraw::isStepPointAccepted(const MgMotion* sender, const Point2d& pt)
+{
+    return !pt.isEqualTo(m_shape->getPoint(m_step - 1), Tol(sender->displayMmToModel(2.f)));
 }
 
 // MgLocalized
