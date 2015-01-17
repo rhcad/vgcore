@@ -914,6 +914,7 @@ bool MgCmdSelect::touchMoved(const MgMotion* sender)
                      && !shape->getFlag(kMgFixedSize)) {    // 拖动顶点
                 if (sender->view->shapeCanMovedHandle(m_clones[i], m_handleIndex - 1)) {
                     float tol = sender->displayMmToModel(3.f);
+                    shape->setHandlePoint(m_handleIndex - 1, pointM, tol);
                     Point2d pt(snapPoint(sender, m_clones[i]));
                     shape->setHandlePoint2(m_handleIndex - 1, pt, tol, _dragData);
                 }
