@@ -6,6 +6,7 @@
 #ifndef TOUCHVG_MGSNAP_H_
 #define TOUCHVG_MGSNAP_H_
 
+struct MgView;
 class MgMotion;
 class Point2d;
 class GiGraphics;
@@ -32,6 +33,22 @@ typedef enum {
     kMgSnapExtendPt,    //!< 延长线上的点
 } MgSnapType;
 
+//! 捕捉选项位
+typedef enum {
+    kMgOptionSnapGrid           = 1 << 1,
+    kMgOptionStartMustVertex    = 1 << 2,
+    kMgOptionSnapVertex         = 1 << 3,
+    kMgOptionSnapCenter         = 1 << 4,
+    kMgOptionSnapMidPoint       = 1 << 5,
+    kMgOptionSnapQuadrant       = 1 << 6,
+    kMgOptionSnapCross          = 1 << 7,
+    kMgOptionSnapPerp           = 1 << 8,
+    kMgOptionSnapPerpOut        = 1 << 9,
+    kMgOptionSnapTangent        = 1 << 10,
+    kMgOptionSnapNear           = 1 << 11,
+    kMgOptionSnapExtend         = 1 << 12,
+} MgSnapOptions;
+
 //! 图形特征点捕捉器接口
 /*! \ingroup CORE_COMMAND
     \interface MgSnap
@@ -47,6 +64,12 @@ struct MgSnap {
     virtual bool drawPerpMark(GiGraphics* gs, const GiContext& ctx,
                               const Point2d& a, const Point2d& b,
                               const Point2d& perp, const Point2d& c, float len) const = 0;
+    
+    //! 返回捕捉选项，由 MgSnapOptions 按位组成
+    virtual int getSnapOptions(MgView* view) const = 0;
+    
+    //! 设置捕捉选项，由 MgSnapOptions 按位组成
+    virtual void setSnapOptions(MgView* view, int bits) = 0;
     
     //! 返回捕捉到的特征点类型, >=kMgSnapGrid
     virtual int getSnappedType() const = 0;

@@ -5,6 +5,7 @@
 #include "mgbasicsps.h"
 #include "mgstorage.h"
 #include "mglocal.h"
+#include "mgsnap.h"
 #include <sstream>
 
 // MgCmdArc3P
@@ -118,6 +119,11 @@ bool MgCmdArcCSE::click(const MgMotion* sender)
     }
     
     return true;
+}
+
+int MgCmdArcCSE::snapOptionsForStep(const MgMotion*, int step)
+{
+    return step > 1 ? 0 : kMgOptionSnapVertex|kMgOptionSnapCross;
 }
 
 void MgCmdArcCSE::setStepPoint(const MgMotion*, int step, const Point2d& pt)
