@@ -1,7 +1,7 @@
 ﻿//! \file mgsplines.h
 //! \brief 定义二次样条曲线类 MgSplines
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_SPLINES_SHAPE_H_
 #define TOUCHVG_SPLINES_SHAPE_H_

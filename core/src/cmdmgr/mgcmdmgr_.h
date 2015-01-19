@@ -65,6 +65,8 @@ private:
     virtual Point2d snapPoint(const MgMotion* sender, 
         const Point2d& orignPt, const MgShape* shape,
         int hotHandle, int ignoreHandle = -1, const int* ignoreids = NULL);
+    virtual int getSnapOptions(MgView* view) const;
+    virtual void setSnapOptions(MgView* view, int bits);
     virtual int getSnappedType() const;
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt) const;
     virtual int getSnappedPoint(Point2d& fromPt, Point2d& toPt,

@@ -1,7 +1,7 @@
 ﻿//! \file mgellipse.h
 //! \brief 定义椭圆图形类 MgEllipse
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_ELLIPSE_SHAPE_H_
 #define TOUCHVG_ELLIPSE_SHAPE_H_

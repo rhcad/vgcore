@@ -1,6 +1,6 @@
 // mgpathsp.cpp: 实现路径图形 MgPathShape
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #include "mgpathsp.h"
 #include "mgshape_.h"

@@ -79,7 +79,8 @@ static bool snapHandle(const MgMotion* sender, const Point2d& orgpt, int mask,
                        const MgShape* shape, int ignoreHd,
                        const MgShape* sp, SnapItem& arr0, Point2d* matchpt)
 {
-    bool ignored = sp->shapec()->isKindOf(MgSplines::Type()); // 除自由曲线外
+    bool ignored = (sp->shapec()->isKindOf(MgArc::Type())
+                    || sp->shapec()->isKindOf(MgSplines::Type()));  // 除圆弧和自由曲线外
     int n = ignored ? 0 : sp->getHandleCount();
     bool dragHandle = (!shape || shape->getID() == 0    // 正画的图形:末点动
                        || (ignoreHd >= 0 && orgpt == shape->getHandlePoint(ignoreHd)) // 拖已有图形的点
@@ -723,6 +724,58 @@ void MgCmdManagerImpl::checkResult(SnapItem arr[3], int hotHandle)
             _ptSnap.y = arr[2].pt.y;
             _snapBase[1] = arr[2].base;
         }
+    }
+}
+
+int MgCmdManagerImpl::getSnapOptions(MgView* view) const
+{
+    int bits = 0;
+    
+    if (view->getOptionBool("snapEnabled", true)) {
+        if (view->getOptionBool("snapGrid", true))
+            bits |= kMgOptionSnapGrid;
+        if (view->getOptionBool("startMustVertex", false))
+            bits |= kMgOptionStartMustVertex;
+        if (view->getOptionBool("snapVertex", true))
+            bits |= kMgOptionSnapVertex;
+        if (view->getOptionBool("snapCenter", true))
+            bits |= kMgOptionSnapCenter;
+        if (view->getOptionBool("snapMidPoint", true))
+            bits |= kMgOptionSnapMidPoint;
+        if (view->getOptionBool("snapQuadrant", false))
+            bits |= kMgOptionSnapQuadrant;
+        if (view->getOptionBool("snapCross", true))
+            bits |= kMgOptionSnapCross;
+        if (view->getOptionBool("snapPerp", true))
+            bits |= kMgOptionSnapPerp;
+        if (view->getOptionBool("perpOut", false))
+            bits |= kMgOptionSnapPerpOut;
+        if (view->getOptionBool("snapTangent", true))
+            bits |= kMgOptionSnapTangent;
+        if (view->getOptionBool("snapNear", true))
+            bits |= kMgOptionSnapNear;
+        if (view->getOptionBool("snapExtend", false))
+            bits |= kMgOptionSnapExtend;
+    }
+    return bits;
+}
+
+void MgCmdManagerImpl::setSnapOptions(MgView* view, int bits)
+{
+    view->setOptionBool("snapEnabled", !!bits);
+    if (bits) {
+        view->setOptionBool("snapGrid", !!(bits & kMgOptionSnapGrid));
+        view->setOptionBool("startMustVertex", !!(bits & kMgOptionStartMustVertex));
+        view->setOptionBool("snapVertex", !!(bits & kMgOptionSnapVertex));
+        view->setOptionBool("snapCenter", !!(bits & kMgOptionSnapCenter));
+        view->setOptionBool("snapMidPoint", !!(bits & kMgOptionSnapMidPoint));
+        view->setOptionBool("snapQuadrant", !!(bits & kMgOptionSnapQuadrant));
+        view->setOptionBool("snapCross", !!(bits & kMgOptionSnapCross));
+        view->setOptionBool("snapPerp", !!(bits & kMgOptionSnapPerp));
+        view->setOptionBool("perpOut", !!(bits & kMgOptionSnapPerpOut));
+        view->setOptionBool("snapTangent", !!(bits & kMgOptionSnapTangent));
+        view->setOptionBool("snapNear", !!(bits & kMgOptionSnapNear));
+        view->setOptionBool("snapExtend", !!(bits & kMgOptionSnapExtend));
     }
 }
 

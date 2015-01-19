@@ -125,7 +125,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
                 m_shape->setContext(ctx);
             }
         }
-        m_step = 0;
+        cancel(sender);
         sender->view->setOptionBool("snapEnabled", oldSnap);
     }
     
@@ -280,6 +280,18 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
     return pt;
 }
 
+Point2d MgCommandDraw::snapPointWidhOptions(const MgMotion* sender, int options, bool firstStep)
+{
+    if (options < 0) {
+        return snapPoint(sender, firstStep);
+    }
+    int old = sender->view->getSnap()->getSnapOptions(sender->view);
+    sender->view->getSnap()->setSnapOptions(sender->view, options);
+    Point2d pt(snapPoint(sender, firstStep));
+    sender->view->getSnap()->setSnapOptions(sender->view, old);
+    return pt;
+}
+
 void MgCommandDraw::ignoreStartPoint(const MgMotion* sender, int handle)
 {
     if (handle >= 0 && handle < m_shape->getPointCount()) {
@@ -303,14 +315,16 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
 {
     if (0 == m_step) {
         m_step = 1;
-        Point2d pnt(snapPoint(sender, true));
+        int options = snapOptionsForStep(sender, 0);
+        Point2d pnt(snapPointWidhOptions(sender, options, true));
         for (int i = m_shape->getPointCount() - 1; i >= 0; i--) {
             m_shape->shape()->setPoint(i, pnt);
         }
         setStepPoint(sender, 0, pnt);
     }
     else {
-        setStepPoint(sender, m_step, snapPoint(sender));
+        int options = snapOptionsForStep(sender, m_step);
+        setStepPoint(sender, m_step, snapPointWidhOptions(sender, options));
     }
     m_shape->shape()->update();
 
@@ -320,7 +334,8 @@ bool MgCommandDraw::touchBeganStep(const MgMotion* sender)
 bool MgCommandDraw::touchMovedStep(const MgMotion* sender)
 {
     if (sender->dragging()) {
-        setStepPoint(sender, m_step, snapPoint(sender));
+        int options = snapOptionsForStep(sender, m_step);
+        setStepPoint(sender, m_step, snapPointWidhOptions(sender, options));
         m_shape->shape()->update();
     }
     return MgCommandDraw::touchMoved(sender);
@@ -328,13 +343,14 @@ bool MgCommandDraw::touchMovedStep(const MgMotion* sender)
 
 bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
 {
-    Point2d pnt(snapPoint(sender));
+    int options = snapOptionsForStep(sender, m_step);
+    Point2d pnt(snapPointWidhOptions(sender, options));
     Tol tol(sender->displayMmToModel(2.f));
     
     setStepPoint(sender, m_step, pnt);
     m_shape->shape()->update();
     
-    if (!pnt.isEqualTo(m_shape->getPoint(m_step - 1), tol)) {
+    if (isStepPointAccepted(sender, pnt)) {
         m_step++;
         if (m_step >= getMaxStep()) {
             m_step = 0;
@@ -345,6 +361,11 @@ bool MgCommandDraw::touchEndedStep(const MgMotion* sender)
     }
 
     return MgCommandDraw::touchEnded(sender);
+}
+
+bool MgCommandDraw::isStepPointAccepted(const MgMotion* sender, const Point2d& pt)
+{
+    return !pt.isEqualTo(m_shape->getPoint(m_step - 1), Tol(sender->displayMmToModel(2.f)));
 }
 
 // MgLocalized

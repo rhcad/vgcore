@@ -1,7 +1,7 @@
 ﻿//! \file mgimagesp.h
 //! \brief 定义图像矩形类 MgImageShape
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_IMAGE_SHAPE_H_
 #define TOUCHVG_IMAGE_SHAPE_H_

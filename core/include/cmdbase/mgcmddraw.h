@@ -43,6 +43,8 @@ protected:
     bool _click(const MgMotion* sender);
     virtual int getMaxStep() { return 3; }
     virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
+    virtual bool isStepPointAccepted(const MgMotion* sender, const Point2d& pt);
+    virtual int snapOptionsForStep(const MgMotion* sender, int step) { return -1; }
 
 private:
     virtual bool isDrawingCommand() { return true; }
@@ -66,6 +68,7 @@ public:
     int getStep() { return m_step; }
     MgShape* dynshape() { return m_shape; }
     void setStep(int step) { m_step = step; }
+    Point2d snapPointWidhOptions(const MgMotion* sender, int options, bool firstStep = false);
     Point2d snapPoint(const MgMotion* sender, bool firstStep = false);
     Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt, bool firstStep = false);
     Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt, bool firstStep, int handle);

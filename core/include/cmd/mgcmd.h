@@ -8,6 +8,10 @@
 
 #include "mgview.h"
 
+#ifndef SWIG
+struct GiTextWidthCallback;
+#endif
+
 //! 命令接口
 /*! \ingroup CORE_COMMAND
     \interface MgCommand
@@ -26,6 +30,8 @@ public:
     virtual bool initializeWithSelection(const MgMotion* sender, MgStorage* s, const int* ids) { return initialize(sender, s); }
     virtual int getSelectedIDs(MgView* view, int* ids, int count) { return 0; }
     static float drawAngleText(const MgMotion* sender, GiGraphics* gs, float angle, void* stdstr = NULL);
+    static float drawAngleText(MgView* view, GiGraphics* gs, float angle, const Point2d& pt,
+                               int align = 1, void* stdstr = NULL, GiTextWidthCallback* c = NULL);
 #endif
     virtual void release() = 0;                                 //!< 销毁对象
     

@@ -1396,6 +1396,29 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool mode
 
 float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align, float angle)
 {
+    return drawTextAt(NULL, argb, text, pnt, h, align, angle);
+}
+
+struct TextWidthCallback1 : GiTextWidthCallback {
+    GiTextWidthCallback *rc;
+    float w2d;
+    volatile long refcount;
+    
+    TextWidthCallback1(GiTextWidthCallback *c, float w2d) : rc(c), w2d(w2d), refcount(0) {}
+    virtual void addRefTextWidth() {
+        giAtomicIncrement(&refcount);
+    }
+    virtual void releaseTextWidth() {
+        if (giAtomicDecrement(&refcount) == 0)
+            delete this;
+    }
+    virtual void drawTextEnded(GiTextWidthCallback *c, float width) {
+        rc->drawTextEnded(rc, width / w2d);
+    }
+};
+
+float GiGraphics::drawTextAt(GiTextWidthCallback* c, int argb, const char* text, const Point2d& pnt, float h, int align, float angle)
+{
     float ret = 0;
     
     if (m_impl->canvas && text && h > 0 && !m_impl->stopping && !pnt.isDegenerate()) {
@@ -1410,7 +1433,8 @@ float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, flo
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
         if (setBrush(&ctx)) {
-            ret = m_impl->canvas->drawTextAt(text, ptd.x, ptd.y, h, align, angle) / w2d;
+            TextWidthCallback1 *cw = c ? new TextWidthCallback1(c, w2d) : NULL;
+            ret = m_impl->canvas->drawTextAt(cw, text, ptd.x, ptd.y, h, align, angle) / w2d;
         }
     }
     

@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Zhang Yungui, https://github.com/touchvg/vgcore
+// Copyright (c) 2014, Zhang Yungui, https://github.com/rhcad/vgcore
 
 #ifdef SWIGJAVA
 %javaconst(1);

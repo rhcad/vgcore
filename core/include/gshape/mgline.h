@@ -1,7 +1,7 @@
 ﻿//! \file mgline.h
 //! \brief 定义线段图形类 MgLine
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_LINE_SHAPE_H_
 #define TOUCHVG_LINE_SHAPE_H_

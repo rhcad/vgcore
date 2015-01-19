@@ -600,9 +600,16 @@ struct CmdDrawBitmap : public MgRecordShape::ICmd {
 //! The class for recording 'drawTextAt'.
 struct CmdDrawTextAt : public MgRecordShape::ICmd {
     std::string text; Point2d pt; Vector2d vec; int align; float angle;
-    CmdDrawTextAt() : align(0), angle(0) {}
-    CmdDrawTextAt(const Matrix2d& d2w, const char* text, float x, float y, float h, int align, float angle)
-        : text(text), pt(Point2d(x, y) * d2w), vec(Vector2d(h, h) * d2w), align(align), angle(angle) {}
+    GiTextWidthCallback* c; mutable float w;
+    
+    CmdDrawTextAt() : align(0), angle(0), c(NULL), w(0) {}
+    CmdDrawTextAt(const Matrix2d& d2w, GiTextWidthCallback* c, const char* text,
+                  float x, float y, float h, int align, float angle)
+        : text(text), pt(Point2d(x, y) * d2w), vec(Vector2d(h, h) * d2w), align(align), angle(angle), c(c), w(0)
+    {
+        if (c) c->addRefTextWidth();
+    }
+    ~CmdDrawTextAt() { if (c) c->releaseTextWidth(); }
     
     virtual int type() const { return 16; }
     virtual void copy(const ICmd& src) {
@@ -612,6 +619,11 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
             pt = p.pt;
             vec = p.vec;
             align = p.align;
+            if (p.c && c != p.c) {
+                c = p.c;
+                c->addRefTextWidth();
+            }
+            w = p.w;
         }
     }
     virtual bool save(MgStorage* s) const {
@@ -621,6 +633,7 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
         s->writeFloat("h", vec.x);
         s->writeInt("align", align);
         s->writeFloat("angle", angle);
+        s->writeFloat("w", w);
         return true;
     }
     virtual bool load(MgStorage* s) {
@@ -633,13 +646,16 @@ struct CmdDrawTextAt : public MgRecordShape::ICmd {
         vec.x = s->readFloat("h", vec.x);
         align = s->readInt("align", align);
         angle = s->readFloat("angle", angle);
+        angle = s->readFloat("w", w);
         
         return len > 0;
     }
     virtual bool draw(GiGraphics& gs, const Matrix2d& w2d) const {
         Point2d pt2(pt * w2d);
         Vector2d vec2(vec * w2d);
-        return gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align, angle) > 0;
+        w = gs.getCanvas()->drawTextAt(text.c_str(), pt2.x, pt2.y, vec2.x, align, angle);
+        if (c) c->drawTextEnded(c, w);
+        return w > 0;
     }
     virtual Box2d getExtentW() const { return Box2d(pt, pt + vec); }
 };
@@ -922,6 +938,12 @@ bool GiRecordCanvas::drawBitmap(const char* name, float xc, float yc,
 
 float GiRecordCanvas::drawTextAt(const char* text, float x, float y, float h, int align, float angle)
 {
-    _sp->addItem(_xf->worldToModel(), new CmdDrawTextAt(d2w(), text, x, y, h, align, angle));
+    return drawTextAt(NULL, text, x, y, h, align, angle);
+}
+
+float GiRecordCanvas::drawTextAt(GiTextWidthCallback* c, const char* text, float x, float y, float h, int align, float angle)
+{
+    CmdDrawTextAt *p = new CmdDrawTextAt(d2w(), c, text, x, y, h, align, angle);
+    _sp->addItem(_xf->worldToModel(), p);
     return h;
 }

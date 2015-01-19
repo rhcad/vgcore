@@ -10,6 +10,7 @@ struct MgView;
 class MgMotion;
 class MgShape;
 class Point2d;
+class Matrix2d;
 
 //! 选择状态
 typedef enum {
@@ -130,6 +131,9 @@ struct MgSelection {
 
     //! 判断当前选择的图形是否从指定类型派生
     virtual bool isSelectedByType(MgView* view, int type) = 0;
+    
+    //! 对当前选中的图形进行几何变形
+    virtual bool applyTransform(const MgMotion* sender, const Matrix2d& xf) = 0;
 };
 
 #endif // TOUCHVG_MGSELECTION_H_
