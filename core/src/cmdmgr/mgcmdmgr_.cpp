@@ -148,12 +148,11 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
         }
     }
     
-    cancel(sender);
-    
     bool ret = false;
     const std::string oldname(_cmdname);
     
     if (cmd) {
+        cancel(sender);
         _cmdname = cmd->getName();
         
         ret = cmd->initializeWithSelection(sender, s, ids);
@@ -172,6 +171,9 @@ bool MgCmdManagerImpl::setCommand(const MgMotion* sender,
     }
     else if (strcmp(name, "erasewnd") == 0) {
         eraseWnd(sender);
+    }
+    else if (strcmp(name, "transform") == 0) {
+        ((MgCmdSelect*)findCommand("select"))->applyTransform(sender, s);
     }
     else if (!name[0]) {
         _cmdname = "";

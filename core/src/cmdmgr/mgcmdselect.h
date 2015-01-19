@@ -19,6 +19,7 @@ public:
     static const char* Name() { return "select"; }
     static MgCommand* Create() { return new MgCmdSelect; }
     bool dynamicChangeEnded(MgView* view, bool apply);
+    bool applyTransform(const MgMotion* sender, MgStorage* s);
     
 public:
     virtual int getSelection(MgView* view, int count, const MgShape** shapes);
@@ -46,6 +47,7 @@ public:
     virtual bool overturnPolygon(const MgMotion* sender);
     virtual Box2d getBoundingBox(const MgMotion* sender);
     virtual bool isSelectedByType(MgView* view, int type);
+    virtual bool applyTransform(const MgMotion* sender, const Matrix2d& xf);
     
 private:
     MgCmdSelect();
@@ -81,6 +83,7 @@ private:
     sel_iterator getSelectedPostion(const MgShape* shape);
     bool isSelected(const MgShape* shape);
     const MgShape* getShape(int id, const MgMotion* sender) const;
+    Box2d _getBoundingBox(const MgMotion* sender);
     bool isDragRectCorner(const MgMotion* sender, Matrix2d& mat);
     bool isCloneDrag(const MgMotion* sender);
     void cloneShapes(MgView* view);

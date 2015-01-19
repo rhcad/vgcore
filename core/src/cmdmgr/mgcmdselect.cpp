@@ -691,17 +691,24 @@ bool MgCmdSelect::isIntersectMode(const MgMotion*)
     //        && sender->startPt.y < sender->point.y);
 }
 
-Box2d MgCmdSelect::getBoundingBox(const MgMotion* sender)
+Box2d MgCmdSelect::_getBoundingBox(const MgMotion* sender)
 {
-    Box2d selbox;
+    Box2d box;
     
     for (size_t i = 0; i < m_selIds.size(); i++) {
         const MgShape* shape = getShape(m_selIds[i], sender);
         if (shape) {
-            selbox.unionWith(shape->shapec()->getExtent());
+            box.unionWith(shape->shapec()->getExtent());
         }
     }
+    
+    return box;
+}
 
+Box2d MgCmdSelect::getBoundingBox(const MgMotion* sender)
+{
+    Box2d selbox(_getBoundingBox(sender));
+    
     float minDist = sender->view->xform()->displayToModel(8, true);
     if (!m_selIds.empty() && selbox.width() < minDist)
         selbox.inflate(minDist / 2, 0);
@@ -1555,25 +1562,48 @@ bool MgCmdSelect::setEditMode(const MgMotion* sender, bool editMode)
 
 bool MgCmdSelect::overturnPolygon(const MgMotion* sender)
 {
-    const MgShape* oldsp = getShape(m_id, sender);
+    Box2d rect(sender->view->xform()->getWndRectM().intersectWith(_getBoundingBox(sender)));
+    Matrix2d xf(Matrix2d::mirroring(rect.center(), Vector2d(0.f, 1.f)));
+    return !rect.isEmpty() && applyTransform(sender, xf);
+}
+
+bool MgCmdSelect::applyTransform(const MgMotion* sender, const Matrix2d& xf)
+{
+    int count = 0;
     
-    if (oldsp) {
-        MgShape* newsp = oldsp->cloneShape();
-        Box2d rect(sender->view->xform()->getWndRectM().intersectWith(oldsp->shapec()->getExtent()));
-        if (rect.isEmpty())
-            return false;
-        Point2d cen(rect.center());
-        
-        newsp->shape()->transform(Matrix2d::mirroring(cen, Vector2d(0.f, 1.f)));
-        newsp->shape()->update();
-        oldsp->getParent()->updateShape(newsp);
-        
+    for (sel_iterator it = m_selIds.begin(); it != m_selIds.end(); ++it) {
+        const MgShape* oldsp = sender->view->shapes()->findShape(*it);
+        if (oldsp) {
+            MgShape* newsp = oldsp->cloneShape();
+            newsp->shape()->transform(xf);
+            oldsp->getParent()->updateShape(newsp);
+            count++;
+        }
+    }
+    if (count > 0) {
         sender->view->regenAll(true);
         longPress(sender);
-        return true;
     }
     
-    return false;
+    return count > 0;
+}
+
+bool MgCmdSelect::applyTransform(const MgMotion* sender, MgStorage* s)
+{
+    Matrix2d xf;
+    Point2d pt(_getBoundingBox(sender).center());
+    float sx = s->readFloat("sx", 0);
+    float angle = s->readFloat("angle", 0);
+    
+    if (!mgIsZero(sx)) {
+        xf *= Matrix2d::scaling(sx, s->readFloat("sy", sx), pt);
+    }
+    if (!mgIsZero(angle)) {
+        xf *= Matrix2d::rotation(angle * _M_D2R, pt);
+    }
+    xf *= Matrix2d::translation(Vector2d(s->readFloat("dx", 0), s->readFloat("dy", 0)));
+    
+    return applyTransform(sender, xf);
 }
 
 static bool isZoomShapeEnabled(const MgMotion* sender)
