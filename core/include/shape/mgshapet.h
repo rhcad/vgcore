@@ -40,6 +40,7 @@ public:
     
     void setContext(const GiContext& ctx, int mask) {
         _context.copy(ctx, mask);
+        MgShape::setContext(ctx, mask);
     }
     
     MgBaseShape* shape() {
