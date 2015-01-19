@@ -1,7 +1,7 @@
 ﻿//! \file mgrect.h
 //! \brief 定义矩形图形基类 MgBaseRect
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_BASERECT_SHAPE_H_
 #define TOUCHVG_BASERECT_SHAPE_H_

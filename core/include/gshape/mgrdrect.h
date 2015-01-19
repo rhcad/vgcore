@@ -1,7 +1,7 @@
 ﻿//! \file mgrdrect.h
 //! \brief 定义圆角矩形类 MgRoundRect
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_ROUNDRECT_SHAPE_H_
 #define TOUCHVG_ROUNDRECT_SHAPE_H_

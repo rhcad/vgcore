@@ -1,7 +1,7 @@
 ﻿//! \file mgparallel.h
 //! \brief 定义平行四边形图形类 MgParallel
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_PARALLEL_SHAPE_H_
 #define TOUCHVG_PARALLEL_SHAPE_H_

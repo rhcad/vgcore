@@ -2,7 +2,7 @@
 
 ## Overview
 
-TouchVGCore contains the following cross-platform modules using C++ for 2D vector drawing frameworks:
+TouchVGCore contains the following cross-platform modules using C++ for 2D vector drawing frameworks such as [vgios](https://github.com/rhcad/vgios), [vgandroid](https://github.com/rhcad/vgandroid) and [vgwpf](https://github.com/rhcad/vgwpf):
 
 - geom: Math and geometry module.
 - graph: 2D Graphics interface module using geom module.

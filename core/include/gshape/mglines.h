@@ -1,7 +1,7 @@
 ﻿//! \file mglines.h
 //! \brief 定义折线类 MgBaseLines,MgLines
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_LINES_SHAPE_H_
 #define TOUCHVG_LINES_SHAPE_H_

@@ -1,6 +1,6 @@
 // nanosvg.cpp: Implement MgPath::addSVGPath(s).
 // Copyright (c) 2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 //
 // addSVGPath is based on nanosvg.h (https://github.com/memononen/nanosvg)
 // NanoSVG is a simple stupid single-header-file SVG parse.

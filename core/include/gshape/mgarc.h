@@ -1,7 +1,7 @@
 ﻿//! \file mgarc.h
 //! \brief 定义圆弧图形类 MgArc
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/touchvg/vgcore
+// License: LGPL, https://github.com/rhcad/vgcore
 
 #ifndef TOUCHVG_ARC_SHAPE_H_
 #define TOUCHVG_ARC_SHAPE_H_
