@@ -1498,6 +1498,19 @@ bool GiCoreView::getModelBox(mgvector<float>& box)
     return ret;
 }
 
+bool GiCoreView::getModelBox(mgvector<float>& box, int shapeId)
+{
+    const MgShape* shape = impl->doc()->findShape(shapeId);
+    bool ret = box.count() == 4 && shape && impl->curview;
+    
+    if (ret) {
+        Box2d rect(shape->shapec()->getExtent());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
 bool GiCoreView::getDisplayExtent(mgvector<float>& box)
 {
     bool ret = box.count() == 4 && impl->curview;
