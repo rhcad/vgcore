@@ -134,7 +134,8 @@ bool MgShape::load(MgShapeFactory* factory, MgStorage* s)
 
 void MgShape::setContext(const GiContext& ctx, int mask)
 {
-    if (shapec()->isKindOf(MgComposite::Type())) {
+    if ((mask & GiContext::kCopyAll) != GiContext::kCopyAll
+        && shapec()->isKindOf(MgComposite::Type())) {
         MgShapeIterator it( ((MgComposite*)shape())->shapes());
         while (const MgShape* sp = it.getNext()) {
             ((MgShape*)sp)->setContext(ctx, mask);
