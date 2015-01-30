@@ -16,6 +16,7 @@ bool GiMouseHelper::onLButtonDown(float x, float y, bool, bool)
     _startY = y;
     _moved = false;
     _ldown = true;
+    _rdown = false;
     return _coreView->onGesture(_view, kGiGesturePan, kGiGesturePossible, x, y);
 }
 
@@ -32,8 +33,6 @@ bool GiMouseHelper::onMouseUp(float x, float y)
         ret = _coreView->onGesture(_view, kGiGesturePress,
             kGiGestureBegan, x, y);
     }
-    _ldown = false;
-    _rdown = false;
 
     return ret;
 }
@@ -60,9 +59,9 @@ bool GiMouseHelper::onMouseMove(float x, float y, bool ldown, bool)
     return ret;
 }
 
-bool GiMouseHelper::onLButtonDblClk(float, float)
+bool GiMouseHelper::onLButtonDblClk(float x, float y)
 {
-    return false;
+    return _ldown && _coreView->onGesture(_view, kGiGestureDblTap, kGiGestureEnded, x, y);
 }
 
 bool GiMouseHelper::onRButtonDown(float x, float y)
@@ -71,6 +70,7 @@ bool GiMouseHelper::onRButtonDown(float x, float y)
     _startY = y;
     _moved = false;
     _rdown = true;
+    _ldown = false;
     return false;
 }
 
