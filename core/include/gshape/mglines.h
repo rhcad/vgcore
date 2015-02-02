@@ -60,7 +60,6 @@ protected:
     void _update();
     void _transform(const Matrix2d& mat);
     void _clear();
-    bool _setHandlePoint(int index, const Point2d& pt, float tol);
     float _hitTest(const Point2d& pt, float tol, MgHitResult& res) const;
     bool _hitTestBox(const Box2d& rect) const;
     bool _save(MgStorage* s) const;

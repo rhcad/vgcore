@@ -164,32 +164,6 @@ bool MgBaseLines::removePoint(int index)
     return ret;
 }
 
-bool MgBaseLines::_setHandlePoint(int index, const Point2d& pt, float tol)
-{
-    int preindex = (isClosed() && 0 == index) ? _count - 1 : index - 1;
-    int postindex = (isClosed() && index + 1 == _count) ? 0 : index + 1;
-    
-    float predist = preindex < 0 ? _FLT_MAX : getPoint(preindex).distanceTo(pt);
-    float postdist = postindex >= _count ? _FLT_MAX : getPoint(postindex).distanceTo(pt);
-    
-    if (predist < tol || postdist < tol) {
-        if (_count <= 3)
-            return false;
-        removePoint(index);
-    }
-    else if (!isClosed() && ((index == 0 && getPoint(_count - 1).distanceTo(pt) < tol)
-             || (index == _count - 1 && getPoint(0).distanceTo(pt) < tol))) {
-        removePoint(index);
-        setClosed(true);
-    }
-    else {
-        setPoint(index, pt);
-    }
-    update();
-    
-    return true;
-}
-
 float MgBaseLines::_hitTest(const Point2d& pt, float tol, MgHitResult& res) const
 {
     return linesHit(_count, _points, isClosed(), pt, tol, res);
