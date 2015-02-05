@@ -1115,15 +1115,19 @@ void GiCoreView::freeContent()
     impl->defaultStorage.clear();
 }
 
-bool GiCoreView::setContent(const char* content)
+bool GiCoreView::setContent(const char* content, bool readOnly)
 {
-    bool ret = loadShapes(impl->defaultStorage.storageForRead(content));
+    bool ret = loadShapes(impl->defaultStorage.storageForRead(content), readOnly);
     impl->defaultStorage.clear();
     return ret;
 }
 
 bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
 {
+    if (*vgfile == '{') {
+        return setContent(vgfile, readOnly);
+    }
+    
     FILE *fp = mgopenfile(vgfile, "rt");
     if (!fp) {
         LOGE("Fail to open file: %s", vgfile);

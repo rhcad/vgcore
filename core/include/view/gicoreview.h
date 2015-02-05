@@ -162,7 +162,7 @@ public:
     bool saveShapes(long doc, MgStorage* s);
     const char* getContent(long doc);
     void freeContent();
-    bool setContent(const char* content);
+    bool setContent(const char* content, bool readOnly = false);
     bool zoomToInitial();
     bool zoomToExtent(float margin = 2);
     bool zoomToModel(float x, float y, float w, float h, float margin = 2);
