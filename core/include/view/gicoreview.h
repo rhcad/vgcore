@@ -162,7 +162,7 @@ public:
     bool saveShapes(long doc, MgStorage* s);
     const char* getContent(long doc);
     void freeContent();
-    bool setContent(const char* content);
+    bool setContent(const char* content, bool readOnly = false);
     bool zoomToInitial();
     bool zoomToExtent(float margin = 2);
     bool zoomToModel(float x, float y, float w, float h, float margin = 2);
@@ -182,6 +182,7 @@ public:
     int traverseImageShapes(long doc, MgFindImageCallback* c);
     bool getViewModelBox(mgvector<float>& box);
     bool getModelBox(mgvector<float>& box);
+    bool getModelBox(mgvector<float>& box, int shapeId);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);

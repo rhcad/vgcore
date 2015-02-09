@@ -107,7 +107,7 @@ struct MgCoreView {
     virtual void setSelectedShapeIDs(const mgvector<int>& ids) = 0; //!< 选中指定ID的图形
 
     virtual void clear() = 0;                       //!< 删除所有图形，包括锁定的图形
-    virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;       //!< 从文件中加载
+    virtual bool loadFromFile(const char* vgfile, bool readOnly = false) = 0;       //!< 从文件或JSON串中加载
     virtual bool saveToFile(long doc, const char* vgfile, bool pretty = false) = 0; //!< 保存图形
     bool saveToFile(const char* vgfile, bool pretty = false);           //!< 保存图形，主线程中用
     
@@ -122,7 +122,7 @@ struct MgCoreView {
     void getContent(long doc, MgStringCallback* c);     //!< 得到图形的JSON内容，自动 freeContent()
     void getContent(MgStringCallback* c);               //!< 得到图形的JSON内容，主线程中用
     virtual void freeContent() = 0;                     //!< 释放 getContent() 产生的缓冲资源
-    virtual bool setContent(const char* content) = 0;   //!< 从JSON内容中加载图形
+    virtual bool setContent(const char* content, bool readOnly = false) = 0;    //!< 从JSON内容中加载图形
 
     virtual bool zoomToInitial() = 0;                   //!< 放缩到文档初始状态
     virtual bool zoomToExtent(float margin = 2) = 0;    //!< 放缩显示全部内容到视图区域
@@ -177,6 +177,9 @@ struct MgCoreView {
 
     //! 返回后端文档的模型坐标范围，模型坐标(left, top, right, bottom)
     virtual bool getModelBox(mgvector<float>& box) = 0;
+    
+    //! 返回后端文档中指定ID的模型坐标范围，模型坐标(left, top, right, bottom)
+    virtual bool getModelBox(mgvector<float>& box, int shapeId) = 0;
     
     //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;

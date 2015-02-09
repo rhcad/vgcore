@@ -4,6 +4,7 @@
 
 #include "mgcmdmgr_.h"
 #include "mgbasicsps.h"
+#include "mgcomposite.h"
 #include "mglog.h"
 
 //! 捕捉结果
@@ -635,6 +636,18 @@ static void snapPoints(const MgMotion* sender, const Point2d& orgpt,
                   needPerp, perpOut, tolPerp,
                   needTangent, needCross, nearBox, needGrid,
                   spTarget, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
+        
+        if (spTarget->shapec()->isKindOf(MgGroup::Type())
+            && sender->view->getOptionBool("snapInGroup", false)) {
+            MgShapeIterator it2( ((const MgGroup*)spTarget->shapec())->shapes());
+            while (const MgShape* sp2 = it2.getNext()) {
+                snapShape(sender, orgpt, minBox, snapbox, wndbox,
+                          handleMask, needNear, needExtend, tolNear,
+                          needPerp, perpOut, tolPerp,
+                          needTangent, needCross, nearBox, needGrid,
+                          sp2, shape, ignoreHd, ignoreids, arr, matchpt, ignoreStart);
+            }
+        }
     }
 }
 

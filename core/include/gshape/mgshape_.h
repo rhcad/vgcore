@@ -18,6 +18,10 @@
             __super::_copy((const Cls&)src);                    \
     }                                                           \
     void Cls::release() { delete this; }                        \
+    Cls* Cls::cast(MgBaseShape* obj) { return obj && obj->isKindOf(Type()) ? (Cls*)obj : (Cls*)0; }	\
+    Cls* Cls::fromHandle(long h) {                              \
+        Cls* p; *(long*)&p = h;                                 \
+        return p && p->isKindOf(Type()) ? p : (Cls*)0; }        \
     bool Cls::equals(const MgObject& src) const                 \
         { return src.isKindOf(Type()) && _equals((const Cls&)src); } \
     bool Cls::_isKindOf(int type) const                         \

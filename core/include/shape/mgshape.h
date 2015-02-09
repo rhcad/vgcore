@@ -33,7 +33,7 @@ public:
     virtual const GiContext& context() const = 0;
 
     //! 设置显示属性
-    virtual void setContext(const GiContext& ctx, int mask) = 0;
+    virtual void setContext(const GiContext& ctx, int mask);
     void setContext(const GiContext& ctx) { setContext(ctx, GiContext::kCopyAll); }
 
     //! 返回几何图形对象

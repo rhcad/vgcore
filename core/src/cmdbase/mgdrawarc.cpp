@@ -77,13 +77,13 @@ float MgCommand::drawAngleText(MgView* view, GiGraphics* gs, float angle,
                                const Point2d& pt, int align, void* stdstr, GiTextWidthCallback* c)
 {
     std::stringstream ss;
-    int decimal = view->getOptionInt("degreeDecimal", 1);
+    int decimal = view->getOptionInt("degreeDecimal", 2);
     
     ss << mgbase::roundReal(mgbase::rad2Deg(angle), decimal) << MgLocalized::getString(view, "degrees");
     if (stdstr) {
         *((std::string*)stdstr) = ss.str();
     }
-    return gs ? gs->drawTextAt(c, GiColor::Red().getARGB(), ss.str().c_str(), pt, 3.5f, align) : 0.f;
+    return gs ? gs->drawTextAt(c, GiColor::Red().getARGB(), ss.str().c_str(), pt, 5.f, align) : 0.f;
 }
 
 bool MgCmdArcCSE::draw(const MgMotion* sender, GiGraphics* gs)

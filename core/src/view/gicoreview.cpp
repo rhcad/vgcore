@@ -1115,15 +1115,19 @@ void GiCoreView::freeContent()
     impl->defaultStorage.clear();
 }
 
-bool GiCoreView::setContent(const char* content)
+bool GiCoreView::setContent(const char* content, bool readOnly)
 {
-    bool ret = loadShapes(impl->defaultStorage.storageForRead(content));
+    bool ret = loadShapes(impl->defaultStorage.storageForRead(content), readOnly);
     impl->defaultStorage.clear();
     return ret;
 }
 
 bool GiCoreView::loadFromFile(const char* vgfile, bool readOnly)
 {
+    if (*vgfile == '{') {
+        return setContent(vgfile, readOnly);
+    }
+    
     FILE *fp = mgopenfile(vgfile, "rt");
     if (!fp) {
         LOGE("Fail to open file: %s", vgfile);
@@ -1492,6 +1496,19 @@ bool GiCoreView::getModelBox(mgvector<float>& box)
     bool ret = box.count() == 4;
     if (ret) {
         Box2d rect(impl->doc()->getExtent());
+        box.set(0, rect.xmin, rect.ymin);
+        box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::getModelBox(mgvector<float>& box, int shapeId)
+{
+    const MgShape* shape = impl->doc()->findShape(shapeId);
+    bool ret = box.count() == 4 && shape && impl->curview;
+    
+    if (ret) {
+        Box2d rect(shape->shapec()->getExtent());
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
     }

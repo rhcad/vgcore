@@ -4,6 +4,7 @@
 
 #include "mgshape.h"
 #include "mgstorage.h"
+#include "mgcomposite.h"
 
 bool MgShape::hasFillColor() const
 {
@@ -129,4 +130,15 @@ bool MgShape::load(MgShapeFactory* factory, MgStorage* s)
     }
 
     return ret;
+}
+
+void MgShape::setContext(const GiContext& ctx, int mask)
+{
+    if ((mask & GiContext::kCopyAll) != GiContext::kCopyAll
+        && shapec()->isKindOf(MgComposite::Type())) {
+        MgShapeIterator it( ((MgComposite*)shape())->shapes());
+        while (const MgShape* sp = it.getNext()) {
+            ((MgShape*)sp)->setContext(ctx, mask);
+        }
+    }
 }

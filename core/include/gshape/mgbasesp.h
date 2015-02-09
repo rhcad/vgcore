@@ -34,6 +34,7 @@ typedef enum {
     kMgHideContent,     //!< 隐藏内容
     kMgNoDel,           //!< 禁止删除
     kMgCanSelLocked,    //!< 允许选中，即使锁定
+    kMgNotAddRel,       //!< 不自动加约束
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -81,6 +82,9 @@ public:
         static Tol tol(1e-4f);
         return tol;
     }
+    
+	//! 得到句柄，用于跨库转换
+	long toHandle() const { long h; *(const MgBaseShape**)&h = this; return h; }
 
     //! 复制出一个新图形对象
     MgBaseShape* cloneShape() const { return (MgBaseShape*)clone(); }
@@ -246,6 +250,7 @@ protected:
             int _flagHide:1;
             int _flagNoDel:1;
             int _flagCanSelLocked:1;
+            int _flagNotAddRel:1;
         } _bits;
     };
     long _changeCount;
@@ -276,18 +281,20 @@ protected:
 
 #if !defined(_MSC_VER) || _MSC_VER <= 1200
 #define MG_DECLARE_DYNAMIC(Cls, Base)                           \
-    typedef Base __super;
+	typedef Base __super;
 #else
 #define MG_DECLARE_DYNAMIC(Cls, Base)
 #endif
 
 #define MG_INHERIT_CREATE(Cls, Base, TypeNum)                   \
-    MG_DECLARE_DYNAMIC(Cls, Base)                               \
+	MG_DECLARE_DYNAMIC(Cls, Base)                               \
 public:                                                         \
-    Cls();                                                      \
-    virtual ~Cls();                                             \
-    static Cls* create();                                       \
-    static int Type() { return TypeNum; }                       \
+	Cls();                                                      \
+	virtual ~Cls();                                             \
+	static Cls* create();                                       \
+	static int Type() { return TypeNum; }                       \
+    static Cls* cast(MgBaseShape* obj);                         \
+    static Cls* fromHandle(long h);                             \
 protected:                                                      \
     bool _isKindOf(int type) const;                             \
 public:                                                         \
