@@ -74,6 +74,11 @@ struct GiColor
         b = (unsigned char)_b;
         a = (unsigned char)_a;
     }
+    
+    GiColor withAlpha(int alpha) const
+    {
+        return GiColor(r, g, b, alpha);
+    }
 
     bool isInvalid() const
     {
