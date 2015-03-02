@@ -323,7 +323,7 @@ bool GiPlaying::isStopping() const
 
 long GiPlaying::acquireFrontDoc()
 {
-    if (!this || !impl->frontDoc())
+    if (!impl->frontDoc())
         return 0;
     impl->frontDoc()->addRef();
     return impl->frontDoc()->toHandle();
@@ -355,7 +355,7 @@ void GiPlaying::submitBackDoc()
 
 long GiPlaying::acquireFrontShapes()
 {
-    if (!this || !impl->frontShapes())
+    if (!impl->frontShapes())
         return 0;
     impl->frontShapes()->addRef();
     return impl->frontShapes()->toHandle();

@@ -57,7 +57,7 @@ public:
     const T *address() const { return _v; }
 #endif
     int count() const {
-        return this ? _n : 0;
+        return _n;
     }
     T get(int index) const {
         return (index >= 0 && index < _n) ? _v[index] : (T)0;

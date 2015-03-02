@@ -81,7 +81,7 @@ public:
     }
     
     int getID() const {
-        return this ? _id : 0;
+        return _id;
     }
     
     MgShapes* getParent() const {

@@ -149,7 +149,7 @@ void MgShapes::clearCachedData()
 
 MgObject* MgShapes::getOwner() const
 {
-    return this ? im->owner : NULL;
+    return im->owner;
 }
 
 int MgShapes::getIndex() const
@@ -321,7 +321,7 @@ bool MgShapes::reorderShapes(int n, const int *ids)
 
 int MgShapes::getShapeCount() const
 {
-    return this ? (int)im->shapes.size() : 0;
+    return (int)im->shapes.size();
 }
 
 void MgShapes::freeIterator(void*& it) const
@@ -334,7 +334,7 @@ void MgShapes::freeIterator(void*& it) const
 
 const MgShape* MgShapes::getFirstShape(void*& it) const
 {
-    if (!this || im->shapes.empty()) {
+    if (im->shapes.empty()) {
         it = NULL;
         return NULL;
     }
@@ -355,12 +355,12 @@ const MgShape* MgShapes::getNextShape(void*& it) const
 
 const MgShape* MgShapes::getHeadShape() const
 {
-    return (!this || im->shapes.empty()) ? NULL : im->shapes.front();
+    return im->shapes.empty() ? NULL : im->shapes.front();
 }
 
 const MgShape* MgShapes::getLastShape() const
 {
-    return (!this || im->shapes.empty()) ? NULL : im->shapes.back();
+    return im->shapes.empty() ? NULL : im->shapes.back();
 }
 
 const MgShape* MgShapes::findShape(int sid) const
@@ -370,8 +370,9 @@ const MgShape* MgShapes::findShape(int sid) const
 
 const MgShape* MgShapes::findShapeByTag(int tag) const
 {
-    if (!this || 0 == tag)
+    if (0 == tag) {
         return NULL;
+    }
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         if ((*it)->getTag() == tag)
             return *it;
@@ -409,8 +410,9 @@ const MgShape* MgShapes::getShapeAtIndex(int index) const
 
 const MgShape* MgShapes::findShapeByType(int type) const
 {
-    if (!this || 0 == type)
+    if (0 == type) {
         return NULL;
+    }
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         if ((*it)->shapec()->getType() == type)
             return *it;
@@ -420,8 +422,6 @@ const MgShape* MgShapes::findShapeByType(int type) const
 
 const MgShape* MgShapes::findShapeByTypeAndTag(int type, int tag) const
 {
-    if (!this)
-        return NULL;
     for (I::citerator it = im->shapes.begin(); it != im->shapes.end(); ++it) {
         if ((*it)->shapec()->getType() == type && (*it)->getTag() == tag)
             return *it;
@@ -651,7 +651,7 @@ void MgShapes::setNewShapeID(int sid)
 
 MgShape* MgShapes::I::findShape(int sid) const
 {
-    if (!this || 0 == sid || -1 == sid)
+    if (0 == sid || -1 == sid)
         return NULL;
     ID2SHAPE::const_iterator it = id2shape.find(sid);
     return it != id2shape.end() ? it->second : NULL;

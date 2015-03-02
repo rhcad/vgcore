@@ -421,7 +421,7 @@ void GiCoreView::createMagnifierView_(GiView* newview, GiView* mainView)
 
 void GiCoreView::destoryView(GiView* view)
 {
-    GcBaseView* aview = this ? impl->_gcdoc->findView(view) : NULL;
+    GcBaseView* aview = impl->_gcdoc->findView(view);
 
     if (aview && impl->_gcdoc->removeView(aview)) {
         if (impl->curview == aview) {
@@ -464,7 +464,7 @@ bool GiCoreView::isZooming()
 
 bool GiCoreView::isStopping()
 {
-    if (!this || !impl || impl->stopping) {
+    if (!impl || impl->stopping) {
         return true;
     }
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {
