@@ -175,7 +175,9 @@ bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, 
         {
             return doubleClick(sender);
         }
-        longPress(sender);
+        if (!s || s->readInt("handleIndex", 0) == 0) {
+            longPress(sender);
+        }
     }
     
     return true;

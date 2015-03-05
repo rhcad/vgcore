@@ -212,7 +212,7 @@ static int crossTwoCircles(Point2d& pt1, Point2d& pt2,
 
 //! 计算无穷直线(ab)与圆(cr)的交点，返回交点数
 static int crossLineCircle(Point2d& pt1, Point2d& pt2,
-                           const Point2d& a, const Point2d& b, const Point2d& c, float r);
+                           const Point2d& a, const Point2d& b, const Point2d& c, float r, bool ray = false);
 
 #ifndef SWIG
 //! 求解三对角线方程组

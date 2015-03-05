@@ -328,7 +328,7 @@ int GiCoreView::getSkipDrawIds(mgvector<int>& ids)
     int n = 0;
     
     if (impl->cmds()) {
-        ids.setSize(50);
+        ids.setSize(500);
         impl->getCmdSubject()->onGatherSnapIgnoredID(impl->motion(), NULL,
                                                      ids.address(), n, ids.count() - 1);
     }

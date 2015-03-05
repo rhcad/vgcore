@@ -96,6 +96,9 @@ static bool isBetweenLine(const Point2d& a, const Point2d& b, const Point2d& pt)
 //! 判断点pt是否投影在线段ab上(闭区间)
 static bool isProjectBetweenLine(const Point2d& a, const Point2d& b, const Point2d& pt);
 
+//! 判断点pt是否投影在射线a->b上(闭区间)
+static bool isProjectBetweenRayline(const Point2d& a, const Point2d& b, const Point2d& pt);
+
 //! 判断点pt是否在线段ab上
 /*!
     \param[in] a 线段的起点
