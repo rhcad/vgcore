@@ -3,7 +3,6 @@
 A Cross-platform framework using C++ for 2D vector drawing frameworks such as [vgios](https://github.com/rhcad/vgios), [vgandroid](https://github.com/rhcad/vgandroid) and [vgwpf](https://github.com/rhcad/vgwpf).
 
 [![Version](http://img.shields.io/cocoapods/v/TouchVGCore.svg)](http://cocoadocs.org/docsets/TouchVGCore/)
-[![Platform](http://img.shields.io/cocoapods/p/TouchVGCore.svg)](http://cocoadocs.org/docsets/TouchVGCore/)
 [![License](http://img.shields.io/cocoapods/l/TouchVGCore.svg)](LICENSE.md)
 
 ## Overview
