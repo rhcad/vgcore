@@ -1,7 +1,6 @@
 ﻿//! \file mgdrawquadrangle.h
 //! \brief 定义四边形绘图命令类 MgCmdDrawQuadrangle
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_QUADRANGLE_H_
 #define TOUCHVG_CMD_DRAW_QUADRANGLE_H_

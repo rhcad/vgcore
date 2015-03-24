@@ -1,6 +1,6 @@
 // svgcanvas.cpp
 // Copyright (c) 2013-2014, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "svgcanvas.h"
 #include "simple_svg.hpp"

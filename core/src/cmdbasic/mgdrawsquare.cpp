@@ -1,6 +1,5 @@
 // mgdrawsquare.cpp: 实现正方形绘图命令类 MgCmdDrawSquare
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgdrawsquare.h"
 #include "mgbasicsps.h"

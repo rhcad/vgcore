@@ -1,6 +1,5 @@
 // mgbox.cpp: 实现矩形框类 Box2d
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgbox.h"
 #include "mgmat.h"

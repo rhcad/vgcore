@@ -1,7 +1,6 @@
 ﻿//! \file gigraph.h
 //! \brief 定义图形系统类 GiGraphics
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_GRAPHSYS_H_
 #define TOUCHVG_GRAPHSYS_H_

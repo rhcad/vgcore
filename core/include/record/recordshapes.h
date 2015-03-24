@@ -1,6 +1,6 @@
 // recordshapes.h
 // Copyright (c) 2013-2014, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_RECORD_SHAPES_H_
 #define TOUCHVG_RECORD_SHAPES_H_

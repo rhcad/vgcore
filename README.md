@@ -3,7 +3,7 @@
 A Cross-platform framework using C++ for 2D vector drawing frameworks such as [vgios](https://github.com/rhcad/vgios), [vgandroid](https://github.com/rhcad/vgandroid) and [vgwpf](https://github.com/rhcad/vgwpf).
 
 [![Version](http://img.shields.io/cocoapods/v/TouchVGCore.svg)](http://cocoadocs.org/docsets/TouchVGCore/)
-[![License](http://img.shields.io/cocoapods/l/TouchVGCore.svg)](LICENSE.md)
+[![License](http://img.shields.io/cocoapods/l/TouchVGCore.svg)](LICENSE)
 
 ## Overview
 
@@ -26,7 +26,7 @@ TouchVGCore contains the following cross-platform modules:
 
 ![modules](http://touchvg.github.io/images/core.svg)
 
-This is an open source LGPL 2.1 licensed project that is in active development. Contributors and sponsors are welcome.
+This is an open source [BSD licensed](LICENSE) project that is in active development. Contributors and sponsors are welcome.
 
 It uses the following open source projects:
 

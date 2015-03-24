@@ -1,6 +1,6 @@
 //! \file mgvector.h
 //! \brief Template vector definition for SWIG.
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef SWIG_MGVECTOR_H
 #define SWIG_MGVECTOR_H

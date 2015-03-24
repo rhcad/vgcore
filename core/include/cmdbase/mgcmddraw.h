@@ -1,7 +1,6 @@
 ﻿//! \file mgcmddraw.h
 //! \brief 定义绘图命令基类 MgCommandDraw 和 MgCmdBaseLines
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_H_
 #define TOUCHVG_CMD_DRAW_H_

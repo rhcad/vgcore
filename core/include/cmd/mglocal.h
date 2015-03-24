@@ -1,6 +1,6 @@
 ﻿//! \file mglocal.h
 //! \brief 定义本地化文字的辅助类 MgLocalized
-// Copyright (c) 2014, https://github.com/rhcad/vgcore
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CORE_LOCALSTR_H
 #define TOUCHVG_CORE_LOCALSTR_H

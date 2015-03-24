@@ -1,7 +1,6 @@
 ﻿//! \file mgdrawellipse.h
 //! \brief 定义椭圆绘图命令类 MgCmdDrawEllipse
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_ELLIPSE_H_
 #define TOUCHVG_CMD_DRAW_ELLIPSE_H_

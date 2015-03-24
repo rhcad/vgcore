@@ -1,7 +1,6 @@
-﻿//! \file mgdef.h
+//! \file mgdef.h
 //! \brief 定义数学几何库的常量和宏
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef __GEOMETRY_MGDEF_H_
 #define __GEOMETRY_MGDEF_H_

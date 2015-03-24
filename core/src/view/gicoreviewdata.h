@@ -1,6 +1,6 @@
 ﻿//! \file gicoreviewdata.h
 //! \brief 定义GiCoreView内部数据类 GiCoreViewData
-// Copyright (c) 2014, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CORE_VIEWDATA_H
 #define TOUCHVG_CORE_VIEWDATA_H

@@ -1,7 +1,6 @@
 ﻿//! \file mgspfactory.h
 //! \brief 定义图形工厂接口 MgShapeFactory
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_SHAPE_FACTORY_H_
 #define TOUCHVG_SHAPE_FACTORY_H_

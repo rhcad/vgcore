@@ -1,6 +1,6 @@
 ﻿//! \file cmdsubject.h
 //! \brief 定义命令扩展目标接口 CmdSubject
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMDSUBJECT_H_
 #define TOUCHVG_CMDSUBJECT_H_

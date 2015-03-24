@@ -1,6 +1,5 @@
-﻿// mglnrel.cpp: 实现直线位置关系函数
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// mglnrel.cpp: 实现直线位置关系函数
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mglnrel.h"
 

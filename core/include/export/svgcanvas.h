@@ -1,7 +1,7 @@
 //! \file svgcanvas.h
 //! \brief 定义输出SVG文件的画布适配器类 GiSvgCanvas
 // Copyright (c) 2013-2014, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CORE_SVGCANVAS_H_
 #define TOUCHVG_CORE_SVGCANVAS_H_

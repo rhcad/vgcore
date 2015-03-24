@@ -1,6 +1,6 @@
 ﻿//! \file gicorerecord.cpp
 //! \brief 实现内核视图类 GiCoreView 的录制功能
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "gicoreview.h"
 #include "gicoreviewimpl.h"

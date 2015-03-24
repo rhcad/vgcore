@@ -1,7 +1,7 @@
 ﻿//! \file mgdrawline.h
 //! \brief 定义直线段绘图命令
 //! \author pengjun, 2012.6.4
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_LINE_H_
 #define TOUCHVG_CMD_DRAW_LINE_H_

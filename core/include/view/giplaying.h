@@ -1,6 +1,6 @@
 ﻿//! \file giplaying.h
 //! \brief 定义图形播放项类 GiPlaying
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CORE_PLAYING_H
 #define TOUCHVG_CORE_PLAYING_H

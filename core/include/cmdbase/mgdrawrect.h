@@ -1,7 +1,6 @@
 ﻿//! \file mgdrawrect.h
 //! \brief 定义矩形绘图命令类 MgCmdDrawRect
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_RECT_H_
 #define TOUCHVG_CMD_DRAW_RECT_H_
