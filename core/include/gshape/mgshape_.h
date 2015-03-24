@@ -1,7 +1,6 @@
 ﻿//! \file mgshape_.h
 //! \brief 定义图形类实现用的辅助宏
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_MGSHAPEIMPL_H_
 #define TOUCHVG_MGSHAPEIMPL_H_

@@ -1,6 +1,5 @@
-﻿// mglnrel.cpp: 实现直线位置关系函数
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// mglnrel.cpp: 实现直线位置关系函数
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mglnrel.h"
 
@@ -66,6 +65,12 @@ bool mglnrel::isProjectBetweenLine(const Point2d& a, const Point2d& b, const Poi
 {
     float proj = (pt - a).projectScaleToVector(b - a);
     return proj >= 0 && proj <= 1;
+}
+
+bool mglnrel::isProjectBetweenRayline(const Point2d& a, const Point2d& b, const Point2d& pt)
+{
+    float proj = (pt - a).projectScaleToVector(b - a);
+    return proj >= 0;
 }
 
 bool mglnrel::isBetweenLine2(

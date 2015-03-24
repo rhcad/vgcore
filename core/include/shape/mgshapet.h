@@ -1,7 +1,6 @@
-﻿//! \file mgshapet.h
+//! \file mgshapet.h
 //! \brief 定义矢量图形模板类 MgShapeT
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_MGSHAPE_TEMPL_H_
 #define TOUCHVG_MGSHAPE_TEMPL_H_
@@ -81,7 +80,7 @@ public:
     }
     
     int getID() const {
-        return this ? _id : 0;
+        return _id;
     }
     
     MgShapes* getParent() const {

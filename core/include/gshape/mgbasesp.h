@@ -1,7 +1,6 @@
 ﻿//! \file mgbasesp.h
 //! \brief 定义矢量图形基类 MgBaseShape
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_MGBASESHAPE_H_
 #define TOUCHVG_MGBASESHAPE_H_
@@ -35,6 +34,7 @@ typedef enum {
     kMgNoDel,           //!< 禁止删除
     kMgCanSelLocked,    //!< 允许选中，即使锁定
     kMgNotAddRel,       //!< 不自动加约束
+    kMgNotShowSnap,     //!< 不显示捕捉提示
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -251,6 +251,7 @@ protected:
             int _flagNoDel:1;
             int _flagCanSelLocked:1;
             int _flagNotAddRel:1;
+            int _flagNotShowSnap:1;
         } _bits;
     };
     long _changeCount;

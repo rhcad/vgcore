@@ -1,6 +1,5 @@
-﻿// mgcmdselect.cpp: 实现选择命令类
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// mgcmdselect.cpp: 实现选择命令类
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgcmdselect.h"
 #include "mgcmdmgr.h"
@@ -175,7 +174,9 @@ bool MgCmdSelect::initializeWithSelection(const MgMotion* sender, MgStorage* s, 
         {
             return doubleClick(sender);
         }
-        longPress(sender);
+        if (!s || s->readInt("handleIndex", 0) == 0) {
+            longPress(sender);
+        }
     }
     
     return true;

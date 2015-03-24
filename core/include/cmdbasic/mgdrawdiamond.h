@@ -1,7 +1,6 @@
 ﻿//! \file mgdrawdiamond.h
 //! \brief 定义菱形绘图命令类 MgCmdDrawDiamond
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_DRAW_DIAMOND_H_
 #define TOUCHVG_CMD_DRAW_DIAMOND_H_

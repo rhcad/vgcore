@@ -1,6 +1,5 @@
 // mgdrawcircle.cpp: 实现圆绘图命令类 MgCmdDrawCircle
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgdrawcircle.h"
 #include "mgbasicsps.h"

@@ -1,7 +1,6 @@
 ﻿//! \file cmdbasic.h
 //! \brief 定义基本绘图命令工厂类 MgBasicCommands
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_BASIC_CMDS_H_
 #define TOUCHVG_BASIC_CMDS_H_

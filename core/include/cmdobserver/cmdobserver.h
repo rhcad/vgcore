@@ -1,6 +1,6 @@
 ﻿//! \file cmdobserver.h
 //! \brief 定义命令扩展观察者接口 CmdObserver
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMDOBSERVER_H_
 #define TOUCHVG_CMDOBSERVER_H_

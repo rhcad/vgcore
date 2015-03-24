@@ -1,7 +1,6 @@
 ﻿//! \file mggrid.h
 //! \brief 定义网格图形类
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_GRIDSHAPE_H_
 #define TOUCHVG_GRIDSHAPE_H_

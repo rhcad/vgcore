@@ -1,7 +1,6 @@
 ﻿//! \file mgnear.h
 //! \brief 定义求曲线上最近点的函数
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CURVENEAR_H_
 #define TOUCHVG_CURVENEAR_H_

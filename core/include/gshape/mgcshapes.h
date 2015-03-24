@@ -1,7 +1,7 @@
 ﻿//! \file mgcshapes.h
 //! \brief 定义基本图形的工厂类 MgCoreShapeFactory
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CORESHAPE_FACTORY_H_
 #define TOUCHVG_CORESHAPE_FACTORY_H_

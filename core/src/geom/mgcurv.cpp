@@ -1,6 +1,5 @@
-﻿// mgcurv.cpp: 实现曲线拟和函数
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// mgcurv.cpp: 实现曲线拟和函数
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgcurv.h"
 #include "mgbase.h"
@@ -655,7 +654,7 @@ int _crossLineCircle(point_t& pt1, point_t& pt2, const point_t& a,
 }
 
 int mgcurv::crossLineCircle(Point2d& pt1, Point2d& pt2, const Point2d& a,
-                            const Point2d& b, const Point2d& c, float r)
+                            const Point2d& b, const Point2d& c, float r, bool ray)
 {
     if (a == b) {
         return 0;
@@ -677,6 +676,23 @@ int mgcurv::crossLineCircle(Point2d& pt1, Point2d& pt2, const Point2d& a,
     
     pt1.set((float)p1.x + c.x, (float)p1.y + c.y);
     pt2.set((float)p2.x + c.x, (float)p2.y + c.y);
+    
+    if (ray && n > 0) {
+        bool b1 = mglnrel::isProjectBetweenRayline(a, b, pt1);
+        bool b2 = mglnrel::isProjectBetweenRayline(a, b, pt2);
+        
+        if (!b1 && !b2) {
+            n = 0;
+        }
+        else if (!b1 || !b2) {
+            n = 1;
+            if (!b1) {
+                pt1 = pt2;
+            } else {
+                pt2 = pt1;
+            }
+        }
+    }
     
     return n;
 }

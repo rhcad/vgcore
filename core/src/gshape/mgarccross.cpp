@@ -1,6 +1,6 @@
 ﻿// mgarccross.cpp
 // Copyright (c) 2004-2014, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgarc.h"
 #include "mgellipse.h"
@@ -43,7 +43,7 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
         n = mgcurv::crossTwoCircles(pt1, pt2, cen1, r1, cen2, r2);
     } else if ((ca1 || ca2) && line->isKindOf(MgLine::Type())) {
         n = mgcurv::crossLineCircle(pt1, pt2, line->getPoint(0), line->getPoint(1),
-            ca1 ? cen1 : cen2, ca1 ? r1 : r2);
+            ca1 ? cen1 : cen2, ca1 ? r1 : r2, line->getSubType() != 2);
     } else if ((ca1 || ca2) && line->isKindOf(MgLines::Type())) {
         int edges = line->getPointCount() - (line->isClosed() ? 0 : 1);
         Point2d pt1r, pt2r;
@@ -53,7 +53,7 @@ int MgEllipse::crossCircle(Point2d& pt1, Point2d& pt2, const MgBaseShape* sp1,
         for (int i = 0; i < edges; i++) {
             n2 = mgcurv::crossLineCircle(pt1r, pt2r, line->getHandlePoint(i),
                 line->getHandlePoint((i + 1) % line->getPointCount()),
-                ca1 ? cen1 : cen2, ca1 ? r1 : r2);
+                ca1 ? cen1 : cen2, ca1 ? r1 : r2, line->getSubType() != 2);
             if (n2 > 0) {
                 Point2d pt(pt2r.distanceTo(hitpt) < pt1r.distanceTo(hitpt) ? pt2r : pt1r);
                 float d = hitpt.distanceTo(pt);

@@ -1,6 +1,6 @@
 //! \file mgvector.h
 //! \brief Template vector definition for SWIG.
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef SWIG_MGVECTOR_H
 #define SWIG_MGVECTOR_H
@@ -57,7 +57,7 @@ public:
     const T *address() const { return _v; }
 #endif
     int count() const {
-        return this ? _n : 0;
+        return _n;
     }
     T get(int index) const {
         return (index >= 0 && index < _n) ? _v[index] : (T)0;

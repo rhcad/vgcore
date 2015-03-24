@@ -1,7 +1,6 @@
 ﻿//! \file mgcmdmgr_.h
 //! \brief 定义命令管理器实现类 MgCmdManagerImpl
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMD_MANAGER_IMPL_H_
 #define TOUCHVG_CMD_MANAGER_IMPL_H_

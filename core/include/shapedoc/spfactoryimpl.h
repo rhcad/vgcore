@@ -1,7 +1,7 @@
 ﻿//! \file spfactoryimpl.h
 //! \brief 定义图形工厂接口的默认实现类 MgShapeFactoryImpl
 // Copyright (c) 2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_SHAPEFACTORY_IMPL_H_
 #define TOUCHVG_SHAPEFACTORY_IMPL_H_

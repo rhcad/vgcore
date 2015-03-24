@@ -1,6 +1,6 @@
 ﻿//! \file gicoreview.cpp
 //! \brief 实现内核视图类 GiCoreView
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "gicoreview.h"
 #include "gicoreviewimpl.h"
@@ -328,7 +328,7 @@ int GiCoreView::getSkipDrawIds(mgvector<int>& ids)
     int n = 0;
     
     if (impl->cmds()) {
-        ids.setSize(50);
+        ids.setSize(500);
         impl->getCmdSubject()->onGatherSnapIgnoredID(impl->motion(), NULL,
                                                      ids.address(), n, ids.count() - 1);
     }
@@ -421,7 +421,7 @@ void GiCoreView::createMagnifierView_(GiView* newview, GiView* mainView)
 
 void GiCoreView::destoryView(GiView* view)
 {
-    GcBaseView* aview = this ? impl->_gcdoc->findView(view) : NULL;
+    GcBaseView* aview = impl->_gcdoc->findView(view);
 
     if (aview && impl->_gcdoc->removeView(aview)) {
         if (impl->curview == aview) {
@@ -464,7 +464,7 @@ bool GiCoreView::isZooming()
 
 bool GiCoreView::isStopping()
 {
-    if (!this || !impl || impl->stopping) {
+    if (!impl || impl->stopping) {
         return true;
     }
     for (unsigned i = 0; i < sizeof(impl->gsBuf)/sizeof(impl->gsBuf[0]); i++) {

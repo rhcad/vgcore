@@ -1,7 +1,6 @@
-﻿//! \file mglnrel.h
+//! \file mglnrel.h
 //! \brief 定义图形位置关系函数
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_LINEREL_H_
 #define TOUCHVG_LINEREL_H_
@@ -95,6 +94,9 @@ static bool isBetweenLine(const Point2d& a, const Point2d& b, const Point2d& pt)
 
 //! 判断点pt是否投影在线段ab上(闭区间)
 static bool isProjectBetweenLine(const Point2d& a, const Point2d& b, const Point2d& pt);
+
+//! 判断点pt是否投影在射线a->b上(闭区间)
+static bool isProjectBetweenRayline(const Point2d& a, const Point2d& b, const Point2d& pt);
 
 //! 判断点pt是否在线段ab上
 /*!

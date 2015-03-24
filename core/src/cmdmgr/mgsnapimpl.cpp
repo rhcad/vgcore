@@ -1,6 +1,5 @@
-﻿// mgsnapimpl.cpp: 实现命令管理器类
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// mgsnapimpl.cpp: 实现命令管理器类
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgcmdmgr_.h"
 #include "mgbasicsps.h"
@@ -906,6 +905,11 @@ bool MgCmdManagerImpl::drawSnap(const MgMotion* sender, GiGraphics* gs) const
     
     if (sender->dragging() || !sender->view->useFinger()) {
         if (_snapType[0] >= kMgSnapGrid) {
+            const MgShape* sp = sender->view->shapes()->findShape(_snapShapeId);
+            if (sp && sp->shapec()->getFlag(kMgNotShowSnap)) {
+                return ret;
+            }
+            
             bool small = (_snapType[0] >= kMgSnapNearPt || _snapType[0] < kMgSnapPoint);
             float r = displayMmToModel(small ? 3.f : 8.f, gs);
             GiContext ctx(-2, GiColor(0, 255, 0, 200), GiContext::kDashLine, GiColor(0, 200, 200, 32));

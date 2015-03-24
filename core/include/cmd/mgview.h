@@ -1,6 +1,6 @@
 ﻿//! \file mgview.h
 //! \brief 定义视图回调接口 MgView
-// Copyright (c) 2012-2013, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_CMDVIEW_H
 #define TOUCHVG_CMDVIEW_H

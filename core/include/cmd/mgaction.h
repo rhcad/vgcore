@@ -1,7 +1,6 @@
 ﻿//! \file mgaction.h
 //! \brief 定义上下文动作接口 MgActionDispatcher
-// Copyright (c) 2004-2013, Zhang Yungui
-// License: LGPL, https://github.com/rhcad/touchvg
+// Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #ifndef TOUCHVG_MGACTION_H_
 #define TOUCHVG_MGACTION_H_
