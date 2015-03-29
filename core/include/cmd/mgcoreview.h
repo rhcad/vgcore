@@ -39,6 +39,8 @@ struct MgCoreView {
         kMgHideContent,     //!< 隐藏内容
         kMgNoDel,           //!< 禁止删除
         kMgCanSelLocked,    //!< 允许选中，即使锁定
+        kMgNotAddRel,       //!< 不自动加约束
+        kMgNotShowSnap,     //!< 不显示捕捉提示
     };
     
     virtual ~MgCoreView() {}
