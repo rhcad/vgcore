@@ -183,6 +183,7 @@ public:
     bool getViewModelBox(mgvector<float>& box);
     bool getModelBox(mgvector<float>& box);
     bool getModelBox(mgvector<float>& box, int shapeId);
+    bool getHandlePoint(mgvector<float>& xy, int shapeId, int index);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);

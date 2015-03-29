@@ -1505,12 +1505,24 @@ bool GiCoreView::getModelBox(mgvector<float>& box)
 bool GiCoreView::getModelBox(mgvector<float>& box, int shapeId)
 {
     const MgShape* shape = impl->doc()->findShape(shapeId);
-    bool ret = box.count() == 4 && shape && impl->curview;
+    bool ret = box.count() == 4 && shape;
     
     if (ret) {
         Box2d rect(shape->shapec()->getExtent());
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::getHandlePoint(mgvector<float>& xy, int shapeId, int index)
+{
+    const MgShape* shape = impl->doc()->findShape(shapeId);
+    bool ret = xy.count() == 2 && shape && index < shape->getHandleCount();
+    
+    if (ret) {
+        Point2d pt(shape->getHandlePoint(index));
+        xy.set(0, pt.x, pt.y);
     }
     return ret;
 }
