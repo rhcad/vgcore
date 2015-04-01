@@ -326,6 +326,7 @@ public:                                                         \
     virtual int getHandleType(int index) const;                 \
     virtual bool offset(const Vector2d& vec, int segment);      \
     virtual float hitTest(const Point2d& pt, float tol, MgHitResult& res) const; \
+protected:                                                      \
     virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data);
 
 #define MG_DECLARE_CREATE(Cls, Base, TypeNum)                   \
