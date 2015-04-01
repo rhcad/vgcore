@@ -176,14 +176,19 @@
 
 #ifdef SWIGJAVA
 %{
-struct TmpJOBJ {
-    JNIEnv* env;
-    jobject* jo;
-    template <class T>
-    TmpJOBJ(JNIEnv* e, T* v) : env(e), jo((jobject*)v) { }
-    TmpJOBJ(JNIEnv* e, jobject& v) : env(e), jo(&v) { }
-    ~TmpJOBJ() { if (*jo) { env->DeleteLocalRef(*jo); *jo = 0; } }
+#ifdef __ANDROID__
+#include <android/log.h>
+struct TmpLogFunc {
+    const char* name;
+    TmpLogFunc(const char* name) : name(name) {
+        __android_log_print(ANDROID_LOG_VERBOSE,"vgstack","%s enter",name);
+    }
+    ~TmpLogFunc() {
+        __android_log_print(ANDROID_LOG_VERBOSE,"vgstack","%s exit",name);
+    }
 };
+#endif
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* /*ajvm*/, void* /*reserved*/) {
     return JNI_VERSION_1_6;
 }

@@ -166,7 +166,7 @@ public:
     virtual bool hitTestBox(const Box2d& rect) const;
     
     //! 显示图形（mode：0-正常显示，1-选中显示，2-拖动显示）
-    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const = 0;
+    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const { return false; }
     
     //! 可查询上级图形列表对象的图形显示重载方法
     virtual bool draw2(const MgObject* owner, int mode, GiGraphics& gs, const GiContext& ctx, int segment) const {
@@ -326,7 +326,6 @@ public:                                                         \
     virtual int getHandleType(int index) const;                 \
     virtual bool offset(const Vector2d& vec, int segment);      \
     virtual float hitTest(const Point2d& pt, float tol, MgHitResult& res) const; \
-protected:                                                      \
     virtual bool setHandlePoint2(int index, const Point2d& pt, float tol, int& data);
 
 #define MG_DECLARE_CREATE(Cls, Base, TypeNum)                   \
