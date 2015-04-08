@@ -81,16 +81,17 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("snapMidPoint", true);
     setOptionBool("snapQuadrant", false);
     setOptionBool("snapNear", true);
+    setOptionBool("snapExtend", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
     setOptionBool("snapTangent", true);
     setOptionBool("snapCross", true);
+    setOptionBool("snapParallel", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
-    setOptionBool("canRotateHandle", true);
     setOptionFloat("snapPointTol", 4.f);
     setOptionFloat("snapNearTol", 3.f);
-    setOptionInt("snapRoundCell", 2);
+    setOptionInt("snapRoundCell", 1);
     
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
