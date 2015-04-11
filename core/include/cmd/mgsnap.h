@@ -55,6 +55,8 @@ typedef enum {
     \interface MgSnap
 */
 struct MgSnap {
+    virtual ~MgSnap() {}
+    
     //! 清除捕捉结果
     virtual void clearSnap(const MgMotion* sender) = 0;
     

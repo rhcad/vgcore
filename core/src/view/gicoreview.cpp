@@ -1363,6 +1363,8 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     return ret;
 }
 
+MgRegenLocker::MgRegenLocker(MgView* view) : obj(view->createRegenLocker()) {}
+
 MgRegenLocker::~MgRegenLocker()
 {
     delete (DrawLocker *)obj;

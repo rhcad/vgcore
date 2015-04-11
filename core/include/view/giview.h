@@ -54,7 +54,7 @@ public:
     virtual bool shapeClicked(int type, int sid, int tag, float x, float y) { return false; }
     virtual void showMessage(const char* text) {}   //!< 显示提示文字
     //! 得到本地化文字内容
-    virtual void getLocalizedString(const char* name, MgStringCallback* result) {}
+    virtual void getLocalizedString(const char* name, MgStringCallback* c) {}
 };
 
 #endif // TOUCHVG_CORE_GIVIEW_H

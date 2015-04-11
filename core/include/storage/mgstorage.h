@@ -11,6 +11,8 @@
 */
 struct MgStorage
 {
+    virtual ~MgStorage() {}
+    
     //! 通知一个节点开始读取或读取完成
     /*! 一个节点会调用两次本函数，节点可包含多个键值对，可嵌套子节点。
         \param name 节点名称前缀，与index一起形成实际存储的节点名称
