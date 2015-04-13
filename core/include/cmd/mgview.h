@@ -101,7 +101,7 @@ struct MgView
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
 #ifndef SWIG
     virtual bool showContextActions(int selState, const int* actions,
-            const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单
+            const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单(MgContextAction)
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0; //!< 注册命令
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
     virtual const char* getOptionString(const char* name) = 0;  //!< 文本选项值

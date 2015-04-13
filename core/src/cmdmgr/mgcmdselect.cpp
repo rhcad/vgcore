@@ -458,8 +458,9 @@ int MgCmdSelect::hitTestHandles(const MgShape* shape, const Point2d& pointM,
         }
     }
     
-    if (sender->pressDrag && nearDist < minDist / 3
+    if (sender->dragging() && nearDist < minDist / 3
         && minDist > sender->displayMmToModel(8.f)
+        && shape->shapec()->getFlag(kMgCanAddVertex)
         && shape->shapec()->isKindOf(kMgShapeBaseLines))
     {
         m_insertPt = true;
