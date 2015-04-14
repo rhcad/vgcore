@@ -6,7 +6,7 @@
 
 MG_IMPLEMENT_CREATE(MgArc)
 
-MgArc::MgArc()
+MgArc::MgArc() : _sweepAngle(0)
 {
 }
 
@@ -56,6 +56,10 @@ bool MgArc::_isClosed() const
 
 float MgArc::getSweepAngle() const
 {
+    if (!mgIsZero(_sweepAngle)) {
+        return _sweepAngle;
+    }
+    
     const float midAngle = (getMidPoint() - getCenter()).angle2();
     const float startAngle = getStartAngle();
     const float endAngle = getEndAngle();
@@ -126,6 +130,7 @@ bool MgArc::setCenterRadius(const Point2d& center, float radius, float startAngl
     else if (sweepAngle < 1e-3 - _M_2PI)
         sweepAngle = -_M_2PI;
     
+    _sweepAngle = sweepAngle;
     _points[0] = center;
     _points[1] = center.polarPoint(startAngle, radius);
     _points[2] = center.polarPoint(startAngle + sweepAngle, radius);
@@ -225,12 +230,14 @@ Point2d MgArc::_getPoint(int index) const
 void MgArc::_setPoint(int index, const Point2d& pt)
 {
     _points[index % 4] = pt;
+    _sweepAngle = 0;
 }
 
 void MgArc::_copy(const MgArc& src)
 {
     for (int i = 0; i < _getPointCount(); i++)
         _points[i] = src._points[i];
+    _sweepAngle = src._sweepAngle;
     __super::_copy(src);
 }
 
@@ -253,6 +260,7 @@ void MgArc::_clear()
 {
     for (int i = 0; i < _getPointCount(); i++)
         _points[i] = Point2d();
+    _sweepAngle = 0;
     __super::_clear();
 }
 

@@ -51,6 +51,7 @@ protected:
     
 private:
     Point2d _points[4]; // center,start,end, mid
+    float   _sweepAngle;
 };
 
 #endif // TOUCHVG_ARC_SHAPE_H_
