@@ -1339,8 +1339,8 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     bool ret = false;
     
     if (sid == 0) {
-        const MgShape* shapes[20];
-        int n = impl->cmds()->getSelection(impl, 20, shapes);
+        const MgShape* shapes[100];
+        int n = impl->cmds()->getSelection(impl, 100, shapes);
         
         while (--n >= 0) {
             shape = shapes[n];
