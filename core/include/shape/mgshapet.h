@@ -1,4 +1,4 @@
-//! \file mgshapet.h
+﻿//! \file mgshapet.h
 //! \brief 定义矢量图形模板类 MgShapeT
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 

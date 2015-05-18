@@ -1,4 +1,4 @@
-//! \file GcGraphView.cpp
+﻿//! \file GcGraphView.cpp
 //! \brief 实现主绘图视图类 GcGraphView
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 

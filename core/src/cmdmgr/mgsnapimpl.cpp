@@ -1,4 +1,4 @@
-// mgsnapimpl.cpp: 实现命令管理器类
+﻿// mgsnapimpl.cpp: 实现命令管理器类
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgcmdmgr_.h"
