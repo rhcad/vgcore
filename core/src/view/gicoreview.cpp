@@ -1093,7 +1093,7 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
 
 void GiCoreView::clear()
 {
-    int n = getShapeCount();
+    int n = getUnlockedShapeCount();
     loadShapes((MgStorage*)0);
     if (n > 0) {
         char buf[31];
