@@ -34,6 +34,7 @@ public:
     
 #ifndef SWIG
     virtual bool isCurve() const { return true; }
+    virtual int getSubType() const { return _subtype; }
 #endif
 
 protected:
@@ -52,6 +53,7 @@ protected:
 private:
     Point2d _points[4]; // center,start,end, mid
     float   _sweepAngle;
+    int     _subtype;   // 0:arc, 1:pie
 };
 
 #endif // TOUCHVG_ARC_SHAPE_H_

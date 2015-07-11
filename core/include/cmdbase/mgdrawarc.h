@@ -53,7 +53,6 @@ public:
 
 protected:
     virtual void setStepPoint(const MgMotion* sender, int step, const Point2d& pt);
-    virtual int snapOptionsForStep(const MgMotion* sender, int step);
     
 private:
     int     _decimal;

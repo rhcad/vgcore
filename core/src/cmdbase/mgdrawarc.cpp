@@ -121,11 +121,6 @@ bool MgCmdArcCSE::click(const MgMotion* sender)
     return true;
 }
 
-int MgCmdArcCSE::snapOptionsForStep(const MgMotion*, int step)
-{
-    return step > 1 ? 0 : kMgOptionSnapVertex|kMgOptionSnapCross;
-}
-
 void MgCmdArcCSE::setStepPoint(const MgMotion*, int step, const Point2d& pt)
 {
     MgArc* arc = (MgArc*)dynshape()->shape();
