@@ -32,6 +32,8 @@ public:
     bool setTanStartEnd(const Vector2d& startTan, const Point2d& start, const Point2d& end);
     bool setCenterRadius(const Point2d& center, float radius, float startAngle, float sweepAngle);
     
+    void setSubType(int type) { _subtype = type; };
+    
 #ifndef SWIG
     virtual bool isCurve() const { return true; }
     virtual int getSubType() const { return _subtype; }
@@ -46,6 +48,7 @@ protected:
     int _getHandleCount() const;
     Point2d _getHandlePoint(int index) const;
     int _getHandleType(int index) const;
+    bool _isHandleFixed(int) const;
     bool _setHandlePoint2(int index, const Point2d& pt, float tol, int& data);
     bool _reverse();
     bool setCSE(const Point2d& center, const Point2d& start, const Point2d& end, float lastSweepAngle);

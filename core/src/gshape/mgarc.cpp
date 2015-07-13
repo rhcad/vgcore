@@ -335,7 +335,7 @@ bool MgArc::_load(MgShapeFactory* factory, MgStorage* s)
 
 int MgArc::_getHandleCount() const
 {
-    return 6;
+    return 4;
 }
 
 int MgArc::_getHandleType(int index) const
@@ -350,6 +350,11 @@ int MgArc::_getHandleType(int index) const
         return kMgHandleCenter;
     }
     return __super::_getHandleType(index);
+}
+
+bool MgArc::_isHandleFixed(int index) const
+{
+    return index > 2;
 }
 
 Point2d MgArc::_getHandlePoint(int index) const
