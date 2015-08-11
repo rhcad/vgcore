@@ -35,6 +35,7 @@ typedef enum {
     kMgCanSelLocked,    //!< 允许选中，即使锁定
     kMgNotAddRel,       //!< 不自动加约束
     kMgNotShowSnap,     //!< 不显示捕捉提示
+    kMgCanAddVertex,    //!< 允许增删顶点
 } MgShapeBit;
 
 //! 图形特征点类型
@@ -166,7 +167,7 @@ public:
     virtual bool hitTestBox(const Box2d& rect) const;
     
     //! 显示图形（mode：0-正常显示，1-选中显示，2-拖动显示）
-    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const = 0;
+    virtual bool draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const { return false; }
     
     //! 可查询上级图形列表对象的图形显示重载方法
     virtual bool draw2(const MgObject* owner, int mode, GiGraphics& gs, const GiContext& ctx, int segment) const {
@@ -252,6 +253,7 @@ protected:
             int _flagCanSelLocked:1;
             int _flagNotAddRel:1;
             int _flagNotShowSnap:1;
+            int _flagCanAddVertex:1;
         } _bits;
     };
     long _changeCount;

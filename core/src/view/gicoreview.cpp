@@ -81,16 +81,17 @@ void GiCoreViewImpl::resetOptions()
     setOptionBool("snapMidPoint", true);
     setOptionBool("snapQuadrant", false);
     setOptionBool("snapNear", true);
+    setOptionBool("snapExtend", true);
     setOptionBool("snapPerp", true);
     setOptionBool("perpOut", false);
     setOptionBool("snapTangent", true);
     setOptionBool("snapCross", true);
+    setOptionBool("snapParallel", true);
     setOptionBool("snapGrid", true);
     setOptionBool("drawOneShape", false);
-    setOptionBool("canRotateHandle", true);
     setOptionFloat("snapPointTol", 4.f);
     setOptionFloat("snapNearTol", 3.f);
-    setOptionInt("snapRoundCell", 2);
+    setOptionInt("snapRoundCell", 1);
     
     setOptionBool("canRotateHandle", true);
     setOptionBool("canMoveShape", true);
@@ -1092,7 +1093,7 @@ void GiCoreViewImpl::submitDynamicShapes(GcBaseView* v)
 
 void GiCoreView::clear()
 {
-    int n = getShapeCount();
+    int n = getUnlockedShapeCount();
     loadShapes((MgStorage*)0);
     if (n > 0) {
         char buf[31];
@@ -1338,8 +1339,8 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     bool ret = false;
     
     if (sid == 0) {
-        const MgShape* shapes[20];
-        int n = impl->cmds()->getSelection(impl, 20, shapes);
+        const MgShape* shapes[100];
+        int n = impl->cmds()->getSelection(impl, 100, shapes);
         
         while (--n >= 0) {
             shape = shapes[n];
@@ -1361,6 +1362,8 @@ bool GiCoreView::setShapeFlag(int sid, int bit, bool on)
     }
     return ret;
 }
+
+MgRegenLocker::MgRegenLocker(MgView* view) : obj(view->createRegenLocker()) {}
 
 MgRegenLocker::~MgRegenLocker()
 {
@@ -1505,12 +1508,24 @@ bool GiCoreView::getModelBox(mgvector<float>& box)
 bool GiCoreView::getModelBox(mgvector<float>& box, int shapeId)
 {
     const MgShape* shape = impl->doc()->findShape(shapeId);
-    bool ret = box.count() == 4 && shape && impl->curview;
+    bool ret = box.count() == 4 && shape;
     
     if (ret) {
         Box2d rect(shape->shapec()->getExtent());
         box.set(0, rect.xmin, rect.ymin);
         box.set(2, rect.xmax, rect.ymax);
+    }
+    return ret;
+}
+
+bool GiCoreView::getHandlePoint(mgvector<float>& xy, int shapeId, int index)
+{
+    const MgShape* shape = impl->doc()->findShape(shapeId);
+    bool ret = xy.count() == 2 && shape && index < shape->getHandleCount();
+    
+    if (ret) {
+        Point2d pt(shape->getHandlePoint(index));
+        xy.set(0, pt.x, pt.y);
     }
     return ret;
 }

@@ -1,4 +1,4 @@
-// mgcurv.cpp: 实现曲线拟和函数
+﻿// mgcurv.cpp: 实现曲线拟和函数
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mgcurv.h"

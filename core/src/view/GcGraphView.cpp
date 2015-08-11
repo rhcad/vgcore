@@ -1,4 +1,4 @@
-//! \file GcGraphView.cpp
+﻿//! \file GcGraphView.cpp
 //! \brief 实现主绘图视图类 GcGraphView
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
@@ -19,8 +19,10 @@ void GcBaseView::onSize(int dpi, int w, int h)
     xform()->setWndSize(w, h);
 }
 
-bool GcBaseView::onGesture(const MgMotion& motion)
+bool GcBaseView::onGesture(const MgMotion& )
 {
+    return false;
+    /*
     if (motion.gestureType != kGiGesturePan || !_zoomEnabled){
         return false;
     }
@@ -39,7 +41,7 @@ bool GcBaseView::onGesture(const MgMotion& motion)
         cmdView()->regenAll(false);
     }
     
-    return true;
+    return true;*/
 }
 
 bool GcBaseView::twoFingersMove(const MgMotion& motion)

@@ -14,8 +14,8 @@ struct MgSelection;
     \interface MgCmdManager
     \see mgRegisterCommand(), MgShapeT<T>::registerCreator()
 */
-struct MgCmdManager {
-
+struct MgCmdManager
+{
 #ifndef SWIG
     //! 注册外部命令, 为NULL则取消注册
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0;
@@ -23,6 +23,7 @@ struct MgCmdManager {
     virtual const char* getCommandName(int index) const = 0;    //!< 得到指定序号命令的名称
 #endif
 
+    virtual ~MgCmdManager() {}
     virtual void release() = 0;                             //!< 销毁管理器
     
     virtual MgCommand* getCommand() const = 0;              //!< 得到当前命令

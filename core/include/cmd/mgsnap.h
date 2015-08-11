@@ -26,6 +26,7 @@ typedef enum {
     kMgSnapOutPoint,    //!< 线外点
     kMgSnapTangent,     //!< 切点
     kMgSnapIntersect,   //!< 交点
+    kMgSnapParallel,    //!< 平行
     kMgSnapPerp,        //!< 垂足
     kMgSnapPerpNear,    //!< 一端为垂足，另一端为线上最近点
     kMgSnapNearPt,      //!< 线上最近点
@@ -46,6 +47,7 @@ typedef enum {
     kMgOptionSnapTangent        = 1 << 10,
     kMgOptionSnapNear           = 1 << 11,
     kMgOptionSnapExtend         = 1 << 12,
+    kMgOptionSnapParallel       = 1 << 13,
 } MgSnapOptions;
 
 //! 图形特征点捕捉器接口
@@ -53,6 +55,8 @@ typedef enum {
     \interface MgSnap
 */
 struct MgSnap {
+    virtual ~MgSnap() {}
+    
     //! 清除捕捉结果
     virtual void clearSnap(const MgMotion* sender) = 0;
     

@@ -39,6 +39,9 @@ struct MgCoreView {
         kMgHideContent,     //!< 隐藏内容
         kMgNoDel,           //!< 禁止删除
         kMgCanSelLocked,    //!< 允许选中，即使锁定
+        kMgNotAddRel,       //!< 不自动加约束
+        kMgNotShowSnap,     //!< 不显示捕捉提示
+        kMgCanAddVertex,    //!< 允许增删顶点
     };
     
     virtual ~MgCoreView() {}
@@ -180,6 +183,9 @@ struct MgCoreView {
     
     //! 返回后端文档中指定ID的模型坐标范围，模型坐标(left, top, right, bottom)
     virtual bool getModelBox(mgvector<float>& box, int shapeId) = 0;
+    
+    //! 得到指定序号的控制点的模型坐标
+    virtual bool getHandlePoint(mgvector<float>& xy, int shapeId, int index) = 0;
     
     //! 返回后端文档的图形显示范围，四个点单位坐标(left, top, right, bottom)
     virtual bool getDisplayExtent(mgvector<float>& box) = 0;

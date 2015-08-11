@@ -1,4 +1,4 @@
-//! \file mglnrel.h
+﻿//! \file mglnrel.h
 //! \brief 定义图形位置关系函数
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 

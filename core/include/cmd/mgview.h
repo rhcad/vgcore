@@ -95,13 +95,13 @@ struct MgView
     virtual bool shapeClicked(const MgShape* shape, float x, float y) = 0;
     virtual void showMessage(const char* text) = 0;             //!< 显示提示文字
     //! 得到本地化文字内容(可用封装函数 MgLocalized::getString)
-    virtual void getLocalizedString(const char* name, MgStringCallback* result) = 0;
+    virtual void getLocalizedString(const char* name, MgStringCallback* c) = 0;
     
     virtual bool isContextActionsVisible() = 0;                 //!< 返回上下文菜单是否已显示
     virtual void hideContextActions() = 0;                      //!< 隐藏上下文操作菜单
 #ifndef SWIG
     virtual bool showContextActions(int selState, const int* actions,
-            const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单
+            const Box2d& selbox, const MgShape* shape) = 0;     //!< 显示上下文菜单(MgContextAction)
     virtual bool registerCommand(const char* name, MgCommand* (*creator)()) = 0; //!< 注册命令
     virtual const char* getCommandName() = 0;                   //!< 得到当前命令名称
     virtual const char* getOptionString(const char* name) = 0;  //!< 文本选项值
@@ -114,16 +114,6 @@ struct MgView
     virtual void setOptionInt(const char* name, int value) = 0;          //!< 设置整型选项值
     virtual void setOptionFloat(const char* name, float value) = 0;      //!< 设置浮点型选项值
     virtual void setOptionString(const char* name, const char* text) = 0; //!< 设置文本选项值
-};
-
-//! 避免重复触发 regenAll/redraw 的辅助类
-class MgRegenLocker
-{
-public:
-    MgRegenLocker(MgView* view) : obj(view->createRegenLocker()) {}
-    ~MgRegenLocker();
-private:
-    void* obj;
 };
 
 //! 触摸动作参数

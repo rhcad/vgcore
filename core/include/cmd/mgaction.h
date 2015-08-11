@@ -42,6 +42,7 @@ class Box2d;
     \see MgCmdManager, MgContextAction
 */
 struct MgActionDispatcher {
+    virtual ~MgActionDispatcher() {}
     virtual bool showInSelect(const MgMotion* sender, int selState, const MgShape* shape, const Box2d& selbox) = 0;
     virtual bool showInDrawing(const MgMotion* sender, const MgShape* shape) = 0;
     virtual bool doAction(const MgMotion* sender, int action) = 0;

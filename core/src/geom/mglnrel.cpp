@@ -1,4 +1,4 @@
-// mglnrel.cpp: 实现直线位置关系函数
+﻿// mglnrel.cpp: 实现直线位置关系函数
 // Copyright (c) 2004-2015, https://github.com/rhcad/vgcore, BSD License
 
 #include "mglnrel.h"

@@ -191,8 +191,8 @@ public:
     void showMessage(const char* text) {
         CALL_VIEW(deviceView()->showMessage(text));
     }
-    void getLocalizedString(const char* name, MgStringCallback* result) {
-        CALL_VIEW(deviceView()->getLocalizedString(name, result));
+    void getLocalizedString(const char* name, MgStringCallback* c) {
+        CALL_VIEW(deviceView()->getLocalizedString(name, c));
     }
     
     int removeShape(const MgShape* shape) {

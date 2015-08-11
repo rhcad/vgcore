@@ -16,7 +16,8 @@ struct GiTextWidthCallback;
     \interface MgCommand
     \see mgRegisterCommand
 */
-class MgCommand {
+class MgCommand
+{
 public:
     //! 构造函数，名称最长为30个字符
     MgCommand(const char* name) {

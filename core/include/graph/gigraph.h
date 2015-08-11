@@ -29,6 +29,7 @@ enum GiHandleTypes {        //!< 符号类型
     kGiHandleQuadrant,      //!< 象限点
     kGiHandleTangent,       //!< 切点
     kGiHandleIntersect,     //!< 交点
+    kGiHandleParallel,      //!< 平行
     kGiHandleNear,          //!< 最近点
     kGiHandlePivot,         //!< 变形中心
     kGiHandleOverturn,      //!< 翻转

@@ -11,6 +11,7 @@
 
 class GiCanvas;
 class GiCoreViewImpl;
+struct MgView;
 
 //! 获取配置项的回调接口
 /*! \ingroup CORE_VIEW
@@ -23,6 +24,16 @@ struct MgOptionCallback {
     virtual void onGetOptionInt(const char* name, int value) = 0;       //!< 整型选项值
     virtual void onGetOptionFloat(const char* name, float value) = 0;   //!< 浮点型选项值
     virtual void onGetOptionString(const char* name, const char* text) = 0; //!< 文本选项值
+};
+
+//! 避免重复触发 regenAll/redraw 的辅助类
+class MgRegenLocker
+{
+public:
+    MgRegenLocker(MgView* view);
+    ~MgRegenLocker();
+private:
+    void* obj;
 };
 
 //! 内核视图分发器类
@@ -183,6 +194,7 @@ public:
     bool getViewModelBox(mgvector<float>& box);
     bool getModelBox(mgvector<float>& box);
     bool getModelBox(mgvector<float>& box, int shapeId);
+    bool getHandlePoint(mgvector<float>& xy, int shapeId, int index);
     bool getDisplayExtent(mgvector<float>& box);
     bool getDisplayExtent(long doc, long gs, mgvector<float>& box);
     bool getBoundingBox(mgvector<float>& box);

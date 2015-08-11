@@ -13,6 +13,7 @@ class MgShape;
 */
 struct MgShapeFactory
 {
+    virtual ~MgShapeFactory() {}
 #ifndef SWIG
     //! 登记类型号对应的图形创建函数，creator为NULL则取消登记
     virtual void registerShape(int type, MgShape* (*creator)()) = 0;
