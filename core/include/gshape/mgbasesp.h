@@ -84,8 +84,8 @@ public:
         return tol;
     }
     
-	//! 得到句柄，用于跨库转换
-	long toHandle() const { long h; *(const MgBaseShape**)&h = this; return h; }
+    static MgBaseShape* fromHandle(long h) { MgBaseShape* p; *(long*)&p = h; return p; }    //!< 转为对象
+	long toHandle() const { long h; *(const MgBaseShape**)&h = this; return h; }    //!< 得到句柄，用于跨库转换
 
     //! 复制出一个新图形对象
     MgBaseShape* cloneShape() const { return (MgBaseShape*)clone(); }
