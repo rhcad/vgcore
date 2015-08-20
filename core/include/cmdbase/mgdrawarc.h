@@ -78,7 +78,7 @@ public:
     MgCmdCompass(const char* name = Name()) : MgCmdArc3P(name), _decimal(0) {}
 #ifndef SWIG
     static const char* Name() { return "compass"; }
-    static MgCommand* Create() { return new MgCmdArcCSE; }
+    static MgCommand* Create() { return new MgCmdCompass; }
 #endif
     virtual void release() { delete this; }
     virtual bool initialize(const MgMotion* sender, MgStorage* s);
