@@ -95,7 +95,7 @@ bool GiGraphics::beginPaint(GiCanvas* canvas, const RECT_2D& clipBox)
 
 void GiGraphics::endPaint()
 {
-    m_impl->canvas = NULL;
+    m_impl->canvas = (GiCanvas *)0;
 }
 
 bool GiGraphics::isDrawing() const
@@ -407,7 +407,7 @@ static bool DrawEdge(int count, int &i, Point2d* pts, Point2d &ptLast,
 bool GiGraphics::drawLines(const GiContext* ctx, int count, 
                            const Point2d* points, bool modelUnit)
 {
-    if (count < 2 || points == NULL || isStopping())
+    if (count < 2 || !points || isStopping())
         return false;
     if (count > 0x2000)
         count = 0x2000;
@@ -454,7 +454,7 @@ bool GiGraphics::drawLines(const GiContext* ctx, int count,
 bool GiGraphics::drawBeziers(const GiContext* ctx, int count, 
                              const Point2d* points, bool closed, bool modelUnit)
 {
-    if (count < 4 || points == NULL || isStopping())
+    if (count < 4 || !points || isStopping())
         return false;
     if (count > 0x2000)
         count = 0x2000;
@@ -709,7 +709,7 @@ bool GiGraphics::_drawPolygon(const GiContext* ctx, int count, const Point2d* po
 bool GiGraphics::drawPolygon(const GiContext* ctx, int count, 
                              const Point2d* points, bool modelUnit)
 {
-    if (count < 2 || points == NULL || isStopping())
+    if (count < 2 || !points || isStopping())
         return false;
     
     count = count > 0x2000 ? 0x2000 : count;
@@ -1395,7 +1395,7 @@ bool GiGraphics::drawHandle(const Point2d& pnt, int type, float angle, bool mode
 
 float GiGraphics::drawTextAt(int argb, const char* text, const Point2d& pnt, float h, int align, float angle)
 {
-    return drawTextAt(NULL, argb, text, pnt, h, align, angle);
+    return drawTextAt((GiTextWidthCallback *)0, argb, text, pnt, h, align, angle);
 }
 
 struct TextWidthCallback1 : GiTextWidthCallback {
@@ -1432,7 +1432,7 @@ float GiGraphics::drawTextAt(GiTextWidthCallback* c, int argb, const char* text,
         GiContext ctx;
         ctx.setFillARGB(argb ? argb : 0xFF000000);
         if (setBrush(&ctx)) {
-            TextWidthCallback1 *cw = c ? new TextWidthCallback1(c, w2d) : NULL;
+            TextWidthCallback1 *cw = c ? new TextWidthCallback1(c, w2d) : (TextWidthCallback1 *)0;
             ret = m_impl->canvas->drawTextAt(cw, text, ptd.x, ptd.y, h, align, angle) / w2d;
         }
     }

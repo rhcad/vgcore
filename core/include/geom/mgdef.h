@@ -13,6 +13,11 @@
 #pragma warning(disable: 4251)  // using non-exported as public in exported
 #endif
 
+#ifndef _SIZE_T
+#define _SIZE_T
+typedef unsigned long size_t;
+#endif
+
 #ifndef isnan
 #define isnan(x) ((x)!=(x))
 #endif
