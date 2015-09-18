@@ -65,8 +65,9 @@ public:
     int getType() const { return Type(); }
     
     void release() {
-        if (giAtomicDecrement(&_refcount) == 0)
+        if (giAtomicDecrement(&_refcount) == 0) {
             delete this;
+        }
     }
     
     void addRef() {

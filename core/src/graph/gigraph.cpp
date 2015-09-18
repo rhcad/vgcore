@@ -1408,8 +1408,9 @@ struct TextWidthCallback1 : GiTextWidthCallback {
         giAtomicIncrement(&refcount);
     }
     virtual void releaseTextWidth() {
-        if (giAtomicDecrement(&refcount) == 0)
+        if (giAtomicDecrement(&refcount) == 0) {
             delete this;
+        }
     }
     virtual void drawTextEnded(GiTextWidthCallback *c, float width) {
         rc->drawTextEnded(rc, width / w2d);
