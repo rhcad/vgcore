@@ -89,7 +89,7 @@ struct MgSnap {
     
     //! 根据当前点捕捉新的坐标
     virtual Point2d snapPoint(const MgMotion* sender, const Point2d& orignPt) {
-        return snapPoint(sender, orignPt, (const MgShape*)0, -1);
+        return snapPoint(sender, orignPt, MgShape::Null(), -1);
     }
     
 #ifndef SWIG

@@ -212,7 +212,7 @@ const MgShape* MgShapeDoc::findShape(int sid) const
             return sp;
         }
     }
-    return (const MgShape*)0;
+    return MgShape::Null();
 }
 
 const MgShape* MgShapeDoc::getLastShape() const

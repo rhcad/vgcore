@@ -94,7 +94,7 @@ bool MgImageShape::_load(MgShapeFactory* factory, MgStorage* s)
 const MgShape* MgImageShape::findShapeByImageID(const MgShapes* shapes, const char* name)
 {
     MgShapeIterator it(shapes);
-    const MgShape* ret = (const MgShape*)0;
+    const MgShape* ret = MgShape::Null();
     
     while (const MgShape* sp = it.getNext()) {
         if (sp->shapec()->isKindOf(MgImageShape::Type())) {

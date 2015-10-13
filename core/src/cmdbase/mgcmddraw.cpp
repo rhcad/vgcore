@@ -12,7 +12,7 @@
 Point2d MgCommandDraw::m_lastSnapped[];
 
 MgCommandDraw::MgCommandDraw(const char* name)
-    : MgCommand(name), m_step(0), m_shape((MgShape*)0)
+    : MgCommand(name), m_step(0), m_shape(MgShape::Null())
 {
 }
 
@@ -134,7 +134,7 @@ bool MgCommandDraw::_initialize(int shapeType, const MgMotion* sender, MgStorage
 MgShape* MgCommandDraw::addShape(const MgMotion* sender, MgShape* shape)
 {
     shape = shape ? shape : m_shape;
-    MgShape* newsp = (MgShape*)0;
+    MgShape* newsp = MgShape::Null();
     
     if (sender->view->getOptionBool("newShapeFixedlen", false)) {
         shape->shape()->setFlag(kMgFixedLength, true);
@@ -265,7 +265,7 @@ Point2d MgCommandDraw::snapPoint(const MgMotion* sender, const Point2d& orignPt,
                                  bool firstStep, int handle)
 {
     MgSnap *snap = sender->view->getSnap();
-    Point2d pt(snap->snapPoint(sender, orignPt, firstStep ? (const MgShape*)0 : m_shape, handle));
+    Point2d pt(snap->snapPoint(sender, orignPt, firstStep ? MgShape::Null() : m_shape, handle));
     
     if ( (firstStep || !sender->dragging())
         && snap->getSnappedType() >= kMgSnapPoint) {

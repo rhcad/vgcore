@@ -1298,7 +1298,7 @@ void GiCoreView::setContext(const GiContext& ctx, int mask, int apply)
 
     if (mask != 0) {
         int n = impl->_cmds->getSelectionForChange(impl, 0, NULL);
-        std::vector<MgShape*> shapes(n, (MgShape*)0);
+        std::vector<MgShape*> shapes(n, MgShape::Null());
 
         if (n > 0 && impl->_cmds->getSelectionForChange(impl, n, &shapes.front()) > 0) {
             for (int i = 0; i < n; i++) {

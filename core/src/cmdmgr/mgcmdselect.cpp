@@ -1207,7 +1207,7 @@ int MgCmdSelect::getSelectType(MgView* view)
 {
     int n = getSelection(view, 0, NULL);
     int type = 0;
-    std::vector<const MgShape*> arr(n, (MgShape*)0);
+    std::vector<const MgShape*> arr(n, MgShape::Null());
 
     if (n > 0) {
         n = getSelection(view, n, &arr.front());

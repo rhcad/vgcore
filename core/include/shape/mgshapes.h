@@ -161,7 +161,7 @@ class MgShapeIterator
 {
 public:
     //! 给定图形列表(可为空)构造迭代器
-    MgShapeIterator(const MgShapes* s) : _s(s), _it((void*)0), _sp((const MgShape*)0) {}
+    MgShapeIterator(const MgShapes* s) : _s(s), _it((void*)0), _sp(MgShape::Null()) {}
     ~MgShapeIterator() { if (_it && _s) _s->freeIterator(_it); }
     
     //! 检查是否还有图形可遍历

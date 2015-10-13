@@ -13,7 +13,7 @@
 #pragma warning(disable: 4251)  // using non-exported as public in exported
 #endif
 
-#ifndef _SIZE_T
+#if !defined(_SIZE_T) && !defined(_MSC_VER)
 #define _SIZE_T
 typedef unsigned long size_t;
 #endif
