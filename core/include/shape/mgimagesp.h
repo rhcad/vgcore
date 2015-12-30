@@ -33,8 +33,6 @@ protected:
     bool _draw(int mode, GiGraphics& gs, const GiContext& ctx, int segment) const;
     bool _save(MgStorage* s) const;
     bool _load(MgShapeFactory* factory, MgStorage* s);
-private:
-    bool drawBox(GiGraphics& gs, const GiContext& ctx) const;
     
 protected:
     char    _name[64];

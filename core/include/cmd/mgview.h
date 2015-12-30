@@ -52,7 +52,7 @@ struct MgView
     virtual Matrix2d& modelTransform() const = 0;               //!< 文档的模型变换矩阵
 
     virtual MgShapeFactory* getShapeFactory() = 0;              //!< 返回图形工厂对象
-    virtual MgShape* createShapeCtx(int type, const GiContext* ctx = NULL) = 0; //!< 根据类型号创建图形对象
+    virtual MgShape* createShapeCtx(int type, const GiContext* ctx = (const GiContext*)0) = 0; //!< 根据类型号创建图形对象
     virtual MgSnap* getSnap() = 0;                              //!< 返回图形特征点捕捉器
     virtual MgActionDispatcher* getAction() = 0;                //!< 返回上下文动作分发对象
     virtual CmdSubject* getCmdSubject() = 0;                    //!< 返回命令扩展目标对象
@@ -141,7 +141,7 @@ public:
     float           d2mgs;              //!< for displayMmToModel()
     float           d2m;                //!< for displayMmToModel()
     
-    MgMotion() : view(NULL), gestureType(0), gestureState(kMgGesturePossible)
+    MgMotion() : view((MgView*)0), gestureType(0), gestureState(kMgGesturePossible)
         , pressDrag(false), switchGesture(false), d2mgs(0), d2m(0) {}
     
     bool dragging() const {                             //!< 是否正按下拖动

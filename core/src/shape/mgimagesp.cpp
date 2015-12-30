@@ -40,26 +40,11 @@ bool MgImageShape::_draw(int, GiGraphics& gs, const GiContext& ctx, int) const
     bool ret = false;
     
     if (isVisible()) {
-        ret = (gs.rawImage(_name, rect.center().x, rect.center().y,
-                           rect.width(), rect.height(), vec.angle2())
-               || drawBox(gs, ctx));
+        ret = gs.rawImage(_name, rect.center().x, rect.center().y,
+                          rect.width(), rect.height(), vec.angle2());
     }
     
     return ret;
-}
-
-bool MgImageShape::drawBox(GiGraphics& gs, const GiContext& ctx) const
-{
-    GiContext tmpctx(ctx);
-    tmpctx.setNoFillColor();
-    tmpctx.setLineStyle(GiContext::kSolidLine);
-    
-    GiContext ctxline(tmpctx);
-    ctxline.setLineWidth(0, false);
-    
-    return (gs.drawPolygon(&tmpctx, 4, _points)
-            && gs.drawLine(&ctxline, _points[0], _points[2])
-            && gs.drawLine(&ctxline, _points[1], _points[3]));
 }
 
 void MgImageShape::_copy(const MgImageShape& src)
@@ -109,7 +94,7 @@ bool MgImageShape::_load(MgShapeFactory* factory, MgStorage* s)
 const MgShape* MgImageShape::findShapeByImageID(const MgShapes* shapes, const char* name)
 {
     MgShapeIterator it(shapes);
-    const MgShape* ret = NULL;
+    const MgShape* ret = MgShape::Null();
     
     while (const MgShape* sp = it.getNext()) {
         if (sp->shapec()->isKindOf(MgImageShape::Type())) {
