@@ -63,12 +63,13 @@ void MgImageShape::_copy(const MgImageShape& src)
 #else
     strcpy(_name, src._name);
 #endif
+    _size = src._size;
     __super::_copy(src);
 }
 
 bool MgImageShape::_equals(const MgImageShape& src) const
 {
-    return strcmp(_name, src._name) == 0 && __super::_equals(src);
+    return strcmp(_name, src._name) == 0 && _size == src._size && __super::_equals(src);
 }
 
 void MgImageShape::_clear()
