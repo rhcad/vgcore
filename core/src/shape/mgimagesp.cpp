@@ -4,6 +4,7 @@
 #include "mgimagesp.h"
 #include "mgcomposite.h"
 #include "mgshape_.h"
+#include "mglog.h"
 #include <string.h>
 
 MG_IMPLEMENT_CREATE(MgImageShape)
@@ -31,6 +32,14 @@ void MgImageShape::setName(const char* name)
         setFlag(kMgHideContent, true);
         setFlag(kMgNoClone, true);
     }
+}
+
+void MgImageShape::setImageSize(Vector2d size)
+{
+    if (size.x < 1 || size.y < 1) {
+        LOGE("Invalid image size: %f x %f, %s", size.x, size.y, _name);
+    }
+    _size = size;
 }
 
 bool MgImageShape::_draw(int, GiGraphics& gs, const GiContext& ctx, int) const

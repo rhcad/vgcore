@@ -22,7 +22,7 @@ public:
     void setName(const char* name);
     
     Vector2d getImageSize() const { return _size; }
-    void setImageSize(Vector2d size) { _size = size; }
+    void setImageSize(Vector2d size);
     
     static const MgShape* findShapeByImageID(const MgShapes* shapes, const char* name);
     
