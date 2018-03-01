@@ -1231,6 +1231,7 @@ bool GiGraphics::rawBeziers(const GiContext* ctx, const Point2d* pxs, int count,
                                      pxs[i+2].x, pxs[i+2].y);
         }
         if (closed) {
+            setBrush(ctx);
             m_impl->canvas->closePath();
         }
         m_impl->canvas->drawPath(true, closed);

@@ -27,3 +27,4 @@ gdbserver
 *.db
 ios/output
 android/output
+.idea/
